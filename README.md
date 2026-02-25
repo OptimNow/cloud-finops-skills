@@ -2,7 +2,7 @@
 
 > A comprehensive Cloud FinOps Agent Skill built by [OptimNow](https://optimnow.io).
 > Provides expert, framework-aligned guidance on cloud financial management across
-> AWS, Azure, AI workloads, and tagging governance — grounded in hands-on enterprise
+> AWS, Azure, AI workloads, and tagging governance, grounded in hands-on enterprise
 > delivery experience.
 
 [![GitHub Stars](https://img.shields.io/github/stars/OptimNow/cloud-finops-skill?style=flat)](https://github.com/OptimNow/cloud-finops-skill/stargazers)
