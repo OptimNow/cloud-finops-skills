@@ -2,16 +2,22 @@
 name: cloud-finops
 description: >
  Expert Cloud FinOps guidance covering AI cost management (LLM inference costs, token
-  economics, agentic cost patterns, AI unit economics, AI ROI), Anthropic billing
-  (Claude Opus, Sonnet, Haiku pricing, Fast mode, long-context cliffs, prompt caching,
-  Batch API, governance controls), AWS cost optimization (EC2 rightsizing, Reserved
-  Instances, Savings Plans, CUR, Cost Explorer), Azure cost management (reservations,
-  Azure Policy, FinOps Toolkit), cloud tagging governance and MCP-based automation, and
-  FinOps framework implementation (Inform/Optimize/Operate, Crawl/Walk/Run maturity,
-  22 capabilities, cost allocation, chargeback, showback, forecasting, budgeting). Use
-  for any query about cloud cost, cloud financial operations, FinOps practice setup,
-  AI workload costs, Anthropic Claude API costs, prompt optimization, model selection,
-  tagging strategy, or connecting cloud spend to business value. Built by OptimNow.
+  economics, agentic cost patterns, AI unit economics, AI ROI), GenAI capacity planning
+  (provisioned vs shared capacity, traffic shape, spillover, throughput units), Anthropic
+  billing (Claude Opus, Sonnet, Haiku pricing, Fast mode, long-context cliffs, prompt
+  caching, Batch API, governance controls), AWS cost optimization (EC2 rightsizing,
+  Reserved Instances, Savings Plans, CUR, Cost Explorer), AWS Bedrock (model pricing,
+  provisioned throughput, batch inference), Azure cost management (reservations, Azure
+  Policy, FinOps Toolkit), Azure OpenAI Service (PTU reservations, GPT pricing, spillover,
+  fine-tuning costs), GCP Vertex AI (Gemini pricing, provisioned throughput, batch
+  prediction), cloud tagging governance and MCP-based automation, and FinOps framework
+  implementation (Inform/Optimize/Operate, Crawl/Walk/Run maturity, 22 capabilities,
+  cost allocation, chargeback, showback, forecasting, budgeting). Use for any query about
+  cloud cost, cloud financial operations, FinOps practice setup, AI workload costs,
+  AI investment governance, AI Investment Council, AI value management, Anthropic
+  Claude API costs, Bedrock pricing, Azure OpenAI PTUs, Vertex AI costs, GenAI
+  capacity planning, prompt optimization, model selection, tagging strategy, or
+  connecting cloud spend to business value. Built by OptimNow.
 license: MIT
 ---
 
@@ -32,12 +38,17 @@ domain reference that matches the query.
 | Query topic | Load reference |
 |---|---|
 | AI costs, LLM inference, token economics, agentic cost patterns, AI ROI | `references/finops-for-ai.md` |
+| AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations | `references/finops-ai-value-management.md` |
+| GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | AWS billing, EC2 rightsizing, RIs, Savings Plans, CUR, Cost Explorer | `references/finops-aws.md` |
+| AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference | `references/finops-bedrock.md` |
 | Azure cost management, reservations, Azure Advisor, Cost Management | `references/finops-azure.md` |
+| Azure OpenAI Service, PTU reservations, GPT-4o / GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
 | Anthropic billing, Claude API costs, Claude Code costs, Opus, Sonnet, Haiku pricing, Fast mode, prompt caching, Batch API, long-context pricing | `references/finops-anthropic.md` |
+| GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery optimization | `references/finops-gcp.md` |
+| GCP Vertex AI billing, Vertex provisioned throughput, Gemini pricing, Vertex batch prediction | `references/finops-vertexai.md` |
 | Tagging strategy, naming conventions, IaC enforcement, MCP governance | `references/finops-tagging.md` |
 | FinOps framework, maturity model, phases, capabilities, personas | `references/finops-framework.md` |
-| GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery optimization | `references/finops-gcp.md` |
 | Databricks clusters, jobs, Spark optimization, Unity Catalog costs | `references/finops-databricks.md` |
 | Snowflake warehouses, query optimization, storage, credits | `references/finops-snowflake.md` |
 | OCI compute, storage, networking optimization | `references/finops-oci.md` |
@@ -112,12 +123,17 @@ premature - they will commit to waste.
 |---|---|---|
 | `optimnow-methodology.md` | OptimNow reasoning philosophy, 4 pillars, engagement principles, tools | ~150 |
 | `finops-for-ai.md` | AI cost management, LLM economics, agentic patterns, ROI framework | ~400 |
+| `finops-ai-value-management.md` | AI investment governance: AI Investment Council, stage gates, incremental funding, practice operations, value metrics | ~265 |
+| `finops-genai-capacity.md` | GenAI capacity models: provisioned vs shared, traffic shape, spillover, waste types, cross-provider comparison | ~220 |
 | `finops-aws.md` | AWS FinOps + 128 optimization patterns: CUR, Cost Explorer, EC2, RIs, Savings Plans, waste detection | ~1450 |
+| `finops-bedrock.md` | AWS Bedrock billing: model pricing, provisioned throughput, batch inference, CloudWatch metrics, cost allocation | ~200 |
 | `finops-azure.md` | Azure FinOps + 48 optimization patterns: reservations, Advisor, AHB, waste detection | ~1000 |
+| `finops-azure-openai.md` | Azure OpenAI Service: PTU reservations, spillover, GPT model pricing, prompt caching, fine-tuning costs | ~260 |
 | `finops-anthropic.md` | Anthropic billing: Claude Opus/Sonnet/Haiku pricing, Fast mode, long-context cliffs, prompt caching, Batch API, governance | ~175 |
+| `finops-gcp.md` | GCP optimization: 26 patterns across Compute Engine, Cloud SQL, GCS, networking | ~260 |
+| `finops-vertexai.md` | GCP Vertex AI billing: Gemini pricing, provisioned throughput, batch prediction, Cloud Monitoring metrics | ~215 |
 | `finops-tagging.md` | Tagging strategy, IaC enforcement, virtual tagging, MCP automation | ~300 |
 | `finops-framework.md` | Full FinOps Foundation framework: 22 capabilities, personas, domains | ~350 |
-| `finops-gcp.md` | GCP optimization: 26 patterns across Compute Engine, Cloud SQL, GCS, networking | ~260 |
 | `finops-databricks.md` | Databricks optimization: 18 patterns for clusters, jobs, Spark, storage | ~180 |
 | `finops-snowflake.md` | Snowflake optimization: 13 patterns for warehouses, queries, storage, credits | ~130 |
 | `finops-oci.md` | OCI optimization: 6 patterns for compute, storage, networking | ~70 |

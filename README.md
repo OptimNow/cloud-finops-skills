@@ -2,8 +2,9 @@
 
 > A comprehensive Cloud FinOps Agent Skill built by [OptimNow](https://optimnow.io).
 > Provides expert, framework-aligned guidance on cloud financial management across
-> AWS, Azure, AI workloads, and tagging governance, grounded in hands-on enterprise
-> delivery experience.
+> AWS, Azure, GCP, Anthropic, Bedrock, Azure OpenAI, Vertex AI, Databricks, Snowflake,
+> OCI, AI workloads, GenAI capacity planning, and tagging governance — grounded in
+> hands-on enterprise delivery experience.
 
 [![GitHub Stars](https://img.shields.io/github/stars/OptimNow/cloud-finops-skill?style=flat)](https://github.com/OptimNow/cloud-finops-skill/stargazers)
 [![FinOps Framework](https://img.shields.io/badge/FinOps-Framework%202024-blue)](https://www.finops.org/framework/)
@@ -14,16 +15,30 @@
 
 ## What this skill provides
 
-This skill enables AI agents to deliver expert FinOps guidance across four domains:
+This skill enables AI agents to deliver expert FinOps guidance across multiple domains:
 
 - **FinOps for AI** - LLM inference economics, token cost management, agentic cost
   patterns, unit economics for AI features, ROI frameworks, and AI cost governance
+- **AI value management** - AI Investment Council, stage gate model, incremental
+  funding, practice operations, cross-functional governance for AI investments
+- **GenAI capacity planning** - provisioned vs shared capacity, traffic shape analysis,
+  spillover mechanics, throughput units, cross-provider comparison
+- **Anthropic billing** - Claude Opus, Sonnet, Haiku pricing, Fast mode, long-context
+  cliffs, prompt caching, Batch API, governance controls
+- **AWS Bedrock** - model pricing, provisioned throughput, batch inference, cost allocation
+- **Azure OpenAI Service** - PTU reservations, GPT model pricing, spillover, fine-tuning costs
+- **GCP Vertex AI** - Gemini pricing, provisioned throughput, batch prediction, cost visibility
 - **AWS FinOps** - CUR setup, Cost Explorer, EC2 rightsizing, Reserved Instances vs
   Savings Plans, cost allocation, SCPs, and AWS-native quick wins
 - **Azure FinOps** - Azure Cost Management, Reservations, Azure Policy for governance,
   FinOps Toolkit, Azure Hybrid Benefit, and Azure-specific optimization patterns
+- **GCP FinOps** - Compute Engine, Cloud SQL, GCS, BigQuery, networking optimization
 - **Tagging Governance** - tag taxonomy design, naming conventions, IaC enforcement,
   virtual tagging, MCP-based automation, and compliance monitoring
+- **FinOps Framework** - full FinOps Foundation framework, 22 capabilities, maturity model
+- **Databricks** - cluster optimization, jobs, Spark, Unity Catalog costs
+- **Snowflake** - warehouse optimization, query tuning, storage, credits
+- **OCI** - compute, storage, networking optimization
 
 All guidance is framed through OptimNow's methodology: connecting cost to business value,
 diagnosing before prescribing, and recommending progressive actions matched to
@@ -41,15 +56,12 @@ organizational maturity.
 - **Maturity-sensitive** - recommendations match the organization's current state,
   not a generic best practice
 
-Built on top of [finops-skill](https://github.com/OptimNow/finops-skill) (generic
-FinOps Foundation framework coverage), which remains available as a standalone skill.
-
 ---
 
 ## Directory structure
 
 ```
-cloud-finops-skill/
+cloud-finops-skills/
 ├── README.md                                   ← This file
 ├── INSTALLATION.md                             ← Setup instructions
 ├── LICENSE.md                                  ← MIT
@@ -58,10 +70,20 @@ cloud-finops-skill/
     └── references/
         ├── optimnow-methodology.md             ← OptimNow reasoning philosophy
         ├── finops-for-ai.md                    ← AI cost management
+        ├── finops-ai-value-management.md       ← AI investment governance
+        ├── finops-genai-capacity.md            ← GenAI capacity models (cross-provider)
+        ├── finops-anthropic.md                 ← Anthropic billing + governance
         ├── finops-aws.md                       ← AWS-specific FinOps
+        ├── finops-bedrock.md                   ← AWS Bedrock billing
         ├── finops-azure.md                     ← Azure-specific FinOps
+        ├── finops-azure-openai.md              ← Azure OpenAI Service (PTUs)
+        ├── finops-gcp.md                       ← GCP-specific FinOps
+        ├── finops-vertexai.md                  ← GCP Vertex AI billing
         ├── finops-tagging.md                   ← Tagging and naming governance
-        └── finops-framework.md                 ← Full FinOps Foundation framework
+        ├── finops-framework.md                 ← Full FinOps Foundation framework
+        ├── finops-databricks.md                ← Databricks optimization
+        ├── finops-snowflake.md                 ← Snowflake optimization
+        └── finops-oci.md                       ← OCI optimization
 ```
 
 ---
