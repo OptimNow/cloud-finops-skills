@@ -14,16 +14,16 @@ operational discipline that requires design, enforcement, and continuous monitor
 
 **Tagging enables:**
 - Cost allocation to teams, products, cost centers, and environments
-- Accountability — teams cannot own what they cannot see
-- Optimization attribution — savings must be linked to a resource owner
-- Governance automation — policies act on tag values, not resource IDs
-- Chargeback — financial accountability requires accurate attribution
-- Security and compliance — resource classification drives access and audit controls
+- Accountability - teams cannot own what they cannot see
+- Optimization attribution - savings must be linked to a resource owner
+- Governance automation - policies act on tag values, not resource IDs
+- Chargeback - financial accountability requires accurate attribution
+- Security and compliance - resource classification drives access and audit controls
 
 **The cost of poor tagging:**
-- Untagged spend cannot be allocated — it falls into shared cost pools or "unknown"
-- Optimization savings cannot be credited to teams — removing the incentive to act
-- Anomaly detection produces false positives — spikes in untagged spend are uninvestigable
+- Untagged spend cannot be allocated - it falls into shared cost pools or "unknown"
+- Optimization savings cannot be credited to teams - removing the incentive to act
+- Anomaly detection produces false positives - spikes in untagged spend are uninvestigable
 - Commitment discounts applied to untagged resources create stranded capacity
 
 **OptimNow principle:** Physical tagging must precede virtual tagging. Virtual tagging
@@ -37,7 +37,7 @@ powerful complement but a fragile substitute. Fix the source before adding abstr
 ### Mandatory tags (minimum viable set)
 
 Every organization needs a minimum set of tags that apply to all resources, without
-exception. Start small — enforcement of 5 tags is more valuable than partial compliance
+exception. Start small - enforcement of 5 tags is more valuable than partial compliance
 on 20.
 
 | Tag key | Purpose | Example values |
@@ -76,10 +76,10 @@ staging-agent-smith-rds-euw3-01
 ```
 
 **Rules:**
-- Use lowercase and hyphens only (avoid underscores — incompatible with some services)
+- Use lowercase and hyphens only (avoid underscores - incompatible with some services)
 - Keep names under 63 characters (DNS compatibility for some resource types)
-- Never encode dynamic values (costs, dates) in names — they cannot be updated
-- Align naming conventions with your tag taxonomy — the same dimensions, consistently
+- Never encode dynamic values (costs, dates) in names - they cannot be updated
+- Align naming conventions with your tag taxonomy - the same dimensions, consistently
 
 ---
 
@@ -87,7 +87,7 @@ staging-agent-smith-rds-euw3-01
 
 ### The three enforcement layers
 
-**Layer 1: Prevention (IaC — highest value)**
+**Layer 1: Prevention (IaC - highest value)**
 Enforce tags at resource creation through infrastructure-as-code validation. Tags defined
 in Terraform modules, CloudFormation templates, or Bicep files propagate automatically.
 Violations are caught before deployment.
@@ -178,13 +178,13 @@ confirmation in the conversation before execution. All changes are logged.
 **Integration with Agent Smith:**
 The finops-tagging MCP is a core tool in Agent Smith's toolkit, enabling conversational
 tag governance alongside cost analysis. The agent can detect untagged resources driving
-cost anomalies and immediately propose and apply remediation — closing the loop between
+cost anomalies and immediately propose and apply remediation - closing the loop between
 cost visibility and corrective action.
 
 **Current capability status:**
 Tag compliance auditing (read, validate, report) is production-ready. Tag write automation
 with human-in-the-loop confirmation is in active testing. Fully autonomous tag remediation
-(without per-operation confirmation) is intentionally not implemented — governance requires
+(without per-operation confirmation) is intentionally not implemented - governance requires
 human approval for write operations.
 
 ---
@@ -195,7 +195,7 @@ human approval for write operations.
 - Mandatory tags defined (5 or fewer)
 - Tags applied manually at resource creation
 - Compliance checked manually on a monthly basis
-- No enforcement — violations are flagged but not blocked
+- No enforcement - violations are flagged but not blocked
 
 **Quick win:** Run a one-time tag audit, identify the top 10 untagged resources by spend,
 tag them manually. This typically achieves 15–20% allocation improvement in one session.

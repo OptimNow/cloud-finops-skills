@@ -26,7 +26,7 @@ After copying, Claude Code will automatically detect the skill. Test it:
 ```
 "What are the first steps to manage AI inference costs?"
 "How do I choose between Reserved Instances and Savings Plans on AWS?"
-"We have zero tagging compliance — where do we start?"
+"We have zero tagging compliance - where do we start?"
 ```
 
 ---

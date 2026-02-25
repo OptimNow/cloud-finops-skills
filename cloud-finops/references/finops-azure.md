@@ -37,8 +37,8 @@ Azure Cost Management is the native cost visibility tool for Azure. For serious 
 implementations, configure scheduled exports to Azure Storage for downstream processing.
 
 **Export types:**
-- **Actual cost** — charges as they appear on the invoice (use for billing reconciliation)
-- **Amortized cost** — reservation and savings plan charges spread across the usage period
+- **Actual cost** - charges as they appear on the invoice (use for billing reconciliation)
+- **Amortized cost** - reservation and savings plan charges spread across the usage period
   (use for team-level showback and allocation)
 
 **Export setup checklist:**
@@ -71,7 +71,7 @@ Repository: https://github.com/microsoft/finops-toolkit
 
 | Dimension | Azure Reservations | Azure Savings Plans for Compute |
 |---|---|---|
-| Flexibility | Low — locked to specific VM family/region | High — applies across VM families and regions |
+| Flexibility | Low - locked to specific VM family/region | High - applies across VM families and regions |
 | Discount depth | Higher (up to 72% for some VM families) | Lower but broader coverage |
 | Coverage scope | Specific resource type | Compute (VMs, Dedicated Hosts) |
 | Best for | Stable workloads with known VM types | Variable workloads, mixed VM families |
@@ -129,7 +129,7 @@ Billing Account
 > tag inheritance from resource groups, which resource types do not support tags,
 > Azure Cost Management tag filters.
 
-**Key difference from AWS:** Azure supports tag inheritance policies through Azure Policy —
+**Key difference from AWS:** Azure supports tag inheritance policies through Azure Policy -
 resources can inherit tags from their resource group automatically. This simplifies
 governance for teams that organize resources by resource group.
 

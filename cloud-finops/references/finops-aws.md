@@ -15,7 +15,7 @@ CUR is the most granular billing data source AWS provides. It is the correct dat
 for any serious FinOps implementation on AWS.
 
 **Why CUR over Cost Explorer API:**
-- Line-item granularity — every resource charge, every hour
+- Line-item granularity - every resource charge, every hour
 - Includes resource tags, usage types, and pricing details not available in Cost Explorer
 - Exportable to S3 for integration with third-party tools, Athena, or Redshift
 - Supports FOCUS (FinOps Open Cost and Usage Specification) format export
@@ -63,10 +63,10 @@ right tool for detailed attribution and custom tooling.
 - Granularity limited to daily in the UI (hourly requires API)
 
 **Useful Cost Explorer features:**
-- **Rightsizing recommendations** — EC2 rightsizing based on CloudWatch utilization
-- **Savings Plans recommendations** — commitment purchase recommendations based on usage
-- **Cost anomaly detection** — ML-based anomaly alerts (set up before you need them)
-- **Cost categories** — virtual tags for billing-layer cost allocation
+- **Rightsizing recommendations** - EC2 rightsizing based on CloudWatch utilization
+- **Savings Plans recommendations** - commitment purchase recommendations based on usage
+- **Cost anomaly detection** - ML-based anomaly alerts (set up before you need them)
+- **Cost categories** - virtual tags for billing-layer cost allocation
 
 ### AWS Cost Anomaly Detection
 
@@ -78,7 +78,7 @@ unexpected spending increases and sends alerts via SNS or email.
 - Set alert threshold at an absolute dollar amount, not just percentage
   (a 100% increase on $10 is $10; a 20% increase on $50,000 is $10,000)
 - Route alerts to both the FinOps practitioner and the engineering team lead
-- Review alert history monthly — tune thresholds to reduce false positives
+- Review alert history monthly - tune thresholds to reduce false positives
 
 ---
 
@@ -91,15 +91,15 @@ characteristics, not a general preference.
 
 | Dimension | Reserved Instances | Savings Plans |
 |---|---|---|
-| Flexibility | Low — locked to instance family, region, OS | High — applies across instance families and services |
+| Flexibility | Low - locked to instance family, region, OS | High - applies across instance families and services |
 | Discount depth | Up to 72% (Standard RI, full upfront) | Up to 66% (Compute Savings Plan) |
 | Coverage scope | Specific EC2 instance type | EC2, Fargate, Lambda (Compute SP) |
-| Convertibility | Convertible RIs allow instance family changes | N/A — flexible by design |
+| Convertibility | Convertible RIs allow instance family changes | N/A - flexible by design |
 | Best for | Stable, predictable workloads with known instance types | Variable workloads or mixed instance families |
 
 **Decision framework:**
 
-1. Analyze 90+ days of historical usage — identify truly steady-state workloads
+1. Analyze 90+ days of historical usage - identify truly steady-state workloads
 2. For workloads with stable instance types: evaluate Standard RIs (highest discount)
 3. For workloads with variable instance types or mixed EC2/Fargate/Lambda: Compute Savings Plans
 4. For EC2 with some flexibility needs: Compute Savings Plans or Convertible RIs
@@ -116,7 +116,7 @@ characteristics, not a general preference.
 - [ ] Confirm no planned architecture changes in the commitment period
 - [ ] Confirm the workload is tagged and attributable to an owner
 - [ ] Verify utilization will sustain through the commitment term
-- [ ] Do not commit to waste — rightsize first, commit second
+- [ ] Do not commit to waste - rightsize first, commit second
 
 ### Spot Instances
 
@@ -147,7 +147,7 @@ For fault-tolerant, interruptible workloads, Spot offers up to 90% discount over
 Rightsizing is the highest-ROI optimization for most AWS environments at Crawl/Walk maturity.
 
 **Data sources for rightsizing analysis:**
-- AWS Compute Optimizer — ML-based recommendations using CloudWatch metrics
+- AWS Compute Optimizer - ML-based recommendations using CloudWatch metrics
 - AWS Cost Explorer rightsizing recommendations (simpler, less granular)
 - Third-party tools (CloudHealth, Apptio, cast.ai for containers)
 
@@ -156,7 +156,7 @@ Rightsizing is the highest-ROI optimization for most AWS environments at Crawl/W
 2. Wait 14 days minimum for sufficient utilization data
 3. Export recommendations and filter for "Over-provisioned" findings
 4. Prioritize by potential monthly savings
-5. Validate recommendations with workload owners — check peak utilization, not average
+5. Validate recommendations with workload owners - check peak utilization, not average
 6. Apply changes in non-production first, then production with monitoring period
 
 **Common rightsizing mistakes:**
@@ -195,10 +195,10 @@ Cost Categories in Cost Explorer can create virtual tags across accounts.
 
 See `finops-tagging.md` for the full tagging strategy. AWS-specific notes:
 
-- AWS propagates some tags to billing automatically — verify which tags appear in CUR
-- Tag propagation is not instant — allow 24 hours for new tags to appear in billing
+- AWS propagates some tags to billing automatically - verify which tags appear in CUR
+- Tag propagation is not instant - allow 24 hours for new tags to appear in billing
 - Some services do not support tagging (AWS Support, Route 53 Hosted Zones, some
-  data transfer charges) — use Cost Categories for virtual allocation of untaggable costs
+  data transfer charges) - use Cost Categories for virtual allocation of untaggable costs
 - Enable "Tag policies" in AWS Organizations to enforce tag key capitalization consistency
 
 ### Cost Categories
@@ -218,16 +218,16 @@ Use them for:
 Use AWS Config for continuous compliance monitoring of tagging and configuration standards.
 
 **Useful managed rules for FinOps:**
-- `required-tags` — flags resources missing specified mandatory tags
-- `ec2-instance-no-public-ip` — governance + potential cost reduction (NAT vs public IP)
-- `s3-bucket-versioning-enabled` — data protection governance
-- `restricted-ssh` — security governance
+- `required-tags` - flags resources missing specified mandatory tags
+- `ec2-instance-no-public-ip` - governance + potential cost reduction (NAT vs public IP)
+- `s3-bucket-versioning-enabled` - data protection governance
+- `restricted-ssh` - security governance
 
 ### Service Control Policies (SCPs)
 
 SCPs in AWS Organizations can prevent resource creation without required tags.
 
-**Example SCP — deny EC2 launch without Environment tag:**
+**Example SCP - deny EC2 launch without Environment tag:**
 ```json
 {
   "Version": "2012-10-17",
@@ -246,7 +246,7 @@ SCPs in AWS Organizations can prevent resource creation without required tags.
 ```
 
 **Important:** Test SCPs in a sandbox OU before applying to production. SCPs cannot be
-overridden by account-level IAM policies — a misconfigured SCP can block legitimate
+overridden by account-level IAM policies - a misconfigured SCP can block legitimate
 operations across all accounts in the OU.
 
 ### AWS Budgets

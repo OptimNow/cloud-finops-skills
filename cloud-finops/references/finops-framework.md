@@ -8,22 +8,22 @@
 
 ## The 6 FinOps Principles
 
-1. **Teams need to collaborate** — FinOps requires cooperation across engineering, finance,
+1. **Teams need to collaborate** - FinOps requires cooperation across engineering, finance,
    product, and leadership. No single team can practice FinOps alone.
 
-2. **Business value drives technology decisions** — the goal is not cost minimization but
+2. **Business value drives technology decisions** - the goal is not cost minimization but
    value maximization. Decisions should connect spend to outcomes.
 
-3. **Everyone takes ownership for their cloud usage** — distributed accountability is more
+3. **Everyone takes ownership for their cloud usage** - distributed accountability is more
    effective than centralized policing. Engineers who see their costs act on them.
 
-4. **FinOps data should be accessible, timely, and accurate** — delayed, incomplete, or
+4. **FinOps data should be accessible, timely, and accurate** - delayed, incomplete, or
    unattributed data cannot support good decisions. Visibility is the foundation.
 
-5. **FinOps should be enabled centrally** — a central FinOps function sets standards,
+5. **FinOps should be enabled centrally** - a central FinOps function sets standards,
    builds tooling, and enables teams. It does not own all decisions.
 
-6. **Take advantage of the variable cost model of the cloud** — the cloud's elasticity
+6. **Take advantage of the variable cost model of the cloud** - the cloud's elasticity
    is an asset. Commit to baseline, keep growth variable, avoid over-provisioning.
 
 **Common principle violations to identify:**
@@ -32,7 +32,7 @@
 - All FinOps work done by one team with no engineering engagement (violates #3)
 - Monthly reporting with no anomaly detection (violates #4)
 - Decentralized, inconsistent tooling and processes (violates #5)
-- Treating cloud like on-premises — fixed capacity, no elasticity (violates #6)
+- Treating cloud like on-premises - fixed capacity, no elasticity (violates #6)
 
 ---
 
@@ -42,13 +42,13 @@ FinOps phases are iterative, not sequential. Organizations cycle through them co
 as their cloud usage evolves. Being in "Operate" for one capability does not mean an
 organization has left "Inform" for another.
 
-### Inform — Establish visibility and allocation
+### Inform - Establish visibility and allocation
 
 **Goal:** Make cost data accessible, attributed, and actionable.
 
 **Key activities:**
 - Set up data ingestion (AWS CUR / Azure Cost Export / GCP BigQuery billing export)
-- Implement cost allocation — by account, subscription, project, or tag
+- Implement cost allocation - by account, subscription, project, or tag
 - Build executive dashboards showing top cost drivers and trends
 - Configure anomaly alerts (recommended threshold: >20% daily change)
 - Establish a shared cost allocation methodology
@@ -57,14 +57,14 @@ organization has left "Inform" for another.
 **Walk targets:** >80% allocated, hierarchical allocation, showback reports to teams
 **Run targets:** >90% allocated, automated allocation, real-time visibility
 
-### Optimize — Improve rates and usage efficiency
+### Optimize - Improve rates and usage efficiency
 
 **Goal:** Reduce cost while maintaining or improving performance and reliability.
 
 **Key activities:**
 - Rightsize compute resources (EC2, VMs, containers, databases)
 - Implement commitment discounts (Reserved Instances, Savings Plans, CUDs)
-- Eliminate waste — unattached volumes, idle resources, zombie features
+- Eliminate waste - unattached volumes, idle resources, zombie features
 - Schedule non-production environments (60–70% savings on dev/test)
 - Implement lifecycle policies for storage and data
 
@@ -72,7 +72,7 @@ organization has left "Inform" for another.
 **Walk targets:** 70% commitment discount coverage, documented optimization process
 **Run targets:** 80%+ commitment coverage, continuous rightsizing, automated policies
 
-### Operate — Operationalize through governance and automation
+### Operate - Operationalize through governance and automation
 
 **Goal:** Embed FinOps into engineering and finance workflows permanently.
 
@@ -141,7 +141,7 @@ organization has left "Inform" for another.
 
 **FinOps Practitioner**
 Central coordinator of the FinOps practice. Owns the process, tooling, and cross-functional
-relationships. Bridges engineering and finance. Does not own all decisions — enables others
+relationships. Bridges engineering and finance. Does not own all decisions - enables others
 to make good ones.
 
 **Engineering**
@@ -168,25 +168,25 @@ commitment purchases.
 
 ### Allied Personas
 
-**ITAM (IT Asset Management)** — manages software licenses, intersects with license
+**ITAM (IT Asset Management)** - manages software licenses, intersects with license
 optimization and cloud license portability (BYOL, AHUB).
 
-**Sustainability** — connects cloud efficiency work to carbon metrics and ESG reporting.
+**Sustainability** - connects cloud efficiency work to carbon metrics and ESG reporting.
 
-**ITSM (IT Service Management)** — integrates FinOps into change management and
+**ITSM (IT Service Management)** - integrates FinOps into change management and
 service catalog processes.
 
-**Security** — intersects with governance, tagging policy enforcement, and access controls
+**Security** - intersects with governance, tagging policy enforcement, and access controls
 for cost management tools.
 
 ---
 
-## Maturity Model — Detailed
+## Maturity Model - Detailed
 
 ### Crawl
 - Processes are manual, reactive, and inconsistent
 - Basic cost visibility exists but allocation is incomplete (<50%)
-- Optimization is ad hoc — one-off projects rather than continuous practice
+- Optimization is ad hoc - one-off projects rather than continuous practice
 - FinOps is driven by one person or team with limited organizational reach
 - Commitment discount coverage is low and unmanaged
 
@@ -196,8 +196,8 @@ Do not attempt chargeback. Do not purchase large commitment discounts without al
 ### Walk
 - Processes are documented and repeatable
 - Cost allocation >80%, showback reports delivered to teams
-- Optimization is proactive — rightsizing and waste elimination run continuously
-- FinOps is cross-functional — engineering and finance participate regularly
+- Optimization is proactive - rightsizing and waste elimination run continuously
+- FinOps is cross-functional - engineering and finance participate regularly
 - Commitment discount coverage ~70%, managed with utilization monitoring
 
 **Priority at Walk:** Establish unit economics, expand optimization scope, begin
@@ -206,8 +206,8 @@ governance automation. Evaluate readiness for chargeback.
 ### Run
 - Processes are automated and self-improving
 - Cost allocation >90%, real-time visibility, anomalies auto-detected
-- Optimization is embedded in engineering workflows — not a separate activity
-- FinOps culture is distributed — teams own their costs without central policing
+- Optimization is embedded in engineering workflows - not a separate activity
+- FinOps culture is distributed - teams own their costs without central policing
 - Commitment discount coverage 80%+, managed by automation with human oversight
 - Chargeback implemented where organizationally appropriate
 

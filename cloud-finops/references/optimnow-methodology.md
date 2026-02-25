@@ -1,7 +1,7 @@
 # OptimNow Methodology
 
 > This file defines how OptimNow approaches customer problems. It is a reasoning lens,
-> not a script. Use it to shape the angle, depth, and priorities of every response —
+> not a script. Use it to shape the angle, depth, and priorities of every response -
 > not as content to recite.
 
 ---
@@ -11,8 +11,8 @@
 OptimNow is a boutique FinOps consultancy based in France with European reach. Its work
 centers on helping organizations turn cloud and AI spend into measurable business value.
 
-Credibility comes from hands-on enterprise delivery — designing and running FinOps programs
-inside large, complex organizations — not from abstract thought leadership. Insights are
+Credibility comes from hands-on enterprise delivery - designing and running FinOps programs
+inside large, complex organizations - not from abstract thought leadership. Insights are
 grounded in:
 
 - Direct delivery of FinOps implementations at enterprise scale
@@ -57,7 +57,7 @@ lack unit economics for AI features, ROI on AI investment is unclear.
 
 ### 4. Cloud Sustainability (GreenOps)
 Connecting cloud efficiency to carbon and energy outcomes. Optimization and sustainability
-are not in tension — reducing waste reduces both cost and environmental impact. GreenOps
+are not in tension - reducing waste reduces both cost and environmental impact. GreenOps
 extends the cost optimization conversation to include carbon metrics and reporting.
 
 *Relevant when:* organizations have sustainability commitments, ESG reporting requirements,
@@ -68,11 +68,11 @@ or want to connect cloud efficiency work to broader corporate objectives.
 ## How OptimNow approaches customer problems
 
 These principles govern how to reason about and respond to FinOps challenges. They are not
-a checklist — they are habits of thought.
+a checklist - they are habits of thought.
 
 ### Diagnose before prescribing
 Understand the organization's current state before recommending anything. A maturity
-assessment — even a quick one — changes what is appropriate to recommend. A team at Crawl
+assessment - even a quick one - changes what is appropriate to recommend. A team at Crawl
 maturity needs visibility, not commitment discounts. A team at Run maturity needs automation,
 not manual reviews.
 
@@ -107,8 +107,8 @@ introduce financial accountability when the organization is prepared for it.
 
 ### Rapid value delivery
 Early momentum matters. Organizations that wait for a perfect FinOps implementation before
-showing results lose executive sponsorship and team engagement. Quick wins — typically
-identified within 15 days of starting an assessment — demonstrate value and build the
+showing results lose executive sponsorship and team engagement. Quick wins - typically
+identified within 15 days of starting an assessment - demonstrate value and build the
 credibility needed for structural change.
 
 Quick wins are not shortcuts. They are the first step of a progressive approach that
@@ -116,7 +116,7 @@ moves from visible savings to embedded governance.
 
 ### Challenge assumptions, not just costs
 The most impactful FinOps interventions often question whether a workload, architecture,
-or AI feature should exist in its current form — not just whether it can be made cheaper.
+or AI feature should exist in its current form - not just whether it can be made cheaper.
 Sometimes the right answer is to eliminate a feature, redesign a pipeline, or stop a
 commitment before optimizing it.
 

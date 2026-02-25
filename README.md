@@ -16,13 +16,13 @@
 
 This skill enables AI agents to deliver expert FinOps guidance across four domains:
 
-- **FinOps for AI** — LLM inference economics, token cost management, agentic cost
+- **FinOps for AI** - LLM inference economics, token cost management, agentic cost
   patterns, unit economics for AI features, ROI frameworks, and AI cost governance
-- **AWS FinOps** — CUR setup, Cost Explorer, EC2 rightsizing, Reserved Instances vs
+- **AWS FinOps** - CUR setup, Cost Explorer, EC2 rightsizing, Reserved Instances vs
   Savings Plans, cost allocation, SCPs, and AWS-native quick wins
-- **Azure FinOps** — Azure Cost Management, Reservations, Azure Policy for governance,
+- **Azure FinOps** - Azure Cost Management, Reservations, Azure Policy for governance,
   FinOps Toolkit, Azure Hybrid Benefit, and Azure-specific optimization patterns
-- **Tagging Governance** — tag taxonomy design, naming conventions, IaC enforcement,
+- **Tagging Governance** - tag taxonomy design, naming conventions, IaC enforcement,
   virtual tagging, MCP-based automation, and compliance monitoring
 
 All guidance is framed through OptimNow's methodology: connecting cost to business value,
@@ -32,13 +32,13 @@ organizational maturity.
 ## What makes this skill different from generic FinOps resources
 
 - **AI cost management** is a first-class domain, not an afterthought
-- **OptimNow methodology** shapes reasoning — visibility before optimization,
+- **OptimNow methodology** shapes reasoning - visibility before optimization,
   showback before chargeback, quick wins before structural change
-- **Practical over theoretical** — real anti-patterns, real implementation steps,
+- **Practical over theoretical** - real anti-patterns, real implementation steps,
   real decision frameworks
-- **Tool-aware** — references OptimNow's open-source tools (MCP for Tagging,
+- **Tool-aware** - references OptimNow's open-source tools (MCP for Tagging,
   AI ROI Calculator, FinOps Maturity Assessment) where genuinely relevant
-- **Maturity-sensitive** — recommendations match the organization's current state,
+- **Maturity-sensitive** - recommendations match the organization's current state,
   not a generic best practice
 
 Built on top of [finops-skill](https://github.com/OptimNow/finops-skill) (generic
@@ -86,7 +86,7 @@ The skill is pre-integrated into Agent Smith. No manual installation required.
 
 - "We're spending $40K/month on AWS Bedrock and have no idea which features are driving it. Where do we start?"
 - "How do I calculate ROI for our AI support bot?"
-- "Our inference costs doubled last month — what are the most likely causes?"
+- "Our inference costs doubled last month - what are the most likely causes?"
 - "Should we use Claude Haiku or Sonnet for our classification pipeline?"
 
 ### AWS FinOps
@@ -100,7 +100,7 @@ The skill is pre-integrated into Agent Smith. No manual installation required.
 
 - "What's the Azure equivalent of AWS CUR?"
 - "How do Azure Reservations compare to Azure Savings Plans?"
-- "We need to enforce tagging across 15 subscriptions — what's the right approach?"
+- "We need to enforce tagging across 15 subscriptions - what's the right approach?"
 - "How do we use Azure Hybrid Benefit to reduce our VM costs?"
 
 ### Tagging governance

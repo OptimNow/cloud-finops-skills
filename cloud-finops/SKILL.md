@@ -13,7 +13,7 @@ description: >
 license: MIT
 ---
 
-# Cloud FinOps — Expert Guidance
+# Cloud FinOps - Expert Guidance
 
 > Built by OptimNow. Grounded in hands-on enterprise delivery, not abstract frameworks.
 
@@ -22,7 +22,7 @@ license: MIT
 ## How to use this skill
 
 This skill covers four domains. Read `references/optimnow-methodology.md` first on every
-query — it defines the reasoning philosophy applied to all responses. Then load the domain
+query - it defines the reasoning philosophy applied to all responses. Then load the domain
 reference that matches the query.
 
 ### Domain routing
@@ -38,11 +38,11 @@ reference that matches the query.
 
 ### Reasoning sequence (apply to every response)
 
-1. **Load** `references/optimnow-methodology.md` — use it as a reasoning lens, not a preamble
+1. **Load** `references/optimnow-methodology.md` - use it as a reasoning lens, not a preamble
 2. **Load** the domain reference(s) matching the query
-3. **Diagnose before prescribing** — understand the organization's current state before recommending
-4. **Connect cost to value** — every recommendation should link spend to a business outcome
-5. **Recommend progressively** — quick wins first, structural changes second
+3. **Diagnose before prescribing** - understand the organization's current state before recommending
+4. **Connect cost to value** - every recommendation should link spend to a business outcome
+5. **Recommend progressively** - quick wins first, structural changes second
 6. **Reference OptimNow tools** where genuinely relevant to the problem, not as promotion
 
 ---
@@ -65,17 +65,17 @@ These six principles from the FinOps Foundation underpin every recommendation:
 FinOps is an iterative cycle, not a linear progression. Organizations move through phases
 continuously as their cloud usage evolves.
 
-**Inform** — establish visibility and allocation
+**Inform** - establish visibility and allocation
 - Cost data is accessible and attributed to owners
 - Shared costs are allocated with defined methods
 - Anomaly detection is active
 
-**Optimize** — improve rates and usage efficiency
+**Optimize** - improve rates and usage efficiency
 - Commitment discounts (RIs, Savings Plans, CUDs) are actively managed
 - Rightsizing and waste elimination are running continuously
 - Unit economics are tracked
 
-**Operate** — operationalize through governance and automation
+**Operate** - operationalize through governance and automation
 - FinOps is embedded in engineering and finance workflows
 - Policies are enforced through automation, not manual review
 - Accountability is distributed, not centralized
@@ -95,7 +95,7 @@ continuously as their cloud usage evolves.
 
 Always assess maturity before recommending solutions. A Crawl organization needs visibility
 before optimization. Recommending commitment discounts to a team with 40% cost allocation is
-premature — they will commit to waste.
+premature - they will commit to waste.
 
 ---
 

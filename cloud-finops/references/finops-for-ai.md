@@ -10,13 +10,13 @@
 
 Traditional FinOps assumes a rhythm: usage happens first, costs are reported later,
 decisions follow. AI disrupts this sequence. With LLMs and agentic systems, cost is
-incurred at the moment a decision is made — a longer prompt, an extra retry, a different
+incurred at the moment a decision is made - a longer prompt, an extra retry, a different
 model, or a poorly bounded loop can change spend materially in seconds, not weeks.
 
 | Dimension | Traditional Cloud | AI Workloads |
 |---|---|---|
 | Cost unit | vCPU-hour, GB-month | Token, inference call, GPU-second |
-| Predictability | High — instance type × hours | Low — depends on user behavior and model design |
+| Predictability | High - instance type × hours | Low - depends on user behavior and model design |
 | Billing speed | Hourly/daily accumulation | Per-request, immediate COGS |
 | Attribution unit | Infrastructure tag | Application-layer metadata |
 | Optimization lever | Rightsizing, reservations | Model selection, prompt design, caching, routing |
@@ -25,7 +25,7 @@ model, or a poorly bounded loop can change spend materially in seconds, not week
 
 **The structural mismatch:** Traditional FinOps was built for predictable infrastructure.
 AI workloads behave more like real-time COGS than capacity plans. A feature estimated
-at $1,600/month can cost $8,800 without any infrastructure change — the variance comes
+at $1,600/month can cost $8,800 without any infrastructure change - the variance comes
 entirely from user behavior and model design decisions.
 
 **The critical inversion:** For AI workloads, the FinOps sequence must run in reverse.
@@ -41,7 +41,7 @@ Without request-level attribution, everything downstream is guesswork.
 
 **What is required:**
 
-**Request-level instrumentation** — attach metadata to every API call at the moment of
+**Request-level instrumentation** - attach metadata to every API call at the moment of
 invocation. Minimum required fields:
 - Feature or product name
 - User or session identifier
@@ -49,7 +49,7 @@ invocation. Minimum required fields:
 - Prompt template version or ID
 - Environment (prod / staging / dev)
 
-**A proxy or gateway layer** — sits between your application and the AI provider,
+**A proxy or gateway layer** - sits between your application and the AI provider,
 attaches metadata before requests execute. Options by complexity:
 
 | Option | Examples | Effort | Metadata richness |
@@ -59,8 +59,8 @@ attaches metadata before requests execute. Options by complexity:
 | API gateway | Kong, NGINX with custom plugins | Medium-High | High |
 | Custom application middleware | Direct SDK instrumentation | Low-Medium | Full control |
 
-**Real-time cost ingestion** — token counts must be captured as model responses are
-returned, not retrieved from billing exports. Cost Explorer lags 24–48 hours — acceptable
+**Real-time cost ingestion** - token counts must be captured as model responses are
+returned, not retrieved from billing exports. Cost Explorer lags 24–48 hours - acceptable
 for EC2, not for workloads where a misconfigured agent can generate thousands of dollars
 within hours.
 
@@ -71,14 +71,14 @@ within hours.
 
 Once costs are attributed, translate them from infrastructure metrics to business metrics.
 
-**Step 1 — Define your unit of value:**
+**Step 1 - Define your unit of value:**
 - Customer conversation
 - Document processed
 - Task completed
 - Query answered
 - Report generated
 
-**Step 2 — Calculate the three-layer cost per unit:**
+**Step 2 - Calculate the three-layer cost per unit:**
 
 | Layer | What it measures | Example |
 |---|---|---|
@@ -86,18 +86,18 @@ Once costs are attributed, translate them from infrastructure metrics to busines
 | Layer 2: Harness | All surrounding infrastructure (compute, storage, retrieval, egress) | $0.0035 per conversation |
 | Layer 3: Total unit cost | Layer 1 + Layer 2 + amortized fixed costs | $0.004 per conversation |
 
-**Step 3 — Define value per unit** (pick the most relevant method):
+**Step 3 - Define value per unit** (pick the most relevant method):
 
-- **Cost displacement** — what does the equivalent human action cost?
+- **Cost displacement** - what does the equivalent human action cost?
   `Value = human cost × deflection rate`
-- **Revenue generation** — does the feature increase conversion or order value?
+- **Revenue generation** - does the feature increase conversion or order value?
   `Value = uplift × average transaction value`
-- **Retention improvement** — does the feature reduce churn?
+- **Retention improvement** - does the feature reduce churn?
   `Value = retained customers × LTV delta`
-- **Premium monetisation** — is the feature sold as a paid tier?
+- **Premium monetisation** - is the feature sold as a paid tier?
   `Value = subscription price − unit cost`
 
-**Step 4 — Track unit economics weekly**, not monthly. AI cost patterns shift faster
+**Step 4 - Track unit economics weekly**, not monthly. AI cost patterns shift faster
 than monthly reporting cycles can capture.
 
 **Core formula:**
@@ -109,9 +109,9 @@ Payback period = fixed_costs / monthly_profit (months)
 ```
 
 **ROI time dimension:** AI systems follow a predictable ramp.
-- Month 1: Negative ROI — integration costs dominate
-- Month 3: Near cost parity — prompts improve, routing optimizes
-- Month 6+: Positive ROI — learning effects compound, volume absorbs fixed costs
+- Month 1: Negative ROI - integration costs dominate
+- Month 3: Near cost parity - prompts improve, routing optimizes
+- Month 6+: Positive ROI - learning effects compound, volume absorbs fixed costs
 
 Tolerating early losses is rational if the weekly trajectory toward breakeven is positive.
 Systems showing no improvement after 8–12 weeks warrant scrutiny.
@@ -133,9 +133,9 @@ Implement tiered routing: classify query complexity first (cheap), then route to
 appropriate model. Simple queries to small models, complex queries to large models.
 
 **Prompt engineering as cost control:**
-- System prompts are billed on every request — keep them lean and precise
-- Context windows accumulate cost — manage conversation history length explicitly
-- Always define `max_tokens` on every model call — unbounded responses are a common
+- System prompts are billed on every request - keep them lean and precise
+- Context windows accumulate cost - manage conversation history length explicitly
+- Always define `max_tokens` on every model call - unbounded responses are a common
   and avoidable source of cost overruns
 - Tune `temperature`, `top_p`, `top_k` for concise output on structured tasks
 
@@ -146,17 +146,17 @@ appropriate model. Simple queries to small models, complex queries to large mode
 - Cache at the application layer before hitting the model API
 
 **Architecture hygiene:**
-- Not every feature needs AI — use deterministic code or standard APIs when they are
+- Not every feature needs AI - use deterministic code or standard APIs when they are
   sufficient. A weather API call costs a fraction of a cent. An LLM call to answer
   "what is the weather today?" is waste.
 - Audit for zombie features: AI systems still running at full cost after usage has dropped
-- Review agentic retry logic — retries multiply token consumption silently
+- Review agentic retry logic - retries multiply token consumption silently
 
 **Model parameters:**
 The following inference parameters directly affect output length and therefore cost:
-- `temperature` — higher values produce longer, more varied outputs
-- `top_p` / `top_k` — affect output distribution and length
-- `max_tokens` — the single most important cost guardrail; always set it
+- `temperature` - higher values produce longer, more varied outputs
+- `top_p` / `top_k` - affect output distribution and length
+- `max_tokens` - the single most important cost guardrail; always set it
 
 ### Phase 4: Govern
 
@@ -168,14 +168,14 @@ The following inference parameters directly affect output length and therefore c
 **Governance policies to establish:**
 - Require AI cost estimates (COGS modelling) before feature deployment
 - Mandate application-layer metadata tagging as a development standard
-- Establish a model approval process — preventing shadow AI through procurement
+- Establish a model approval process - preventing shadow AI through procurement
   controls is more effective than prohibition after the fact
 - Define escalation paths when unit economics deteriorate
 
 **Shadow AI:**
 Research indicates 90% of employee AI tool usage does not appear in corporate billing
 systems. The remainder occurs through personal subscriptions, departmental cards, or
-free-tier accounts that bypass procurement. Shadow AI is not only a governance issue —
+free-tier accounts that bypass procurement. Shadow AI is not only a governance issue -
 it destroys cost attribution and makes forecasting impossible.
 
 Detection approach:
@@ -192,13 +192,13 @@ These patterns generate significant financial impact within hours, but remain in
 to monthly dashboards until the bill arrives.
 
 ### 1. Zombie AI features
-A feature loses adoption but continues processing in the background — pre-processing
+A feature loses adoption but continues processing in the background - pre-processing
 documents, indexing content, maintaining persistent connections, or retrying failed calls.
 Cost persists while value delivered collapses.
 
 *Real example:* An AI summarization feature was used heavily at launch, then dropped to
 fewer than 5 active users per day. The feature continued pre-processing every uploaded
-document regardless of whether a summary was requested — 2.8M tokens/month, $1,400.
+document regardless of whether a summary was requested - 2.8M tokens/month, $1,400.
 Actual value delivered: negligible.
 
 *Detection signal:* Token consumption stable or rising while active user sessions decline.
@@ -238,7 +238,7 @@ A feature appears viable at low volume. Each interaction loses money, but losses
 small and unnoticed. As adoption grows, the scale-up accelerates the loss.
 
 *Real example:* An AI-powered search feature was included in a standard $15/user/month
-subscription. Each user performed 120 searches/month at $0.08 each — $9.60 in AI costs
+subscription. Each user performed 120 searches/month at $0.08 each - $9.60 in AI costs
 per user, against $15 in subscription revenue. Profitable only for users performing fewer
 than 25 searches/month. Feature adoption growth increased losses, not margins.
 
@@ -251,7 +251,7 @@ declining as volume increases.
 
 Use this to diagnose an organization's current state before recommending solutions.
 
-**Visibility (prerequisite — assess first):**
+**Visibility (prerequisite - assess first):**
 - [ ] Token counts captured per feature, not just per account or model
 - [ ] Request-level cost attribution with application metadata at invocation time
 - [ ] Cost data available within minutes, not 24–48 hours
@@ -273,16 +273,16 @@ Use this to diagnose an organization's current state before recommending solutio
 - [ ] Shadow AI audit conducted in last 12 months
 
 **Scoring:**
-- 0–4 ✓: Crawl — start with visibility. Nothing else is meaningful without it.
-- 5–8 ✓: Walk — focus on unit economics and model optimization.
-- 9–12 ✓: Run — focus on governance automation and agentic FinOps patterns.
+- 0–4 ✓: Crawl - start with visibility. Nothing else is meaningful without it.
+- 5–8 ✓: Walk - focus on unit economics and model optimization.
+- 9–12 ✓: Run - focus on governance automation and agentic FinOps patterns.
 
 ---
 
 ## Agentic FinOps
 
 Agentic systems introduce cost patterns that require a different governance model. Unlike
-static applications, agents make runtime decisions that directly affect spend — model
+static applications, agents make runtime decisions that directly affect spend - model
 selection, context retention, tool invocation frequency, and retry behavior all create
 variable costs that no static budget can fully anticipate.
 
@@ -296,7 +296,7 @@ MCP server) provides standardized interfaces for cost data, tagging, and governa
 custom integration code per data source.
 
 **2. Memory with cost controls**
-Stateful agents accumulate context over time — necessary for meaningful investigation but
+Stateful agents accumulate context over time - necessary for meaningful investigation but
 expensive if unbounded. Naive implementations store entire conversation histories, creating
 context windows that balloon to hundreds of thousands of tokens. Effective architectures
 use short-term memory for recent exchanges and long-term memory for persistent preferences
@@ -306,7 +306,7 @@ and organizational context, with explicit token budgets for each layer.
 The safest agentic architecture for FinOps generates governance policies for human review
 rather than executing infrastructure changes directly. An agent that identifies idle
 resources and drafts a Cloud Custodian policy or OpenOps rule for review is production-safe.
-An agent that stops instances autonomously is not — regardless of how sophisticated its
+An agent that stops instances autonomously is not - regardless of how sophisticated its
 reasoning is. Governance, not technology capability, is the real constraint on autonomous
 FinOps agents.
 
