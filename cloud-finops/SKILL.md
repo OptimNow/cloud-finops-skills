@@ -2,13 +2,15 @@
 name: cloud-finops
 description: >
  Expert Cloud FinOps guidance covering AI cost management (LLM inference costs, token
-  economics, agentic cost patterns, AI unit economics, AI ROI), AWS cost optimization
-  (EC2 rightsizing, Reserved Instances, Savings Plans, CUR, Cost Explorer), Azure cost
-  management (reservations, Azure Policy, FinOps Toolkit), cloud tagging governance and
-  MCP-based automation, and FinOps framework implementation (Inform/Optimize/Operate,
-  Crawl/Walk/Run maturity, 22 capabilities, cost allocation, chargeback, showback,
-  forecasting, budgeting). Use for any query about cloud cost, cloud financial operations,
-  FinOps practice setup, AI workload costs, prompt optimization, model selection,
+  economics, agentic cost patterns, AI unit economics, AI ROI), Anthropic billing
+  (Claude Opus, Sonnet, Haiku pricing, Fast mode, long-context cliffs, prompt caching,
+  Batch API, governance controls), AWS cost optimization (EC2 rightsizing, Reserved
+  Instances, Savings Plans, CUR, Cost Explorer), Azure cost management (reservations,
+  Azure Policy, FinOps Toolkit), cloud tagging governance and MCP-based automation, and
+  FinOps framework implementation (Inform/Optimize/Operate, Crawl/Walk/Run maturity,
+  22 capabilities, cost allocation, chargeback, showback, forecasting, budgeting). Use
+  for any query about cloud cost, cloud financial operations, FinOps practice setup,
+  AI workload costs, Anthropic Claude API costs, prompt optimization, model selection,
   tagging strategy, or connecting cloud spend to business value. Built by OptimNow.
 license: MIT
 ---
@@ -32,6 +34,7 @@ domain reference that matches the query.
 | AI costs, LLM inference, token economics, agentic cost patterns, AI ROI | `references/finops-for-ai.md` |
 | AWS billing, EC2 rightsizing, RIs, Savings Plans, CUR, Cost Explorer | `references/finops-aws.md` |
 | Azure cost management, reservations, Azure Advisor, Cost Management | `references/finops-azure.md` |
+| Anthropic billing, Claude API costs, Claude Code costs, Opus, Sonnet, Haiku pricing, Fast mode, prompt caching, Batch API, long-context pricing | `references/finops-anthropic.md` |
 | Tagging strategy, naming conventions, IaC enforcement, MCP governance | `references/finops-tagging.md` |
 | FinOps framework, maturity model, phases, capabilities, personas | `references/finops-framework.md` |
 | GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery optimization | `references/finops-gcp.md` |
@@ -111,6 +114,7 @@ premature - they will commit to waste.
 | `finops-for-ai.md` | AI cost management, LLM economics, agentic patterns, ROI framework | ~400 |
 | `finops-aws.md` | AWS FinOps + 128 optimization patterns: CUR, Cost Explorer, EC2, RIs, Savings Plans, waste detection | ~1450 |
 | `finops-azure.md` | Azure FinOps + 48 optimization patterns: reservations, Advisor, AHB, waste detection | ~1000 |
+| `finops-anthropic.md` | Anthropic billing: Claude Opus/Sonnet/Haiku pricing, Fast mode, long-context cliffs, prompt caching, Batch API, governance | ~175 |
 | `finops-tagging.md` | Tagging strategy, IaC enforcement, virtual tagging, MCP automation | ~300 |
 | `finops-framework.md` | Full FinOps Foundation framework: 22 capabilities, personas, domains | ~350 |
 | `finops-gcp.md` | GCP optimization: 26 patterns across Compute Engine, Cloud SQL, GCS, networking | ~260 |

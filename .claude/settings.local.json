@@ -6,7 +6,8 @@
       "Bash(git push:*)",
       "Bash(ls:*)",
       "Bash(python3:*)",
-      "Bash(cygpath:*)"
+      "Bash(cygpath:*)",
+      "Bash(wc:*)"
     ]
   }
 }
