@@ -21,9 +21,9 @@ license: MIT
 
 ## How to use this skill
 
-This skill covers four domains. Read `references/optimnow-methodology.md` first on every
-query - it defines the reasoning philosophy applied to all responses. Then load the domain
-reference that matches the query.
+This skill covers multiple cloud domains. Read `references/optimnow-methodology.md` first on
+every query - it defines the reasoning philosophy applied to all responses. Then load the
+domain reference that matches the query.
 
 ### Domain routing
 
@@ -34,6 +34,10 @@ reference that matches the query.
 | Azure cost management, reservations, Azure Advisor, Cost Management | `references/finops-azure.md` |
 | Tagging strategy, naming conventions, IaC enforcement, MCP governance | `references/finops-tagging.md` |
 | FinOps framework, maturity model, phases, capabilities, personas | `references/finops-framework.md` |
+| GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery optimization | `references/finops-gcp.md` |
+| Databricks clusters, jobs, Spark optimization, Unity Catalog costs | `references/finops-databricks.md` |
+| Snowflake warehouses, query optimization, storage, credits | `references/finops-snowflake.md` |
+| OCI compute, storage, networking optimization | `references/finops-oci.md` |
 | Multi-domain query | Load all relevant references, synthesize |
 
 ### Reasoning sequence (apply to every response)
@@ -105,7 +109,11 @@ premature - they will commit to waste.
 |---|---|---|
 | `optimnow-methodology.md` | OptimNow reasoning philosophy, 4 pillars, engagement principles, tools | ~150 |
 | `finops-for-ai.md` | AI cost management, LLM economics, agentic patterns, ROI framework | ~400 |
-| `finops-aws.md` | AWS-specific FinOps: CUR, Cost Explorer, EC2, RIs, Savings Plans | ~300 |
-| `finops-azure.md` | Azure cost management, reservations, FinOps toolkit, Cost Management | ~300 |
+| `finops-aws.md` | AWS FinOps + 128 optimization patterns: CUR, Cost Explorer, EC2, RIs, Savings Plans, waste detection | ~1450 |
+| `finops-azure.md` | Azure FinOps + 48 optimization patterns: reservations, Advisor, AHB, waste detection | ~1000 |
 | `finops-tagging.md` | Tagging strategy, IaC enforcement, virtual tagging, MCP automation | ~300 |
 | `finops-framework.md` | Full FinOps Foundation framework: 22 capabilities, personas, domains | ~350 |
+| `finops-gcp.md` | GCP optimization: 26 patterns across Compute Engine, Cloud SQL, GCS, networking | ~260 |
+| `finops-databricks.md` | Databricks optimization: 18 patterns for clusters, jobs, Spark, storage | ~180 |
+| `finops-snowflake.md` | Snowflake optimization: 13 patterns for warehouses, queries, storage, credits | ~130 |
+| `finops-oci.md` | OCI optimization: 6 patterns for compute, storage, networking | ~70 |
