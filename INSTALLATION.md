@@ -113,25 +113,6 @@ Or re-run the one-liner installer - it will replace the existing installation au
 
 ---
 
-## Adding Azure content from your local repo
-
-The `finops-azure.md` file is a skeleton. To populate it from your local Azure course:
-
-```bash
-# Review the placeholder and identify which sections to fill
-cat cloud-finops/references/finops-azure.md
-
-# Copy or adapt content from your Azure FinOps course repo
-# ~/github/azure-finops-master → cloud-finops/references/finops-azure.md
-
-# Commit the updated file
-git add cloud-finops/references/finops-azure.md
-git commit -m "Populate Azure reference from azure-finops-master content"
-git push
-```
-
----
-
 ## Troubleshooting
 
 **Skill not activating:** Check that the YAML frontmatter in `SKILL.md` is valid.
