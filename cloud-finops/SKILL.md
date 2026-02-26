@@ -1,23 +1,13 @@
 ---
 name: cloud-finops
 description: >
- Expert Cloud FinOps guidance covering AI cost management (LLM inference costs, token
-  economics, agentic cost patterns, AI unit economics, AI ROI), GenAI capacity planning
-  (provisioned vs shared capacity, traffic shape, spillover, throughput units), Anthropic
-  billing (Claude Opus, Sonnet, Haiku pricing, Fast mode, long-context cliffs, prompt
-  caching, Batch API, governance controls), AWS cost optimization (EC2 rightsizing,
-  Reserved Instances, Savings Plans, CUR, Cost Explorer), AWS Bedrock (model pricing,
-  provisioned throughput, batch inference), Azure cost management (reservations, Azure
-  Policy, FinOps Toolkit), Azure OpenAI Service (PTU reservations, GPT pricing, spillover,
-  fine-tuning costs), GCP Vertex AI (Gemini pricing, provisioned throughput, batch
-  prediction), cloud tagging governance and MCP-based automation, and FinOps framework
-  implementation (Inform/Optimize/Operate, Crawl/Walk/Run maturity, 22 capabilities,
-  cost allocation, chargeback, showback, forecasting, budgeting). Use for any query about
-  cloud cost, cloud financial operations, FinOps practice setup, AI workload costs,
-  AI investment governance, AI Investment Council, AI value management, Anthropic
-  Claude API costs, Bedrock pricing, Azure OpenAI PTUs, Vertex AI costs, GenAI
-  capacity planning, prompt optimization, model selection, tagging strategy, or
-  connecting cloud spend to business value. Built by OptimNow.
+  Expert Cloud FinOps guidance covering AI cost management, GenAI capacity planning,
+  Anthropic billing, AWS (EC2, Bedrock, Savings Plans, CUR), Azure (reservations,
+  OpenAI PTUs, Cost Management), GCP (Vertex AI, Compute Engine, BigQuery), tagging
+  governance, Databricks, Snowflake, OCI, GreenOps, and FinOps framework implementation.
+  Use for any query about cloud cost, AI workload economics, commitment discounts,
+  rightsizing, cost allocation, or connecting cloud spend to business value.
+  Built by OptimNow.
 license: MIT
 ---
 
