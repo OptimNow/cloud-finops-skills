@@ -11,8 +11,8 @@
 
 ## Why AI complicates FinOps practice operations
 
-Standard FinOps practice operations — building accountability, enabling collaboration,
-driving optimization — face compounded challenges when AI is in scope:
+Standard FinOps practice operations  - building accountability, enabling collaboration,
+driving optimization  - face compounded challenges when AI is in scope:
 
 | Challenge | Why it matters |
 |---|---|
@@ -28,18 +28,18 @@ driving optimization — face compounded challenges when AI is in scope:
 
 ### Establish ownership and accountability
 
-Decide the ownership model before projects start — by team, project, or department.
+Decide the ownership model before projects start  - by team, project, or department.
 AI carries its own risk profile (ethical, compliance, cost), so accountability must
 be explicit, not assumed.
 
 - Define who owns AI spend and the value it is expected to produce
 - Ensure owners understand organizational policies, which may be evolving rapidly
-- Accountability should cover both cost and outcomes — not cost alone
+- Accountability should cover both cost and outcomes  - not cost alone
 
 ### Track and allocate costs
 
 - Tag all AI resources at provisioning time (model, team, project, environment)
-- Decide what to track: performance, cost, or both — and be explicit about priority
+- Decide what to track: performance, cost, or both  - and be explicit about priority
 - Treat cost data quality as a prerequisite for any value conversation
 
 ### Expand the FinOps collaboration model
@@ -49,7 +49,7 @@ data scientists, ML engineers, AI product owners. Include them in cost reviews.
 
 - Broaden cost review participation beyond finance and engineering leads
 - Build shared literacy on AI cost drivers across all stakeholders
-- Distribute accountability — cost ownership should not sit only with the finance team
+- Distribute accountability  - cost ownership should not sit only with the finance team
 
 ### Set budgets and plan thresholds per AI project
 
@@ -70,7 +70,7 @@ The less structured or proven an AI project is, the more frequently it should be
 
 ### Use the right tools
 
-- Deploy dashboards and alerts for real-time cost visibility — monthly bill reviews
+- Deploy dashboards and alerts for real-time cost visibility  - monthly bill reviews
   are too slow for AI workloads
 - Implement hard spend caps for experimental or high-speed workloads
 - Make spend caps visible to the teams operating the workloads, not only to finance
@@ -127,7 +127,7 @@ required. AI accelerates FinOps work; it does not replace judgment.
 An AI Investment Council is a cross-functional governance body for AI spending decisions.
 It is the organizational mechanism for implementing the best practices above at scale.
 
-Analogous to the Tiger Teams organizations formed during early cloud adoption — appropriate
+Analogous to the Tiger Teams organizations formed during early cloud adoption  - appropriate
 when technology is evolving fast, architectures are not yet standardized, and cost
 outcomes are uncertain.
 
@@ -148,7 +148,7 @@ outcomes are uncertain.
 
 ### FinOps role in the council
 
-FinOps is a strategic partner in the council — present from the start, not called in
+FinOps is a strategic partner in the council  - present from the start, not called in
 after costs have escalated.
 
 FinOps provides:
@@ -197,13 +197,13 @@ is well-suited to lead.
 - Meet as needed; many organizations default to monthly
 - Cadence should be frequent enough to avoid engineering teams idling while waiting
   for approvals, but not so frequent that council members cannot attend consistently
-- No proxies — council members should attend directly
+- No proxies  - council members should attend directly
 
 ### What each review produces
 
 The goal of each meeting is a short-term approved spend list allowing projects to
 carry forward to the next milestone. Reviews should focus on value, risk, and funding
-decisions — not detailed cost or architecture debates.
+decisions  - not detailed cost or architecture debates.
 
 Required inputs per project:
 - Actual spend vs expectations
@@ -256,8 +256,12 @@ intentional, attributed, and tied to outcomes the organization has agreed to pur
 
 ## See also
 
-- `finops-genai-capacity.md` — Capacity model decisions (provisioned vs shared) across providers
-- `finops-anthropic.md` — Anthropic-specific billing and governance controls
-- `finops-azure-openai.md` — Azure OpenAI PTU model and cost allocation
-- `finops-bedrock.md` — AWS Bedrock billing and cost attribution
-- `finops-vertexai.md` — GCP Vertex AI billing and cost allocation
+- `finops-genai-capacity.md`  - Capacity model decisions (provisioned vs shared) across providers
+- `finops-anthropic.md`  - Anthropic-specific billing and governance controls
+- `finops-azure-openai.md`  - Azure OpenAI PTU model and cost allocation
+- `finops-bedrock.md`  - AWS Bedrock billing and cost attribution
+- `finops-vertexai.md`  - GCP Vertex AI billing and cost allocation
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

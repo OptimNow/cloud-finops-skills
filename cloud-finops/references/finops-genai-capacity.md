@@ -8,7 +8,7 @@
 > Applies to hyperscaler-managed inference services. Does not cover custom model training
 > (SageMaker, Azure ML) or self-hosted serving infrastructure.
 >
-> Distilled from: "Navigating GenAI Capacity Options" — FinOps Foundation GenAI Working Group, 2025/2026.
+> Distilled from: "Navigating GenAI Capacity Options"  - FinOps Foundation GenAI Working Group, 2025/2026.
 
 ---
 
@@ -19,7 +19,7 @@
 The default model. You pay per token consumed, drawing from a shared provider pool.
 
 - No upfront commitment
-- No performance guarantees — latency can spike during peak demand
+- No performance guarantees  - latency can spike during peak demand
 - No data privacy guarantees (data may be used for model training)
 - Suitable for: early adoption, variable/unpredictable workloads, non-latency-sensitive use cases
 
@@ -28,7 +28,7 @@ The default model. You pay per token consumed, drawing from a shared provider po
 You purchase a fixed block of throughput for a defined term (monthly or annual). You pay
 for that capacity 24/7 regardless of actual utilization.
 
-- Dedicated throughput — predictable latency
+- Dedicated throughput  - predictable latency
 - Typically includes data privacy guarantees (no training on your data)
 - Comes with higher uptime SLAs
 - Suitable for: consistent high-volume workloads, latency-sensitive applications, production
@@ -43,12 +43,12 @@ look like over 24 hours?**
 
 | Traffic pattern | Provisioned capacity fit | Rationale |
 |---|---|---|
-| Consistent, high-volume (24/7) | Strong fit — likely cost savings | High utilization of reserved capacity |
-| Business hours peaks, quiet nights | Weak fit — potential trap | Reserved capacity idles 16+ hours/day |
+| Consistent, high-volume (24/7) | Strong fit  - likely cost savings | High utilization of reserved capacity |
+| Business hours peaks, quiet nights | Weak fit  - potential trap | Reserved capacity idles 16+ hours/day |
 | Bursty, unpredictable | Weak fit without spillover | Must reserve for peak; wastes money otherwise |
-| Latency-sensitive regardless of volume | Justified — performance, not savings | Pay premium for SLA and TTFT/OTPS guarantees |
+| Latency-sensitive regardless of volume | Justified  - performance, not savings | Pay premium for SLA and TTFT/OTPS guarantees |
 
-**Key principle:** provisioned capacity is like a Savings Plan or CUD — the break-even
+**Key principle:** provisioned capacity is like a Savings Plan or CUD  - the break-even
 depends on your coverage target and actual utilization, not just the per-token rate.
 
 ---
@@ -87,7 +87,7 @@ to shared capacity at pay-as-you-go rates.
 
 - Allows you to size reservations for average load, not peak load
 - Reduces outage risk without requiring over-provisioning
-- Overflowed requests are billed at pay-as-you-go rates — costs become variable again
+- Overflowed requests are billed at pay-as-you-go rates  - costs become variable again
   during spikes
 
 ### Provider availability
@@ -130,14 +130,14 @@ provisioned capacity is a performance and SLA purchase, not a cost-saving one.
 | GPT-4.1 | $2.00/MTok | $2.55/MTok | +27% |
 
 **Implication:** always compute your break-even utilization rate before purchasing.
-For some models, provisioned capacity never generates token-cost savings — it is purely
+For some models, provisioned capacity never generates token-cost savings  - it is purely
 a performance and SLA product.
 
 ### Normalization checklist
 
 - [ ] Identify the capacity unit type (PTU, throughput unit, scale tier unit)
 - [ ] Identify billing frequency (hourly, daily, monthly, annual)
-- [ ] Obtain vendor TPM estimate for the unit — treat as rough estimate only
+- [ ] Obtain vendor TPM estimate for the unit  - treat as rough estimate only
 - [ ] Load-test your specific workload (realistic input/output token mix + caching)
 - [ ] Calculate effective cost per million tokens at your expected utilization rate
 - [ ] Compare against standard rate to determine break-even utilization
@@ -150,9 +150,9 @@ a performance and SLA product.
 | Dimension | AWS Bedrock | GCP Vertex AI | Azure OpenAI Service |
 |---|---|---|---|
 | Reservation unit | Model-specific SKU | Publisher-specific SKU | PTU pool (model-agnostic) |
-| Model flexibility | None — locked to specific model | Can switch within same publisher | Full — reassign PTUs to any model |
+| Model flexibility | None  - locked to specific model | Can switch within same publisher | Full  - reassign PTUs to any model |
 | Model switching on renewal | Must re-purchase | Can upgrade within publisher family | Reassign PTUs dynamically |
-| Capacity guarantee | Yes — reservation = capacity | Yes | No — reservation ≠ guaranteed model availability |
+| Capacity guarantee | Yes  - reservation = capacity | Yes | No  - reservation ≠ guaranteed model availability |
 | Waste type | Idle allocated capacity | Idle allocated capacity | Idle allocated + unallocated capacity |
 | Spillover | Build yourself | Build yourself | Built-in |
 | Best for | Stable workloads, known model, cost predictability | GCP-native shops, Gemini ecosystem | Flexibility-first, frequent model updates |
@@ -172,14 +172,14 @@ the required reservation size (and cost) while maintaining data privacy for sens
 
 ## Decision framework
 
-### Step 1 — Qualify the workload
+### Step 1  - Qualify the workload
 
 - [ ] Has the workload run in production for 90+ days with measurable traffic patterns?
 - [ ] Is the traffic shape consistent enough to estimate average and peak TPM?
 - [ ] Is the workload latency-sensitive (user-facing, streaming)?
 - [ ] Are there data privacy or compliance requirements?
 
-### Step 2 — Model the economics
+### Step 2  - Model the economics
 
 - [ ] Calculate cost at standard (PAYG) rates at current and projected volume
 - [ ] Obtain provisioned capacity unit pricing from the provider
@@ -187,17 +187,17 @@ the required reservation size (and cost) while maintaining data privacy for sens
 - [ ] Determine break-even utilization rate
 - [ ] Estimate realistic utilization based on traffic shape
 
-### Step 3 — Choose capacity model
+### Step 3  - Choose capacity model
 
 | Condition | Recommendation |
 |---|---|
-| High utilization + break-even favorable | Provisioned — cost + performance |
-| Latency-sensitive regardless of economics | Provisioned — performance justifies premium |
-| Data privacy requirements | Provisioned — segmented by sensitivity |
+| High utilization + break-even favorable | Provisioned  - cost + performance |
+| Latency-sensitive regardless of economics | Provisioned  - performance justifies premium |
+| Data privacy requirements | Provisioned  - segmented by sensitivity |
 | Bursty traffic, no spillover available | PAYG or hybrid with manual failover |
 | Uncertain workload, early stage | PAYG until traffic patterns are established |
 
-### Step 4 — Choose provider model
+### Step 4  - Choose provider model
 
 | Priority | Provider preference |
 |---|---|
@@ -210,11 +210,15 @@ the required reservation size (and cost) while maintaining data privacy for sens
 ## Governance checklist
 
 - [ ] Treat provisioned capacity utilization as a tracked metric (target >80%)
-- [ ] Alert on unallocated PTUs (Azure) — treat as idle reserved capacity
-- [ ] Load-test before purchasing — vendor TPM figures are rough estimates
+- [ ] Alert on unallocated PTUs (Azure)  - treat as idle reserved capacity
+- [ ] Load-test before purchasing  - vendor TPM figures are rough estimates
 - [ ] Do not commit to a model you expect to replace within the reservation term (AWS/GCP)
 - [ ] Define a spillover policy: what percentage of requests can spill to PAYG within SLA?
-- [ ] Apply enterprise discounts to provisioned purchases — verify they apply
-- [ ] Review reservations at renewal — model landscape changes fast
+- [ ] Apply enterprise discounts to provisioned purchases  - verify they apply
+- [ ] Review reservations at renewal  - model landscape changes fast
 
 ---
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

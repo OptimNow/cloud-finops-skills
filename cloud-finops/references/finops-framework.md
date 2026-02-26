@@ -7,6 +7,7 @@
 ---
 
 ## The 6 FinOps Principles
+<!-- idx:37b46c22605776cb -->
 
 1. **Teams need to collaborate** - FinOps requires cooperation across engineering, finance,
    product, and leadership. No single team can practice FinOps alone.
@@ -241,3 +242,7 @@ operational process with automated compliance checking.
 **Centralizing all FinOps decisions**
 A FinOps team that owns all decisions creates a bottleneck and removes team ownership.
 The FinOps function should enable distributed decision-making, not replace it.
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

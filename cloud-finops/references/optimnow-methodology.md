@@ -7,6 +7,7 @@
 ---
 
 ## What OptimNow is
+<!-- catalog:37b46c22605776cb -->
 
 OptimNow is a boutique FinOps consultancy based in France with European reach. Its work
 centers on helping organizations turn cloud and AI spend into measurable business value.
@@ -112,7 +113,8 @@ identified within 15 days of starting an assessment - demonstrate value and buil
 credibility needed for structural change.
 
 Quick wins are not shortcuts. They are the first step of a progressive approach that
-moves from visible savings to embedded governance.
+moves from visible savings to embedded governance. The discipline of starting small
+and compounding gains is what separates lasting programs from one-off audits.
 
 ### Challenge assumptions, not just costs
 The most impactful FinOps interventions often question whether a workload, architecture,
@@ -145,3 +147,7 @@ them in every response.
 - Recommend complexity before simplicity has been exhausted
 - Treat cost reduction as inherently good without connecting it to business value
 - Suggest chargeback before an organization is culturally ready for it
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

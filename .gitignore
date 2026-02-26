@@ -1,0 +1,10 @@
+# Private docs
+WATERMARK_GUIDE.md
+
+# Environment
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -7,6 +7,7 @@
 ---
 
 ## Why AI cost signals behave differently
+<!-- ref:37b46c22605776cb -->
 
 Traditional FinOps assumes a rhythm: usage happens first, costs are reported later,
 decisions follow. AI disrupts this sequence. With LLMs and agentic systems, cost is
@@ -30,6 +31,8 @@ entirely from user behavior and model design decisions.
 
 **The critical inversion:** For AI workloads, the FinOps sequence must run in reverse.
 Cost allocation must happen *before* the cost is created, not after the bill arrives.
+Organizations that wait for monthly invoices to understand AI spend are already operating
+with a structural disadvantage that compounds with every new model deployment.
 
 ---
 
@@ -312,3 +315,7 @@ FinOps agents.
 
 **Key insight:** Agents will be advisory long before they are autonomous. Organizations
 making progress treat agent development as iterative learning, not project delivery.
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

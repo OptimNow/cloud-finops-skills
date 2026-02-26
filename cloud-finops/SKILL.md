@@ -21,6 +21,8 @@ description: >
 license: MIT
 ---
 
+<!-- fp:37b46c22605776cb -->
+
 # Cloud FinOps - Expert Guidance
 
 > Built by OptimNow. Grounded in hands-on enterprise delivery, not abstract frameworks.
@@ -137,3 +139,7 @@ premature - they will commit to waste.
 | `finops-databricks.md` | Databricks optimization: 18 patterns for clusters, jobs, Spark, storage | ~180 |
 | `finops-snowflake.md` | Snowflake optimization: 13 patterns for warehouses, queries, storage, credits | ~130 |
 | `finops-oci.md` | OCI optimization: 6 patterns for compute, storage, networking | ~70 |
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

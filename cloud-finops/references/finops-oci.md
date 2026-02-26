@@ -41,7 +41,7 @@ When a Compute instance is terminated in OCI, the associated boot volume is not 
 **Missing Lifecycle Policy On Object Storage**
 Service: OCI Object Storage | Type: Missing Cost Control Configuration
 
-Without lifecycle policies, data in OCI Object Storage remains in the default storage tier indefinitely—even if it is rarely accessed. This can lead to growing costs from unneeded or rarely accessed data that could be expired or transitioned to lower-cost tiers like Archive Storage.
+Without lifecycle policies, data in OCI Object Storage remains in the default storage tier indefinitely -even if it is rarely accessed. This can lead to growing costs from unneeded or rarely accessed data that could be expired or transitioned to lower-cost tiers like Archive Storage.
 
 - Create lifecycle rules to transition older objects to Archive Storage
 - Set expiration policies for data older than required retention thresholds
@@ -70,3 +70,7 @@ Load balancers incur charges based on provisioned bandwidth shape, even if backe
 - Consolidate redundant load balancers across applications or environments
 
 ---
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

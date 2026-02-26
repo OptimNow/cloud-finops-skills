@@ -559,7 +559,7 @@ AHB alone saved 675 EUR/month with a single CLI command per VM.
 **Underutilized Azure Reserved Instance Due To Workload Drift**
 Service: Azure Reservations | Type: Commitment Misalignment
 
-As workloads evolve, Azure Reserved Instances (RIs) may no longer align with actual usage — due to refactoring, region changes, autoscaling, or instance-type drift. When this happens, the committed usage goes unused, while new workloads run on non-covered SKUs, resulting in both underutilized reservations and full-price on-demand charges elsewhere.
+As workloads evolve, Azure Reserved Instances (RIs) may no longer align with actual usage  - due to refactoring, region changes, autoscaling, or instance-type drift. When this happens, the committed usage goes unused, while new workloads run on non-covered SKUs, resulting in both underutilized reservations and full-price on-demand charges elsewhere.
 
 - Evaluate whether any existing workloads could be migrated to match the reservation scope
 - For new workloads, consider provisioning on RI-covered instance types when technically viable
@@ -568,7 +568,7 @@ As workloads evolve, Azure Reserved Instances (RIs) may no longer align with act
 **Oversized Hosting Plan For Azure Functions**
 Service: Inefficiency Type | Type: Explanation
 
-Teams often choose the Premium or App Service Plan for Azure Functions to avoid cold start delays or enable VNET connectivity, especially early in a project when performance concerns dominate. However, these decisions are rarely revisited—even as usage patterns change.
+Teams often choose the Premium or App Service Plan for Azure Functions to avoid cold start delays or enable VNET connectivity, especially early in a project when performance concerns dominate. However, these decisions are rarely revisited -even as usage patterns change.
 
 - Move low-usage or non-critical Function Apps to the Consumption Plan
 - Pilot plan downgrades in non-production or latency-tolerant environments
@@ -688,7 +688,7 @@ This inefficiency occurs when a blob container intended for long-term or infrequ
 **High Transaction Cost Due To Misaligned Tier In Azure Blob Storage**
 Service: Azure Blob Storage | Type: Inefficient Configuration
 
-Azure Blob Storage tiers are designed to optimize cost based on access frequency. However, when frequently accessed data is stored in the Cool or Archive tiers—either due to misconfiguration, default settings, or cost-only optimization—transaction costs can spike.
+Azure Blob Storage tiers are designed to optimize cost based on access frequency. However, when frequently accessed data is stored in the Cool or Archive tiers -either due to misconfiguration, default settings, or cost-only optimization -transaction costs can spike.
 
 - Move frequently accessed data to the Hot tier, either manually or via lifecycle management policies
 - Evaluate default tiering settings on upload processes to prevent misplacement of active data
@@ -706,7 +706,7 @@ Azure Files Standard tier is cost-effective for low-traffic scenarios but impose
 **Inactive Blobs In Storage Account**
 Service: Azure Blob Storage | Type: Inefficient Configuration
 
-Storage accounts can accumulate blob data that is no longer actively accessed—such as legacy logs, expired backups, outdated exports, or orphaned files. When these blobs remain in the Hot tier, they continue to incur the highest storage cost, even if they have not been read or modified for an extended period.
+Storage accounts can accumulate blob data that is no longer actively accessed -such as legacy logs, expired backups, outdated exports, or orphaned files. When these blobs remain in the Hot tier, they continue to incur the highest storage cost, even if they have not been read or modified for an extended period.
 
 - Identify storage accounts with large amounts of data in the Hot tier
 - Analyze blob-level access patterns using logs or metrics to confirm that data has not been read or written over a defined lookback period
@@ -715,7 +715,7 @@ Storage accounts can accumulate blob data that is no longer actively accessed—
 **Sftp Feature Enabled On Azure Storage Account Without Usage**
 Service: Azure Storage Account | Type: Inefficient Configuration
 
-Azure users may enable the SFTP feature on Storage Accounts during migration tests, integration scenarios, or experimentation. However, if left enabled after initial use, the feature continues to generate flat hourly charges — even when no SFTP traffic occurs.
+Azure users may enable the SFTP feature on Storage Accounts during migration tests, integration scenarios, or experimentation. However, if left enabled after initial use, the feature continues to generate flat hourly charges  - even when no SFTP traffic occurs.
 
 - Disable the SFTP feature on any Storage Account where it is no longer needed
 - Coordinate with owners to confirm that alternate access methods (e.g., HTTPS, SDK) are sufficient
@@ -724,7 +724,7 @@ Azure users may enable the SFTP feature on Storage Accounts during migration tes
 **Missing Performance Plus On Eligible Managed Disks**
 Service: Azure Managed Disks | Type: Misconfiguration
 
-For Premium SSD and Standard SSD disks 513 GiB or larger, Azure now offers the option to enable Performance Plus — unlocking higher IOPS and MBps at no extra cost. Many environments that previously required custom performance settings continue to pay for additional throughput unnecessarily.
+For Premium SSD and Standard SSD disks 513 GiB or larger, Azure now offers the option to enable Performance Plus  - unlocking higher IOPS and MBps at no extra cost. Many environments that previously required custom performance settings continue to pay for additional throughput unnecessarily.
 
 - Enable Performance Plus on all eligible disks using Azure CLI, API, or portal
 - Decommission paid performance tiers or custom throughput settings where Performance Plus provides equivalent capability
@@ -843,7 +843,7 @@ Azure SQL databases often use the default backup configuration, which stores bac
 **Infrequently Accessed Data Stored In Azure Cosmos Db**
 Service: Azure Cosmos DB | Type: Inefficient Storage Tiering
 
-Azure Cosmos DB is optimized for low-latency, globally distributed workloads—not long-term storage of infrequently accessed data. Yet in many environments, cold data such as logs, telemetry, or historical records is retained in Cosmos DB due to a lack of lifecycle management.
+Azure Cosmos DB is optimized for low-latency, globally distributed workloads -not long-term storage of infrequently accessed data. Yet in many environments, cold data such as logs, telemetry, or historical records is retained in Cosmos DB due to a lack of lifecycle management.
 
 - Export infrequently accessed data to lower-cost storage services:
 - Use Blob Storage Cool for rarely accessed but readily retrievable data
@@ -879,7 +879,7 @@ Azure SQL deployments often reserve more storage than needed, either due to defa
 **Overbilling Due To Tier Switches And Allocation Overlaps In Dtu Model**
 Service: Azure SQL | Type: Suboptimal Pricing Model
 
-Workloads that frequently scale up and down within the same day—whether manually, via automation, or platform-managed—can encounter hidden cost amplification under the DTU model. When a database changes tiers (e.g., S7 → S4), Azure treats each tiered segment as a separate allocation and applies full-hour rounding independently.
+Workloads that frequently scale up and down within the same day -whether manually, via automation, or platform-managed -can encounter hidden cost amplification under the DTU model. When a database changes tiers (e.g., S7 → S4), Azure treats each tiered segment as a separate allocation and applies full-hour rounding independently.
 
 - Minimize same-day tier switches unless operationally justified
 - Schedule up/down-scaling during off-peak windows to reduce risk of overlapping billing
@@ -888,7 +888,7 @@ Workloads that frequently scale up and down within the same day—whether manual
 **Idle Azure Sql Elastic Pool Without Databases**
 Service: Azure SQL | Type: Unused Resource
 
-An Azure SQL Elastic Pool continues to incur costs even if it contains no databases. This can occur when databases are deleted, migrated to single-instance configurations, or consolidated elsewhere — but the pool itself remains provisioned.
+An Azure SQL Elastic Pool continues to incur costs even if it contains no databases. This can occur when databases are deleted, migrated to single-instance configurations, or consolidated elsewhere  - but the pool itself remains provisioned.
 
 - Decommission any Elastic Pool with no active databases unless a valid business case exists for retaining it
 - Review infrastructure-as-code templates and automation pipelines to ensure pool cleanup is included in deprovisioning workflows
@@ -901,7 +901,7 @@ An Azure SQL Elastic Pool continues to incur costs even if it contains no databa
 **Suboptimal Load Balancer Rule Configuration In Azure Standard Load Balancer**
 Service: Azure Load Balancer | Type: Inefficient Configuration
 
-As organizations migrate from the Basic to the Standard tier of Azure Load Balancer (driven by Microsoft’s retirement of the Basic tier), they may unknowingly inherit cost structures they didn’t previously face. Specifically, each load balancing rule—both inbound and outbound—can contribute to ongoing charges.
+As organizations migrate from the Basic to the Standard tier of Azure Load Balancer (driven by Microsoft’s retirement of the Basic tier), they may unknowingly inherit cost structures they didn’t previously face. Specifically, each load balancing rule -both inbound and outbound -can contribute to ongoing charges.
 
 - Audit existing Standard Load Balancer rule sets to identify unused entries
 - Remove unnecessary inbound and outbound rules, especially in non-production environments
@@ -910,7 +910,7 @@ As organizations migrate from the Basic to the Standard tier of Azure Load Balan
 **Inactive Azure Load Balancer**
 Service: Azure Load Balancer | Type: Unused Resource
 
-In dynamic environments — especially during autoscaling, testing, or infrastructure changes — it's common for load balancers to remain provisioned after their backend resources have been decommissioned. When this happens, the load balancer continues to incur hourly charges despite serving no functional purpose.
+In dynamic environments  - especially during autoscaling, testing, or infrastructure changes  - it's common for load balancers to remain provisioned after their backend resources have been decommissioned. When this happens, the load balancer continues to incur hourly charges despite serving no functional purpose.
 
 - Delete Azure Load Balancers that have no backend pool members and no observed traffic
 - Implement automation or tagging policies to detect and flag inactive networking resources
@@ -919,7 +919,7 @@ In dynamic environments — especially during autoscaling, testing, or infrastru
 **Inactive Azure Load Balancer 0Fe41**
 Service: Azure Load Balancer | Type: Unused Resource
 
-Standard Load Balancers are frequently provisioned for internal services, internet-facing applications, or testing environments. When a workload is decommissioned or moved, the load balancer may be left behind without any active backend pool or traffic — but continues to incur hourly charges for each frontend IP configuration.Because Azure does not automatically remove or alert on inactive load balancers, and because they may not show significant outbound traffic, these resources often persist unnoticed.
+Standard Load Balancers are frequently provisioned for internal services, internet-facing applications, or testing environments. When a workload is decommissioned or moved, the load balancer may be left behind without any active backend pool or traffic  - but continues to incur hourly charges for each frontend IP configuration.Because Azure does not automatically remove or alert on inactive load balancers, and because they may not show significant outbound traffic, these resources often persist unnoticed.
 
 - Delete load balancers that have no active backend pool and are no longer needed
 - Review associated resources (e.g., front-end IP configurations, probes, rules) to ensure they can be safely removed
@@ -928,7 +928,7 @@ Standard Load Balancers are frequently provisioned for internal services, intern
 **Inactive Web Application Firewall Waf**
 Service: Azure WAF | Type: Unused Resource
 
-Azure WAF configurations attached to Application Gateways can persist after their backend pool resources have been removed — often during environment reconfiguration or application decommissioning. In these cases, the WAF is no longer serving any functional purpose but continues to incur fixed hourly costs.
+Azure WAF configurations attached to Application Gateways can persist after their backend pool resources have been removed  - often during environment reconfiguration or application decommissioning. In these cases, the WAF is no longer serving any functional purpose but continues to incur fixed hourly costs.
 
 - Delete WAF configurations that are no longer routing traffic or protecting active applications
 - Establish periodic audits to flag and review WAFs with empty backend pools
@@ -1000,3 +1000,7 @@ By default, all Log Analytics tables are created under the Analytics plan, which
 - Reconfigure ingestion routes to direct non-essential logs to lower-cost tables
 
 ---
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

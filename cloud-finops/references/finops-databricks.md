@@ -10,7 +10,7 @@
 **Inefficient Query Design In Databricks Sql And Spark Jobs**
 Service: Databricks SQL | Type: Inefficient Configuration
 
-Many Spark and SQL workloads in Databricks suffer from micro-optimization issues — such as unfiltered joins, unnecessary shuffles, missing broadcast joins, and repeated scans of uncached data. These problems increase compute time and resource utilization, especially in exploratory or development environments.
+Many Spark and SQL workloads in Databricks suffer from micro-optimization issues  - such as unfiltered joins, unnecessary shuffles, missing broadcast joins, and repeated scans of uncached data. These problems increase compute time and resource utilization, especially in exploratory or development environments.
 
 - Enable Adaptive Query Execution to improve join strategies and reduce shuffle
 - Use broadcast joins for small lookup tables where applicable
@@ -55,7 +55,7 @@ Autoscaling is a core mechanism for aligning compute supply with workload demand
 **Underuse Of Serverless For Short Or Interactive Workloads**
 Service: Databricks SQL | Type: Inefficient Configuration
 
-Many organizations continue running short-lived or low-intensity SQL workloads — such as dashboards, exploratory queries, and BI tool integrations — on traditional clusters. This leads to idle compute, overprovisioning, and high baseline costs, especially when the clusters are always-on.
+Many organizations continue running short-lived or low-intensity SQL workloads  - such as dashboards, exploratory queries, and BI tool integrations  - on traditional clusters. This leads to idle compute, overprovisioning, and high baseline costs, especially when the clusters are always-on.
 
 - Migrate lightweight SQL workloads and dashboards to Databricks SQL Serverless
 - Enable serverless for high-concurrency, low-compute scenarios where persistent compute isn’t needed
@@ -64,7 +64,7 @@ Many organizations continue running short-lived or low-intensity SQL workloads �
 **Inefficient Bi Queries Driving Excessive Compute Usage**
 Service: Interactive Clusters | Type: Inefficient Query Patterns
 
-Business Intelligence dashboards and ad-hoc analyst queries frequently drive Databricks compute usage — especially when: * Dashboards are auto-refreshed too frequently * Queries scan full datasets instead of leveraging filtered views or materialized tables * Inefficient joins or large broadcast operations are used * Redundant or exploratory queries are triggered during interactive exploration This often results in clusters staying active for longer than necessary, or being autoscaled up to handle inefficient workloads, leading to unnecessary DBU consumption.
+Business Intelligence dashboards and ad-hoc analyst queries frequently drive Databricks compute usage  - especially when: * Dashboards are auto-refreshed too frequently * Queries scan full datasets instead of leveraging filtered views or materialized tables * Inefficient joins or large broadcast operations are used * Redundant or exploratory queries are triggered during interactive exploration This often results in clusters staying active for longer than necessary, or being autoscaled up to handle inefficient workloads, leading to unnecessary DBU consumption.
 
 - Refactor BI queries to limit scan scope and reduce complexity
 - Materialize frequently used intermediate results into temp or Delta tables
@@ -82,7 +82,7 @@ Interactive clusters are often left running between periods of active use. To mi
 **Inefficient Use Of Interactive Clusters**
 Service: Databricks Clusters | Type: Misconfiguration
 
-Interactive clusters are intended for development and ad-hoc analysis, remaining active until manually terminated. When used to run scheduled jobs or production workflows, they often stay idle between executions—leading to unnecessary infrastructure and DBU costs.
+Interactive clusters are intended for development and ad-hoc analysis, remaining active until manually terminated. When used to run scheduled jobs or production workflows, they often stay idle between executions -leading to unnecessary infrastructure and DBU costs.
 
 - Reassign scheduled jobs to ephemeral job clusters
 - Apply workspace policies to enforce job cluster usage for scheduled workflows
@@ -127,7 +127,7 @@ Databricks supports AWS Graviton-based instances for most workloads, including S
 **On Demand Only Configuration For Non Production Databricks Clusters**
 Service: Databricks Clusters | Type: Suboptimal Pricing Model
 
-In non-production environments—such as development, testing, and experimentation—many teams default to on-demand nodes out of habit or caution. However, Databricks offers built-in support for using spot instances safely.
+In non-production environments -such as development, testing, and experimentation -many teams default to on-demand nodes out of habit or caution. However, Databricks offers built-in support for using spot instances safely.
 
 - Enable spot instance usage for non-production clusters where workloads are resilient to interruption
 - Leverage Databricks’ native fallback-to-on-demand capabilities to preserve job continuity
@@ -136,7 +136,7 @@ In non-production environments—such as development, testing, and experimentati
 **Suboptimal Use Of On Demand Instances In Non Production Clusters**
 Service: Databricks Clusters | Type: Suboptimal Pricing Model
 
-In Databricks, on-demand instances provide reliable performance but come at a premium cost. For non-production workloads—such as development, testing, or exploratory analysis—high availability is often unnecessary.
+In Databricks, on-demand instances provide reliable performance but come at a premium cost. For non-production workloads -such as development, testing, or exploratory analysis -high availability is often unnecessary.
 
 - Implement compute policies that cap the percentage of on-demand nodes in relevant workloads
 - Update existing cluster configurations to prioritize Spot usage for dev/test workloads
@@ -162,7 +162,7 @@ In many Databricks environments, large Delta tables are created without enabling
 **Inefficient Use Of Job Clusters In Databricks Workflows**
 Service: Databricks Workflows | Type: Suboptimal Cluster Configuration
 
-When multiple tasks within a workflow are executed on separate job clusters — despite having similar compute requirements — organizations incur unnecessary overhead. Each cluster must initialize independently, adding latency and cost.
+When multiple tasks within a workflow are executed on separate job clusters  - despite having similar compute requirements  - organizations incur unnecessary overhead. Each cluster must initialize independently, adding latency and cost.
 
 - Configure a shared job cluster to run multiple tasks within the same workflow when compute requirements are similar
 - Leverage cluster reuse settings to reduce start-up overhead and improve efficiency
@@ -171,10 +171,14 @@ When multiple tasks within a workflow are executed on separate job clusters — 
 **Lack Of Functional Cost Attribution In Databricks Workloads**
 Service: Databricks | Type: Visibility Gap
 
-Databricks cost optimization begins with visibility. Unlike traditional IaaS services, Databricks operates as an orchestration layer spanning compute, storage, and execution — but its billing data often lacks granularity by workload, job, or team.
+Databricks cost optimization begins with visibility. Unlike traditional IaaS services, Databricks operates as an orchestration layer spanning compute, storage, and execution  - but its billing data often lacks granularity by workload, job, or team.
 
 - Orchestration (DBUs): Analyze query/job-level execution and optimize workload design
 - Compute: Review underlying VM types and cost models (e.g., Spot, RI, Savings Plans)
 - Storage: Align S3/ADLS/GCS usage with lifecycle policies and avoid excessive churn
 
 ---
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

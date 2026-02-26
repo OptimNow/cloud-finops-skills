@@ -20,13 +20,13 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 | Variable | What it does |
 |---|---|
 | Model choice | Base token rate anchor (Opus 4.6: $5/$25 per MTok input/output) |
-| Performance tier | Standard vs Fast mode — 6× price multiplier |
+| Performance tier | Standard vs Fast mode  - 6× price multiplier |
 | Context length | Long-context cliff above 200K input tokens |
 | Data residency | US-only inference adds a 1.1× multiplier |
 | Prompt caching | Writes are priced (1.25× or 2×), reads are discounted (0.1×) |
 | Tool usage | Web search and code execution have separate meters |
 | Batch processing | 50% discount via Batch API (Fast mode excluded) |
-| Service tier | Standard, Priority, or Batch — affects capacity and pricing |
+| Service tier | Standard, Priority, or Batch  - affects capacity and pricing |
 
 ---
 
@@ -48,7 +48,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 - **5-minute cache writes**: ×1.25 on base input price
 - **1-hour cache writes**: ×2 on base input price
 - **Cache reads**: ×0.1 on base input price
-- **Modifiers stack** — Fast mode + long context + US-only inference can compound significantly
+- **Modifiers stack**  - Fast mode + long context + US-only inference can compound significantly
 
 ### Tool charges
 
@@ -82,7 +82,7 @@ on February 7, 2026.
 ### Long-context cliff: the 200K input token threshold
 
 When the 1M context window is enabled, any request that exceeds 200K input tokens
-triggers premium long-context pricing — for the **entire request**, not just the excess.
+triggers premium long-context pricing  - for the **entire request**, not just the excess.
 
 - The threshold includes cache reads and writes in the input token count
 - Features that silently inflate context (tool results, retrieval dumps) can push
@@ -154,7 +154,7 @@ dimensions:
 ### Forecasting
 
 A forecast based solely on "Opus 4.6 at $5/$25 per MTok" is insufficient:
-- Fast mode changes the unit price to $30/$150 — a 6× shift
+- Fast mode changes the unit price to $30/$150  - a 6× shift
 - Long-context requests are repriced entirely at the 200K boundary
 - Tool usage adds call-based meters that are independent of token volume
 - Behavioural effect: lower latency reduces friction, which increases usage volume
@@ -169,8 +169,12 @@ this feature gap introduces spend fragmentation that governance must account for
 ### Cross-provider applicability
 
 The same pricing pattern is emerging across providers (OpenAI priority/flex tiers,
-batch discounts). The governance posture built for Anthropic — tier detection, anomaly
-detection, cost allocation by feature/team/environment, guardrails for premium modes —
+batch discounts). The governance posture built for Anthropic  - tier detection, anomaly
+detection, cost allocation by feature/team/environment, guardrails for premium modes  -
 is reusable across the GenAI vendor landscape.
 
 ---
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

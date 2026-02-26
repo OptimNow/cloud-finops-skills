@@ -5,7 +5,7 @@
 > trade-offs, publisher-scoped reservation flexibility, Committed Use Discounts (CUDs),
 > and cost visibility within GCP Billing and BigQuery.
 >
-> Distilled from: "Navigating GenAI Capacity Options" — FinOps Foundation GenAI Working Group, 2025/2026.
+> Distilled from: "Navigating GenAI Capacity Options"  - FinOps Foundation GenAI Working Group, 2025/2026.
 > See also: `finops-genai-capacity.md` for cross-provider capacity concepts.
 
 ---
@@ -62,7 +62,7 @@ Vertex AI Batch Prediction processes requests asynchronously at discounted token
 - Offline classification pipelines
 - Non-latency-sensitive evaluation workflows
 
-**Constraint:** async processing only — not suitable for interactive workloads.
+**Constraint:** async processing only  - not suitable for interactive workloads.
 
 ---
 
@@ -113,7 +113,7 @@ and can switch between models within that publisher's portfolio.
 - [ ] Calculate break-even utilization (provisioned unit cost ÷ on-demand equivalent)
 - [ ] Verify reserved publisher matches the model families your workloads will use
 - [ ] Build failover logic to on-demand for overflow traffic (spillover is not built in)
-- [ ] Set utilization alerts — target >80% to justify the reservation
+- [ ] Set utilization alerts  - target >80% to justify the reservation
 - [ ] Assess whether new model efficiency gains offset the fixed capacity floor
 
 ---
@@ -169,7 +169,7 @@ request metadata.
 
 ### Prompt optimization
 
-- Audit system prompt length — verbose instructions inflate every API call
+- Audit system prompt length  - verbose instructions inflate every API call
 - Implement context caching where supported (Vertex AI supports context caching for Gemini)
 - Truncate or summarize conversation history for multi-turn applications
 - Avoid sending redundant context in RAG pipelines
@@ -203,12 +203,16 @@ GCP offers CUDs on some Vertex AI workloads. Evaluate CUDs for:
 
 - [ ] Enable BigQuery billing export and configure Vertex AI cost dashboards
 - [ ] Set up cost anomaly alerts in GCP Billing
-- [ ] Define model selection policy — default to Gemini Flash unless higher capability is justified
+- [ ] Define model selection policy  - default to Gemini Flash unless higher capability is justified
 - [ ] Instrument applications with token counts per request (input + output)
 - [ ] Use GCP projects for team/environment cost separation
 - [ ] Review provisioned throughput utilization monthly
 - [ ] Track grounding and tool usage as separate cost centres
 - [ ] Document which workloads use provisioned vs on-demand and why
-- [ ] Establish a model review cadence — Vertex AI model catalog updates frequently
+- [ ] Establish a model review cadence  - Vertex AI model catalog updates frequently
 
 ---
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

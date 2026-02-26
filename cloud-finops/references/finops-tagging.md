@@ -8,6 +8,7 @@
 ---
 
 ## Why tagging is a prerequisite, not a project
+<!-- doc:37b46c22605776cb -->
 
 Tagging is often treated as a one-time cleanup project. It is not. It is an ongoing
 operational discipline that requires design, enforcement, and continuous monitoring.
@@ -241,3 +242,7 @@ without ongoing human effort.
 Tagging new resources manually while existing IaC modules don't include tags means every
 new deployment starts non-compliant. Tag requirements belong in the IaC templates, not
 in a post-deployment process.
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
