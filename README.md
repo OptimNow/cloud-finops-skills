@@ -111,6 +111,15 @@ A general-purpose LLM without this skill will produce plausible but unreliable a
 to most of them - particularly on billing mechanics, capacity economics, and
 provider-specific behaviour.
 
+<div>
+  <a href="https://www.loom.com/share/cc76d419adc64b1784e58621d6934d3e">
+    <p>Cloud FinOps skill - Watch Video</p>
+  </a>
+  <a href="https://www.loom.com/share/cc76d419adc64b1784e58621d6934d3e">
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/cc76d419adc64b1784e58621d6934d3e-906aded8593a48f3-full-play.gif#t=0.1">
+  </a>
+</div>
+
 ### FinOps for AI
 
 - "We're spending $40K/month on AWS Bedrock and have no idea which features are driving it. Where do we start?"
