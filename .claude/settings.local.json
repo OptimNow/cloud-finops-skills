@@ -7,7 +7,12 @@
       "Bash(ls:*)",
       "Bash(python3:*)",
       "Bash(cygpath:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(find . -name \"*.md\" ! -name \"WATERMARK_GUIDE.md\" -exec grep -l '—' {} ;)",
+      "Bash(while read f)",
+      "Bash(do sed -i 's/—/ -/g' \"$f\")",
+      "Bash(done)"
     ]
   }
 }
