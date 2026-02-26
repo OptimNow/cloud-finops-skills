@@ -245,7 +245,7 @@ cp -r cloud-finops-skills/cloud-finops /path/to/your/skills/directory/
 ```
 
 **For Kiro IDE:**
-Add the power from GitHub using the repository URL `OptimNow/cloud-finops-skills`.
+Add the power from GitHub using the repository URL `https://github.com/OptimNow/cloud-finops-skills/`.
 The power activates automatically when you mention cloud costs, FinOps, or AI spend.
 
 **For Agent Smith (OptimNow's FinOps agent):**
