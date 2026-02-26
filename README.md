@@ -228,31 +228,8 @@ domain-specific content is shared.
 
 ## Installation
 
-**One-liner (Mac/Linux/WSL):**
-```bash
-curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/install.sh | bash
-```
-
-**Install to a specific project directory:**
-```bash
-curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/install.sh | bash -s -- --dir ~/my-project
-```
-
-**Manual install:**
-```bash
-git clone https://github.com/OptimNow/cloud-finops-skills.git
-cp -r cloud-finops-skills/cloud-finops /path/to/your/skills/directory/
-```
-
-**For Kiro IDE:**
-Add the power from GitHub using the repository URL `https://github.com/OptimNow/cloud-finops-skills/`.
-The power activates automatically when you mention cloud costs, FinOps, or AI spend.
-
-**For Agent Smith (OptimNow's FinOps agent):**
-The skill is pre-integrated. No manual installation required.
-
-See [INSTALLATION.md](./INSTALLATION.md) for detailed setup instructions including
-Kiro IDE, Claude.ai Projects, API integration, and troubleshooting.
+See **[INSTALLATION.md](./INSTALLATION.md)** for step-by-step setup instructions
+covering Claude Code, Kiro IDE, Claude.ai, and API integration.
 
 ---
 
