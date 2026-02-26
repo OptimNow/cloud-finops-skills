@@ -48,7 +48,21 @@ After copying, Claude Code will automatically detect the skill. Test it:
 
 ---
 
-## Option 3: Claude.ai Project (manual context injection)
+## Option 3: Kiro IDE (power)
+
+In Kiro IDE, add the power directly from GitHub:
+
+1. Open the **Powers** panel in Kiro
+2. Click **Add power from GitHub**
+3. Enter the repository URL: `OptimNow/cloud-finops-skills`
+4. The power installs automatically and activates when you mention cloud costs,
+   FinOps, AI spend, or any of the covered domains
+
+The power loads dynamically based on conversation context - no manual activation needed.
+
+---
+
+## Option 4: Claude.ai Project (manual context injection)
 
 If you are using Claude.ai without Claude Code, add the skill content as project knowledge:
 
@@ -60,7 +74,7 @@ If you are using Claude.ai without Claude Code, add the skill content as project
 
 ---
 
-## Option 4: Agent Smith integration
+## Option 5: Agent Smith integration
 
 The skill is designed to integrate directly with OptimNow's Agent Smith.
 
@@ -73,7 +87,7 @@ Refer to the Agent Smith documentation for skill configuration details.
 
 ---
 
-## Option 5: API integration (system prompt injection)
+## Option 6: API integration (system prompt injection)
 
 For direct API use, concatenate the skill files into your system prompt:
 

@@ -197,7 +197,8 @@ cloud-finops-skills/
 ├── INSTALLATION.md                             ← Setup instructions
 ├── LICENSE.md                                  ← CC BY-SA 4.0
 └── cloud-finops/                               ← Install this folder
-    ├── SKILL.md                                ← Entry point + domain router
+    ├── SKILL.md                                ← Entry point + domain router (Claude Code, generic agents)
+    ├── POWER.md                                ← Entry point (Kiro IDE)
     └── references/
         ├── optimnow-methodology.md             ← OptimNow reasoning philosophy
         ├── finops-for-ai.md                    ← AI cost management
@@ -218,9 +219,9 @@ cloud-finops-skills/
         └── greenops-cloud-carbon.md            ← GreenOps and cloud carbon
 ```
 
-The `SKILL.md` file at the root of the `cloud-finops/` folder is the entry point. It
-routes queries to the appropriate reference file based on the domain and question type.
-The agent loads `SKILL.md` first; the reference files provide the domain-specific detail.
+The `SKILL.md` file is the entry point for Claude Code and generic agents. `POWER.md` is
+the entry point for Kiro IDE. Both route queries to the same reference files - the
+domain-specific content is shared.
 
 ---
 
@@ -242,11 +243,15 @@ git clone https://github.com/OptimNow/cloud-finops-skills.git
 cp -r cloud-finops-skills/cloud-finops /path/to/your/skills/directory/
 ```
 
+**For Kiro IDE:**
+Add the power from GitHub using the repository URL `OptimNow/cloud-finops-skills`.
+The power activates automatically when you mention cloud costs, FinOps, or AI spend.
+
 **For Agent Smith (OptimNow's FinOps agent):**
 The skill is pre-integrated. No manual installation required.
 
 See [INSTALLATION.md](./INSTALLATION.md) for detailed setup instructions including
-Claude.ai Projects, API integration, and troubleshooting.
+Kiro IDE, Claude.ai Projects, API integration, and troubleshooting.
 
 ---
 
