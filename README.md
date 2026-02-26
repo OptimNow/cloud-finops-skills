@@ -4,7 +4,9 @@
 > AWS, Azure, GCP, AI inference costs, GenAI capacity planning, and tagging governance -
 > grounded in enterprise delivery experience.
 
-[![GitHub Stars](https://img.shields.io/github/stars/OptimNow/cloud-finops-skill?style=flat)](https://github.com/OptimNow/cloud-finops-skill/stargazers)
+[![GitHub Stars](https://img.shields.io/github/stars/OptimNow/cloud-finops-skills?style=flat)](https://github.com/OptimNow/cloud-finops-skills/stargazers)
+[![FinOps Framework](https://img.shields.io/badge/FinOps-Framework%202024-blue)](https://www.finops.org/framework/)
+[![Agent Skills](https://img.shields.io/badge/Agent-Skills%20Spec-green)](https://agentskills.io/specification)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ---
@@ -236,11 +238,36 @@ The skill is pre-integrated. No manual installation required.
 
 ---
 
+## This skill is actively maintained
+
+This is a living repository. Reference files are updated regularly as cloud providers
+change pricing, introduce new services, and evolve their billing models. AI cost
+management is moving particularly fast - new model releases, capacity options, and
+billing mechanics appear every few weeks.
+
+Watch or star this repo to be notified when new content is added. Recent additions
+include GreenOps/cloud carbon, AI value management, and GenAI capacity planning.
+
+---
+
+## Contributing
+
+Contributions are welcome. If you spot an inaccuracy, a missing provider feature, or a
+gap in coverage, open an issue or submit a pull request.
+
+To suggest improvements:
+
+1. Review the source material at [finops.org/framework](https://www.finops.org/framework/)
+2. Identify gaps or inaccuracies in existing reference files
+3. Submit a pull request with proposed changes
+4. For new domains, follow the structure of an existing reference file as a template
+
+---
+
 ## Adapting this skill for your organisation
 
-The most common use case is to fork this repository and customise the reference files
-for your organisation's context: your cloud stack, your internal policies, your tag
-taxonomy, your preferred methodology.
+Fork this repository and customise the reference files for your organisation's context:
+your cloud stack, your internal policies, your tag taxonomy, your preferred methodology.
 
 A fork gives you a stable base that you can pull upstream updates into at your own pace,
 without overwriting your customisations. Typical customisations include:
@@ -249,13 +276,6 @@ without overwriting your customisations. Typical customisations include:
 - Replacing generic pricing examples with your negotiated rates
 - Adding reference files for internal tools or platforms not covered here
 - Adjusting the methodology file to reflect your team's own approach
-
-To suggest improvements to the upstream skill:
-
-1. Review the source material at [finops.org/framework](https://www.finops.org/framework/)
-2. Identify gaps or inaccuracies in existing reference files
-3. Submit a pull request with proposed changes
-4. For new domains, follow the structure of an existing reference file as a template
 
 ---
 
