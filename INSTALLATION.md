@@ -74,7 +74,7 @@ If you are using Claude.ai without Claude Code, add the skill content as project
 
 ---
 
-## Option 5: Agent Smith integration
+## Option 5: Agent integration
 
 The skill is designed to integrate directly with OptimNow's Agent Smith.
 
