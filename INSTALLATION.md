@@ -54,7 +54,7 @@ In Kiro IDE, add the power directly from GitHub:
 
 1. Open the **Powers** panel in Kiro
 2. Click **Add power from GitHub**
-3. Enter the repository URL: `OptimNow/cloud-finops-skills`
+3. Enter the repository URL: `https://github.com/OptimNow/cloud-finops-skills/`
 4. The power installs automatically and activates when you mention cloud costs,
    FinOps, AI spend, or any of the covered domains
 
