@@ -8,10 +8,7 @@ description: >
   Use for any query about cloud cost, AI workload economics, commitment discounts,
   rightsizing, cost allocation, or connecting cloud spend to business value.
   Built by OptimNow.
-license: MIT
 ---
-
-<!-- fp:37b46c22605776cb -->
 
 # Cloud FinOps - Expert Guidance
 
@@ -58,6 +55,7 @@ domain reference that matches the query.
 ---
 
 ## Core FinOps principles (always apply)
+<!-- fp:37b46c22605776cb -->
 
 These six principles from the FinOps Foundation underpin every recommendation:
 
