@@ -7,14 +7,31 @@
 
 ---
 
-## Option 1: Claude Code (recommended)
+## Option 1: One-liner install (recommended)
+
+```bash
+curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/install.sh | bash
+```
+
+This downloads the skill into the current directory. To install into a specific project:
+
+```bash
+curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/install.sh | bash -s -- --dir ~/my-project
+```
+
+The script clones the repo, copies the `cloud-finops/` folder, verifies the installation,
+and cleans up. Works on Mac, Linux, and WSL.
+
+---
+
+## Option 2: Manual install (Claude Code)
 
 ```bash
 # Clone the repository
-git clone https://github.com/OptimNow/cloud-finops-skill.git
+git clone https://github.com/OptimNow/cloud-finops-skills.git
 
-# Copy the skill folder to your Claude Code skills directory
-cp -r cloud-finops-skill/cloud-finops ~/.claude/skills/
+# Copy the skill folder to your project or skills directory
+cp -r cloud-finops-skills/cloud-finops ~/.claude/skills/
 
 # Verify structure
 ls ~/.claude/skills/cloud-finops/
@@ -31,7 +48,7 @@ After copying, Claude Code will automatically detect the skill. Test it:
 
 ---
 
-## Option 2: Claude.ai Project (manual context injection)
+## Option 3: Claude.ai Project (manual context injection)
 
 If you are using Claude.ai without Claude Code, add the skill content as project knowledge:
 
@@ -43,7 +60,7 @@ If you are using Claude.ai without Claude Code, add the skill content as project
 
 ---
 
-## Option 3: Agent Smith integration
+## Option 4: Agent Smith integration
 
 The skill is designed to integrate directly with OptimNow's Agent Smith.
 
@@ -56,7 +73,7 @@ Refer to the Agent Smith documentation for skill configuration details.
 
 ---
 
-## Option 4: API integration (system prompt injection)
+## Option 5: API integration (system prompt injection)
 
 For direct API use, concatenate the skill files into your system prompt:
 
@@ -85,12 +102,14 @@ rather than all references at once.
 
 ```bash
 # Pull latest changes
-cd cloud-finops-skill
+cd cloud-finops-skills
 git pull origin main
 
 # Re-copy to your skills directory
 cp -r cloud-finops ~/.claude/skills/
 ```
+
+Or re-run the one-liner installer - it will replace the existing installation automatically.
 
 ---
 

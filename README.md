@@ -226,15 +226,27 @@ The agent loads `SKILL.md` first; the reference files provide the domain-specifi
 
 ## Installation
 
-See [INSTALLATION.md](./INSTALLATION.md) for detailed setup instructions.
-
-**Quick start (Claude Code):**
+**One-liner (Mac/Linux/WSL):**
 ```bash
-cp -r cloud-finops /path/to/your/skills/directory/
+curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/install.sh | bash
+```
+
+**Install to a specific project directory:**
+```bash
+curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/install.sh | bash -s -- --dir ~/my-project
+```
+
+**Manual install:**
+```bash
+git clone https://github.com/OptimNow/cloud-finops-skills.git
+cp -r cloud-finops-skills/cloud-finops /path/to/your/skills/directory/
 ```
 
 **For Agent Smith (OptimNow's FinOps agent):**
 The skill is pre-integrated. No manual installation required.
+
+See [INSTALLATION.md](./INSTALLATION.md) for detailed setup instructions including
+Claude.ai Projects, API integration, and troubleshooting.
 
 ---
 
