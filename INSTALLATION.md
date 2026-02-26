@@ -64,29 +64,49 @@ The power loads dynamically based on conversation context - no manual activation
 
 ## Option 4: Claude.ai skill upload
 
-If you are using Claude.ai (not Claude Code), you can upload the skill directly
-from the Skills panel:
+If you are using Claude.ai (not Claude Code), you can upload the skill directly.
 
-1. Download or clone this repository
-2. Zip the `cloud-finops/` folder (the zip must contain a `SKILL.md` file)
-3. In Claude.ai, go to **Customize** → **Skills** → click **+**
-4. Drag and drop the `cloud-finops.zip` file into the upload dialog
-5. The skill appears in your personal plugins and activates automatically
+### Step 1: Download the skill
 
-![Claude.ai skill upload dialog](assets/claude-skill-upload.png)
-
-To create the zip from a local clone:
+Clone or download this repository, then create a zip of the `cloud-finops/` folder:
 
 ```bash
+git clone https://github.com/OptimNow/cloud-finops-skills.git
 cd cloud-finops-skills
 zip -r cloud-finops.zip cloud-finops/
 ```
 
-Or on Windows (PowerShell):
+On Windows (PowerShell):
 
 ```powershell
+git clone https://github.com/OptimNow/cloud-finops-skills.git
+cd cloud-finops-skills
 Compress-Archive -Path cloud-finops -DestinationPath cloud-finops.zip
 ```
+
+### Step 2: Open the Customize panel
+
+On the Claude.ai home page, find and click **Manage connectors & skills** at the
+bottom of the sidebar.
+
+<img src="assets/claude-manage-connectors.png" alt="Claude.ai home page - Manage connectors and skills" width="400" />
+
+### Step 3: Go to Skills and click +
+
+In the Customize panel, click **Skills** in the left sidebar, then click the **+**
+button at the top to add a new skill.
+
+<img src="assets/claude-skill-customize.png" alt="Claude.ai Customize panel - Skills section" width="400" />
+
+### Step 4: Upload the zip
+
+Drag and drop `cloud-finops.zip` into the upload dialog, or click to browse.
+The zip must contain a `SKILL.md` file with valid YAML frontmatter.
+
+<img src="assets/claude-skill-upload.png" alt="Claude.ai skill upload dialog" width="400" />
+
+Once uploaded, the skill appears under **Personal plugins** and activates
+automatically when you ask FinOps-related questions.
 
 ---
 
