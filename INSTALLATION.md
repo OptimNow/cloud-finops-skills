@@ -62,15 +62,31 @@ The power loads dynamically based on conversation context - no manual activation
 
 ---
 
-## Option 4: Claude.ai Project (manual context injection)
+## Option 4: Claude.ai skill upload
 
-If you are using Claude.ai without Claude Code, add the skill content as project knowledge:
+If you are using Claude.ai (not Claude Code), you can upload the skill directly
+from the Skills panel:
 
-1. Open your Claude.ai Project
-2. Go to Project Knowledge → Add content
-3. Add `cloud-finops/SKILL.md`
-4. Add each file from `cloud-finops/references/` as separate knowledge documents
-5. The agent will reference them when relevant queries are made
+1. Download or clone this repository
+2. Zip the `cloud-finops/` folder (the zip must contain a `SKILL.md` file)
+3. In Claude.ai, go to **Customize** → **Skills** → click **+**
+4. Drag and drop the `cloud-finops.zip` file into the upload dialog
+5. The skill appears in your personal plugins and activates automatically
+
+![Claude.ai skill upload dialog](assets/claude-skill-upload.png)
+
+To create the zip from a local clone:
+
+```bash
+cd cloud-finops-skills
+zip -r cloud-finops.zip cloud-finops/
+```
+
+Or on Windows (PowerShell):
+
+```powershell
+Compress-Archive -Path cloud-finops -DestinationPath cloud-finops.zip
+```
 
 ---
 
