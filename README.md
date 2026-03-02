@@ -35,6 +35,10 @@ setup and the model gains structured expertise on cloud financial management.
 This makes it portable: the same skill works with Claude, GPT-4, Gemini, or any
 MCP-compatible agent - with no changes to the files.
 
+To keep responses consistent across models, add a small **response contract** to your
+system prompt (see `INSTALLATION.md`, Option 6). This preserves the same FinOps
+reasoning structure even when model defaults differ.
+
 ---
 
 ## Who this is for
