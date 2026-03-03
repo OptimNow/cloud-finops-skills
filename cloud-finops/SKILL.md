@@ -4,10 +4,10 @@ description: >
   Expert Cloud FinOps guidance covering AI cost management, GenAI capacity planning,
   Anthropic billing, AWS (EC2, Bedrock, Savings Plans, CUR), Azure (reservations,
   OpenAI PTUs, Cost Management), GCP (Vertex AI, Compute Engine, BigQuery), tagging
-  governance, Databricks, Snowflake, OCI, GreenOps, and FinOps framework implementation.
-  Use for any query about cloud cost, AI workload economics, commitment discounts,
-  rightsizing, cost allocation, or connecting cloud spend to business value.
-  Built by OptimNow.
+  governance, SaaS management (SAM, license optimization, SMPs, shadow IT), Databricks,
+  Snowflake, OCI, GreenOps, and FinOps framework implementation. Use for any query about
+  cloud cost, AI workload economics, commitment discounts, rightsizing, cost allocation,
+  SaaS sprawl, or connecting cloud spend to business value. Built by OptimNow.
 ---
 
 # Cloud FinOps - Expert Guidance
@@ -41,6 +41,8 @@ domain reference that matches the query.
 | Databricks clusters, jobs, Spark optimization, Unity Catalog costs | `references/finops-databricks.md` |
 | Snowflake warehouses, query optimization, storage, credits | `references/finops-snowflake.md` |
 | OCI compute, storage, networking optimization | `references/finops-oci.md` |
+| GreenOps, cloud carbon, sustainability, carbon-aware workloads | `references/greenops-cloud-carbon.md` |
+| SaaS management, license optimization, shadow IT, SaaS sprawl, renewal governance, SMP, SAM | `references/finops-sam.md` |
 | Multi-domain query | Load all relevant references, synthesize |
 
 ### Reasoning sequence (apply to every response)
@@ -127,6 +129,8 @@ premature - they will commit to waste.
 | `finops-databricks.md` | Databricks optimization: 18 patterns for clusters, jobs, Spark, storage | ~180 |
 | `finops-snowflake.md` | Snowflake optimization: 13 patterns for warehouses, queries, storage, credits | ~130 |
 | `finops-oci.md` | OCI optimization: 6 patterns for compute, storage, networking | ~70 |
+| `finops-sam.md` | SaaS asset management: discovery, license optimization, renewal governance, SMPs, shadow IT, AI transition | ~290 |
+| `greenops-cloud-carbon.md` | GreenOps: carbon measurement, carbon-aware workloads, region selection, GHG Protocol | ~150 |
 
 ---
 

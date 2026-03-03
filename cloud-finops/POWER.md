@@ -43,6 +43,14 @@ keywords:
   - oci cost
   - greenops
   - cloud carbon
+  - saas cost
+  - saas management
+  - saas sprawl
+  - license optimization
+  - shadow it
+  - sam
+  - smp
+  - saas renewal
 ---
 
 # Cloud FinOps - Expert Guidance
@@ -84,6 +92,7 @@ philosophy applied to all responses. Then load the domain reference that matches
 | Snowflake warehouses, query optimization, storage, credits | `references/finops-snowflake.md` |
 | OCI compute, storage, networking optimization | `references/finops-oci.md` |
 | GreenOps, cloud carbon, sustainability, carbon-aware workloads | `references/greenops-cloud-carbon.md` |
+| SaaS management, license optimization, shadow IT, SaaS sprawl, renewal governance, SMP, SAM | `references/finops-sam.md` |
 | Multi-domain query | Load all relevant references, synthesize |
 
 ### Reasoning sequence (apply to every response)

@@ -81,6 +81,9 @@ The skill provides accurate, framework-aligned guidance across the following dom
 - **Databricks** - cluster optimisation, jobs, Spark, Unity Catalog costs
 - **Snowflake** - warehouse optimisation, query tuning, storage, credits
 - **OCI** - compute, storage, networking optimisation
+- **SaaS asset management (SAM)** - SaaS discovery, license optimization, renewal
+  governance, SaaS Management Platforms (SMPs), shadow IT detection, sprawl patterns,
+  and the connection to AI transition readiness
 - **GreenOps and cloud carbon** - carbon measurement tooling, FinOps-to-GreenOps
   integration, carbon-aware workload shifting, region selection, GHG Protocol reporting
 
@@ -230,6 +233,7 @@ cloud-finops-skills/
         ├── finops-databricks.md                ← Databricks optimisation
         ├── finops-snowflake.md                 ← Snowflake optimisation
         ├── finops-oci.md                       ← OCI optimisation
+        ├── finops-sam.md                       ← SaaS asset management (SAM)
         └── greenops-cloud-carbon.md            ← GreenOps and cloud carbon
 ```
 
