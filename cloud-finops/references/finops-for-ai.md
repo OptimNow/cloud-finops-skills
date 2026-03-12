@@ -77,7 +77,11 @@ attaches metadata before requests execute. Options by complexity:
 **Real-time cost ingestion** - token counts must be captured as model responses are
 returned, not retrieved from billing exports. Cost Explorer lags 24–48 hours - acceptable
 for EC2, not for workloads where a misconfigured agent can generate thousands of dollars
-within hours.
+within hours. When calculating cost from token counts, account for context-length pricing
+thresholds: all major providers (OpenAI, Anthropic, Google) apply 2× input rates when
+input tokens exceed provider-specific thresholds (200K–272K). The API response does not
+indicate which pricing tier was applied - your instrumentation must check input token
+count against the threshold and apply the correct rate. See anti-pattern #6 for details.
 
 > **Implementation baseline:** Achieving visibility typically requires ~30 minutes of
 > design and ~2 hours of implementation. The barrier is lower than most teams expect.
@@ -289,7 +293,7 @@ Detection approach:
 
 ---
 
-## The five AI cost anti-patterns
+## The six AI cost anti-patterns
 
 These patterns generate significant financial impact within hours, but remain invisible
 to monthly dashboards until the bill arrives.
@@ -347,6 +351,66 @@ than 25 searches/month. Feature adoption growth increased losses, not margins.
 
 *Detection signal:* AI costs growing proportionally with user adoption; unit margin
 declining as volume increases.
+
+### 6. Context-length pricing thresholds (the silent multiplier)
+
+All three major LLM API providers now apply tiered pricing based on input token count
+within a single request. Crossing the threshold changes the rate for *all* tokens in
+that request - not just the tokens above the limit. This is not a marginal surcharge;
+it is a step-function cost increase that can double the effective input rate overnight
+without any change in application logic or user behavior.
+
+**Current thresholds (as of March 2026):**
+
+| Provider | Model(s) | Threshold | Standard input rate | Long-context input rate | Output impact |
+|---|---|---|---|---|---|
+| OpenAI | GPT-5.4, GPT-5.4 Pro | 272K input tokens | $2.50/MTok | $5.00/MTok (2×) | 1.5× ($15 → $22.50/MTok) |
+| Anthropic | Claude Opus 4.6, Sonnet 4.6/4.5/4 | 200K input tokens | $3.00/MTok (Sonnet) | $6.00/MTok (2×) | 1.5× ($15 → $22.50/MTok) |
+| Google | Gemini 3.1 Pro, Gemini 3 Pro | 200K input tokens | $2.00/MTok | $4.00/MTok (2×) | $12 → $18/MTok |
+
+**Why this matters for FinOps practitioners:**
+
+**1. The observability gap.** None of the three providers return the applied pricing tier
+in the API response. The response includes token counts but not the effective rate. If
+your instrumentation records tokens consumed without checking whether the input exceeded
+the threshold, your calculated cost will be wrong. You will under-report actual spend by
+up to 2× on affected requests, and you will not be able to reconcile your internal
+tracking against the provider invoice at month-end.
+
+**2. The forecasting trap.** Cost models that assume a flat per-token rate will produce
+inaccurate forecasts for any workload where input size varies. A RAG system that
+occasionally retrieves a large corpus, an agentic workflow with growing conversation
+history, or a code analysis tool processing a full repository can cross the threshold
+unpredictably. The variance between a 195K-token request and a 205K-token request is
+not 5% more tokens - it is 100% more cost per token on input.
+
+**3. The all-tokens-retroactive rule.** The surcharge applies to the entire request, not
+the incremental tokens above the threshold. A request with 201K input tokens is billed
+at the long-context rate for all 201K tokens, not at the standard rate for the first
+200K and the premium rate for the last 1K. This makes the cost function discontinuous.
+
+**Detection and mitigation:**
+
+- **Instrument the threshold check.** In your proxy or gateway layer, log a boolean flag
+  (`long_context: true/false`) on every request based on input token count vs. the
+  provider's threshold. Use this flag to apply the correct rate in your internal cost
+  calculation.
+- **Set alerts at 80% of the threshold.** If average input token counts per request
+  approach 160K (for Anthropic/Google) or 218K (for OpenAI), investigate before the
+  threshold is crossed in production.
+- **Design for threshold avoidance.** Use RAG chunking strategies, conversation history
+  pruning, or sliding-window context management to keep inputs below the threshold where
+  the quality trade-off is acceptable.
+- **Leverage prompt caching.** Cached tokens are significantly cheaper (up to 90% off on
+  Anthropic, 50% on OpenAI). Caching large, stable context prefixes reduces the effective
+  cost even when the request crosses the long-context threshold.
+- **Include threshold impact in COGS models.** Any AI feature that *could* exceed the
+  threshold should model two cost scenarios: standard and long-context. Report the
+  blended rate based on observed distribution of input sizes.
+
+*Detection signal:* Invoice cost per token higher than expected from flat-rate model;
+requests with high token counts showing disproportionate cost contribution; inability
+to reconcile internal cost tracking with provider invoice.
 
 ---
 

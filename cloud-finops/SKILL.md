@@ -29,7 +29,7 @@ domain reference that matches the query.
 | AI costs, LLM inference, token economics, agentic cost patterns, AI ROI, AI cost allocation, GPU cost attribution, RAG harness costs | `references/finops-for-ai.md` |
 | AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations | `references/finops-ai-value-management.md` |
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
-| AWS billing, EC2 rightsizing, RIs, Savings Plans, CUR, Cost Explorer | `references/finops-aws.md` |
+| AWS billing, EC2 rightsizing, RIs, Savings Plans, CUR, Cost Explorer, EDP negotiation, RDS cost management | `references/finops-aws.md` |
 | AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference | `references/finops-bedrock.md` |
 | Azure cost management, reservations, Azure Advisor, Cost Management | `references/finops-azure.md` |
 | Azure OpenAI Service, PTU reservations, GPT-4o / GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
@@ -117,7 +117,7 @@ premature - they will commit to waste.
 | `finops-for-ai.md` | AI cost management, LLM economics, agentic patterns, ROI framework | ~400 |
 | `finops-ai-value-management.md` | AI investment governance: AI Investment Council, stage gates, incremental funding, practice operations, value metrics | ~265 |
 | `finops-genai-capacity.md` | GenAI capacity models: provisioned vs shared, traffic shape, spillover, waste types, cross-provider comparison | ~220 |
-| `finops-aws.md` | AWS FinOps + 128 optimization patterns: CUR, Cost Explorer, EC2, RIs, Savings Plans, waste detection | ~1450 |
+| `finops-aws.md` | AWS FinOps + 128 optimization patterns: CUR, Cost Explorer, EC2, RIs, Savings Plans, EDP negotiation, RDS strategy, waste detection | ~1730 |
 | `finops-bedrock.md` | AWS Bedrock billing: model pricing, provisioned throughput, batch inference, CloudWatch metrics, cost allocation | ~200 |
 | `finops-azure.md` | Azure FinOps + 48 optimization patterns: reservations, Advisor, AHB, waste detection | ~1000 |
 | `finops-azure-openai.md` | Azure OpenAI Service: PTU reservations, spillover, GPT model pricing, prompt caching, fine-tuning costs | ~260 |

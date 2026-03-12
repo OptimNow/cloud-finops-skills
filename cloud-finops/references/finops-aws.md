@@ -2,8 +2,8 @@
 
 > AWS-specific guidance covering cost management tools, commitment discounts, compute
 > rightsizing, cost allocation, and governance. Covers CUR, Cost Explorer, Compute
-> Optimizer, Trusted Advisor, Savings Plans, Reserved Instances, and AWS-native
-> FinOps patterns.
+> Optimizer, Trusted Advisor, Savings Plans, Reserved Instances, Enterprise Discount
+> Program (EDP) negotiation, RDS cost management strategy, and AWS-native FinOps patterns.
 
 ---
 
@@ -138,6 +138,106 @@ For fault-tolerant, interruptible workloads, Spot offers up to 90% discount over
 - Use Spot Instance pools (multiple instance types and AZs) to reduce interruption risk
 - Implement interruption handling (2-minute warning via EC2 metadata service)
 - Use EC2 Auto Scaling mixed instances policy for automatic on-demand fallback
+
+### Enterprise Discount Program (EDP)
+<!-- src:optimnow-edp-guide -->
+
+The AWS Enterprise Discount Program (EDP) - also referred to as a Private Pricing
+Agreement (PPA) - is a contractual commitment where an organisation pledges a
+specific dollar amount of spend over a one-to-five-year term. In return, AWS provides
+a percentage discount that applies broadly across more than 200 services. Unlike
+Savings Plans or Reserved Instances that target specific compute or database
+resources, an EDP acts as a portfolio-wide discount covering compute, storage,
+databases, networking, and eligible AWS Marketplace purchases.
+
+**Who it is for:**
+EDP is designed for organisations spending $1 million or more annually on AWS.
+Smaller organisations with a strong growth trajectory may negotiate entry via the
+AWS Private Pricing Term Sheet (PPTS), which lowers the threshold to approximately
+$500,000 in annual spend.
+
+**How the discount is applied:**
+The EDP discount is applied after Reserved Instance and Savings Plan discounts. This
+means the EDP provides additional savings on top of already-discounted compute. When
+combined with aggressive rate optimisation (RIs, Savings Plans, Spot), mature
+organisations can achieve an overall effective discount of 40-70% off On-Demand rates.
+
+**Eligibility requirements and hidden costs:**
+- Minimum annual spend of $1 million (negotiable for high-growth accounts)
+- AWS requires a growth commitment - typically 10-20% year-over-year increase
+  over trailing spend. This growth tax is non-negotiable and creates risk for
+  organisations with unpredictable workloads
+- The commitment floor only moves upward - you cannot reduce your pledge in
+  subsequent years of the contract
+- Mandatory Enterprise Support (3-10% of monthly usage). For mid-sized
+  organisations, support fees can erode a significant portion of the EDP savings
+  if not factored into the financial model
+
+**Discount tiers and negotiation leverage:**
+Discount rates are determined by annual commitment level and contract duration.
+Longer terms yield deeper discounts. Strategic pricing breaks occur at specific
+annual spend milestones. A modest increase in committed volume near a tier
+boundary can yield a disproportionate jump in discount rate.
+
+**EDP negotiation checklist:**
+- [ ] Conduct a forensic cost audit before negotiation - eliminate waste to lower
+      your baseline commitment (do not commit to inefficiency)
+- [ ] Clarify pre- vs post-discount commitment measurement. If you commit $2M and
+      receive $200K in discounts, negotiate for the full $2M to count toward
+      retiring your commitment, not just the $1.8M net spend
+- [ ] Negotiate Marketplace inclusion terms. Default is 25% of committed spend;
+      negotiate to 30-35% if your stack relies on third-party SaaS from AWS
+      Marketplace
+- [ ] Request quarterly true-ups rather than annual ones for better pacing
+      visibility
+- [ ] Define which services are excluded from the discount - data transfer fees
+      and specialised managed services can represent hidden costs
+- [ ] Confirm that your EDP covers Marketplace SKUs for key vendors -
+      not all Marketplace transactions are EDP-eligible
+- [ ] Factor Enterprise Support cost into the total cost of ownership before
+      signing
+
+**EDP preparation roadmap (source: OptimNow):**
+
+| Stage | Timeline | Key activities |
+|---|---|---|
+| Suitability assessment | Months 1-2 | Review current AWS spend, evaluate growth trajectory (minimum 10% YoY), initial discussions with AWS |
+| Preparation | Months 2-5 | Build 3-5 year cloud usage forecast (include Marketplace SaaS), optimise resources before baseline is set, internal stakeholder alignment |
+| Negotiation | Months 5-11 | Negotiate commitment levels, term lengths, growth expectations; legal and financial review of proposed agreement |
+| Implementation | Month 12 | Sign and activate the EDP, communicate terms internally |
+| Management and optimisation | Months 13-15 | Monitor usage against commitment, layer RIs/Savings Plans, use FinOps tooling for continuous optimisation |
+| Review and adaptation | Month 16+ | Quarterly performance reviews, strategy adjustments, renewal preparation |
+
+**Internal alignment - who must be at the table:**
+- Engineering/business units: confirm AWS is the right platform for the workload
+- Finance: evaluate multi-year commitment impact on P&L and margins
+- Procurement: coordinate negotiation process and define success criteria
+- Legal: review all terms, ensure specific requirements are included
+- CEO/CTO/CFO: must be in complete agreement before signing. Without this
+  alignment, an EDP can create strategic misalignment and financial risk
+
+**Common EDP mistakes:**
+- Committing before optimising. AWS calculates EDP offers based on gross spend,
+  which often includes significant waste. Clean the house first
+- Choosing an overly long term (4-5 years) with aggressive growth targets. As
+  FinOps maturity improves and cost optimisation becomes more effective, meeting
+  high growth commitments becomes harder - the more efficient you become, the
+  harder it is to meet the spend floor
+- Failing to include Marketplace SaaS in the EDP forecast. Marketplace purchases
+  count toward commitment but are often planned by different teams
+- Not considering alternatives: AWS Savings Plans, Reserved Instances, or the
+  PPTS may be more appropriate for organisations with unpredictable usage patterns
+  or in early growth stages
+
+**EDP and rate optimisation layering:**
+An EDP is not a substitute for active resource management. It is a foundation that
+works best when stacked with other instruments:
+- Use the EDP as the portfolio-wide base discount
+- Layer Savings Plans and Reserved Instances on top for steady-state compute
+- Use Spot Instances for fault-tolerant workloads
+- Note: as of January 2024, EDP customers are prohibited from selling discounted
+  RIs on the AWS Marketplace, making internal commitment forecasting and liquidity
+  management more critical
 
 ---
 
@@ -921,6 +1021,113 @@ S3 Storage Lens Advanced provides valuable insights into storage usage and trend
 
 ---
 
+### RDS cost management strategy
+<!-- src:optimnow-rds-handbook -->
+
+Amazon RDS is a fully managed database service but its pricing model is complex enough
+to generate unexpected cost surges. RDS instances are a subset of EC2 instance types
+but carry a 40-70% premium over equivalent EC2 instances. Understanding the cost
+structure and applying a structured optimisation approach prevents RDS from becoming
+an outsized line item.
+
+**Why RDS costs surge:**
+- On-Demand instances combined with auto-scaling can rapidly inflate costs when
+  demand spikes are not scaled back down
+- Instance family mismatches mean you pay for resources you do not use
+- Provisioned IOPS (io1/io2) storage is expensive and often deployed when gp3 would
+  suffice
+- Non-production environments (dev, test, QA) inherit production-grade configurations
+  (Multi-AZ, oversized instances) without justification
+
+**RDS optimisation framework (source: OptimNow):**
+
+The optimisation sequence matters. Follow this order:
+
+1. **Visibility first** - tag all RDS instances, databases, snapshots, and parameter
+   groups. Start with engineering tags (service, environment, owner) for immediate
+   waste detection, then add finance tags (cost centre, business unit) for allocation.
+   Set up a Cost and Usage Report filtered for RDS to enable Athena-based analysis
+
+2. **Eliminate waste** - identify and remove idle databases (no connections for 7+
+   days), orphaned snapshots, and stopped instances approaching the 7-day auto-restart
+   limit. Use Trusted Advisor or third-party tools to surface idle resources. Require
+   application owner approval before deletion. Take a final snapshot before deleting
+   any instance
+
+3. **Implement scheduling** - stop non-production RDS instances outside business
+   hours using AWS Instance Scheduler or Systems Manager. This alone can save 60-70%
+   on dev/test database costs. Note: start/stop is only possible for single-AZ
+   configurations without read replicas - which is the standard setup for non-production
+   environments
+
+4. **Right-size instances** - monitor CPUUtilization, FreeableMemory, and ReadIOPS
+   in CloudWatch over a 4-week window. If memory consumption is high but CPU stays
+   below 40%, transition from general-purpose (m-family) to memory-optimised
+   (r-family) instances. Also evaluate Graviton-based instances (e.g. db.r6g, db.r7g)
+   which offer up to 35% better performance and up to 52% better cost-effectiveness
+   for open-source database engines
+
+5. **Right-size storage** - before committing to Provisioned IOPS (io1/io2), test
+   General Purpose gp3. For the majority of workloads, gp3 delivers satisfactory
+   latency and throughput at a significantly lower cost. Only workloads with strict
+   low-latency, high-throughput SLA requirements justify the io1/io2 premium. Review
+   provisioned storage volumes - instances with 2TB provisioned but only 150GB used
+   represent direct waste
+
+6. **Review Multi-AZ deployments** - Multi-AZ doubles the cost of database instances
+   and storage. Challenge the need by asking: what are the actual RTO and RPO
+   requirements? Multi-AZ is essential for production; it is rarely justified for dev,
+   test, or QA environments
+
+7. **Improve database performance** - better performance can reduce the required
+   instance size:
+   - Implement caching with ElastiCache (Redis) to reduce direct database reads
+   - Use read replicas to offload heavy read workloads and reduce primary instance
+     strain
+   - Review indexing and query patterns for I/O efficiency
+   - For Aurora, evaluate Aurora Auto Scaling for read replicas to handle unpredictable
+     workloads
+
+8. **Review backup and snapshot costs** - manual snapshots persist indefinitely and
+   continue incurring charges even after the source database is deleted. Review and
+   remove outdated snapshots periodically. Consider relying more on automated backups,
+   which self-manage retention. Also review backup retention settings - excessive
+   retention on automated backups accumulates cost quickly
+
+9. **Apply Reserved Instances** - commit only after completing steps 1-8 (do not
+   commit to waste). Avoid "RDS Paralysis" - waiting for perfect right-sizing before
+   purchasing RIs. Open-source database engines (MySQL, MariaDB, PostgreSQL) and
+   Aurora support RI size flexibility within an instance family, so the initial RI
+   investment remains valid as you continue right-sizing. Start with current
+   recommendations and expand coverage as right-sizing progresses
+
+**RDS RI payback guidelines (indicative, verify current pricing):**
+- 1-year No Upfront: ~34% discount, no capital outlay
+- 1-year Partial Upfront: ~37% discount, payback ~6.5 months
+- 3-year Partial Upfront: ~57% discount, payback ~10 months
+- For most organisations, 1-year No Upfront is the lowest-risk starting point
+
+**Aurora-specific considerations:**
+- Aurora clusters default to Standard I/O configuration, which charges separately for
+  I/O operations. For read/write-intensive workloads, evaluate Aurora I/O-Optimized
+  which eliminates I/O charges at a higher storage rate
+- Aurora clusters running MySQL 5.7 or PostgreSQL 11 that have not been upgraded
+  will incur Extended Support surcharges automatically
+- Aurora Auto Scaling manages read replica count dynamically - use it to avoid
+  over-provisioning read capacity
+
+**Stakeholder alignment for RDS optimisation:**
+Effective implementation requires collaboration across roles:
+- FinOps practitioners bridge business, IT, and finance; drive evidence-based decisions
+- Engineering executes right-sizing, scheduling, and architecture changes
+- Finance provides budget constraints and forecasting; helps build the cost-per-unit
+  model
+- Product/business teams confirm which databases support which products and approve
+  changes
+- Procurement manages Reserved Instance purchasing strategy
+
+---
+
 ### Databases Optimization Patterns (31)
 
 **Inefficient Use Of On Demand Capacity In Dynamodb**
@@ -1447,6 +1654,71 @@ CloudWatch log groups often persist long after their usefulness has expired. In 
 - Identify log groups with significant stored log volume but no recent ingestion activity
 - Review historical usage to determine if log data is still being used for operational, security, or compliance purposes
 - Evaluate whether the log group is associated with an active application or AWS resource
+
+---
+
+## AWS Multi-Organisation Billing Features
+
+*Added: March 2026. Source: AWS Keys to AWS Optimization podcast, S16E5.*
+
+Two features released at re:Invent 2024 allow FinOps teams to centralise cost visibility and billing operations across multiple AWS organisations. They are related but solve different problems and should not be conflated.
+
+---
+
+### Custom billing views (cross-organisation)
+
+A billing view is an AWS resource that controls which accounts' cost and usage data a given account can access in Cost Explorer, budgets, and dashboards.
+
+**What changed at re:Invent 2024:**
+
+- A payer account can now share a billing view with a payer account in a *different* AWS organisation (previously limited to member accounts within the same org).
+- A recipient account can combine multiple billing views -- including views received from other organisations -- into a single aggregated view, giving a unified Cost Explorer experience across several payer accounts.
+- Budgets can now be scoped to a billing view, including cross-organisation views.
+
+**Key behaviours:**
+
+- The owner of a billing view retains full control and can modify or revoke it at any time. Changes are reflected in the recipient account and in any combined view that uses it as a source.
+- Sharing outside an org requires the `billing-view:full-access` permission level for the recipient to use a view as a source in a combined view.
+- Supported tools: Cost Explorer, dashboards, reports, budgets, and forecasts. Amazon Q integration is not yet supported (as of early 2026).
+- Creating, sharing, and combining billing views is free. Cost Explorer API calls against a multi-organisation billing view are charged at $0.01 per organisation queried per API call (vs. the standard $0.01 per call for a single org).
+
+**Typical use cases:** enterprises managing multiple AWS organisations after M&A; FinOps teams giving an external consultant read access to cost data without console access; business unit owners needing a budget that spans accounts across multiple payers.
+
+---
+
+### Billing transfer
+
+Billing transfer is a delegation mechanism that allows one payer account (the "bill transfer account") to take over payment responsibility for another AWS organisation's charges (the "bill source account").
+
+**What this enables:**
+
+- Decouples billing from governance. The bill source organisation retains full control of its AWS environment, IAM, governance, and security. It simply delegates invoice responsibility to the bill transfer account.
+- The bill transfer account receives the invoice and can view cost and usage data for the bill source organisation centrally, without logging into the source account.
+- Integrates with AWS Billing Conductor so the bill transfer account can control what pricing data the bill source account sees (e.g. to protect negotiated rates or to model a reseller margin).
+
+**Key behaviours:**
+
+- The invite process is unidirectional: only the account *taking over* the bill can initiate the transfer. The bill source cannot push its bill to another account.
+- Savings plans and credits remain bounded at the organisation level. They do not share across the transfer relationship.
+- The bill transfer account sees two distinct views: (1) what it pays AWS for the source org's consumption (net of its own discounts); (2) what the source org sees in its own account -- the "showback view", gross of discounts. These amounts will differ if the bill transfer account has negotiated rates.
+- Tax settings and contractual obligations require careful review before enabling billing transfer.
+- A basic (public pricing) showback plan is free. A customised pricing plan (e.g. to apply a managed service fee) is charged at $50 per bill source organisation per month, effective June 2025.
+
+**Typical use cases:** AWS channel partners managing resale relationships; enterprises consolidating invoicing after acquisitions; large organisations that want subsidiaries to retain governance autonomy while centralising finance operations.
+
+---
+
+### Feature comparison
+
+| | Custom billing views | Billing transfer |
+|---|---|---|
+| What it centralises | Cost visibility / data access | Invoice payment |
+| Changes billing responsibility | No | Yes |
+| Governance boundary | Unchanged | Unchanged |
+| Savings plans shared | No | No |
+| Credits shared | No | No |
+| Supported tools | Cost Explorer, budgets, dashboards, reports | Cost Explorer, budgets, bills page |
+| Pricing | Free (API surcharge for multi-org) | Free (basic) / $50/org/month (custom pricing plan) |
 
 ---
 
