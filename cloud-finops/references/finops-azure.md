@@ -538,6 +538,71 @@ AHB alone saved 675 EUR/month with a single CLI command per VM.
 
 ---
 
+## EA-to-MCA transition - FinOps impact
+
+Microsoft is actively migrating Enterprise Agreement (EA) customers to the Microsoft
+Customer Agreement (MCA). While the transition is primarily a commercial restructuring,
+it has significant FinOps operational consequences that teams must prepare for.
+
+### What changes under MCA
+
+| Dimension | EA | MCA |
+|---|---|---|
+| Billing hierarchy | Single enrollment, departments, accounts | Billing account, billing profiles, invoice sections |
+| Invoice structure | Single consolidated invoice | Multiple invoices (one per billing profile) |
+| Commitment flexibility | Annual upfront or monthly payments | Pay-as-you-go default, optional commitments |
+| Cost Management data | Full historical visibility | Pre-migration data may not carry over |
+| Power BI connector | Legacy EA connector | Deprecated - must use FOCUS exports + ADLS |
+| FinOps Toolkit support | Direct EA integration | Requires migration to storage-based exports or FinOps Hubs |
+
+### FinOps risks during transition
+
+**Historical data visibility loss.** Cost Management may not display pre-migration
+spending after the switch. Export historical data before migration begins. Without
+this, year-over-year comparisons and trend analysis break.
+
+**Power BI reporting disruption.** The legacy EA Power BI connector is deprecated
+under MCA. Teams must migrate to FOCUS-aligned exports to Azure Data Lake Storage
+(ADLS) and rebuild Power BI reports against the new schema. Plan for 2-4 weeks of
+reporting rework.
+
+**Savings plan and reservation visibility gaps.** Commitment discount usage reporting
+changes under MCA billing scopes. Verify that existing reservation and savings plan
+utilisation dashboards still function after migration. Re-scope alerts and reports
+to the new billing profile hierarchy.
+
+**Invoice reconciliation complexity.** Multiple billing profiles generate separate
+invoices. Teams accustomed to a single EA invoice need new reconciliation processes.
+Map cost centres and departments to MCA invoice sections before migration.
+
+### Migration checklist for FinOps teams
+
+- [ ] Export 12-24 months of historical cost data from Cost Management before migration
+- [ ] Document current EA billing hierarchy and map to planned MCA structure
+- [ ] Inventory all Power BI reports using the legacy EA connector
+- [ ] Plan migration to FOCUS exports + ADLS (or FinOps Hubs) for reporting
+- [ ] Verify reservation and savings plan visibility in the new billing scope
+- [ ] Update cost allocation rules and management group assignments
+- [ ] Test showback/chargeback reports against the new invoice structure
+- [ ] Update Azure Policy assignments if scoped to EA enrollment or departments
+
+### FinOps Toolkit migration paths
+
+Microsoft's FinOps Toolkit supports two migration approaches:
+
+1. **Storage-based exports** - configure Cost Management exports to ADLS Gen2 in
+   FOCUS format, then connect Power BI directly. Simpler but requires manual schema
+   management.
+
+2. **FinOps Hubs** - deploy the FinOps Hubs solution for automated ingestion,
+   normalisation, and multi-tenant support. Recommended for organisations with
+   multiple billing profiles or complex allocation requirements.
+
+Both approaches produce FOCUS-compliant data, which is the forward-looking standard
+for Azure cost reporting.
+
+---
+
 ## Key resources
 
 - **Microsoft FinOps Toolkit:** https://github.com/microsoft/finops-toolkit

@@ -81,7 +81,7 @@ philosophy applied to all responses. Then load the domain reference that matches
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | AWS billing, EC2 rightsizing, RIs, Savings Plans, CUR, Cost Explorer | `references/finops-aws.md` |
 | AWS Bedrock billing, provisioned throughput, model unit pricing, batch inference | `references/finops-bedrock.md` |
-| Azure cost management, reservations, Azure Advisor, Cost Management | `references/finops-azure.md` |
+| Azure cost management, reservations, Azure Advisor, Cost Management, EA-to-MCA transition | `references/finops-azure.md` |
 | Azure OpenAI Service, PTU reservations, GPT pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
 | Anthropic billing, Claude API costs, Claude Code costs, pricing, Fast mode, prompt caching, Batch API | `references/finops-anthropic.md` |
 | GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery optimization | `references/finops-gcp.md` |

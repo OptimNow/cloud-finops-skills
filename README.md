@@ -74,7 +74,7 @@ The skill provides accurate, framework-aligned guidance across the following dom
   Savings Plans, Enterprise Discount Program (EDP) negotiation, RDS cost management,
   multi-organisation billing, cost allocation, SCPs, and AWS-native quick wins
 - **Azure FinOps** - Azure Cost Management, Reservations, Azure Policy, FinOps Toolkit,
-  Azure Hybrid Benefit, and Azure-specific optimisation patterns
+  Azure Hybrid Benefit, EA-to-MCA transition impact, and Azure-specific optimisation patterns
 - **GCP FinOps** - Compute Engine, Cloud SQL, GCS, BigQuery, networking optimisation
 - **Tagging governance** - tag taxonomy design, naming conventions, IaC enforcement,
   virtual tagging, MCP-based automation, and compliance monitoring
@@ -192,6 +192,7 @@ provider-specific behaviour.
 - "How do Azure Reservations compare to Azure Savings Plans?"
 - "We need to enforce tagging across 15 subscriptions - what's the right approach?"
 - "How do we use Azure Hybrid Benefit to reduce our VM costs?"
+- "We're migrating from EA to MCA - what FinOps work do we need to do before the switch?"
 
 ### Tagging governance
 

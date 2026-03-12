@@ -31,7 +31,7 @@ domain reference that matches the query.
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | AWS billing, EC2 rightsizing, RIs, Savings Plans, CUR, Cost Explorer, EDP negotiation, RDS cost management | `references/finops-aws.md` |
 | AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference | `references/finops-bedrock.md` |
-| Azure cost management, reservations, Azure Advisor, Cost Management | `references/finops-azure.md` |
+| Azure cost management, reservations, Azure Advisor, Cost Management, EA-to-MCA transition | `references/finops-azure.md` |
 | Azure OpenAI Service, PTU reservations, GPT-4o / GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
 | Anthropic billing, Claude API costs, Claude Code costs, Opus, Sonnet, Haiku pricing, Fast mode, prompt caching, Batch API, long-context pricing | `references/finops-anthropic.md` |
 | GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery optimization | `references/finops-gcp.md` |
@@ -119,7 +119,7 @@ premature - they will commit to waste.
 | `finops-genai-capacity.md` | GenAI capacity models: provisioned vs shared, traffic shape, spillover, waste types, cross-provider comparison | ~220 |
 | `finops-aws.md` | AWS FinOps + 128 optimization patterns: CUR, Cost Explorer, EC2, RIs, Savings Plans, EDP negotiation, RDS strategy, waste detection | ~1730 |
 | `finops-bedrock.md` | AWS Bedrock billing: model pricing, provisioned throughput, batch inference, CloudWatch metrics, cost allocation | ~200 |
-| `finops-azure.md` | Azure FinOps + 48 optimization patterns: reservations, Advisor, AHB, waste detection | ~1000 |
+| `finops-azure.md` | Azure FinOps + 48 optimization patterns: reservations, Advisor, AHB, EA-to-MCA transition, waste detection | ~1070 |
 | `finops-azure-openai.md` | Azure OpenAI Service: PTU reservations, spillover, GPT model pricing, prompt caching, fine-tuning costs | ~260 |
 | `finops-anthropic.md` | Anthropic billing: Claude Opus/Sonnet/Haiku pricing, Fast mode, long-context cliffs, prompt caching, Batch API, governance | ~175 |
 | `finops-gcp.md` | GCP optimization: 26 patterns across Compute Engine, Cloud SQL, GCS, networking | ~260 |
