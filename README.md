@@ -264,14 +264,14 @@ covering Claude Code, Kiro IDE, Claude.ai, and API integration.
 
 ## This skill is actively maintained
 
-This is a living repository. Reference files are updated regularly as cloud providers
-change pricing, introduce new services, and evolve their billing models. AI cost
-management is moving particularly fast - new model releases, capacity options, and
-billing mechanics appear every few weeks.
+This is a living repository. Reference files are updated on the 15th of every month,
+driven by an automated scan of 29 data sources - cloud provider pricing pages, release
+notes, billing changelogs, and FinOps community publications. Changes are reviewed
+before being applied, so the content reflects verified updates rather than raw feed output.
 
-Watch or star this repo to be notified when new content is added. Recent additions
-include AWS EDP negotiation, RDS cost management, context-length pricing anti-patterns,
-SaaS asset management (SAM), GreenOps/cloud carbon, and AI value management.
+AI cost management is moving particularly fast - new model releases, capacity options, and
+billing mechanics appear every few weeks. Watch or star this repo to be notified when
+updates are published.
 
 ---
 
