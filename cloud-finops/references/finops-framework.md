@@ -48,7 +48,7 @@ organization has left "Inform" for another.
 **Goal:** Make cost data accessible, attributed, and actionable.
 
 **Key activities:**
-- Set up data ingestion (AWS CUR / Azure Cost Export / GCP BigQuery billing export)
+- Set up data ingestion (AWS CUR / Azure Cost Export / GCP BigQuery billing export / FOCUS exports)
 - Implement cost allocation - by account, subscription, project, or tag
 - Build executive dashboards showing top cost drivers and trends
 - Configure anomaly alerts (recommended threshold: >20% daily change)
@@ -88,6 +88,42 @@ organization has left "Inform" for another.
 **Walk targets:** Automated alerts, showback reports delivered to teams
 **Run targets:** Chargeback implemented, policies self-enforcing, anomalies auto-investigated
 
+#### Shift Left FinOps Practices
+
+**Goal:** Prevent cost issues during development rather than discovering them in production.
+
+Cost errors typically appear weeks after architectural decisions are deployed, making
+prevention far more valuable than remediation. Shifting FinOps left embeds cost
+considerations into the development lifecycle before expensive architectural changes
+become difficult to reverse.
+
+**Key activities:**
+- **Pre-deployment cost estimation** - require cost projections for new features and
+  architectural changes during design reviews
+- **Cost-aware CI/CD pipelines** - integrate cost validation into build processes,
+  failing deployments that exceed cost thresholds
+- **Development environment cost visibility** - provide real-time cost feedback in IDEs
+  and development dashboards
+- **Architectural cost reviews** - include FinOps practitioners in architecture review
+  boards (ARBs) to assess cost implications before approval
+- **Cost testing in lower environments** - validate cost models in dev/test before
+  production deployment
+- **Infrastructure-as-code cost scanning** - tools like Infracost analyse Terraform
+  and CloudFormation templates for cost impact before deployment
+
+**Implementation approach:**
+1. Start with visibility - developers need to see the cost impact of their code
+2. Add guardrails - implement soft limits that warn before hard limits that block
+3. Provide alternatives - when blocking expensive patterns, suggest cost-effective options
+4. Measure prevention value - track costs avoided through shift-left practices
+
+**Common shift-left patterns:**
+- Requiring cost estimates in pull requests for infrastructure changes
+- Automated cost anomaly detection in staging environments
+- Cost-based approval workflows for resource provisioning
+- Developer cost budgets with real-time tracking
+- Cost optimization suggestions in code reviews
+
 ---
 
 ## The 4 Domains and 22 Capabilities
@@ -96,7 +132,7 @@ organization has left "Inform" for another.
 
 | Capability | Description |
 |---|---|
-| Data Ingestion | Collecting billing data from cloud providers into a central platform |
+| Data Ingestion | Collecting billing data from cloud providers into a central platform. FOCUS specification (v1.2 for AWS and Azure, v1.0-1.2 for other providers) enables normalised data ingestion across multiple clouds. |
 | Allocation | Distributing shared costs to cost centers, teams, or products |
 | Reporting and Analytics | Providing actionable cost and usage reports |
 | Anomaly Management | Detecting and responding to unexpected cost changes |
@@ -130,7 +166,7 @@ organization has left "Inform" for another.
 | FinOps Education and Enablement | Training teams to incorporate FinOps into daily work |
 | Onboarding Workflows | Managing cost implications of cloud migrations |
 | Cloud Policy and Governance | Establishing controls that align cloud use with business objectives |
-| FinOps Tools and Services | Evaluating and integrating tools to support FinOps capabilities |
+| FinOps Tools and Services | Evaluating and integrating tools to support FinOps capabilities. FOCUS-compliant exports now available from AWS, Azure, GCP, Oracle, Tencent, Huawei, OVHCloud, Alibaba, and Nebius. |
 | Invoicing and Chargeback | Reconciling cloud invoices and implementing financial accountability |
 | Cloud Vendor Management | Managing relationships, contracts, and commitments with cloud providers |
 
@@ -184,9 +220,9 @@ for cost management tools.
 
 ## FinOps organisational placement
 
-The State of FinOps 2026 survey (6th edition, 1,192 respondents, published February 2026)
-provides current data on how FinOps practices are structured and positioned within
-organisations.
+The State of FinOps 2026 survey (6th edition, 1,192 respondents representing $83+ billion
+in cloud spend, published February 2026) provides current data on how FinOps practices
+are structured and positioned within organisations.
 
 **Reporting line:** 78% of FinOps practices now report into the CTO/CIO organisation
 (up 18% vs 2023). Teams reporting to the CFO declined to 8%. Practitioners aligned with
@@ -271,8 +307,29 @@ operational process with automated compliance checking.
 A FinOps team that owns all decisions creates a bottleneck and removes team ownership.
 The FinOps function should enable distributed decision-making, not replace it.
 
+**Building practices without community support**
+Developing FinOps practices in isolation without engaging the broader FinOps community
+misses valuable lessons learned. Leverage community resources, attend meetups, and
+participate in forums to avoid reinventing solutions.
+
+**Allowing inaccurate data to erode engineering trust**
+Engineers quickly lose faith in FinOps initiatives when cost data is wrong, incomplete,
+or misattributed. Prioritise data accuracy and validation before pushing adoption -
+one bad report can undermine months of relationship building.
+
+**Managing commitments manually**
+Spreadsheet-based commitment management becomes unmanageable at scale and leads to
+underutilisation or overcommitment. Automate commitment tracking, recommendations,
+and purchasing workflows early.
+
+**Running unproductive cost review meetings**
+Meetings that review costs without clear actions, ownership, or follow-up waste time
+and create FinOps fatigue. Structure meetings with specific agendas, action items,
+and accountability mechanisms.
+
 ---
 
-> Sources: FinOps Foundation (finops.org/framework, 2024 version; State of FinOps 2026).
+> Sources: FinOps Foundation (finops.org/framework, 2024 version; State of FinOps 2026);
+> FinOps Weekly podcast on common implementation mistakes; FinOps Weekly blog on shift-left practices.
 
 > *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

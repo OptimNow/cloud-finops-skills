@@ -2,11 +2,12 @@
 
 > Anthropic-specific guidance covering the billing model changes introduced in February 2026,
 > including Fast mode pricing, long-context cost cliffs, prompt caching multipliers, tool
-> charges, and service tiers. Covers governance controls, workload segmentation, and
-> cost allocation practices for Claude API and Claude Code usage.
+> charges, service tiers, and the new Claude Managed Agents runtime. Covers governance
+> controls, workload segmentation, and cost allocation practices for Claude API, Claude Code,
+> and Managed Agents usage.
 >
 > Distilled from: [Explaining Anthropic billing changes in 2026](https://www.finout.io/blog/anthropic-billing-changes-2026)
-> by Asaf Liveanu (Finout), February 24, 2026.
+> by Asaf Liveanu (Finout), February 24, 2026 and [Anthropic just launched Managed Agents](https://www.finout.io/blog/anthropic-just-launched-managed-agents.-lets-talk-about-how-were-going-to-pay-for-this).
 
 ---
 
@@ -14,41 +15,56 @@
 
 ### From simple token pricing to a multi-variable cost model
 
-As of February 2026, Anthropic's billing is no longer a flat "tokens in, tokens out" model.
+As of April 2026, Anthropic's billing is no longer a flat "tokens in, tokens out" model.
 Total cost is now shaped by a combination of variables that FinOps must track explicitly:
 
 | Variable | What it does |
 |---|---|
 | Model choice | Base token rate anchor (Opus 4.6: $5/$25 per MTok input/output) |
-| Performance tier | Standard vs Fast mode  - 6× price multiplier |
-| Context length | Long-context cliff above 200K input tokens |
+| Performance tier | Standard vs Fast mode - 6× price multiplier |
+| Context length | Flat-rate 1M token context window with no surcharges |
 | Data residency | US-only inference adds a 1.1× multiplier |
 | Prompt caching | Writes are priced (1.25× or 2×), reads are discounted (0.1×) |
 | Tool usage | Web search and code execution have separate meters |
 | Batch processing | 50% discount via Batch API (Fast mode excluded) |
-| Service tier | Standard, Priority, or Batch  - affects capacity and pricing |
+| Service tier | Standard, Priority, or Batch - affects capacity and pricing |
+| Managed Agents | Fully managed runtime with persistent sessions and sandboxed execution |
 
 ---
 
-## Pricing reference: Claude Opus 4.6
+## Pricing reference: Claude models
 
-### Base and Fast mode token pricing
+### Base token pricing (as of April 2026)
 
-| Configuration | Input ($/MTok) | Output ($/MTok) | Notes |
+| Model | Input ($/MTok) | Output ($/MTok) | Notes |
 |---|---|---|---|
-| Standard | $5 | $25 | Base rate |
-| Fast mode (≤200K input tokens) | $30 | $150 | 6× premium |
-| Long context (>200K input tokens) | $10 | $37.50 | Whole request repriced |
-| Fast mode + long context | $60 | $225 | Multipliers stack |
-| Batch API | $2.50 | $12.50 | 50% discount; Fast not available |
+| Claude Opus 4.6 | $5 | $25 | Most capable model |
+| Claude Sonnet 4.6 | $3 | $15 | Balanced performance |
+| Claude Haiku 4.5 | $1 | $5 | Fast and efficient |
+
+### Fast mode pricing
+
+| Model | Input ($/MTok) | Output ($/MTok) | Notes |
+|---|---|---|---|
+| Opus 4.6 Fast | $30 | $150 | 6× premium |
+| Sonnet 4.6 Fast | $18 | $90 | 6× premium |
+| Haiku 4.5 Fast | $6 | $30 | 6× premium |
+
+### Batch API pricing
+
+| Model | Input ($/MTok) | Output ($/MTok) | Notes |
+|---|---|---|---|
+| Opus 4.6 Batch | $2.50 | $12.50 | 50% discount |
+| Sonnet 4.6 Batch | $1.50 | $7.50 | 50% discount |
+| Haiku 4.5 Batch | $0.50 | $2.50 | 50% discount |
 
 ### Modifiers
 
 - **US-only inference** (`inference_geo`): ×1.1 on all token categories
 - **5-minute cache writes**: ×1.25 on base input price
 - **1-hour cache writes**: ×2 on base input price
-- **Cache reads**: ×0.1 on base input price
-- **Modifiers stack**  - Fast mode + long context + US-only inference can compound significantly
+- **Cache reads**: ×0.1 on base input price (90% discount)
+- **Modifiers stack** - Fast mode + US-only inference can compound significantly
 
 ### Tool charges
 
@@ -59,11 +75,42 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 ---
 
+## Claude Managed Agents: new cost dimension
+
+### What Managed Agents are
+
+Claude Managed Agents provide a fully managed runtime for autonomous AI agents with:
+- Sandboxed execution environment
+- Persistent sessions across invocations
+- Managed infrastructure and scaling
+- Built-in security and isolation
+
+### Billing model differences from standard API
+
+Unlike token-based API calls, Managed Agents introduce new cost drivers:
+
+| Cost driver | Description |
+|---|---|
+| Runtime hours | Compute time for agent execution environment |
+| Session persistence | Storage and state management costs |
+| Resource allocation | CPU/memory tiers for agent containers |
+| Invocation frequency | Number of agent activations |
+| Data transfer | Input/output between agent and external systems |
+
+### FinOps implications
+
+- **Different cost unit**: Shifts from per-token to per-runtime-hour pricing
+- **Always-on costs**: Persistent sessions may incur costs even when idle
+- **Resource tiering**: Different agent sizes/capabilities at different price points
+- **Harder attribution**: Agent costs spread across multiple invocations vs discrete API calls
+
+---
+
 ## Fast mode: key FinOps risks
 
 ### What Fast mode is
 
-Fast mode is a high-speed inference configuration for Opus 4.6 (up to 2.5× faster output
+Fast mode is a high-speed inference configuration for Claude models (up to 2.5× faster output
 tokens per second). It is not a different model. It was released in Claude Code v2.1.36
 on February 7, 2026.
 
@@ -79,14 +126,13 @@ on February 7, 2026.
   Amazon Bedrock, Google Vertex AI, and Microsoft Azure Foundry. This fragments spend
   away from consolidated cloud agreements toward direct Anthropic invoices.
 
-### Long-context cliff: the 200K input token threshold
+### Context window pricing: flat-rate 1M tokens
 
-When the 1M context window is enabled, any request that exceeds 200K input tokens
-triggers premium long-context pricing  - for the **entire request**, not just the excess.
-
-- The threshold includes cache reads and writes in the input token count
-- Features that silently inflate context (tool results, retrieval dumps) can push
-  requests over the threshold without developer awareness
+As of April 2026, Anthropic has moved to a flat-rate pricing model for the 1M context window:
+- No surcharges for long contexts
+- The same per-token rate applies regardless of context length
+- This removes the previous 200K input token cost cliff
+- Features that inflate context (tool results, retrieval dumps) no longer trigger premium pricing
 
 ---
 
@@ -107,21 +153,33 @@ triggers premium long-context pricing  - for the **entire request**, not just th
 | Batch jobs or background agents | Not allowed |
 | Production usage | Require approval or alerting |
 
-### Workload segmentation: interactive vs batch
+### Managed Agents governance
+
+| Control | Recommendation |
+|---|---|
+| Agent creation | Require approval for production agents |
+| Resource limits | Set maximum runtime hours per agent |
+| Session timeout | Configure automatic session termination |
+| Cost alerts | Monitor runtime costs separately from API usage |
+
+### Workload segmentation: interactive vs batch vs autonomous
 
 | Workload type | Recommended configuration | Rationale |
 |---|---|---|
 | Interactive / low-latency | Standard mode | Baseline cost |
 | Urgent / developer flow | Fast mode (governed) | Justified premium |
 | Batch, async, non-latency-sensitive | Batch API | 50% token discount |
+| Autonomous agents | Managed Agents | Persistent state, sandboxed execution |
 
 ### Monitoring checklist
 
-- [ ] Alert on input tokens per request approaching the 200K long-context threshold
-- [ ] Track cache reads and writes that contribute to the input token count
+- [ ] Track total token usage across the 1M context window
+- [ ] Monitor cache reads and writes that contribute to the input token count
 - [ ] Monitor Fast mode activation per user or team
 - [ ] Treat web search and code execution as separate cost centres with their own budgets
 - [ ] Detect Fast mode usage in CI/CD or batch jobs (anomaly detection)
+- [ ] Track Managed Agent runtime hours and resource utilisation
+- [ ] Monitor agent session persistence costs
 
 ---
 
@@ -136,9 +194,11 @@ dimensions:
 |---|---|
 | Base token usage (input/output) | Team / project / environment |
 | Fast mode overage | Developer or workflow that enabled it |
-| Long-context usage | Feature or agent generating large contexts |
+| Model tier usage (Opus/Sonnet/Haiku) | Feature or use case requirements |
 | Tool usage (web search, code execution) | Function / use case |
 | Batch API usage | Workload type |
+| Managed Agent runtime | Agent owner / business process |
+| Agent session persistence | Long-running workflow / department |
 
 ### Enterprise billing context
 
@@ -146,6 +206,7 @@ dimensions:
 - Older seat-based enterprise billing models will transition at renewal to a single
   Enterprise seat model with usage-based billing
 - Admin controls, spend caps, and usage analytics are available as part of business plans
+- Managed Agents have separate billing and may require additional enterprise agreements
 
 ---
 
@@ -153,10 +214,11 @@ dimensions:
 
 ### Forecasting
 
-A forecast based solely on "Opus 4.6 at $5/$25 per MTok" is insufficient:
-- Fast mode changes the unit price to $30/$150  - a 6× shift
-- Long-context requests are repriced entirely at the 200K boundary
+A forecast based solely on base token pricing is insufficient:
+- Fast mode changes the unit price by 6×
+- Model choice (Opus vs Sonnet vs Haiku) creates a 5× price range
 - Tool usage adds call-based meters that are independent of token volume
+- Managed Agents add runtime-based costs that scale differently than token usage
 - Behavioural effect: lower latency reduces friction, which increases usage volume
   (more calls, longer sessions, more tool invocations)
 
@@ -165,16 +227,17 @@ A forecast based solely on "Opus 4.6 at $5/$25 per MTok" is insufficient:
 Fast mode's exclusion from Bedrock, Vertex, and Azure Foundry is a deliberate channel
 choice. If your strategy relies on CSP-consolidated billing and commitment vehicles,
 this feature gap introduces spend fragmentation that governance must account for.
+Managed Agents further fragment spend as they represent a distinct service tier.
 
 ### Cross-provider applicability
 
 The same pricing pattern is emerging across providers (OpenAI priority/flex tiers,
-batch discounts). The governance posture built for Anthropic  - tier detection, anomaly
-detection, cost allocation by feature/team/environment, guardrails for premium modes  -
-is reusable across the GenAI vendor landscape.
+batch discounts, managed services). The governance posture built for Anthropic - tier
+detection, anomaly detection, cost allocation by feature/team/environment, guardrails
+for premium modes and managed services - is reusable across the GenAI vendor landscape.
 
 ---
 
 ---
 
-> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

@@ -14,9 +14,10 @@ FinOps manages cloud cost through visibility, allocation, and optimisation. ITAM
 the broader technology estate through governance, compliance, and contractual accountability.
 Neither discipline covers the full picture on its own, and the gap between them is growing.
 
-The State of FinOps 2026 survey shows FinOps-ITAM collaboration up 20% year over year.
-The driver is practical: modern technology estates blend consumption-based cloud, seat-based
-SaaS, perpetual licenses, BYOL deployments, and marketplace purchases. A single vendor
+The State of FinOps 2026 survey shows FinOps-ITAM collaboration as a top priority, with
+68% of organisations reporting active collaboration between the two functions. The driver
+is practical: modern technology estates blend consumption-based cloud, seat-based SaaS,
+perpetual licenses, BYOL deployments, and marketplace purchases. A single vendor
 relationship (Microsoft, Oracle, SAP) can span all of these billing models simultaneously.
 Managing cost without managing entitlements - or managing entitlements without cost
 telemetry - creates blind spots that lead to overspend, audit exposure, and missed
@@ -319,8 +320,4 @@ not with an automated governance platform.
 
 ---
 
-> Sources: FinOps Foundation (FinOps & ITAM: Collaborating to Optimize Cost, Risk, and
-> Value, March 2026; Practical Scenarios: Planning & Procurement, March 2026; Practical
-> Scenarios: Deliver & Govern, March 2026; State of FinOps 2026).
-
-> *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+> Sources

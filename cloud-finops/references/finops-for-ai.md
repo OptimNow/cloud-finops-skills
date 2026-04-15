@@ -8,13 +8,14 @@
 
 ## AI cost management is no longer optional
 
-The State of FinOps 2026 survey (6th edition, 1,192 respondents, published February 2026)
-confirms that AI cost management has shifted from emerging concern to universal priority.
-The trajectory is striking: 31% of respondents managed AI spend in 2024, 63% in 2025,
-and 98% in 2026. AI cost management is now the #1 skillset that FinOps teams need to
-develop, and 81% of respondents are actively exploring how AI can improve FinOps
-efficiency itself. Many organisations report being asked to self-fund AI investments
-through efficiency gains - tying FinOps directly to strategic AI enablement.
+The State of FinOps 2026 survey (6th edition, 1,192 respondents representing $83+ billion
+in cloud spend, published February 2026) confirms that AI cost management has shifted from
+emerging concern to universal priority. The trajectory is striking: 31% of respondents
+managed AI spend in 2024, 63% in 2025, and 98% in 2026. AI cost management is now the #1
+skillset that FinOps teams need to develop, and 81% of respondents are actively exploring
+how AI can improve FinOps efficiency itself. Many organisations report being asked to
+self-fund AI investments through efficiency gains - tying FinOps directly to strategic AI
+enablement.
 
 ---
 
@@ -28,7 +29,7 @@ model, or a poorly bounded loop can change spend materially in seconds, not week
 
 | Dimension | Traditional Cloud | AI Workloads |
 |---|---|---|
-| Cost unit | vCPU-hour, GB-month | Token, inference call, GPU-second |
+| Cost unit | vCPU-hour, GB-month | Token, inference call, GPU-second, agent session |
 | Predictability | High - instance type × hours | Low - depends on user behavior and model design |
 | Billing speed | Hourly/daily accumulation | Per-request, immediate COGS |
 | Attribution unit | Infrastructure tag | Application-layer metadata |
@@ -63,6 +64,7 @@ invocation. Minimum required fields:
 - Model name and version
 - Prompt template version or ID
 - Environment (prod / staging / dev)
+- Service type (inference / managed agent / fine-tuning)
 
 **A proxy or gateway layer** - sits between your application and the AI provider,
 attaches metadata before requests execute. Options by complexity:
@@ -110,6 +112,25 @@ inference cost.
 | Orchestration layer | Lambda/Fargate invocations, Step Functions | Low-Medium | Tags + application logging |
 | Reranking models | Token volume for secondary ranking calls | Medium | Per-request metadata logging |
 | Observability and logging | Log ingestion volume | Medium | Tiered logging strategy |
+| Managed agent runtime | Session hours, compute resources, tool invocations | High - new service category | Provider-specific tagging + session metadata |
+
+**Managed agent services:**
+Anthropic Claude Managed Agents (launched March 2026) introduces a new cost category
+beyond token-based inference. Managed agents run in provider-controlled sandboxed
+environments with persistent sessions and autonomous execution capabilities. Cost drivers
+differ fundamentally from standard API calls:
+
+- **Session-based billing** - charged per active session hour, not per token
+- **Compute resource allocation** - dedicated CPU/memory for agent execution
+- **Tool invocation costs** - each external API call or database query adds cost
+- **State persistence** - storage costs for maintaining agent memory between sessions
+- **Sandbox overhead** - isolation and security features add baseline cost per agent
+
+Attribution approach for managed agents:
+- Tag agent sessions with business metadata at creation time
+- Track tool invocation patterns per agent to identify cost drivers
+- Monitor session duration and implement timeout policies
+- Separate agent runtime costs from underlying model inference costs in reporting
 
 **Vector database marketplace attribution:**
 Managed vector databases (Pinecone, Weaviate, Qdrant) purchased through a cloud
@@ -166,6 +187,7 @@ version); log full request and response content only for sampled traffic or erro
 | Training job attribution | SageMaker tags -> CUR | AzureML resource group + tags -> Cost Management | Vertex AI project labels -> BigQuery |
 | Inference attribution | Tags on provisioned throughput + app instrumentation | Separate AOAI accounts + tags + app instrumentation | Project labels + API call labels + Cloud Monitoring |
 | Token-level unit economics | App instrumentation + CloudWatch | App instrumentation + Azure Monitor | App instrumentation + Cloud Monitoring |
+| Managed agent attribution | Bedrock agent tags + session metadata | Azure AI agents resource tags + session tracking | Vertex AI agent labels + session monitoring |
 
 The common thread: native billing does not provide feature-level or user-level cost
 attribution for inference out of the box. Account and project separation handles
@@ -184,6 +206,7 @@ Once costs are attributed, translate them from infrastructure metrics to busines
 - Task completed
 - Query answered
 - Report generated
+- Agent session completed
 
 **Step 2 - Calculate the three-layer cost per unit:**
 
@@ -192,6 +215,11 @@ Once costs are attributed, translate them from infrastructure metrics to busines
 | Layer 1: Inference | Raw model API cost (tokens × rate) | $0.0003 per conversation |
 | Layer 2: Harness | All surrounding infrastructure (compute, storage, retrieval, egress) | $0.0035 per conversation |
 | Layer 3: Total unit cost | Layer 1 + Layer 2 + amortized fixed costs | $0.004 per conversation |
+
+For managed agent services, adapt the layers:
+- Layer 1: Agent runtime cost (session hours × rate + tool invocations)
+- Layer 2: Supporting infrastructure (state storage, monitoring, orchestration)
+- Layer 3: Total cost including model inference calls made by the agent
 
 **Step 3 - Define value per unit** (pick the most relevant method):
 
@@ -239,6 +267,13 @@ for every feature is the AI equivalent of running all workloads on ml.p4d.24xlar
 Implement tiered routing: classify query complexity first (cheap), then route to the
 appropriate model. Simple queries to small models, complex queries to large models.
 
+**Managed agent optimisation:**
+- Define clear session boundaries - don't let agents run indefinitely
+- Implement tool invocation budgets - limit external API calls per session
+- Use agent orchestration patterns - multiple specialised agents vs. one general agent
+- Monitor state size - prune unnecessary memory to reduce storage costs
+- Consider hybrid architectures - use managed agents for complex workflows, direct API calls for simple tasks
+
 **Prompt engineering as cost control:**
 - System prompts are billed on every request - keep them lean and precise
 - Context windows accumulate cost - manage conversation history length explicitly
@@ -251,6 +286,7 @@ appropriate model. Simple queries to small models, complex queries to large mode
 - Cache embedding results for repeated documents in RAG systems
 - Cache responses for deterministic or near-deterministic queries
 - Cache at the application layer before hitting the model API
+- For managed agents, cache tool responses and intermediate results
 
 **Architecture hygiene:**
 - Not every feature needs AI - use deterministic code or standard APIs when they are
@@ -258,6 +294,7 @@ appropriate model. Simple queries to small models, complex queries to large mode
   "what is the weather today?" is waste.
 - Audit for zombie features: AI systems still running at full cost after usage has dropped
 - Review agentic retry logic - retries multiply token consumption silently
+- For managed agents, implement circuit breakers to prevent runaway sessions
 
 **Model parameters:**
 The following inference parameters directly affect output length and therefore cost:
@@ -271,6 +308,7 @@ The following inference parameters directly affect output length and therefore c
 - Set spending limits at the feature level, not just the account level
 - Anomaly alerts should trigger within minutes, not surface on the monthly bill
 - Define thresholds that require review before spend, not after
+- For managed agents, implement session-level and daily spending caps
 
 **Governance policies to establish:**
 - Require AI cost estimates (COGS modelling) before feature deployment
@@ -278,6 +316,7 @@ The following inference parameters directly affect output length and therefore c
 - Establish a model approval process - preventing shadow AI through procurement
   controls is more effective than prohibition after the fact
 - Define escalation paths when unit economics deteriorate
+- Create specific policies for managed agent deployments (session limits, tool allowlists)
 
 **Shadow AI:**
 Research indicates 90% of employee AI tool usage does not appear in corporate billing
@@ -289,199 +328,4 @@ Detection approach:
 - Audit for marketplace subscriptions (AWS, Azure, GCP) that may not appear in
   centralized cost management tools
 - Review expense reports for recurring SaaS charges from known AI vendors
-- Survey teams on tools in active use before assuming billing systems are complete
-
----
-
-## The six AI cost anti-patterns
-
-These patterns generate significant financial impact within hours, but remain invisible
-to monthly dashboards until the bill arrives.
-
-### 1. Zombie AI features
-A feature loses adoption but continues processing in the background - pre-processing
-documents, indexing content, maintaining persistent connections, or retrying failed calls.
-Cost persists while value delivered collapses.
-
-*Real example:* An AI summarization feature was used heavily at launch, then dropped to
-fewer than 5 active users per day. The feature continued pre-processing every uploaded
-document regardless of whether a summary was requested - 2.8M tokens/month, $1,400.
-Actual value delivered: negligible.
-
-*Detection signal:* Token consumption stable or rising while active user sessions decline.
-
-### 2. Technology churn debt
-Each AI provider or framework migration leaves behind infrastructure that continues
-incurring charges: API keys, Lambda functions, S3 buckets, committed capacity reservations.
-Organizations running 3+ AI providers simultaneously often find 30–40% of AI spend
-supports abandoned experiments rather than production features.
-
-*Detection signal:* Active resources in accounts or regions with no recent deployments;
-committed capacity with low utilization.
-
-### 3. Agentic loops
-AI agents calling other agents create multiplicative cost patterns. Retry logic, recursive
-calls, validation loops, or agents that invoke themselves multiply token consumption by
-5–50× per user request.
-
-*Real example:* A sales intelligence agent validated its own output with a second API
-call. When validation failed, it retried the full sequence. A single user query generated
-47 API calls at $2.30 each. At 12,000 queries/month: $27,600 in unintended cost.
-
-*Detection signal:* Average tokens per request significantly above design estimate; high
-variance in cost per session; cost growing faster than user volume.
-
-### 4. Data egress in AI pipelines
-RAG systems that store data in one region, generate embeddings in another, and run
-inference in a third create multi-directional transfer costs invisible in model-level
-reporting. For high-volume applications, data movement can represent 15–25% of total
-AI costs.
-
-*Detection signal:* S3 or network costs rising in proportion with AI feature usage;
-cross-region data transfer appearing in billing without a clear infrastructure change.
-
-### 5. Negative unit economics at scale
-A feature appears viable at low volume. Each interaction loses money, but losses are
-small and unnoticed. As adoption grows, the scale-up accelerates the loss.
-
-*Real example:* An AI-powered search feature was included in a standard $15/user/month
-subscription. Each user performed 120 searches/month at $0.08 each - $9.60 in AI costs
-per user, against $15 in subscription revenue. Profitable only for users performing fewer
-than 25 searches/month. Feature adoption growth increased losses, not margins.
-
-*Detection signal:* AI costs growing proportionally with user adoption; unit margin
-declining as volume increases.
-
-### 6. Context-length pricing thresholds (the silent multiplier)
-
-All three major LLM API providers now apply tiered pricing based on input token count
-within a single request. Crossing the threshold changes the rate for *all* tokens in
-that request - not just the tokens above the limit. This is not a marginal surcharge;
-it is a step-function cost increase that can double the effective input rate overnight
-without any change in application logic or user behavior.
-
-**Current thresholds (as of March 2026):**
-
-| Provider | Model(s) | Threshold | Standard input rate | Long-context input rate | Output impact |
-|---|---|---|---|---|---|
-| OpenAI | GPT-5.4, GPT-5.4 Pro | 272K input tokens | $2.50/MTok | $5.00/MTok (2×) | 1.5× ($15 → $22.50/MTok) |
-| Anthropic | Claude Opus 4.6, Sonnet 4.6/4.5/4 | 200K input tokens | $3.00/MTok (Sonnet) | $6.00/MTok (2×) | 1.5× ($15 → $22.50/MTok) |
-| Google | Gemini 3.1 Pro, Gemini 3 Pro | 200K input tokens | $2.00/MTok | $4.00/MTok (2×) | $12 → $18/MTok |
-
-**Why this matters for FinOps practitioners:**
-
-**1. The observability gap.** None of the three providers return the applied pricing tier
-in the API response. The response includes token counts but not the effective rate. If
-your instrumentation records tokens consumed without checking whether the input exceeded
-the threshold, your calculated cost will be wrong. You will under-report actual spend by
-up to 2× on affected requests, and you will not be able to reconcile your internal
-tracking against the provider invoice at month-end.
-
-**2. The forecasting trap.** Cost models that assume a flat per-token rate will produce
-inaccurate forecasts for any workload where input size varies. A RAG system that
-occasionally retrieves a large corpus, an agentic workflow with growing conversation
-history, or a code analysis tool processing a full repository can cross the threshold
-unpredictably. The variance between a 195K-token request and a 205K-token request is
-not 5% more tokens - it is 100% more cost per token on input.
-
-**3. The all-tokens-retroactive rule.** The surcharge applies to the entire request, not
-the incremental tokens above the threshold. A request with 201K input tokens is billed
-at the long-context rate for all 201K tokens, not at the standard rate for the first
-200K and the premium rate for the last 1K. This makes the cost function discontinuous.
-
-**Detection and mitigation:**
-
-- **Instrument the threshold check.** In your proxy or gateway layer, log a boolean flag
-  (`long_context: true/false`) on every request based on input token count vs. the
-  provider's threshold. Use this flag to apply the correct rate in your internal cost
-  calculation.
-- **Set alerts at 80% of the threshold.** If average input token counts per request
-  approach 160K (for Anthropic/Google) or 218K (for OpenAI), investigate before the
-  threshold is crossed in production.
-- **Design for threshold avoidance.** Use RAG chunking strategies, conversation history
-  pruning, or sliding-window context management to keep inputs below the threshold where
-  the quality trade-off is acceptable.
-- **Leverage prompt caching.** Cached tokens are significantly cheaper (up to 90% off on
-  Anthropic, 50% on OpenAI). Caching large, stable context prefixes reduces the effective
-  cost even when the request crosses the long-context threshold.
-- **Include threshold impact in COGS models.** Any AI feature that *could* exceed the
-  threshold should model two cost scenarios: standard and long-context. Report the
-  blended rate based on observed distribution of input sizes.
-
-*Detection signal:* Invoice cost per token higher than expected from flat-rate model;
-requests with high token counts showing disproportionate cost contribution; inability
-to reconcile internal cost tracking with provider invoice.
-
----
-
-## AI cost readiness assessment
-
-Use this to diagnose an organization's current state before recommending solutions.
-
-**Visibility (prerequisite - assess first):**
-- [ ] Token counts captured per feature, not just per account or model
-- [ ] Request-level cost attribution with application metadata at invocation time
-- [ ] Cost data available within minutes, not 24–48 hours
-
-**Unit economics:**
-- [ ] Cost per unit defined and tracked (conversation / task / document)
-- [ ] Unit cost trend tracked weekly
-- [ ] Value metric defined and measured alongside cost metric
-
-**Optimization:**
-- [ ] Model selection reviewed per use case (not defaulting to largest model)
-- [ ] Maximum token limits set on all model calls
-- [ ] System prompts and repeated context cached where provider supports it
-
-**Governance:**
-- [ ] AI COGS estimated before feature deployment
-- [ ] Budget alerts configured at feature level
-- [ ] Process exists to detect and decommission zombie features
-- [ ] Shadow AI audit conducted in last 12 months
-
-**Scoring:**
-- 0–4 ✓: Crawl - start with visibility. Nothing else is meaningful without it.
-- 5–8 ✓: Walk - focus on unit economics and model optimization.
-- 9–12 ✓: Run - focus on governance automation and agentic FinOps patterns.
-
----
-
-## Agentic FinOps
-
-Agentic systems introduce cost patterns that require a different governance model. Unlike
-static applications, agents make runtime decisions that directly affect spend - model
-selection, context retention, tool invocation frequency, and retry behavior all create
-variable costs that no static budget can fully anticipate.
-
-**Three architectural pillars for cost-safe agents:**
-
-**1. Data connectivity with cost awareness**
-Agents require access to real-time cost data alongside operational data. An agent that
-can identify a spending anomaly but cannot correlate it to a specific resource, workflow,
-or decision point is only half useful. MCP-based connectivity (e.g., OptimNow's finops-tagging
-MCP server) provides standardized interfaces for cost data, tagging, and governance without
-custom integration code per data source.
-
-**2. Memory with cost controls**
-Stateful agents accumulate context over time - necessary for meaningful investigation but
-expensive if unbounded. Naive implementations store entire conversation histories, creating
-context windows that balloon to hundreds of thousands of tokens. Effective architectures
-use short-term memory for recent exchanges and long-term memory for persistent preferences
-and organizational context, with explicit token budgets for each layer.
-
-**3. Policy-generation over direct mutation**
-The safest agentic architecture for FinOps generates governance policies for human review
-rather than executing infrastructure changes directly. An agent that identifies idle
-resources and drafts a Cloud Custodian policy or OpenOps rule for review is production-safe.
-An agent that stops instances autonomously is not - regardless of how sophisticated its
-reasoning is. Governance, not technology capability, is the real constraint on autonomous
-FinOps agents.
-
-**Key insight:** Agents will be advisory long before they are autonomous. Organizations
-making progress treat agent development as iterative learning, not project delivery.
-
----
-
-> Sources: FinOps Foundation (State of FinOps 2026), OptimNow methodology.
-
-> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+- Survey teams on tools in active use before assuming billing
