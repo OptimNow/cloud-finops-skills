@@ -126,29 +126,65 @@ data with application-level metrics from CloudWatch or your own instrumentation.
 
 ### Tagging strategy for Bedrock
 
-AWS Bedrock supports resource tagging on provisioned throughput resources. On-demand
-API calls are attributed at the account/region level - not at the individual API call
-level. This is the structural constraint that makes account separation the preferred
-allocation boundary for AI workloads.
+AWS Bedrock supports resource tagging on provisioned throughput resources. For on-demand
+API calls, attribution historically required account separation or application-level
+instrumentation. As of 2026, **IAM Principal Cost Allocation** adds a native attribution
+path by recording the caller's IAM principal ARN on every billed line item.
 
 **Recommended allocation approach:**
 
 | Allocation need | Method |
 |---|---|
-| Team / product attribution | Separate AWS accounts per team (preferred) or cost allocation tags |
+| Team / product attribution | Separate AWS accounts per team, or IAM Principal Cost Allocation with team/cost-centre tags on IAM roles |
 | Environment separation | Separate accounts (prod/dev/staging) |
 | Workload-level unit economics | Application-level instrumentation + CloudWatch metrics |
+| Per-user / per-role attribution on shared account | IAM Principal Cost Allocation (see below) |
 | Provisioned capacity attribution | Tags on provisioned throughput resources |
 
-**Key limitation:** on-demand Bedrock API calls cannot be attributed to a specific feature
-or application using tags alone. Cost Explorer shows combined Bedrock spend per account
-and model - it does not distinguish between, for example, a customer-facing chatbot and
-an internal summarisation tool sharing the same account.
+#### IAM Principal Cost Allocation
 
-**Feature-level attribution approach:** use a proxy or SDK wrapper that attaches metadata
-to every API call at invocation time: feature name, user tier, environment, model version,
-and prompt template ID. Combine with CloudWatch metrics (`InputTokenCount`,
-`OutputTokenCount`) to calculate per-feature token volumes and translate them to cost.
+When enabled, AWS records the calling IAM principal ARN for each Bedrock API call and
+propagates tags applied to that principal into the Cost and Usage Report and Cost Explorer.
+
+**How it shows up in CUR 2.0:**
+
+- New column `line_item_iam_principal` containing the ARN of the caller (IAM user, role,
+  or assumed-role session)
+- Tags applied to the IAM principal appear with an `iamPrincipal/` prefix  -
+  e.g. `iamPrincipal/team`, `iamPrincipal/cost-centre`, `iamPrincipal/environment`
+- In Cost Explorer, these tags become available as a grouping and filter dimension
+
+**Activation (three steps, ~48h end-to-end):**
+
+1. Apply tags to IAM users and roles in the IAM console
+2. Activate those tag keys in Billing > Cost Allocation Tags (up to 24h propagation)
+3. Enable "Include caller identity (IAM principal) allocation data" in CUR 2.0 Data Exports
+
+**Structural consequences to plan for:**
+
+- **CUR size grows significantly.** Row count multiplies roughly by the number of distinct
+  calling principals per model per day. Budget for larger S3 storage, longer Athena scans,
+  and potentially higher query cost on CUR
+- Tags only become visible after the principal has made at least one API call  - new roles
+  will not appear in cost allocation UI until used
+- Follow standard tag hygiene: avoid high-cardinality values (session IDs, timestamps,
+  GUIDs) as they inflate CUR without analytical value
+- The feature gives visibility, not chargeback automation  - downstream showback or
+  chargeback still needs to be built on top of the CUR
+
+**When to use it vs. account separation:**
+
+| Scenario | Preferred approach |
+|---|---|
+| Multiple teams share one account and need per-team Bedrock attribution | IAM Principal Cost Allocation |
+| Teams need independent budgets, IAM boundaries, and quota ceilings | Separate accounts |
+| Per-user chargeback inside a team (e.g. internal AI sandbox) | IAM Principal Cost Allocation on user tags |
+| Per-feature attribution inside a single application | Still needs SDK/proxy wrapper  - IAM principal is too coarse |
+
+**Feature-level attribution (still relevant):** IAM principals identify *who* called the
+API, not *which feature*. For per-feature unit economics inside one application, keep
+using an SDK wrapper that attaches feature/tier/model metadata and combines with
+CloudWatch `InputTokenCount` / `OutputTokenCount` metrics.
 
 ### SageMaker training job allocation
 

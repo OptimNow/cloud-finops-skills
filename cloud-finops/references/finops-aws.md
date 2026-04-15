@@ -682,6 +682,11 @@ See `finops-tagging.md` for the full tagging strategy. AWS-specific notes:
 - Some services do not support tagging (AWS Support, Route 53 Hosted Zones, some
   data transfer charges) - use Cost Categories for virtual allocation of untaggable costs
 - Enable "Tag policies" in AWS Organizations to enforce tag key capitalization consistency
+- **IAM Principal Cost Allocation (2026):** tags applied to IAM users and roles can be
+  propagated to CUR 2.0 and Cost Explorer with an `iamPrincipal/` prefix, enabling
+  caller-based attribution when resource-level tags are not sufficient. Primary use case
+  today is Amazon Bedrock  - see `finops-bedrock.md` for setup, CUR size implications,
+  and when to use it vs. account separation
 
 ### Cost Categories
 
@@ -758,6 +763,340 @@ These actions typically deliver savings within 30 days with low risk.
 | Right-size over-provisioned RDS instances | 20–50% RDS cost | Medium (test first) | Medium |
 | Convert gp2 EBS volumes to gp3 | 20% EBS cost (same IOPS baseline) | Low | Low |
 | Review and right-size NAT Gateway usage | Variable | Medium | Medium |
+
+---
+
+## CloudFront flat-rate pricing plans
+
+AWS introduced per-distribution flat-rate plans for CloudFront in late 2025. They
+bundle CDN, WAF, Route 53, CloudWatch Logs ingest, ACM, CloudFront Functions and
+S3 storage credits into a single monthly price, removing the bill variance that
+made CloudFront costs hard to forecast.
+
+### Tier summary
+
+| Plan | Monthly cost | Data transfer out | Requests | S3 credit | WAF rules | Cache behaviours |
+|---|---|---|---|---|---|---|
+| Free | $0 | 100 GB | 1M | 5 GB | 5 | 5 |
+| Pro | $15 | 50 TB | 10M | 50 GB | 25 | 10 |
+| Business | $200 | 50 TB | 125M | 1 TB | 50 | 50 |
+| Premium | $1,000 | 50 TB | 500M | 5 TB | 75 | 100 |
+
+Pay-as-you-go pricing for 50 TB of data transfer out from North America runs
+roughly $4,250 at $0.085/GB. The Pro plan delivers the same 50 TB for $15. For
+bandwidth-heavy workloads the effective discount is at the 99% mark - this is
+not the usual "simplified pricing" code for "we repriced the meter". It is a
+genuine offer aimed at mid-market customers who would otherwise move to
+Cloudflare.
+
+### Request-bound vs bandwidth-bound
+
+The break-even average response size (bandwidth cap / request cap) is the number
+that decides which tier fits:
+
+| Plan | Break-even avg response size |
+|---|---|
+| Free | 100 KB |
+| Pro | 5 MB |
+| Business | 400 KB |
+| Premium | 100 KB |
+
+If your average response is smaller than the break-even, you hit the request
+ceiling first - you are request-bound. Pro is designed for software binaries,
+video chunks, large assets. For API responses or web pages averaging under
+400 KB you will exhaust the 10M request budget long before the 50 TB bandwidth,
+and Business becomes the real entry point.
+
+**Model the p95 month, not the average.** Flat-rate tiers care about worst-case
+volume - a traffic spike during a launch can push you past the cap exactly when
+performance matters.
+
+### What is included
+
+- CloudFront CDN distribution
+- AWS WAF with bot management (**mandatory** - WebACL must be associated, you
+  cannot opt out)
+- DDoS protection (blocked attack traffic does not count against allowances)
+- Route 53 DNS, with caveats (see below)
+- CloudWatch Logs ingestion (storage and queries still billed separately)
+- ACM TLS certificates
+- CloudFront Functions (serverless edge compute)
+- S3 storage credit at the bundled tier
+
+The WAF inclusion is load-bearing for the value math. 25 WAF rules at $1/rule/month
+is $25/month of standalone WAF value, which by itself exceeds the $15 Pro price.
+If you were going to adopt WAF anyway, Pro pays for itself on that line alone.
+
+### Route 53 gotchas
+
+- Hosted zone must live in the same AWS account as the CloudFront distribution.
+  Cross-account Route 53 setups disqualify you from flat-rate entirely.
+- ALIAS records pointing at CloudFront or other supported AWS services do not
+  count against the DNS query allowance. CNAME records do count.
+- If you exceed the DNS query limit AWS may automatically transition the hosted
+  zone back to pay-as-you-go without prompting.
+- DNSSEC KMS charges and health checks are billed separately.
+
+### What is not included (the real filter)
+
+Lambda@Edge is not supported. There is no migration path, no compatibility
+shim, and CloudFront Functions is not a replacement for most Lambda@Edge
+workloads (2 MB memory, 10 KB code, JavaScript only, no network access, no AWS
+SDK). If your architecture relies on Lambda@Edge - even accidentally after
+years of incremental drift - flat-rate is off the table until you can remove or
+replace that dependency.
+
+Other exclusions that will disqualify real distributions:
+
+- Real-time logs (Kinesis streaming), Parquet log format
+- Continuous deployment, staging distributions, multi-tenant distributions
+- Anycast IP list configuration, dedicated IP/SSL, field-level encryption
+- Shield Advanced combined subscriptions, Firewall Manager
+- WAF targeted bots, CAPTCHA (challenge only), Partner Managed Rules, Account
+  Takeover Protection, WAF Rule Groups (must be individual rules)
+- Shared CloudFront Functions or WAF WebACLs across distributions - each plan
+  requires dedicated, non-shared resources
+- Legacy cache settings and origin access identity (OAI) - must migrate to
+  cache policies and origin access control (OAC)
+
+### The tier-locked features that drive up-tier selection
+
+| Feature | Minimum tier |
+|---|---|
+| Geographic restrictions, rate limiting | Free |
+| Common bot detection, Origin Shield, custom response headers, private VPC origins | Business |
+| Automatic origin failover (origin groups) | Premium |
+| Mutual TLS (mTLS) | Premium |
+
+Origin failover is the biggest one. If high availability to multiple origins
+matters to you (the December 2021 us-east-1 event is the usual reference), you
+are looking at Premium at $1,000/month or staying on pay-as-you-go.
+
+### Multi-tenant SaaS constraint
+
+One apex domain per plan. If every customer runs on a subdomain of your platform
+(`customer1.yourplatform.com`) you are fine, all subdomains share the same plan.
+If customers bring their own apex domains (`customer1.com`, `customer2.com`),
+you need one plan per customer, capped at 100 plans per AWS account. For custom-
+domain SaaS at any meaningful scale, flat-rate does not fit - stay on
+pay-as-you-go.
+
+### Overages mean throttling, not a bill
+
+AWS does not charge overage fees. When you exceed allowances they **degrade
+performance** - fewer or more distant edge locations serve your traffic. There
+is no operational signal distinguishing "hit the cap" from "CloudFront is just
+slow". Notifications at 50%, 80% and 100% are explicitly "may be delayed". The
+failure mode is a P1 investigation that ends with "we forgot about a pricing
+tier limit", which is much harder to explain than an invoice.
+
+**Build your own alerting.** CloudWatch metrics for `Requests` and
+`BytesDownloaded` with alarms at 50%, 80% and 90% of the plan limits. Do not
+rely on AWS's email cadence.
+
+### Ecosystem lock-in is part of the price
+
+AWS can offer 50 TB for $15 because origin traffic from S3 or EC2 to CloudFront
+is free. Moving that same workload to Cloudflare triggers standard AWS data
+transfer out charges at roughly $0.09/GB - 50 TB/month becomes $4,500 in egress
+alone, every month. The real price of CloudFront Pro is $15 plus the AWS
+dependency you have already accepted.
+
+For greenfield workloads with no AWS origins, Cloudflare's unlimited-bandwidth
+Pro plan at $25/month is the correct comparison. For existing AWS shops the
+comparison is not close.
+
+### Operational gotchas
+
+- **Historical usage affects eligibility.** AWS checks recent distribution
+  traffic when you subscribe. You cannot subscribe to Pro when your usage
+  clearly puts you in Business territory.
+- **Disabled distributions still incur plan charges.** Disable without
+  cancelling the plan and you keep paying the monthly fee for nothing.
+- **Plans must be cancelled before deletion.** You cannot delete a distribution
+  while a plan is attached.
+- **Upgrades are immediate and prorated. Downgrades take effect next billing
+  cycle.**
+- **You can mix pricing models.** Keep experimental or low-traffic distributions
+  on pay-as-you-go (effectively free at low volume) and move only the
+  high-volume production distributions to flat-rate.
+- **Unsupported features block subscription.** The console refuses to attach a
+  plan while the distribution still has Lambda@Edge, real-time logs or any
+  other unsupported feature active.
+- **Maximum 100 plans per AWS account, 3 Free plans maximum. AWS Free Tier
+  accounts are not eligible.**
+
+### Decision flow
+
+1. Audit existing distributions. Most accounts have zombie distributions -
+   identify which ones actually serve traffic.
+2. Check blockers per distribution: Lambda@Edge, shared Functions or WebACLs,
+   real-time logs, Shield Advanced, cross-account Route 53. Any of these keep
+   you on pay-as-you-go for that distribution.
+3. Calculate average response size. Under 400 KB you are request-bound - Pro
+   will not fit a high-traffic distribution.
+4. Model p95 volume, not average. Pick the tier that fits your worst month.
+5. Count cache behaviours. Over 10 means Pro is off the table regardless.
+6. Build CloudWatch alarms at 50/80/90% of plan limits before subscribing.
+7. Migrate one non-critical distribution first, watch usage counters across a
+   full billing cycle, then expand.
+
+The downside risk is low - no annual commitment, downgrades and cancellations
+are supported. The upside is the first AWS pricing mechanism in years where
+predictability and cost both move in the right direction for mid-market
+workloads.
+
+---
+
+## S3 Files - filesystem access over S3
+
+S3 Files (launched 2026) lets you mount an S3 bucket as an NFS 4.1/4.2
+filesystem on EC2, Lambda, EKS or ECS. The filesystem maintains a view of your
+objects and translates POSIX operations into S3 requests. Writes are synced back
+to the underlying bucket. S3 itself is still not a filesystem - S3 Files is a
+real filesystem layer in front of it, built on EFS infrastructure, with the
+original S3 bucket as durable backing store.
+
+### What it replaces
+
+- FUSE-based workarounds: s3fs-fuse, goofys, Mountpoint for Amazon S3 for
+  workloads that need genuine POSIX semantics
+- Cases where teams ran EFS or FSx purely to give legacy applications something
+  to mount, while the data of record actually lived in S3
+- Ad-hoc proxy layers between S3 and ML training pipelines or agentic workloads
+  that need shared file storage
+
+### Pricing mechanics
+
+Two cost dimensions on top of the underlying S3 bucket:
+
+| Dimension | Rate |
+|---|---|
+| Filesystem storage (hot tier) | $0.30/GB-month |
+| Reads | $0.03/GB |
+| Writes | $0.06/GB |
+
+Rates are identical to EFS Performance-optimised Standard. The underlying
+infrastructure is the same.
+
+**The design that makes it cheap:** you mount a petabyte bucket and pay S3 Files
+rates only on the small slice you actually touch. Everything else stays at
+standard S3 pricing ($0.023/GB-month Standard, or less on Intelligent-Tiering or
+Infrequent Access). The hot tier is an opt-in cache, not a whole-bucket storage
+class.
+
+### The 128 KB threshold
+
+Files below the threshold (default 128 KB, configurable) get pulled into the
+hot tier on first access - small-file latency is where filesystems actually
+beat object stores, so S3 Files caches them.
+
+**Reads of 128 KB or larger stream directly from S3 even when the file is
+already on the hot tier.** No S3 Files access charge. This is the key mechanic
+that makes the economics work for mixed workloads - your Parquet files and
+video chunks go through the free path.
+
+### Metering minimums (the gotcha)
+
+Every data access operation has minimums that round up:
+
+| Operation | Metered as |
+|---|---|
+| Read of any size | 32 KB minimum |
+| Write of any size | 32 KB minimum |
+| Metadata op (list, stat, create, delete) | 4 KB read |
+| Commit (fsync or close-after-write) | 4 KB write |
+| Everything above minimums | Rounds up to next 1 KB |
+
+If your workload is millions of tiny metadata-heavy operations - ML training
+checkpointing and some agentic workflows fit this profile exactly - the
+minimums dominate the bill. `ls` on a directory with 10,000 files is 10,000
+metadata reads at 4 KB each; if that triggers prefetch it is another 10,000
+writes at 32 KB minimum each. Model these patterns before you mount anything
+production.
+
+**First-read cost for small files:** $0.06/GB (the import write), not $0.03/GB.
+The read is included in the import operation. Subsequent reads of the same
+cached file are $0.03/GB. AWS's pricing examples were misleading on this
+initially - cost the workload on your real access patterns.
+
+**Rename cost:** a file rename is an S3 PUT plus a filesystem read (32 KB
+minimum). Renaming a directory meters every object with that prefix - moving
+50,000 files is 50,000 individual metered operations.
+
+### Expiration and eviction
+
+Untouched data on the hot tier is evicted after a configurable window (1 to
+365 days, default 30). This bounds your hot-tier storage cost automatically -
+you are charged for actively-used files, not for every file that has ever been
+touched.
+
+### Base storage tier constraints
+
+S3 Files works with Standard, Intelligent-Tiering and Infrequent Access as the
+underlying bucket tier. It does **not** work with Glacier Flexible Retrieval,
+Glacier Deep Archive or the Intelligent-Tiering archive tiers - those require a
+standard S3 restore first.
+
+This means you can put the authoritative data on Intelligent-Tiering at roughly
+$0.0125/GB-month in the infrequent tier and still mount it as a filesystem,
+paying hot-tier rates only on the active working set. S3 Intelligent-Tiering
+transitions between classes are free, which matters because EFS equivalents
+charge per-GB tiering fees.
+
+### S3 Files vs EFS comparison
+
+For an illustrative 10 TB workload with 90% cold data, 500 GB hot working set,
+500 GB/month reads (90% large files / 10% small files), 100 GB/month writes:
+
+| | EFS Legacy + IA | EFS Performance-optimised + Archive | S3 Intelligent-Tiering + S3 Files |
+|---|---|---|---|
+| Cold storage (9 TB) | ~$225 ($0.025/GB IA) | ~$72 ($0.008/GB Archive) | ~$115 ($0.0125/GB IT infrequent) |
+| Hot working set (500 GB) | $150 ($0.30/GB Std) | $150 ($0.30/GB Std) | $12 (S3 IT) + Files surcharge on sub-128 KB portion only |
+| Read 500 GB large | Included in throughput | ~$15 ($0.03/GB) | $0 (direct from S3) |
+| Read 50 GB small | ~$0.50 IA reads | ~$4 ($0.03 + tier surcharge) | ~$3 ($0.06/GB first read) |
+| Write 100 GB | Included | $6 ($0.06/GB) | $6 ($0.06/GB via Files) |
+| Tiering transitions | $0.01/GB in and out | $0.01-$0.03/GB per transition | Free (S3 IT) |
+
+EFS wins when the workload is metadata-heavy and small-file-dominated (no 32 KB
+minimums on EFS). S3 Files wins on cold storage, large-file reads (free),
+tiering flexibility, and any workload where the authoritative data already
+lives in S3.
+
+### When S3 Files fits
+
+- ML training pipelines that chew through millions of small checkpoint files
+  scattered across S3 - the existing duct-tape of Mountpoint and prayer
+- Agentic AI workloads that need shared storage accessible by a mount command
+  without the team becoming S3 API experts
+- Legacy applications assuming POSIX semantics where the data of record needs
+  to stay in S3 for durability, audit or downstream processing
+- Any case where data gravity sits in S3 but one access path needs filesystem
+  semantics
+
+### When to stay on S3 API or EFS
+
+- Current workloads happy with native S3 APIs - S3 Files does not replace them,
+  it adds an access pattern
+- Metadata-heavy workloads (directory listings, frequent stats, mass renames)
+  where 4 KB per metadata op dominates the bill
+- Ultra-latency-sensitive small-file reads where the $0.06/GB first-read import
+  is a recurring hit
+- Use cases that need filesystem features EFS supports but S3 Files does not
+
+### Decision checklist
+
+- [ ] Is the data already in S3 and does it need to stay there?
+- [ ] What is the read/write mix between files above and below 128 KB?
+- [ ] How metadata-heavy is the workload (listings, stats, renames)?
+- [ ] Can the base tier run on Intelligent-Tiering or IA for the cold bulk?
+- [ ] Are the 32 KB/4 KB minimums going to dominate or not?
+
+The rate card matches EFS Performance-optimised. The savings come from the
+design - free large-file reads straight from S3, pay-only-for-hot-slice
+storage, and free Intelligent-Tiering transitions underneath. For workloads
+with meaningful cold storage and large-file reads, this is a structurally
+cheaper filesystem than EFS.
 
 ## AWS Optimization Patterns
 
