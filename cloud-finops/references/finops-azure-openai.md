@@ -82,16 +82,34 @@ Representative pricing (verify against current Azure pricing documentation):
 | GPT-5 | $1.25/MTok | $0.125/MTok | $10.00/MTok |
 | GPT-4.1 | $2.00/MTok | $0.50/MTok | $8.00/MTok |
 
-### Provisioned (Scale Tier) pricing vs standard
+### Provisioned vs standard pricing - hourly PTU vs reservation-discounted PTU
 
-| Model | Standard input | Provisioned input | Delta at 100% utilization |
-|---|---|---|---|
-| GPT-5 | $1.25/MTok | $2.08/MTok | +67% |
-| GPT-4.1 | $2.00/MTok | $2.55/MTok | +27% |
+The PTU economics are model-specific and have **three distinct price points** to
+keep separate:
 
-**Critical insight:** for GPT-5, provisioned capacity is more expensive per token even
-at 100% utilization. Provisioned capacity on Azure OpenAI is primarily a performance
-and SLA purchase, not a cost-saving mechanism for all models.
+1. **Standard (PAYG)** - per-token rate, no capacity commitment.
+2. **Hourly PTU (no reservation)** - dedicated capacity priced per PTU-hour. This is
+   the price comparison most often quoted; for some models, hourly PTU at 100%
+   utilisation is more expensive than the equivalent PAYG token spend, which is why
+   provisioned capacity at this price point is mainly a performance and SLA purchase.
+3. **PTU + Reservation** - committing to PTU capacity for 1 month, 1 year, or 3 years
+   via an Azure reservation produces meaningful discounts off the hourly PTU rate.
+   Microsoft's current docs frame reservations as "considerable discounts" on
+   provisioned throughput, with many consistent workloads finding reserved PTU a
+   better value than hourly PTU or PAYG.
+
+**Practical implication:** "Is provisioned cheaper?" is the wrong framing. The right
+framing is "Is PTU + reservation, at the customer's actual utilisation curve, cheaper
+than PAYG?" Run the comparison against the reservation-discounted PTU rate, not the
+hourly PTU rate, before concluding provisioned is uneconomic.
+
+**Reservation locality constraint.** PTU reservations are purchased by **deployment
+locality (Global / Data Zone / Regional)** and are **not exchangeable across
+localities**. A Global PTU reservation cannot serve a Data Zone deployment. Before
+purchasing, confirm which locality the deployment will use - the wrong locality
+means the reservation is stranded.
+
+Sources: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/azure-openai, https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/provisioned-throughput-onboarding
 
 ---
 
@@ -99,9 +117,13 @@ and SLA purchase, not a cost-saving mechanism for all models.
 
 ### How the PTU model works
 
-Azure OpenAI Service uses a **pool-based reservation model**. You purchase a block of
-PTUs for a fixed term (monthly or annual). PTUs are generic capacity units  - not tied
-to a specific model at purchase time.
+Azure OpenAI Service - increasingly framed by Microsoft under the **Azure AI Foundry
+/ Microsoft Foundry Models** umbrella - uses a **pool-based capacity model**. You
+purchase a block of PTUs (hourly) or commit via reservation, then deploy models
+against that capacity. PTUs are model-flexible at deploy time within the **same
+locality** (Global / Data Zone / Regional), but **reservations are not exchangeable
+across localities** - a Global PTU reservation cannot serve a Data Zone deployment
+or vice versa. Lock in the locality before purchasing the reservation.
 
 You then **deploy models against that pool**, assigning a number of PTUs to each deployment.
 Different models have different PTU minimums to operate effectively, with larger models
