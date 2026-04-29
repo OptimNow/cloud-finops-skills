@@ -1,8 +1,12 @@
 # FinOps Framework Reference
 
-> Source: FinOps Foundation (finops.org/framework), 2024 version.
-> This file covers the complete FinOps Framework: principles, phases, maturity model,
-> domains, capabilities, and personas.
+> Source: FinOps Foundation (finops.org/framework). The structure documented below is the
+> 2024 framework (4 domains, 22 capabilities). The Foundation published a **2026 framework
+> update** that adds an **Executive Strategy Alignment** dimension and renames several
+> capabilities (notably **Workload Optimization → Usage Optimization**). See "2026 framework
+> update" section below for the changes; verify the authoritative current capability list
+> at https://www.finops.org/insights/2026-finops-framework/ before quoting in customer
+> engagements.
 
 ---
 
@@ -166,9 +170,58 @@ become difficult to reverse.
 | FinOps Education and Enablement | Training teams to incorporate FinOps into daily work |
 | Onboarding Workflows | Managing cost implications of cloud migrations |
 | Cloud Policy and Governance | Establishing controls that align cloud use with business objectives |
-| FinOps Tools and Services | Evaluating and integrating tools to support FinOps capabilities. FOCUS-compliant exports now available from AWS, Azure, GCP, Oracle, Tencent, Huawei, OVHCloud, Alibaba, and Nebius. |
+| FinOps Tools and Services | Evaluating and integrating tools to support FinOps capabilities. FOCUS exports are now offered by most major providers but **conformance levels vary** - AWS Data Exports for FOCUS 1.2 went GA on 19 November 2025; Azure Cost Management offers a FOCUS 1.2 preview with documented conformance gaps; GCP and others publish FOCUS exports at varying levels. Distinguish ratified FOCUS 1.2 conformance from preview / partial-conformance exports when planning multi-cloud normalisation. Source: https://focus.finops.org/focus-specification/ |
 | Invoicing and Chargeback | Reconciling cloud invoices and implementing financial accountability |
 | Cloud Vendor Management | Managing relationships, contracts, and commitments with cloud providers |
+
+---
+
+## 2026 framework update
+
+The FinOps Foundation published a 2026 framework update that builds on the 2024
+structure documented above. Verify exact capability names and the full delta against
+the official page (https://www.finops.org/insights/2026-finops-framework/) before
+quoting in a customer engagement - the Foundation continues to refine the framework
+between major versions.
+
+**Headline changes:**
+
+- **Executive Strategy Alignment** is added as an explicit dimension. The 2024
+  framework treated executive engagement as embedded across "Manage the FinOps
+  Practice"; the 2026 version makes strategic alignment with C-suite priorities a
+  named capability area in its own right. Practical implication: FinOps practitioners
+  reporting to CTO/CIO (78% per State of FinOps 2026) need an explicit cadence for
+  surfacing technology-spend trade-offs at the executive level.
+- **Workload Optimization → Usage Optimization.** The capability previously named
+  Workload Optimization has been renamed to **Usage Optimization**. The semantic
+  shift reframes the work from architectural rewrites of workloads to the broader
+  practice of matching consumption to demand (which includes, but is not limited
+  to, architectural change). Rightsizing, autoscaling, scheduling, and demand
+  shaping all live under Usage Optimization.
+- **Capability list refreshed.** The capability count and grouping have been
+  refined relative to the 2024 "4 domains, 22 capabilities" structure. Treat the
+  numbers in the table above as the 2024 baseline; the authoritative 2026 list is
+  on the Foundation page.
+
+**What did not change:**
+
+- The 6 principles. They remain the canonical statements of FinOps philosophy.
+- The 3 phases (Inform / Optimize / Operate) and the Crawl / Walk / Run maturity
+  model.
+- The persona model and allied-persona framing.
+
+**FinOps engagement implications:**
+
+- When using framework capabilities as the spine of a maturity assessment, use the
+  2026 capability names with customers - the 2024 names are now legacy.
+- "Workload Optimization" still appears in older customer artefacts (procurement
+  decks, vendor proposals, prior assessment reports). Treat it as equivalent to
+  Usage Optimization rather than rewriting historical documents.
+- The Executive Strategy Alignment addition is a useful prompt for engagements
+  that have plateaued at "tactical optimisation" - it reframes the work as
+  strategic, not just operational.
+
+Source: https://www.finops.org/insights/2026-finops-framework/
 
 ---
 
