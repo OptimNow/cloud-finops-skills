@@ -81,8 +81,14 @@ and can switch between models within that publisher's portfolio.
 - **Capacity floor, not ceiling:** you cannot reduce reserved capacity mid-term, even if
   a newer model becomes more efficient. Efficiency gains reduce your effective cost per
   output, but the reservation commitment remains at the original size.
-- **No spillover built in:** overflow traffic returns HTTP 429 unless you build custom
-  failover logic to route excess to on-demand capacity.
+- **Default spillover to pay-as-you-go.** As of current Google docs, supported Gemini
+  Provisioned Throughput overages are billed as pay-as-you-go by default. Request
+  headers control whether traffic is routed to dedicated capacity, shared/on-demand,
+  or rejected. This is a material change vs the older "build your own failover"
+  pattern - capacity planning can size reservations to average load, with overage
+  becoming variable PAYG cost during spikes. Sources:
+  https://cloud.google.com/vertex-ai/generative-ai/docs/provisioned-throughput/use-provisioned-throughput,
+  https://docs.cloud.google.com/vertex-ai/generative-ai/docs/provisioned-throughput/supported-models
 - **Capacity guarantee:** a Vertex AI reservation guarantees capacity availability for
   models within the reserved publisher family.
 
@@ -93,7 +99,7 @@ and can switch between models within that publisher's portfolio.
 | Flexibility | Publisher-scoped | Model-locked | Full PTU pool |
 | Model upgrade within reservation | Yes (same publisher) | No | Yes (any model) |
 | Publisher switch within reservation | No | No | Yes |
-| Spillover | Build yourself | Build yourself | Built-in |
+| Spillover | Default PAYG (header-controlled) | Build yourself | Built-in |
 
 ### When provisioned throughput makes sense on Vertex AI
 
