@@ -1,0 +1,39 @@
+name: Release skill zip
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build zip of cloud-finops skill folder
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          ZIP_NAME="cloud-finops-${VERSION}.zip"
+          cd "${GITHUB_WORKSPACE}"
+          zip -r "${ZIP_NAME}" cloud-finops
+          ls -lh "${ZIP_NAME}"
+          echo "ZIP_NAME=${ZIP_NAME}" >> "$GITHUB_ENV"
+
+      - name: Create GitHub Release with zip attached
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: ${{ env.ZIP_NAME }}
+          generate_release_notes: true
+          body: |
+            ## Cloud FinOps Skill ${{ github.ref_name }}
+
+            The attached `cloud-finops-${{ github.ref_name }}.zip` is the skill bundle for upload into Claude Desktop / claude.ai (Settings → Skills → Upload).
+
+            For Claude Code users, see [INSTALLATION.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/INSTALLATION.md) for the six setup options including the model-agnostic response contract.
