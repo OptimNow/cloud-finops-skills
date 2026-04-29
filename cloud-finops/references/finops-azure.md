@@ -26,15 +26,29 @@ implementations, configure scheduled exports to Azure Storage for downstream pro
   (use for team-level showback and allocation)
 
 **Export setup checklist:**
-- [ ] Configure exports at the appropriate billing scope (Management Group for org-wide view)
+- [ ] Configure FOCUS exports at **Billing Account** or **Billing Profile** scope (Management Group is not supported for FOCUS exports)
+- [ ] For legacy actual/amortized exports, MG scope is supported but with limitations - keep them on subscription or billing-profile scope for cleanest behaviour
 - [ ] Select both actual and amortized cost exports
 - [ ] Set daily granularity
 - [ ] Export to Azure Data Lake Storage Gen2 for Power BI integration
 - [ ] Consider FinOps Hubs (Microsoft FinOps Toolkit) for automated ingestion and normalization
 
-**FOCUS export support:** As of March 2026, Azure supports FOCUS v1.2 exports, providing
-standardised billing data that can be normalised alongside other cloud providers. Configure
-FOCUS exports alongside traditional Cost Management exports for multi-cloud environments.
+Source for scope rules: https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-improved-exports
+
+**FOCUS export support (April 2026):**
+- **Cost Management exports** support a **FOCUS 1.2 preview** dataset, with documented conformance gaps against the published 1.2 spec.
+- **FinOps Toolkit v12 / FinOps Hubs** ingest the preview and provide FOCUS 1.2-aligned analytics on top.
+- FOCUS 1.0 went GA in Cost Management in June 2024 - that remains the historical baseline; FOCUS 1.2 is the current direction. Configure for multi-cloud normalisation alongside traditional actual/amortized exports.
+
+Sources: https://learn.microsoft.com/en-us/cloud-computing/finops/focus/conformance-summary, https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/changelog
+
+**Five first-class export feeds (FinOps Hubs model):** beyond actual/amortized and FOCUS, Cost Management produces three more feeds the FinOps Hubs model treats as first-class:
+- **Price sheet** - negotiated price per meter, per Billing Profile
+- **Reservation details** - purchases, terms, scope, utilisation
+- **Reservation recommendations** - Microsoft's purchase suggestions
+- **Reservation transactions** - purchase, exchange, refund history
+
+All five feed the same Hub for unified reservation portfolio analytics. Source: https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/finops-hubs-overview
 
 ### Retail Prices API for validation
 
@@ -51,8 +65,9 @@ report templates, Azure Workbooks, and FinOps Hubs for automated cost data inges
 
 **FinOps Hubs** normalize cost exports into a consistent schema and feed Power BI reports.
 Recommended for organizations that want production-grade reporting without building custom
-data pipelines. FinOps Hubs support FOCUS v1.2 format as of March 2026, enabling
-standardised multi-cloud cost reporting.
+data pipelines. FinOps Hubs (Toolkit v12) ingest the **FOCUS 1.2 preview** from Cost
+Management and provide 1.2-aligned analytics on top, enabling standardised multi-cloud
+cost reporting (see "FOCUS export support" above for the layered preview vs GA picture).
 
 Repository: https://github.com/microsoft/finops-toolkit
 
@@ -104,12 +119,10 @@ to be layered, not chosen in isolation.
    Reservation does not follow. A Savings Plan is spend-based and applies wherever it
    finds eligible usage - but the discount is ~7% shallower than a Reservation.
 
-4. **Azure allows Reservation exchanges and refunds - but with limits.** You can exchange
-   a Reservation for a different SKU (same or higher value) or request a pro-rated refund
-   up to $50,000 per rolling 12 months. This is significantly more liquidity than AWS
-   offers (where Savings Plans cannot be modified and Standard RIs can only be sold on
-   the marketplace). However, Microsoft has been tightening these policies - verify
-   current exchange and refund terms before relying on them for liquidity.
+4. **Reservations have meaningful liquidity; Savings Plans have none.** See the liquidity
+   mechanics table below for fees, caps, and operational rules. The takeaway: Microsoft's
+   current reservation-liquidity terms are significantly more generous than AWS Standard
+   RI marketplace selling, but read the fine print on the future 12% fee clause.
 
 5. **Savings Plans cannot be exchanged, cancelled, or refunded** once purchased. The
    commitment runs for the full term. This makes phased purchasing and portfolio
@@ -118,6 +131,17 @@ to be layered, not chosen in isolation.
 6. **Spot is not a commitment** - it is a market mechanism with a 30-second eviction
    notice and no SLA. It belongs in the compute cost strategy but should not be compared
    directly against commitment instruments.
+
+**Reservation and Savings Plan liquidity mechanics (current as of April 2026):**
+
+| Mechanic | Fee | Annual cap | Notes |
+|---|---|---|---|
+| **Reservation exchange** | None | None | Same product family only. Does not count against the refund cap. |
+| **Reservation refund (cancellation)** | None today | $50,000 per 12-month rolling window per Billing Profile (MCA) or enrollment (EA) | "Refund" and "cancellation" are the same operation in current docs. Microsoft reserves the right to introduce a 12% early-termination fee in future - verify before relying on liquidity. |
+| **Reservation trade-in to Savings Plan** | None | None | Convert RI to Savings Plan credit. No time limit. |
+| **Savings Plan cancel / exchange / refund** | N/A | N/A | Not allowed. SPs are non-refundable, non-exchangeable, non-cancellable. |
+
+Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations
 
 ### Compute commitment decision tree
 
@@ -228,11 +252,11 @@ START: What Azure compute service runs the workload?
 | VM family | Locked to one family | Any family |
 | Region | Locked to one region | Any region |
 | Size | Flexible within family (instance size flexibility) | Any size |
-| Covers App Service | Isolated tier only | Premium v3 + Isolated v2 |
+| Covers App Service | Premium v3 + Isolated v2 | App Service & Functions Premium plans (broader SKU set) |
 | Covers Container Instances | No | Yes |
-| Exchangeable | Yes (for equal or greater value, $50K/12mo refund cap) | No |
-| Refundable | Pro-rated, up to $50K per 12 months | No |
-| Cancellable | Yes (with early termination fee) | No |
+| Exchangeable | Yes - same product family, no fee, no cap (does not count against the refund cap) | No |
+| Refundable | Pro-rated, up to $50K per 12 months - no fee today; Microsoft reserves right to add 12% future fee | No |
+| Cancellable | Yes - refund and cancellation are the same operation today, no fee currently charged | No |
 | Payment options | Monthly or Upfront | Monthly or Upfront |
 | Scoping | Subscription, resource group, management group, shared | Subscription, resource group, management group, shared |
 
@@ -284,7 +308,10 @@ Azure applies discounts in a specific order. The layering sequence matters.
 2. Spot pricing (market rate, for Spot-eligible workloads)
 3. Reservations (capacity-based, applied to matching PAYG usage)
 4. Savings Plans (spend-based, applied to remaining eligible PAYG usage)
-5. MACC discount (portfolio-wide, applied last to remaining spend)
+
+Note: MACC is **not** in this list. It is a commercial commitment / burn-down construct,
+not a metered discount applied per usage record. See "MACC - commercial commitment
+alignment" below.
 
 **Recommended layering approach:**
 
@@ -298,10 +325,26 @@ Layer 2: Savings Plans for Compute (broad baseline)
 Layer 3: Reservations (high-stability VM workloads)
   ↓ captures the extra ~7% discount for workloads locked to a family+region
   ↓ retains exchange/refund liquidity if workload changes
-Layer 4: MACC (portfolio-wide, if applicable)
-  ↓ applies on top of everything above for remaining PAYG spend
-Layer 5: PAYG (variable / new workloads)
+Layer 4: PAYG (variable / new workloads)
 ```
+
+### MACC - commercial commitment alignment
+
+MACC (Microsoft Azure Consumption Commitment) is **not a metered discount** - it is a
+negotiated multi-year spend commitment that runs orthogonally to Reservations and
+Savings Plans:
+
+- Eligible Azure consumption (most services) **burns down** the commitment.
+- The commercial discount on a MACC, if any, is negotiated up front - it is not applied
+  per meter at billing time.
+- The FinOps responsibility under MACC is **commitment alignment** - making sure Azure
+  spend on the right Billing Profile burns down the right MACC, neither under-utilising
+  the commitment (forfeit risk) nor over-utilising it (no further benefit beyond the
+  commitment value).
+- Reservation and Savings Plan purchases **count toward** MACC burndown - purchasing
+  them does not "double-discount" but does pull commitment forward.
+
+Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/track-consumption-commitment
 
 ---
 
@@ -314,52 +357,56 @@ surface.
 
 ### The Advisor threshold trap
 
-Azure Advisor's "Right-size or shut down underutilized virtual machines" recommendation
-has factory defaults that hide most of the actual rightsizing opportunity:
+Azure Advisor evaluates VMs through two distinct paths with different threshold logic.
+Both paths are conservative by design - the result is that Advisor surfaces a thin slice
+of the actual rightsizing opportunity, and customers who stop at the Advisor list miss
+the bulk of it.
 
-- **P95 CPU < 5%** AND
-- **P95 network < 2%** AND
-- **7-day lookback**
+**Shutdown recommendation logic:**
+- **P95 CPU < 3%** AND
+- **P100 average CPU over the last 3 days <= 2%** AND
+- **Outbound network < 2%**
 
-A VM running steady at 12% CPU - grossly oversized for the workload - never appears.
-Anything noisier than the 5%/2% band gets filtered out by the conservative threshold.
-Customers see "Advisor says we have nothing to rightsize" and stop looking. That is
-the trap.
+**Resize recommendation logic:** uses CPU, **memory**, and outbound network - with
+**different thresholds for user-facing vs non-user-facing workloads** (Microsoft's
+internal classification). Memory is part of the resize evaluation, not just CPU.
 
-**Common trap:** A new Azure customer following Advisor at default settings will
-typically see only 5-15% of their actual rightsizing surface. The remainder is hidden
-by the threshold.
+Source: https://learn.microsoft.com/en-us/azure/advisor/advisor-cost-recommendations
 
-### Tuning Advisor right-sizing rules (the buried setting)
+**Common trap:** Advisor's logic is conservative on shutdown and skips many moderate-
+rightsizing opportunities. A new Azure customer following Advisor at default settings
+will typically see only 5-15% of their actual rightsizing surface; the remainder needs
+custom queries (see KQL pattern below) to surface.
 
-Microsoft introduced configurable thresholds in late 2023. The path is buried:
+### The configurable rule is a display filter, not a tuning knob
+
+Microsoft introduced configurable rules in late 2023 at:
 
 ```
 Azure portal → Advisor → Configuration → Rules → Right-sizing rules
 ```
 
-Scope the rule at **subscription**, **resource group**, or **management group** (set
-at MG for org-wide consistency). Tunable parameters:
+**Important framing:** this rule **filters which existing recommendations get displayed**.
+It does not retune the underlying CPU / memory / network logic Advisor uses to generate
+those recommendations. If Advisor's evaluation never produced a recommendation for a
+given VM (e.g. a 12% steady-state CPU VM that Advisor's logic skipped), no rule change
+makes it appear.
 
-- **CPU threshold** - 5%, 10%, 15%, or 20%
-- **Network threshold** - configurable
-- **Lookback period** - 7 to 90 days
+**The right pattern to extend coverage** is a custom Azure Monitor or Resource Graph
+query that surfaces the band Advisor's logic skips. The KQL example below complements
+Advisor - it does not replace or "tune" it.
 
-**Recommended production setting:** 15-20% CPU threshold with a 30-day lookback. This
-catches the long tail of moderately oversized VMs while filtering out genuine spike
-workloads. For non-production, 20% / 30-day is more aggressive and still defensible.
+Scope the display filter rule at **subscription**, **resource group**, or **management
+group** as appropriate. Document the scope in the FinOps runbook so the next engineer
+understands what is being filtered out of the visible Advisor list.
 
-Document the rule scope and threshold in the FinOps runbook - if the next FinOps
-engineer rotates in and finds default thresholds re-applied, the recommendation list
-collapses overnight.
-
-**Source:** https://learn.microsoft.com/en-us/azure/advisor/advisor-cost-recommendations
+Source: https://learn.microsoft.com/en-us/azure/advisor/advisor-cost-recommendations
 
 ### KQL: catch the band Advisor misses
 
-Even with tuned Advisor rules, the band between 5% and 15% steady-state CPU is where
-most of the structural over-provisioning sits. This Azure Monitor query against VM
-guest metrics surfaces it:
+The band between 5% and 15% steady-state CPU is where most of the structural over-
+provisioning sits, and Advisor's shutdown logic (P95 CPU < 3%) does not surface it.
+This Azure Monitor query against VM guest metrics fills the gap:
 
 ```kql
 // VMs with steady-state CPU between 5% and 15% over 30 days
@@ -460,23 +507,29 @@ means paying PAYG rates above the commitment.
 Each table in a workspace can be set to one of three plans, with order-of-magnitude
 cost differences:
 
-| Plan | Query capability | Default retention | Cost vs Analytics |
+| Plan | Query capability | Retention | Cost vs Analytics |
 |---|---|---|---|
-| **Analytics** | Full KQL, alerts, dashboards | 30 days | Baseline (highest) |
-| **Basic** | Limited KQL (no joins, no aggregations across tables) | 8 days, extendable to 30 | ~80% cheaper |
-| **Auxiliary** | Search jobs only (no interactive queries) | Up to 12 years | ~95% cheaper |
+| **Analytics** | Full KQL, alerts, dashboards | 30 days default; extendable to 2 years interactive (12 years with archive) | Baseline (highest) |
+| **Basic** | Limited KQL (no joins, no aggregations across tables) | **30-day query period** (data accessible by KQL for 30 days); total retention up to 12 years | Cheaper ingestion than Analytics |
+| **Auxiliary** | KQL with reduced features | **Query for the full retention period** (not search-job only) | Lowest per-GB cost; search and query costs differ by plan |
 
-**Common candidates for Basic or Auxiliary:**
+**Important:** built-in Azure tables (`AzureDiagnostics`, `Heartbeat`, AKS container
+logs, `AppTraces`, `W3CIISLog`, etc.) **do not currently support the Auxiliary plan**.
+Auxiliary is restricted to specific custom tables on a documented allow-list. Verify
+per-table eligibility before assuming Auxiliary is available.
+
+**Realistic candidates for Basic** (where Auxiliary is not yet available for built-in
+tables):
 - `AzureDiagnostics` (high volume, rarely queried interactively)
-- `ContainerLogStdout` / `ContainerLogV2` (high volume on AKS clusters)
-- `Heartbeat` (every-minute pings, used for availability not investigation)
+- `ContainerLogV2` on AKS (high volume)
+- `Heartbeat` (every-minute pings; availability not investigation)
 - `AppTraces` at debug level
 - `W3CIISLog` for high-traffic web tiers
 
-Move these to Basic where you keep them for short-window troubleshooting, or
-Auxiliary where compliance retention is the only reason for keeping them.
+Move these to Basic where you keep them for short-window troubleshooting. Use
+Auxiliary for compliance retention only on tables that explicitly support it.
 
-**Source:** https://learn.microsoft.com/en-us/azure/azure-monitor/logs/basic-logs-configure
+Sources: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/logs-table-plans, https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs
 
 ### Lever 3: Data Collection Rules (DCR) - filter at source
 
@@ -813,20 +866,44 @@ and Microsoft-supported lifecycle. Ubuntu has a broader ecosystem and tooling.
 **Cost difference is negligible** - choose for operational reasons (security
 hardening, supportability, debug familiarity), not cost.
 
-### Karpenter on AKS
+### Current platform risk: Azure Linux 2 retirement
 
-Karpenter (originating in EKS, now in preview/GA on AKS depending on region) is a
-node provisioning engine that consolidates workloads more aggressively than the
-Cluster Autoscaler:
+**Action item for any AKS-heavy engagement.** Azure Linux 2 reached end of support on
+**30 November 2025**, and node images were removed on **31 March 2026**. As of
+April 2026, customers still on Azure Linux 2:
+
+- Cannot scale node pools (no new images available)
+- Face emergency migration cost if a node fails or a scale-out is needed
+- Are running unsupported infrastructure with no security patching
+
+**Day 1 audit:** list AKS node pools by OS image (Resource Graph or
+`az aks nodepool list`) and flag Azure Linux 2 pools immediately. Migration target is
+Azure Linux 3 or Ubuntu 22.04+.
+
+Source: https://learn.microsoft.com/en-us/azure/aks/use-azure-linux
+
+### AKS Node Auto Provisioning (NAP)
+
+Node Auto Provisioning (NAP) is Microsoft's branded, Karpenter-based node provisioning
+engine for AKS. It consolidates workloads more aggressively than the Cluster Autoscaler:
 
 - Right-sizes node SKU at runtime based on pending pod requirements (rather than
   scaling a fixed SKU pool)
 - Consolidates underutilised nodes by re-scheduling pods onto fewer larger nodes
 - Faster bin-packing convergence on heterogeneous workloads
 
-For AKS-heavy customers - especially those with diverse pod sizes - Karpenter
-typically delivers an additional 10-20% on top of a tuned Cluster Autoscaler.
-Monitor preview status for the customer's region before recommending.
+**Limitations to flag before recommending:**
+- **Incompatible with Cluster Autoscaler on the same cluster** - choose one or the
+  other.
+- **No Windows node pool support.**
+- Documented egress and networking constraints - verify against the current
+  limitations list before adoption.
+
+For AKS-heavy customers with diverse pod sizes, NAP typically delivers an additional
+10-20% on top of a tuned Cluster Autoscaler - but only on Linux clusters that can
+accept the autoscaler trade-off.
+
+Source: https://learn.microsoft.com/en-us/azure/aks/node-autoprovision
 
 ### AKS-specific commitment applicability
 
@@ -1433,10 +1510,14 @@ The Cost Management foundation section covers FOCUS exports as a setup step. Thi
 section covers the practical patterns and known limitations when building custom
 cost analytics on top.
 
-### FOCUS 1.0 export practical patterns
+### FOCUS export practical patterns (1.0 GA, 1.2 preview)
 
-FOCUS exports went GA in Azure Cost Management in June 2024. The schema fields
-most useful for FinOps work:
+FOCUS 1.0 went GA in Azure Cost Management in June 2024. As of April 2026, Cost
+Management additionally supports a **FOCUS 1.2 preview** export with documented
+conformance gaps (see Cost Management foundation section above). FinOps Hubs /
+Toolkit v12 ingest the 1.2 preview into 1.2-aligned analytics. The schema fields
+below cover the 1.0 GA columns most useful for FinOps work - additional 1.2 columns
+become available once the preview export is enabled.
 
 | Field | Use |
 |---|---|
