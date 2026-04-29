@@ -337,9 +337,13 @@ generation, or codebase analysis tasks.
 **LiteLLM budget caps** - set hard or soft budget limits per team or project at the proxy
 level. Prevents runaway spend from a single developer or workflow.
 
-**Context window management** - for Anthropic specifically, crossing the 200K input token
-threshold reprices the entire request at premium rates. Monitor input token counts and
-configure alerts before the cliff.
+**Context window management** - for Anthropic specifically, the 200K input-token
+threshold reprices the request at premium rates **for selected models running with
+the 1M context beta header** (notably Claude Sonnet 4). The newer 4.6 generation in
+its default 200K window has flat-rate pricing - no cliff to monitor. Confirm which
+models and headers your tooling actually uses before assuming either profile applies;
+see `finops-anthropic.md` for the per-model picture and Anthropic's primary pricing
+docs.
 
 ---
 
