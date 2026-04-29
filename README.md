@@ -32,7 +32,7 @@ model's knowledge beyond its training data. Unlike RAG, it requires no vector da
 no embedding pipeline, and no retrieval infrastructure. You copy a folder into your agent
 setup and the model gains structured expertise on cloud financial management.
 
-This makes it portable: the same skill works with Claude, GPT-4, Gemini, or any
+This makes it portable: the same skill works with Claude, GPT, Gemini, or any
 MCP-compatible agent - with no changes to the files.
 
 To keep responses consistent across models, add a **response contract** to your
