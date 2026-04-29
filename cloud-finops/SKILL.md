@@ -32,7 +32,7 @@ philosophy applied to all responses. Then load the domain reference that matches
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | AWS billing, EC2 rightsizing, RIs, Savings Plans, commitment strategy, portfolio liquidity, phased purchasing, CUR, Cost Explorer, EDP negotiation, RDS cost management, database commitments | `references/finops-aws.md` |
 | AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference | `references/finops-bedrock.md` |
-| Azure cost management, reservations, Savings Plans, AHB, commitment strategy, portfolio liquidity, phased purchasing, Azure Advisor, MACC, EA-to-MCA transition, database commitments | `references/finops-azure.md` |
+| Azure cost management, reservations, Savings Plans, AHB, commitment strategy, portfolio liquidity, phased purchasing, Azure Advisor, compute rightsizing, AKS optimisation, database optimisation (Azure SQL, Postgres/MySQL, Cosmos), Log Analytics cost control, backup and snapshot management, storage tiering and lifecycle, networking cost, tagging and Azure Policy governance, FOCUS exports, MACC, EA-to-MCA transition | `references/finops-azure.md` |
 | Azure OpenAI Service, PTU reservations, GPT-4o / GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
 | Anthropic billing, Claude API costs, Claude Code costs, Opus, Sonnet, Haiku pricing, Fast mode, prompt caching, Batch API, long-context pricing | `references/finops-anthropic.md` |
 | GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery optimisation | `references/finops-gcp.md` |
@@ -122,7 +122,7 @@ premature - they risk committing to waste.
 | `finops-genai-capacity.md` | GenAI capacity models: provisioned vs shared, traffic shape, spillover, waste types, cross-provider comparison | ~225 |
 | `finops-aws.md` | AWS FinOps: CUR, Cost Explorer, EC2, compute/database commitment decision trees, portfolio liquidity, phased purchasing, EDP negotiation, RDS strategy, 128 optimisation patterns | ~2240 |
 | `finops-bedrock.md` | AWS Bedrock billing: model pricing, provisioned throughput, batch inference, CloudWatch metrics, cost allocation | ~225 |
-| `finops-azure.md` | Azure FinOps: reservations, Savings Plans, AHB, compute/database commitment decision trees, portfolio liquidity, phased purchasing, MACC, EA-to-MCA transition, 48 optimisation patterns | ~1560 |
+| `finops-azure.md` | Azure FinOps: reservations, Savings Plans, AHB, compute/database commitment decision trees, portfolio liquidity, MACC, EA-to-MCA transition, Advisor rightsizing, AKS optimisation, database patterns, Log Analytics cost control, backup/snapshot management, storage tiering, networking cost, tagging and Azure Policy governance, FOCUS exports | ~1500 |
 | `finops-azure-openai.md` | Azure OpenAI Service: PTU reservations, spillover, GPT model pricing, prompt caching, fine-tuning costs | ~390 |
 | `finops-anthropic.md` | Anthropic billing: Claude Opus/Sonnet/Haiku pricing, Fast mode, long-context cliffs, prompt caching, Batch API, governance | ~180 |
 | `finops-gcp.md` | GCP optimisation: 26 patterns across Compute Engine, Cloud SQL, GCS, networking | ~265 |
