@@ -19,15 +19,31 @@ for any serious FinOps implementation on AWS.
 - Line-item granularity - every resource charge, every hour
 - Includes resource tags, usage types, and pricing details not available in Cost Explorer
 - Exportable to S3 for integration with third-party tools, Athena, or Redshift
-- Supports FOCUS (FinOps Open Cost and Usage Specification) format export
 
 **CUR setup checklist:**
-- [ ] Enable CUR in the management (payer) account
+- [ ] Enable CUR (or CUR 2.0 via AWS Data Exports - see below) in the management (payer) account
 - [ ] Configure S3 bucket with appropriate retention and access policies
 - [ ] Enable resource IDs (required for tag-level allocation)
 - [ ] Select hourly granularity (daily is insufficient for anomaly detection)
 - [ ] Enable Athena integration for SQL-based analysis
-- [ ] Consider enabling FOCUS format for tool-agnostic downstream use
+
+### AWS Data Exports for FOCUS 1.2
+
+AWS Data Exports is the modern delivery mechanism for billing data, replacing the legacy
+CUR for new deployments. As of **19 November 2025**, AWS Data Exports for FOCUS 1.2 is
+generally available - the canonical path for FOCUS-conformant cost data on AWS.
+
+**What this means in practice:**
+- New customers should set up Data Exports for FOCUS 1.2 directly, not legacy CUR + FOCUS
+  format flag.
+- Existing CUR consumers can run CUR and Data Exports in parallel during transition.
+- FOCUS 1.2 data flows into the same S3-backed pattern: configure once, query via Athena
+  or any FOCUS-aware tool.
+- For multi-cloud customers, the FOCUS 1.2 schema aligns with Azure Cost Management's
+  FOCUS 1.2 preview export and GCP's FOCUS export, enabling true cross-cloud
+  normalisation in a single warehouse.
+
+Source: https://aws.amazon.com/about-aws/whats-new/2025/11/aws-data-exports-focus-1-2-available/
 
 **Common CUR analysis queries (Athena):**
 ```sql
@@ -57,11 +73,18 @@ Cost Explorer provides pre-built visualizations and the Cost Explorer API for
 programmatic access. It is the right tool for quick analysis and reporting; CUR is the
 right tool for detailed attribution and custom tooling.
 
-**Cost Explorer limitations to know:**
-- 24–48 hour data lag (unacceptable for real-time AI cost management)
-- Cannot filter by resource-level tags without enabling resource-level data (additional cost)
+**Cost Explorer capabilities and limitations (as of April 2026):**
+- 24-48 hour data lag (unacceptable for real-time AI cost management)
+- **Hourly granularity** is now an opt-in feature in Cost Explorer (no longer API-only).
+  Enable per management account; data retained 14 days. Source:
+  https://docs.aws.amazon.com/cost-management/latest/userguide/ce-services-hourly.html
+- **Resource-level daily granularity** is also an opt-in feature - exposes per-resource
+  daily cost without requiring the legacy "resource-level data" paid tier. Retention
+  and limits documented per service. Source:
+  https://docs.aws.amazon.com/cost-management/latest/userguide/ce-resource-daily.html
 - API queries are charged ($0.01 per request)
-- Granularity limited to daily in the UI (hourly requires API)
+- For programmatic deep analysis, CUR / Data Exports remain the right tool - Cost
+  Explorer is for visualisation and pre-built recommendations
 
 **Useful Cost Explorer features:**
 - **Rightsizing recommendations** - EC2 rightsizing based on CloudWatch utilization
@@ -87,9 +110,15 @@ unexpected spending increases and sends alerts via SNS or email.
 
 ### Compute commitment instruments
 
-AWS provides five distinct instruments for reducing compute costs. Each has different
+AWS provides six distinct instruments for reducing compute costs, plus a separate
+Database Savings Plan (covered in the database section below). Each has different
 flexibility, discount depth, and risk profile. The most common mistake is treating
 them as alternatives when they are designed to be layered.
+
+AWS now documents **four Savings Plan types** in its plan-types reference: Compute,
+EC2 Instance, SageMaker AI, and Database. SageMaker AI Savings Plans are a separate
+product from Compute Savings Plans - **Compute Savings Plans no longer cover SageMaker**.
+Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html
 
 **Instrument comparison:**
 
@@ -98,7 +127,8 @@ them as alternatives when they are designed to be layered.
 | EC2 Standard RI | Up to 72% | Lowest - locked to instance type, region, OS, tenancy | Capacity reservation + rate | 1yr or 3yr | EC2 only |
 | EC2 Convertible RI | Up to 66% | Medium - can change instance family, OS, tenancy | Rate only (no capacity) | 3yr only | EC2 only |
 | EC2 Instance Savings Plan | Up to 72% | Medium - locked to instance family and region | Spend-based ($/hr) | 1yr or 3yr | EC2 only |
-| Compute Savings Plan | Up to 66% | Highest - any instance family, region, OS | Spend-based ($/hr) | 1yr or 3yr | EC2, Fargate, Lambda, SageMaker |
+| Compute Savings Plan | Up to 66% | Highest - any instance family, region, OS | Spend-based ($/hr) | 1yr or 3yr | EC2, Fargate, Lambda |
+| SageMaker AI Savings Plan | Up to 64% | Flexible across SageMaker AI usage | Spend-based ($/hr) | 1yr or 3yr | SageMaker AI (training, inference, notebooks) |
 | Spot Instances | Up to 90% | Variable - can be interrupted with 2 min notice | None (market-priced) | None | EC2, EKS nodes, EMR, SageMaker Training |
 
 **Critical distinctions most teams miss:**
@@ -108,9 +138,10 @@ them as alternatives when they are designed to be layered.
    flexibility (any size within the instance family). For most teams, EC2 Instance
    SPs have replaced Standard RIs as the default choice.
 
-2. **Compute Savings Plans are shallower** (up to 66%) but cover EC2, Fargate,
-   Lambda, and SageMaker. The flexibility premium costs ~6% discount depth vs
-   EC2 Instance SPs.
+2. **Compute Savings Plans are shallower** (up to 66%) but cover EC2, Fargate, and
+   Lambda. The flexibility premium costs ~6% discount depth vs EC2 Instance SPs.
+   Compute SPs **do not cover SageMaker** - SageMaker AI workloads need their own
+   SageMaker AI Savings Plan, which is a separate purchase.
 
 3. **Standard RIs are the only instrument that reserves capacity.** If you need
    guaranteed capacity in a specific AZ (e.g. GPU instances, high-demand regions),
@@ -215,14 +246,15 @@ START: What compute service runs the workload?
 │       as a form of capacity commitment - only use for latency-critical
 │       functions where cold starts are unacceptable.
 │
-├── SageMaker (ML inference and training)
+├── SageMaker AI (ML inference and training)
 │   │
 │   ├── Training jobs → Spot via SageMaker Managed Spot Training
 │   │   (up to 90% discount; requires checkpoint support)
 │   │
 │   └── Inference endpoints
-│       ├── Stable, predictable → SageMaker Savings Plan (dedicated)
-│       │   OR Compute Savings Plan (if mixed with EC2/Fargate/Lambda)
+│       ├── Stable, predictable → SageMaker AI Savings Plan
+│       │   (Compute Savings Plans no longer cover SageMaker -
+│       │   this is the only Savings Plan that does)
 │       ├── Variable → SageMaker Serverless Inference (no commitment)
 │       └── Real-time with auto-scaling → evaluate Inference Components
 │           for multi-model packing before committing
@@ -241,20 +273,24 @@ START: What compute service runs the workload?
 
 ### Savings Plan types - detailed comparison
 
-| Dimension | Compute Savings Plan | EC2 Instance Savings Plan |
-|---|---|---|
-| Commitment | $/hr spend for 1yr or 3yr | $/hr spend for 1yr or 3yr |
-| Discount depth | Up to 66% | Up to 72% |
-| Instance family | Any | Locked to one family (e.g. m6i) |
-| Region | Any | Locked to one region |
-| OS | Any | Any |
-| Tenancy | Any | Any |
-| Size | Any | Any (flexible within family) |
-| Covers Fargate | Yes | No |
-| Covers Lambda | Yes | No |
-| Covers SageMaker | Yes | No |
-| Payment options | No Upfront, Partial Upfront, All Upfront | No Upfront, Partial Upfront, All Upfront |
-| Discount by payment | All Upfront > Partial > No Upfront | All Upfront > Partial > No Upfront |
+| Dimension | Compute Savings Plan | EC2 Instance Savings Plan | SageMaker AI Savings Plan |
+|---|---|---|---|
+| Commitment | $/hr spend for 1yr or 3yr | $/hr spend for 1yr or 3yr | $/hr spend for 1yr or 3yr |
+| Discount depth | Up to 66% | Up to 72% | Up to 64% |
+| Instance family | Any | Locked to one family (e.g. m6i) | Any SageMaker AI instance |
+| Region | Any | Locked to one region | Any |
+| OS | Any | Any | N/A |
+| Tenancy | Any | Any | N/A |
+| Size | Any | Any (flexible within family) | Any |
+| Covers Fargate | Yes | No | No |
+| Covers Lambda | Yes | No | No |
+| Covers SageMaker AI | **No** (changed - was previously included) | No | Yes |
+| Payment options | No Upfront, Partial Upfront, All Upfront | No Upfront, Partial Upfront, All Upfront | No Upfront, Partial Upfront, All Upfront |
+| Discount by payment | All Upfront > Partial > No Upfront | All Upfront > Partial > No Upfront | All Upfront > Partial > No Upfront |
+
+A separate **Database Savings Plan** also exists (see the AWS database commitment
+section below). Plan-types reference:
+https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html
 
 **Payment option guidance:**
 - **No Upfront** - lowest risk, lowest discount. Best starting point for organisations
@@ -313,14 +349,18 @@ order matters because AWS applies discounts in a specific sequence.
 Layer 1: Spot (for interruptible workloads)
   ↓ removes 15-40% of compute from the commitment equation entirely
 Layer 2: Compute Savings Plans (broad baseline)
-  ↓ covers the predictable floor across EC2/Fargate/Lambda/SageMaker
+  ↓ covers the predictable floor across EC2 / Fargate / Lambda
 Layer 3: EC2 Instance Savings Plans (high-stability EC2 workloads)
   ↓ captures the extra ~6% discount for workloads locked to a family+region
-Layer 4: Standard RIs (capacity reservation needs only)
+Layer 4: SageMaker AI Savings Plan (if SageMaker spend is material)
+  ↓ separate purchase - Compute SPs no longer cover SageMaker AI
+Layer 5: Database Savings Plan (if RDS/Aurora spend is material - see DB section)
+  ↓ separate purchase - Compute SPs do not cover managed databases
+Layer 6: Standard RIs (capacity reservation needs only)
   ↓ only where guaranteed AZ capacity is required (GPU, scarce types)
-Layer 5: EDP (portfolio-wide, if eligible)
+Layer 7: EDP (portfolio-wide, if eligible)
   ↓ applies on top of everything above for remaining On-Demand spend
-Layer 6: On-Demand (variable / new workloads)
+Layer 8: On-Demand (variable / new workloads)
   ↓ buffer for growth, experimentation, and workloads under evaluation
 ```
 
@@ -1848,30 +1888,38 @@ Effective implementation requires collaboration across roles:
 
 ### Database commitment discount decision tree
 
-AWS offers different commitment instruments depending on the database service. Unlike
-Azure (which introduced a unified Savings Plan for Databases in March 2026), AWS
-commitment discounts remain service-specific. Choosing the wrong instrument - or
-committing too early - is the most common database FinOps mistake.
+AWS now offers a **Database Savings Plan** alongside service-specific Reserved
+Instances for managed databases. Compute Savings Plans still do not cover managed
+databases - those workloads need either RIs or the Database Savings Plan, depending
+on the service. Choosing the wrong instrument - or committing too early - is the
+most common database FinOps mistake.
+
+Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html
 
 **Instrument availability by service:**
 
-| Service | Reserved Instances | Compute Savings Plans | On-Demand only | Notes |
+| Service | Reserved Instances | Database Savings Plan | Compute Savings Plans | Notes |
 |---|---|---|---|---|
-| RDS (MySQL, PostgreSQL, MariaDB) | Yes - size-flexible within family | No | - | RI size flexibility means right-sizing does not invalidate the commitment |
-| RDS (Oracle, SQL Server) | Yes - locked to instance type | No | - | No size flexibility for commercial engines; must match instance exactly |
-| Aurora (MySQL, PostgreSQL) | Yes - size-flexible within family | No | - | Same RI pool as RDS open-source engines |
-| DynamoDB | Yes - Reserved Capacity | No | - | Commit to read/write capacity units; only viable for Provisioned mode |
-| ElastiCache (Redis, Memcached) | Yes - node-type specific | No | - | Locked to node type, no size flexibility |
-| MemoryDB | Yes - node-type specific | No | - | Same mechanics as ElastiCache RIs |
-| Neptune | Yes - instance-type specific | No | - | Low discount depth compared to RDS RIs |
-| OpenSearch | Yes - instance-type specific | No | - | Also covers legacy Elasticsearch domains |
-| Redshift | Yes - node-type specific | No | - | Consider Redshift Serverless for variable workloads (no RI available) |
-| DocumentDB | Yes - instance-type specific | No | - | Same RI mechanics as RDS commercial engines |
+| RDS (MySQL, PostgreSQL, MariaDB) | Yes - size-flexible within family | Yes - covers eligible RDS engines | No | RI size flexibility means right-sizing does not invalidate the commitment. Database SP adds spend-based flexibility across engines. |
+| RDS (Oracle, SQL Server) | Yes - locked to instance type | Eligibility varies - verify per engine | No | No size flexibility for commercial engines; must match instance exactly |
+| Aurora (MySQL, PostgreSQL) | Yes - size-flexible within family | Yes - covers eligible Aurora engines | No | Same RI pool as RDS open-source engines |
+| DynamoDB | Yes - Reserved Capacity | No | No | Commit to read/write capacity units; only viable for Provisioned mode |
+| ElastiCache (Redis, Memcached) | Yes - node-type specific | No | No | Locked to node type, no size flexibility |
+| MemoryDB | Yes - node-type specific | No | No | Same mechanics as ElastiCache RIs |
+| Neptune | Yes - instance-type specific | No | No | Low discount depth compared to RDS RIs |
+| OpenSearch | Yes - instance-type specific | No | No | Also covers legacy Elasticsearch domains |
+| Redshift | Yes - node-type specific | No | No | Consider Redshift Serverless for variable workloads (no RI available) |
+| DocumentDB | Yes - instance-type specific | No | No | Same RI mechanics as RDS commercial engines |
+
+**Verify Database Savings Plan eligibility per engine and instance class** at the
+plan-types reference above before sizing - the Database SP scope is narrower than
+"all managed databases" and the eligible-engine list evolves.
 
 **Key insight:** Compute Savings Plans do NOT cover any managed database service.
-Savings Plans only apply to EC2, Fargate, Lambda, and SageMaker. If a database
-runs on EC2 (self-managed), Compute Savings Plans apply to the EC2 instance - but
-the database layer itself has no Savings Plan instrument.
+Compute SPs apply to EC2, Fargate, and Lambda. SageMaker AI uses its own Savings Plan.
+Managed databases use either RIs (per service) or the Database Savings Plan (where
+eligible). If a database runs on EC2 (self-managed), Compute Savings Plans apply to
+the EC2 instance - but the database layer itself has no Compute SP coverage.
 
 **Decision tree:**
 
@@ -1937,7 +1985,7 @@ flexibility. The decision is rarely purely financial.
 | Factor | Self-managed on EC2 | RDS / Aurora |
 |---|---|---|
 | Instance cost | EC2 On-Demand (cheaper base) | 40-70% premium over equivalent EC2 |
-| Commitment options | Compute Savings Plans + EC2 RIs | RDS RIs only (no Savings Plans) |
+| Commitment options | Compute Savings Plans + EC2 RIs | RDS RIs + Database Savings Plan (eligible engines) |
 | Maximum discount | Up to 72% (Standard RI) + EDP | Up to 57% (3yr Partial Upfront RI) + EDP |
 | Operational cost | DBA time, patching, backups, HA setup | Managed by AWS |
 | BYOL | Full control over licensing | Limited BYOL options (Oracle, SQL Server) |
