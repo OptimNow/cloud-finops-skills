@@ -186,6 +186,58 @@ API, not *which feature*. For per-feature unit economics inside one application,
 using an SDK wrapper that attaches feature/tier/model metadata and combines with
 CloudWatch `InputTokenCount` / `OutputTokenCount` metrics.
 
+#### Application Inference Profiles - native per-application attribution
+
+AWS introduced **Application Inference Profiles** as the first-party way to attribute
+Bedrock costs across applications, features, or teams without an SDK wrapper. An
+Application Inference Profile is a tagged inference profile that callers reference
+instead of (or in addition to) raw model IDs - the tags propagate to CUR 2.0 and
+Cost Explorer alongside `line_item_iam_principal`.
+
+**What this unlocks that IAM Principal alone does not:**
+- **Cross-region inference attribution.** Cross-region inference profiles route to
+  alternate regions for availability. Without an Application Inference Profile, the
+  resulting cost lines do not carry the originating application context. With one,
+  the application tag survives the cross-region routing.
+- **Per-feature attribution within a single IAM principal.** A single role can call
+  Bedrock from multiple features, each via a different Application Inference Profile,
+  and CUR will distinguish them.
+- **Tag-based budget alerts at the application level**, not just the principal level.
+
+**Setup pattern:**
+
+1. Create an inference profile per application (or per feature within an application)
+   with tags like `application`, `feature`, `cost-centre`, `environment`.
+2. Update application code to call Bedrock with the inference profile ARN instead of
+   the raw model ID.
+3. Activate the relevant tag keys in Billing > Cost Allocation Tags.
+4. Verify tags appear in CUR 2.0 and Cost Explorer (24-48h propagation).
+
+**When to choose IAM Principal vs Application Inference Profiles:**
+
+| Scenario | Preferred approach |
+|---|---|
+| Per-user chargeback or shared-account team attribution | IAM Principal Cost Allocation |
+| Per-application or per-feature unit economics | Application Inference Profiles |
+| Cross-region inference cost attribution | Application Inference Profiles (only path) |
+| Maximum granularity | Both - they compose (principal X via app Y) |
+
+Sources: https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html, https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-understanding-cur-data.html
+
+#### Bedrock Projects (organisational primitive, not a billing primitive)
+
+Bedrock **Projects** group agents, knowledge bases, prompt flows, and other resources
+under a named container with shared IAM and resource policies. Projects are an
+**organisational** primitive - they tidy up the AWS console and enforce access
+boundaries - but they do **not** introduce a new billing dimension by themselves.
+Cost attribution still flows through IAM principals, resource tags, and Application
+Inference Profiles.
+
+Useful FinOps angle: when a team adopts Projects, take the opportunity to standardise
+the project name as a tag value across IAM roles and Application Inference Profiles
+under that project. The project name becomes a clean cost-allocation key in CUR 2.0
+without requiring a separate naming convention.
+
 ### SageMaker training job allocation
 
 SageMaker training jobs support resource tagging at job creation. Apply tags for `team`,
@@ -223,10 +275,51 @@ The highest-impact optimization. Before committing to a model tier:
 ### Prompt optimization
 
 Input token volume is directly controllable:
-- Audit system prompt length  - verbose instructions inflate every API call
-- Implement prompt caching where supported (reduces repeated context costs)
+- Audit system prompt length - verbose instructions inflate every API call
 - Truncate or summarize conversation history for multi-turn applications
 - Avoid sending redundant context in retrieval-augmented generation (RAG) pipelines
+- For repetitive context, use **prompt caching** (see below) - this is the highest-
+  leverage prompt-side lever for long-context and agentic workflows
+
+### Prompt caching - direct FinOps lever for long-context and agentic workloads
+
+Bedrock supports prompt caching for selected models, with two distinct token types
+that bill differently from regular input tokens:
+
+| Token type | Description | Pricing relative to regular input |
+|---|---|---|
+| **Cache write** | First time a cache breakpoint is created | ~1.25x base input price (5-min TTL) or ~2x (1-hour TTL) |
+| **Cache read** | Subsequent requests that hit the cached prefix | ~0.1x base input price |
+
+**TTL options.** Selected Claude models on Bedrock support both **5-minute** and
+**1-hour** cache TTLs. The 1-hour duration was announced for Bedrock prompt caching
+in early 2026, extending the original 5-minute window. Choose based on workflow
+cadence:
+
+- **5-minute TTL** for interactive sessions where the same context is reused within
+  a few minutes (chat, agent loops with tool calls).
+- **1-hour TTL** for longer-running workflows: persistent agents, batch evaluation
+  passes over the same corpus, multi-step task chains where the system prompt and
+  context are stable across hours.
+
+**FinOps math:** the 1-hour write costs ~2x base, but a single cache write that
+serves 100 reads at 0.1x base saves roughly 90% on those input tokens. Break-even
+is reached after ~10 cache hits (5-min TTL) or ~20 cache hits (1-hour TTL). For
+agentic workflows that loop on the same context dozens of times, the savings are
+material - often the difference between economic and uneconomic at scale.
+
+**Where caching matters most:**
+- Long system prompts (>1k tokens) reused across many requests
+- RAG pipelines with stable retrieved context across user queries
+- Agentic loops that repeatedly send the same tool definitions and conversation history
+- Batch evaluation against a stable corpus
+
+**Where caching does not help:**
+- One-shot calls with unique input
+- Workloads where context changes substantively between requests
+- Models that do not support caching (verify per model in the Bedrock docs)
+
+Sources: https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html, https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-bedrock-one-hour-duration-prompt-caching/
 
 ### Context window management
 
