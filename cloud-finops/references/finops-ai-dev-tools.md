@@ -354,9 +354,13 @@ less per request.
 
 ### For BYOK tools (Claude Code, Codex)
 
-**Model selection** - Sonnet 4.6 at $3/$15 per MTok vs Opus 4.6 at $5/$25 for Claude Code.
-codex-mini at $1.50/$6 vs GPT-5 at $1.25/$10 for Codex. Choose the model that matches the
-task complexity. Default to the more efficient model and escalate only when needed.
+**Model selection** - Anthropic and OpenAI models span a wide rate range (Haiku /
+Sonnet / Opus on Anthropic, codex-mini / GPT-5 / GPT-5.5 on OpenAI). The typical
+spread is roughly 5x between cheapest and most capable model in each provider's
+line-up. Choose the model that matches the task complexity; default to the more
+efficient model and escalate only when needed. **Verify current per-token rates
+on the Anthropic and OpenAI pricing pages before using them in capacity planning -
+both providers re-price model lines on a multi-month cadence.**
 
 **Prompt caching** (Anthropic) - cache reads cost 0.1x the base input price. Cache writes
 cost 1.25x (5-minute TTL) or 2x (1-hour TTL). For repetitive workflows with stable system
