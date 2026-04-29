@@ -85,6 +85,13 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 ## Claude Managed Agents: new cost dimension
 
+> **Source quality flag.** The Managed Agents mechanics described in this section are
+> distilled primarily from Finout commentary and early community reporting, not from
+> Anthropic's primary pricing documentation. Treat the specifics (cost drivers,
+> always-on session billing, resource tiers) as **emerging assumptions** to validate
+> against official Anthropic docs before quoting in a customer engagement. Update this
+> section when Anthropic publishes settled pricing detail.
+
 ### What Managed Agents are
 
 Claude Managed Agents provide a fully managed runtime for autonomous AI agents with:
@@ -115,6 +122,14 @@ Unlike token-based API calls, Managed Agents introduce new cost drivers:
 ---
 
 ## Fast mode: key FinOps risks
+
+> **Source quality flag.** Fast mode pricing specifics in this section (6× premium
+> multiplier, sticky routing, retroactive context repricing) are sourced primarily
+> from Finout reporting and community observation, not from Anthropic's primary
+> pricing documentation. Treat as **emerging assumptions** - the qualitative shape
+> (Fast mode is a premium-priced channel, governance matters) is reliable; specific
+> multipliers and behaviours need verification against Anthropic docs before being
+> quoted as policy in customer engagements.
 
 ### What Fast mode is
 
