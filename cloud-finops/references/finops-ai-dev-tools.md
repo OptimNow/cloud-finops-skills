@@ -72,16 +72,21 @@ in detail provides a template for evaluating any seat + usage tool.
 
 ### Pricing model
 
-Cursor has two cost layers: a fixed subscription and variable usage-based token charges.
+Cursor restructured its pricing in early 2026, moving from the older Pro / Business
+two-tier layout to a four-tier individual + team structure. As of April 2026 the
+canonical tiers are **Pro**, **Ultra**, **Teams**, and **Enterprise**:
 
-| Plan | Seat cost | Included usage | Overage billing |
-|---|---|---|---|
-| Hobby (free) | $0 | Limited requests and completions | Not available |
-| Pro | $20/month | $20 in usage credits | Per token at model rates |
-| Business | $40/seat/month | $20 in usage credits per seat | Per token at model rates |
-| Enterprise | Custom | Custom | Custom |
+| Plan | Tier focus | Notes |
+|---|---|---|
+| Hobby (free) | Trial | Limited requests and completions |
+| Pro | Individual | Includes a request allotment plus usage-based pricing after limits; some current marketing wording emphasises "unlimited agent requests" within fair-use bounds |
+| Ultra | Heavy individual | Larger request allotment, designed for full-time agentic use |
+| Teams | Team | Per-seat pricing, centralised billing, admin analytics, request allotment per seat with usage-based pricing on top |
+| Enterprise | Org | Custom contract, SSO, compliance, procurement-friendly billing |
 
-Annual billing on Pro reduces the seat cost to ~$16/month.
+**Verify live dollar amounts** against the official pricing page before quoting -
+Cursor has shipped multiple pricing changes in the past 12 months and absolute
+numbers move. Sources: https://www.cursor.com/en/pricing, https://docs.cursor.com/en/account/teams/pricing
 
 ### Token rate variability
 
@@ -188,18 +193,24 @@ Codex is OpenAI's coding agent, available through ChatGPT and as a CLI tool.
 at no extra per-token charge. ChatGPT Plus at $20/month is the cheapest access path.
 
 **API key mode:** when switched to API key mode, Codex bills per token at standard OpenAI
-API rates:
+API rates. The Codex model line-up moves quickly - **OpenAI announced GPT-5.5
+availability in API and Codex on 24 April 2026**, and prior generations (codex-mini,
+GPT-5, GPT-5.4, GPT-5.3-Codex) remain in the catalogue alongside it. Current rates
+must be verified against the live pricing page; the table below is illustrative of
+the rate structure, not a quotable price sheet:
 
 | Model | Input ($/MTok) | Output ($/MTok) |
 |---|---|---|
-| codex-mini-latest | $1.50 | $6.00 |
+| GPT-5.5 | Verify on pricing page | Verify on pricing page |
 | GPT-5 | $1.25 | $10.00 |
+| codex-mini-latest | $1.50 | $6.00 |
 
 OpenAI claims Codex CLI is approximately 4x more token-efficient than Claude Code, meaning
 the same budget covers more work. This claim should be validated against your own workloads
-before using it for capacity planning. Note that OpenAI's model naming evolves frequently
-(e.g. GPT-5.4, GPT-5.3-Codex, GPT-5.1-Codex-Mini) - verify current model names and rates
-against the OpenAI pricing page.
+before using it for capacity planning - the comparison is sensitive to which models the
+two tools route to and how each handles context.
+
+Sources: https://openai.com/index/introducing-gpt-5-5/, https://help.openai.com/en/articles/20001106, https://openai.com/api/pricing/
 
 ### Cost tracking
 
@@ -216,6 +227,11 @@ billing.
 
 ### GitHub Copilot
 
+GitHub Copilot is in the middle of a billing model transition. Plan accordingly when
+quoting in customer engagements.
+
+**Current model (until 31 May 2026) - premium-request billing:**
+
 | Plan | Seat cost | Notes |
 |---|---|---|
 | Free | $0 | Limited completions |
@@ -224,10 +240,27 @@ billing.
 | Business | $19/seat/month | Admin controls, audit logs, IP indemnity |
 | Enterprise | $39/seat/month | Requires GH Enterprise Cloud ($21/seat/month extra) |
 
-Overage charges apply at $0.04 per premium request beyond the monthly allocation.
+Overage at $0.04 per premium request beyond the monthly allocation. Enterprise total
+cost of ownership is $60/seat/month including the required GitHub Enterprise Cloud
+subscription - a detail that often surprises procurement.
 
-Enterprise total cost of ownership is $60/seat/month when including the required GitHub
-Enterprise Cloud subscription - a detail that often surprises procurement.
+**New model (from 1 June 2026) - usage-based billing with GitHub AI Credits:**
+
+GitHub announced on 27 April 2026 that Copilot is moving to **usage-based billing
+with GitHub AI Credits** starting **1 June 2026**, replacing the premium-request
+model. Subscription tiers continue to exist; the metered layer changes from "premium
+requests" to AI Credits consumed against the included allowance with overage billing
+on top.
+
+**FinOps implications during transition:**
+- Forecasts built on the premium-request model break for usage from June onwards.
+  Re-baseline using post-1-June consumption, not pre-1-June extrapolation.
+- Customers with custom enterprise contracts may retain the premium-request model
+  longer - confirm per contract before assuming the new model applies.
+- Allocation logic that maps premium requests to teams must be replaced with
+  AI-Credit accounting.
+
+Sources: https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/, https://docs.github.com/copilot/concepts/billing/usage-based-billing-for-individuals, https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing
 
 ### Windsurf
 
@@ -372,14 +405,17 @@ becomes a cost problem when:
 
 ---
 
-## Pricing comparison (March 2026)
+## Pricing comparison (April 2026)
+
+Verify live pricing against each vendor's official page before quoting - the AI dev
+tools market has been re-pricing every few months.
 
 | Tool | Type | Seat cost | Token / usage model | Enterprise option | Proxy-compatible |
 |---|---|---|---|---|---|
-| **Cursor** | Seat + usage | $20 (Pro) / $40 (Business) | $20 included credits + per-token overage | Yes (custom) | No (vendor-mediated) |
+| **Cursor** | Seat + usage | Pro / Ultra (individual) / Teams / Enterprise (verify on pricing page) | Request allotment + usage-based after limits | Yes (custom) | No (vendor-mediated) |
 | **Claude Code** | BYOK or subscription | $20 (Pro) / $100 (Max 5x) / $200 (Max 20x) | API key: $3-$25/MTok depending on model | Via Anthropic Enterprise | Yes (API key mode) |
-| **OpenAI Codex** | BYOK or subscription | $20 (ChatGPT Plus) and up | API key: $1.25-$10/MTok depending on model | Via OpenAI Enterprise | Yes (API key mode) |
-| **GitHub Copilot** | Seat + usage | $10 (Pro) / $19 (Business) / $39 (Enterprise) | $0.04/premium request overage | Yes ($60/seat total with GH Enterprise Cloud) | No (vendor-mediated) |
+| **OpenAI Codex** | BYOK or subscription | $20 (ChatGPT Plus) and up | API key: per-token rates including GPT-5.5 (verify) | Via OpenAI Enterprise | Yes (API key mode) |
+| **GitHub Copilot** | Seat + usage (transitioning) | $10 (Pro) / $19 (Business) / $39 (Enterprise) | Premium-request until 31 May 2026; **GitHub AI Credits from 1 June 2026** | Yes ($60/seat total with GH Enterprise Cloud) | No (vendor-mediated) |
 | **Windsurf** | Seat + usage | $20-$200 (individual) / $40 (Teams) | Credit-based ($0.04/credit, provider cost + 20% margin) | Yes (custom) | No (vendor-mediated) |
 
 ---
