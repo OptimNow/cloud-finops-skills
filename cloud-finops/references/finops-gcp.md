@@ -108,20 +108,22 @@ GCP CUDs come in two distinct flavours that are easy to conflate:
 | CUD type | Commits to | Discount depth | Flexibility | Term |
 |---|---|---|---|---|
 | **Resource-based CUD** | Specific vCPU + memory in a region | Up to 57% (3yr) | Low - locked to machine series and region | 1yr or 3yr |
-| **Spend-based CUD** | $/hr spend on Compute Engine | Up to 28% (3yr) | High - any machine series in any region | 1yr or 3yr |
+| **Spend-based / Flexible CUD** | $/hr spend on Compute Engine | **Up to 28% (1yr) or 46% (3yr)** | High - any machine series in any region | 1yr or 3yr |
 
 **Resource-based CUDs** are the deeper-discount path for predictable, stable
 workloads on a known machine series (N2, E2, etc.). The trade-off is rigidity -
 they do not transfer if you migrate to a different series or to GKE / Cloud Run.
 
-**Spend-based CUDs (Flex CUDs)** are the spend-based equivalent of AWS Compute
-Savings Plans or Azure Compute Savings Plans. Shallower discount, but they apply
-across machine series and regions and survive architectural changes.
+**Spend-based CUDs (Flexible CUDs)** are the spend-based equivalent of AWS Compute
+Savings Plans or Azure Compute Savings Plans. Shallower discount than resource-
+based CUDs at the same term, but they apply across machine series and regions and
+survive architectural changes.
 
 The **architectural drift trap** (already in the patterns section below) is the
 most common GCP commitment failure: organisations buy resource-based CUDs early,
 then migrate workloads to GKE Autopilot or Cloud Run, leaving the CUDs underused.
-Spend-based CUDs avoid this category of failure at the cost of ~10% discount depth.
+Spend-based CUDs avoid this category of failure at the cost of ~11 percentage
+points of discount depth on 3-year terms (46% vs 57%).
 
 **Layering recommendation (analogous to AWS / Azure layering):**
 
@@ -146,11 +148,15 @@ Sources: https://cloud.google.com/compute/docs/instances/committed-use-discounts
 
 ### Spot VMs
 
-Spot VMs (formerly Preemptible VMs) offer **60-91% discount** off on-demand pricing
-in exchange for:
-- 30-second termination notice
-- 24-hour maximum runtime (for some configurations)
+Spot VMs (which superseded Preemptible VMs) offer **60-91% discount** off on-demand
+pricing in exchange for:
+- 30-second termination notice on preemption
 - No SLA, no live migration
+
+**No 24-hour maximum runtime.** Spot VMs can run indefinitely until preempted - the
+24-hour cap was a property of the older Preemptible VM offering, not Spot. Long-
+running batch jobs and training workloads with checkpointing are valid Spot
+workloads.
 
 Use for: batch jobs, ML training with checkpointing, CI/CD, fault-tolerant tiers.
 Avoid for: stateful workloads, latency-sensitive APIs, anything that cannot tolerate
