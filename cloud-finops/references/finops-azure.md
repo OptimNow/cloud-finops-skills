@@ -136,8 +136,8 @@ to be layered, not chosen in isolation.
 
 | Mechanic | Fee | Annual cap | Notes |
 |---|---|---|---|
-| **Reservation exchange** | None | None | Same product family only. Does not count against the refund cap. |
-| **Reservation refund (cancellation)** | None today | $50,000 per 12-month rolling window per Billing Profile (MCA) or enrollment (EA) | "Refund" and "cancellation" are the same operation in current docs. Microsoft reserves the right to introduce a 12% early-termination fee in future - verify before relying on liquidity. |
+| **Reservation exchange** | None | None | Same product family only. Does not count against the refund cap. The 1 January 2024 sunset of free exchanges was extended indefinitely; reservations purchased during the grace period (which is the current state as of April 2026) retain the right to one more exchange after the grace period eventually ends. |
+| **Reservation refund (cancellation)** | None today | $50,000 per 12-month rolling window per Billing Profile (MCA) or enrollment (EA). **The cap restores day-by-day** - 365 days after a refund, the original $50K is fully reinstated. | "Refund" and "cancellation" are the same operation in current docs. Microsoft reserves the right to introduce a 12% early-termination fee in future - verify before relying on liquidity. |
 | **Reservation trade-in to Savings Plan** | None | None | Convert RI to Savings Plan credit. No time limit. |
 | **Savings Plan cancel / exchange / refund** | N/A | N/A | Not allowed. SPs are non-refundable, non-exchangeable, non-cancellable. |
 
@@ -285,6 +285,22 @@ single-instance workloads with no failover.
 - Set max price at PAYG rate - never bid above PAYG
 - For AKS: use Spot node pools with taints/tolerations for workload isolation
 - Monitor eviction rates by VM family and region - some combinations are more stable
+
+### Current operational risk: ISF ratio CSV deprecation (9 May 2026)
+
+**Action item with a clock on it.** From **9 May 2026**, Microsoft stops updating
+the public CSV file that publishes Instance Size Flexibility (ISF) ratios. Ratio
+data moves to **API and PowerShell only** after that date. The CSV will keep being
+served but will silently go stale.
+
+**Day 1 audit on any Azure-heavy engagement.** Ask whether any internal tool,
+spreadsheet, or automation parses the legacy ISF CSV. If yes, it needs migration
+to the Ratios API or PowerShell before the cutover - otherwise reservation-
+utilisation reporting drifts as new VM SKUs ship and stale ratios persist in
+downstream calculations. The drift is silent (no error) and only surfaces at the
+next reservation review when the numbers stop matching Azure Advisor.
+
+Source: [Instance size flexibility for Azure Reservations](https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/instance-size-flexibility)
 
 ### Azure Hybrid Benefit (AHB)
 
@@ -2218,20 +2234,69 @@ each block should be.
 
 ### Billing scope hierarchy
 
-```
-Billing Account
-  > Management Group (org-level governance)
-    > Subscription (primary isolation boundary)
-      > Resource Group (workload grouping)
-        > Resource (individual service)
-```
+The hierarchy is different on EA vs MCA. Get this right at engagement kickoff -
+the wrong mental model leads to wrong recommendations on chargeback and reservations.
 
-**Allocation strategy:**
+**EA hierarchy:** Enrollment -> Department -> Account -> Subscription, with the
+Management Group / Resource Group layers sitting underneath subscriptions for
+governance.
+
+**MCA hierarchy (four billing levels):**
+
+| Level | What it is | What it aggregates | Key role |
+|---|---|---|---|
+| **Billing Account** | Root container, created at signup. One per MCA signature. | Everything below. | Billing Account Owner - full visibility and control. |
+| **Billing Profile** | The unit that **generates a single monthly invoice**. One invoice per Billing Profile. Payment method attached here. Pricing is tied to the Billing Profile (not enrollment-wide as under EA - relevant for multi-entity groups where negotiated discounts may not propagate the way the client assumes). | All Invoice Sections below it. | Billing Profile Owner - manage invoices, create budgets, purchase reservations and savings plans. |
+| **Invoice Section** | A grouping on the invoice (department, team, project). Shows as a line on the invoice, not a separate invoice. | Subscriptions assigned to it. | Invoice Section Owner - create subscriptions in the section, manage them. |
+| **Subscription** | Where resources are deployed and billed. Resource Groups and Resources sit underneath. | Resources. | Subscription Owner / Contributor / Reader (standard Azure RBAC). |
+
+**Three sentences that anchor the hierarchy:**
+1. **Invoices happen at the Billing Profile level.** That is why multi-entity groups
+   often have one Billing Profile per legal entity - because invoices have to match
+   legal contracts.
+2. **Invoice Sections are chargeback groupings inside one invoice.** They do not mean
+   separate invoices.
+3. **Reservations sit on the Billing Profile.** They do not belong to an Invoice
+   Section - this has direct consequences for chargeback (see "MCA reservation
+   ownership and the chargeback trap" below).
+
+**MCA visibility gap to plan for at kickoff.** Under EA, a Subscription Owner with
+enrollment access can create exports and budgets at higher scopes. **Under MCA, a
+Subscription Owner cannot create exports or budgets at Billing Profile or Invoice
+Section level** - the user needs at least **Billing Profile Reader** or **Billing
+Profile Contributor**. Sort out these roles in the engagement kickoff before you
+need them, otherwise the day-1 export setup will block on a permissions ticket.
+
+Sources: [MCA setup](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/mca-setup-account), [Cost Management scopes](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/understand-work-scopes), [Billing roles for MCA](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/understand-mca-roles)
+
+**Allocation strategy (applies to both EA and MCA):**
 - Use Management Groups for policy inheritance and org-level cost views
 - Use Subscriptions as the primary cost allocation boundary (equivalent to AWS
   accounts)
 - Use Resource Groups to group resources by workload or team within a subscription
 - Use Tags for cross-cutting dimensions (Environment, CostCenter, Project)
+
+### MCA reservation ownership and the chargeback trap
+
+Under MCA, an Azure Reservation is **owned at the Billing Profile level**. Default
+discount scope is **Shared**, which means the reservation benefit flows to any
+eligible resource across all subscriptions under that Billing Profile - regardless
+of which Invoice Section the subscription sits in.
+
+**Reservations cannot be moved between Invoice Sections.** This is a hard limit, not
+a configuration flag.
+
+**Consequence for multi-entity engagements.** If a customer has three business units
+mapped to three Invoice Sections and asks "can we attribute each BU's reservation
+cost to its own invoice section?" - the answer is **no, not natively**. You cannot
+do it at the billing layer. You build an allocation layer on top of Cost Management
+exports (allocation rules, or BI-side logic on the FOCUS export).
+
+**Anti-pattern to avoid.** Do not promise "we will put BU-A's reservations on BU-A's
+invoice line." That is not how MCA works. Promise: "we will show BU-A its share of
+reservation cost in a Cost Management view and feed that to your chargeback system."
+
+Source: [Organize your invoice based on your needs](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/mca-section-invoice)
 
 ### Azure-specific tagging considerations
 
@@ -2370,6 +2435,21 @@ Microsoft is actively migrating Enterprise Agreement (EA) customers to the Micro
 Customer Agreement (MCA). While the transition is primarily a commercial
 restructuring, it has significant FinOps operational consequences that teams must
 prepare for.
+
+### The three MCA flavours - know which one before kickoff
+
+MCA is one programme with three distinct purchase paths. They are easy to confuse
+and the answer changes who owns the billing relationship.
+
+| Flavour | Purchase path | Who signs what | Where the FinOps team gets data |
+|---|---|---|---|
+| **MCA Direct** | Customer signs digitally, buys Azure directly from Microsoft via the portal. | Customer signs MCA with Microsoft. | Direct Microsoft billing portal and Cost Management. |
+| **MCA Partner** (formerly **CSP**) | Customer buys through a Microsoft partner. | Partner signs MCA with Microsoft; customer signs with the partner. | Partner's billing tools first, Cost Management for resource-level data. **CSP is no longer a separate programme** - it is the indirect channel under MCA. People still say "CSP" out of habit. |
+| **MCA Enterprise (MCA-E)** | Enterprise sales motion, direct with Microsoft, negotiated terms. | Customer signs MCA-E directly with Microsoft. | Direct Microsoft billing, plus negotiated rate sheet visibility. This is the path most EAs migrate to. |
+
+**Day 1 question to ask the customer:** "Did you sign the Azure agreement directly
+with Microsoft, or through a partner?" If partner, chargeback questions route through
+the partner's tooling first. If direct, the standard Cost Management surfaces apply.
 
 ### What changes under MCA
 
