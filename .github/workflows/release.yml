@@ -20,8 +20,11 @@ jobs:
           VERSION="${GITHUB_REF_NAME}"
           ZIP_NAME="cloud-finops-${VERSION}.zip"
           cd "${GITHUB_WORKSPACE}"
-          zip -r "${ZIP_NAME}" cloud-finops
+          # Exclude local-only directories that may exist in worktrees
+          # (e.g. .claude/settings.local.json from Claude Code worktrees)
+          zip -r "${ZIP_NAME}" cloud-finops -x 'cloud-finops/.claude/*'
           ls -lh "${ZIP_NAME}"
+          unzip -l "${ZIP_NAME}" | head -5  # log the first few entries to verify forward-slash paths
           echo "ZIP_NAME=${ZIP_NAME}" >> "$GITHUB_ENV"
 
       - name: Create GitHub Release with zip attached
