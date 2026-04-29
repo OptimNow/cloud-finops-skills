@@ -1,9 +1,220 @@
 # FinOps on GCP
 
-> GCP-specific optimization patterns covering compute, storage, databases, and networking. 26 inefficiency patterns for diagnosing waste and building optimization roadmaps.
-> Source: PointFive Cloud Efficiency Hub.
+> GCP-specific guidance covering cost data foundations, commitment discounts, carbon
+> footprint, and 26 inefficiency patterns for diagnosing waste. Covers BigQuery billing
+> export, FOCUS, Committed Use Discounts (CUDs), Sustained Use Discounts (SUDs), Spot
+> VMs, Cloud Carbon Footprint, and pattern-level guidance for Compute Engine, GKE,
+> Cloud Run, Cloud Functions, GCS, BigQuery, Cloud SQL, Bigtable, Memorystore, Pub/Sub,
+> Cloud Logging, Cloud NAT, and Cloud Load Balancing.
 
 ---
+
+## GCP cost data foundation
+
+### Cloud Billing reports and Cost Management console
+
+GCP's native cost surface is the Cloud Billing console - reports, cost breakdowns,
+budgets, and pricing tables - scoped to a Billing Account. For organisations with
+multiple Billing Accounts, the Cloud Console aggregates across them but the data
+contract sits at the Billing Account level.
+
+**Set up before anything else:**
+- [ ] Billing administrator IAM grants for the FinOps team
+- [ ] Budgets with email + Pub/Sub alerts at 50% / 80% / 100% thresholds, per project
+- [ ] BigQuery billing export enabled (see below) - this is the canonical analytics path
+- [ ] Pricing data export to BigQuery for SKU price reconciliation
+
+The Cloud Billing console is sufficient for ad-hoc visualisation and budget alerting.
+For any serious FinOps analytics, the BigQuery billing export is the right primitive,
+not the console.
+
+### BigQuery billing export - the canonical GCP cost data path
+
+GCP exposes three distinct exports to BigQuery, and they are not interchangeable:
+
+| Export | What it contains | Use for |
+|---|---|---|
+| **Standard usage cost data** | Daily aggregated cost by service / SKU / project / label | Showback, budget tracking, executive reporting |
+| **Detailed usage cost data** | Resource-level line items (per-resource cost), backfilled from when enabled | Allocation, attribution, anomaly investigation, FinOps deep dives |
+| **Pricing data** | SKU price catalogue (list and discounted) | Validating CUD discounts, pricing-aware what-if analysis |
+
+**Important nuances:**
+- **Resource-level data is opt-in** and backfills only from the moment you enable it -
+  not historically. Enable it on Day 1 of any new GCP engagement.
+- **Detailed export schema differs from standard.** Queries built against `gcp_billing_export_v1_*` (standard)
+  do not run unchanged against `gcp_billing_export_resource_v1_*` (detailed); both schemas
+  evolve over time.
+- **Credits appear as separate line items**, not as discounts on the parent line. CUD
+  application, SUD application, and promotional credits each get their own rows -
+  filter or aggregate carefully.
+
+Source: https://cloud.google.com/billing/docs/how-to/export-data-bigquery
+
+### FOCUS billing export
+
+GCP supports a **FOCUS-conformant BigQuery export** for cross-cloud normalisation.
+Configure it alongside (not instead of) the standard/detailed exports - the FOCUS
+schema is optimised for multi-cloud joins, while the native exports retain GCP-
+specific columns the FOCUS spec does not surface.
+
+For multi-cloud customers normalising AWS / Azure / GCP cost in one warehouse, the
+FOCUS export is the path that aligns with AWS Data Exports for FOCUS 1.2 (GA Nov 2025)
+and Azure Cost Management's FOCUS 1.2 preview.
+
+Source: https://cloud.google.com/billing/docs/how-to/export-data-bigquery-focus
+
+### Cloud Billing Pricing API
+
+For pricing-aware analytics, use the **Cloud Billing Pricing API** to validate that
+CUD-discounted rates match expectation, model what-if scenarios for re-architecture
+proposals, and reconcile invoice line items. Pricing changes propagate to the API
+within hours of the public price change.
+
+Source: https://cloud.google.com/billing/docs/reference/pricing-api
+
+---
+
+## Commitment discounts on GCP
+
+GCP offers a different commitment model from AWS or Azure. There are no Reserved
+Instances. The four levers are **Committed Use Discounts (CUDs)**, **Sustained Use
+Discounts (SUDs)**, **Spot VMs**, and **Flex CUDs** (a recent spend-based addition).
+SUDs are automatic; CUDs and Flex CUDs are explicit commitments; Spot is a market
+mechanism.
+
+### Sustained Use Discounts (SUDs) - free, automatic, often missed
+
+SUDs apply automatically to Compute Engine VMs that run a significant portion of
+the month. **No commitment, no purchase, no enrolment.** GCP discounts the on-demand
+rate retroactively based on monthly run-time per VM family per region.
+
+- Up to ~20% discount for a VM running 100% of a calendar month (general-purpose
+  families)
+- Discount is calculated per-resource and applied automatically on the next invoice
+- Visible in BigQuery billing export as a separate line item with credit type
+  `SUSTAINED_USAGE_DISCOUNT`
+
+**Practical implication:** SUDs reduce the apparent saving from a 1-year CUD purchase
+because the SUD discount is already baked into the on-demand rate the CUD compares
+against. When sizing a CUD, model against the SUD-effective rate, not the headline
+on-demand rate, to avoid overstating CUD savings.
+
+Source: https://cloud.google.com/compute/docs/sustained-use-discounts
+
+### Committed Use Discounts (CUDs) - resource-based vs spend-based
+
+GCP CUDs come in two distinct flavours that are easy to conflate:
+
+| CUD type | Commits to | Discount depth | Flexibility | Term |
+|---|---|---|---|---|
+| **Resource-based CUD** | Specific vCPU + memory in a region | Up to 57% (3yr) | Low - locked to machine series and region | 1yr or 3yr |
+| **Spend-based CUD** | $/hr spend on Compute Engine | Up to 28% (3yr) | High - any machine series in any region | 1yr or 3yr |
+
+**Resource-based CUDs** are the deeper-discount path for predictable, stable
+workloads on a known machine series (N2, E2, etc.). The trade-off is rigidity -
+they do not transfer if you migrate to a different series or to GKE / Cloud Run.
+
+**Spend-based CUDs (Flex CUDs)** are the spend-based equivalent of AWS Compute
+Savings Plans or Azure Compute Savings Plans. Shallower discount, but they apply
+across machine series and regions and survive architectural changes.
+
+The **architectural drift trap** (already in the patterns section below) is the
+most common GCP commitment failure: organisations buy resource-based CUDs early,
+then migrate workloads to GKE Autopilot or Cloud Run, leaving the CUDs underused.
+Spend-based CUDs avoid this category of failure at the cost of ~10% discount depth.
+
+**Layering recommendation (analogous to AWS / Azure layering):**
+
+```
+Layer 1: Spot VMs (interruptible workloads)
+  ↓ removes 60-91% of compute cost on the spike layer
+Layer 2: Spend-based CUDs (broad baseline across machine series)
+  ↓ covers the predictable floor; survives migration
+Layer 3: Resource-based CUDs (only for high-conviction stable workloads)
+  ↓ adds the extra ~30% discount delta but locks you in
+Layer 4: SUDs (automatic - no action)
+  ↓ baseline retroactive discount on remaining on-demand
+Layer 5: On-Demand (variable / new workloads)
+```
+
+CUDs cover **Compute Engine, GKE (via the underlying nodes), Cloud SQL, Cloud Run
+(spend-based only), and Memorystore** depending on the CUD type. They do **not**
+cover Cloud Functions, BigQuery, GCS, or Pub/Sub - those services have their own
+commitment models (BigQuery slot reservations, etc.).
+
+Sources: https://cloud.google.com/compute/docs/instances/committed-use-discounts-overview, https://cloud.google.com/compute/docs/instances/signing-up-flexible-committed-use-discounts
+
+### Spot VMs
+
+Spot VMs (formerly Preemptible VMs) offer **60-91% discount** off on-demand pricing
+in exchange for:
+- 30-second termination notice
+- 24-hour maximum runtime (for some configurations)
+- No SLA, no live migration
+
+Use for: batch jobs, ML training with checkpointing, CI/CD, fault-tolerant tiers.
+Avoid for: stateful workloads, latency-sensitive APIs, anything that cannot tolerate
+abrupt termination.
+
+Source: https://cloud.google.com/compute/docs/instances/spot
+
+### BigQuery commitment model (separate from CUDs)
+
+BigQuery has its own commitment model unrelated to Compute CUDs:
+
+- **On-demand pricing:** $/TiB scanned
+- **Capacity-based pricing:** slot reservations (Standard, Enterprise, Enterprise Plus
+  editions). Reserve slots for predictable workload; Autoscaler scales up beyond the
+  baseline at usage rates.
+- **Slot commitments:** 1-year or 3-year for additional discount on top of the
+  edition rate.
+
+**The BigQuery cost trap** (in the patterns catalogue): teams adopt slot reservations
+to stabilise costs, then query volumes drop and slots sit underused. The reservation
+discount is wasted. Separately, **inefficient query design** (unpartitioned tables,
+broad SELECT *, missing clustering) is often a 10-100x cost amplifier - fix the
+queries before sizing the reservation.
+
+Source: https://cloud.google.com/bigquery/docs/reservations-intro
+
+---
+
+## Cloud Carbon Footprint
+
+GCP publishes per-project, per-region, per-service carbon emissions data through the
+**Cloud Carbon Footprint** product. Both **location-based** and **market-based**
+emissions methodologies are supported.
+
+| Methodology | What it measures | When to use |
+|---|---|---|
+| **Location-based** | Average emissions intensity of the regional grid where compute runs | Comparing physical regions; reporting under GHG Protocol Scope 2 location-based |
+| **Market-based** | Emissions accounting for Google's renewable energy purchases (PPAs, RECs) | Reporting under GHG Protocol Scope 2 market-based; Google's net-zero claims |
+
+**Both views are exposed in the console and via BigQuery export.** For
+sustainability reporting that needs to align with corporate Scope 2 disclosures,
+choose the methodology that matches your accounting framework - they will produce
+materially different numbers, especially in regions where Google has heavy renewable
+PPAs.
+
+**Practical FinOps integration:**
+- Region selection has a carbon-cost trade-off: cheaper regions are sometimes higher-
+  carbon (Asian regions vs European). Surface this in the architecture review, not
+  just at procurement.
+- The BigQuery carbon export joins to billing data on `project_id` + `service` +
+  `region`, enabling carbon-per-dollar analytics for greenops dashboards.
+
+See `greenops-cloud-carbon.md` for cross-provider GreenOps guidance.
+
+Sources: https://cloud.google.com/carbon-footprint, https://docs.cloud.google.com/carbon-footprint/docs/methodology
+
+---
+
+## Inefficiency patterns catalogue
+
+The remainder of this reference is a curated catalogue of 26 GCP inefficiency
+patterns covering compute, storage, databases, networking, and operational
+mechanics. Use these as a diagnostic checklist when building optimisation roadmaps.
+Source: PointFive Cloud Efficiency Hub.
 
 ## Compute Optimization Patterns (10)
 
