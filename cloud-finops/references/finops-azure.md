@@ -346,6 +346,216 @@ Savings Plans:
 
 Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/track-consumption-commitment
 
+### Commitment sizing methodology - granularity, Advisor calibration, tooling
+
+The earlier sections cover **what** to commit to (RI vs SP, scope, term, family). This
+section covers **how to size** the commitment - the harder problem, with a structural
+difficulty in Azure that AWS practitioners do not encounter until they hit it.
+
+#### Data granularity - the AWS-vs-Azure difference that bites in commitment sizing
+
+Azure cost data is **daily**. AWS CUR is **hourly**. This is the structural difference
+that changes how you size commitments.
+
+- **Hourly in Azure:** Azure Monitor platform metrics (VM CPU, network, IOPS) -
+  utilisation telemetry.
+- **Daily in Azure:** Cost Management exports (actual, amortised, FOCUS) and the
+  standard Consumption REST endpoints - all billing data.
+
+Consequence: in AWS you read $/hour spend per SKU directly from CUR. In Azure you read
+daily spend, but to derive the hourly equivalent you must join cost data with utilisation
+data on `ResourceId`.
+
+**Common trap:** consultants moving from AWS to Azure assume hourly cost data is one
+query away. It is not. Build the join into your sizing process before you hit the
+problem on a live engagement.
+
+#### Why daily data hurts Savings Plan sizing more than RI sizing
+
+**RI sizing** is mostly OK with daily data. An RI commits to a SKU+region count for a
+fixed term ("at least 5 D4s_v5 running 24/7"). Daily data answers count questions
+reasonably well - if a SKU+region had at least 5 instances every day for 90 days, you
+can size the RI confidently.
+
+**SP sizing** is where daily granularity hurts. A Savings Plan commits to a $/hour
+amount. The right commitment is roughly the **5th percentile of hourly compute spend** -
+the floor below which spend rarely drops. With daily data you cannot see the
+hour-by-hour floor; you only see the daily average.
+
+A workload that runs at $100/hour for 8 hours and $30/hour for 16 hours has a daily
+average of ~$53/hour but an SP-safe commitment closer to $30.
+
+**Common trap:** **daily-data sizing systematically over-commits Savings Plans on
+workloads with within-day cyclicality** - business-hours patterns, batch jobs,
+month-end spikes. The over-commitment hides as "low SP utilisation" months later.
+
+#### The cost-plus-utilisation join pattern
+
+The workaround that closes the granularity gap:
+
+1. Pull 90 days of daily compute spend from the FOCUS export, grouped by SKU family
+   and region.
+2. Pull hourly running vCPUs (or running instance count) per VM from Azure Monitor
+   over the same period - via `Percentage CPU` joined with VM size, or VM-running-state
+   telemetry from `Heartbeat`.
+3. Join cost and utilisation on `ResourceId`.
+4. From the hourly view, compute the **5th-10th percentile of running vCPUs** across
+   the period - the steady-state floor.
+5. Multiply by the SKU's hourly $ rate (from a price sheet export, FOCUS `ListUnitPrice`,
+   or the Retail Prices API) to get the SP-safe commitment level.
+
+This is the step the granularity gap forces. FinOps Hubs and most third-party FinOps
+platforms do this for you behind the scenes; if you are not using one of those, you
+build it yourself.
+
+```kql
+// Cost-plus-utilisation join for Savings Plan sizing
+// Assumes: FOCUS export ingested as a custom table (e.g. AzureCost_CL) and
+// Azure Monitor InsightsMetrics from the same VMs in the same workspace.
+// Adjust column names to match your FOCUS ingestion schema.
+
+let lookback = 90d;
+let cost =
+    AzureCost_CL
+    | where TimeGenerated > ago(lookback)
+    | where ServiceCategory_s == "Compute"
+    | summarize daily_cost_usd = sum(EffectiveCost_d)
+                by ResourceId = tolower(ResourceId_s),
+                   day = startofday(TimeGenerated);
+let util =
+    InsightsMetrics
+    | where TimeGenerated > ago(lookback)
+    | where Namespace == "Processor" and Name == "UtilizationPercentage"
+    | summarize hourly_cpu_pct = avg(Val)
+                by ResourceId = tolower(_ResourceId),
+                   hour = bin(TimeGenerated, 1h);
+cost
+| join kind=inner util on ResourceId
+| summarize p10_cpu_pct      = percentile(hourly_cpu_pct, 10),
+            avg_daily_cost   = avg(daily_cost_usd)
+            by ResourceId
+| extend implied_hourly_floor_usd = (avg_daily_cost / 24.0) * (p10_cpu_pct / 100.0)
+| order by implied_hourly_floor_usd desc
+```
+
+The query is illustrative - real environments will need the cost-table column names
+mapped to whatever FOCUS schema the ingestion produces, and the `_ResourceId`
+normalisation tweaked for the customer's resource ID conventions.
+
+#### Calibrating Advisor's reservation and Savings Plan recommendations
+
+Advisor's commitment recommendations are **a sanity check, not a source of truth**.
+
+What Advisor does well: surfaces obvious commitment opportunities at scale (hundreds of
+subscriptions, manual analysis impractical). The "you would have saved $X if you had
+purchased this RI three months ago" framing is operationally useful for stakeholder
+conversations.
+
+**Calibration points** - what Advisor does poorly:
+
+- **Backward-looking by design.** Analyses 7, 30, or 60 days of past usage (default 60
+  days). Does not know about a planned decommission, migration, or architecture change.
+  If the customer is about to retire a workload, Advisor will recommend committing to it.
+- **Does not account for Azure Hybrid Benefit.** Quoted savings are gross of AHB. For
+  Windows workloads with AHB applied, the real saving from a recommended RI is
+  meaningfully smaller than Advisor states.
+- **Does not compare RI vs SP side by side.** RI recommendations and SP recommendations
+  live on separate Advisor pages. The actual decision question - "for this workload,
+  do I commit via RI or SP?" - Advisor cannot answer for you.
+- **Defaults to Shared scope and 1-year term.** Both are usually right, but for
+  multi-Billing-Profile MCAs the Shared scope is bounded by the Billing Profile that
+  owns the recommendation, not the whole company. Advisor does not warn about this
+  scope boundary.
+- **Conservative coverage targeting.** Recommendations target ~80-90% of observed usage.
+  If the customer wants lower coverage for liquidity reasons (more PAYG buffer for
+  workload changes), Advisor does not propose that profile.
+
+**Operating pattern:** take Advisor's output as one input, validate against your own
+calculation from the cost-plus-utilisation join, reconcile differences. Differences are
+diagnostic - they usually reveal AHB not factored, scope mismatches, or workload context
+Advisor cannot know.
+
+Source: https://learn.microsoft.com/en-us/azure/advisor/advisor-reference-cost-recommendations
+
+#### Tooling decision - Power BI / FinOps Hubs / third-party
+
+All three options consume the same underlying Azure data sources, so all three face the
+same daily-granularity constraint. The difference is **where the work happens and what
+it costs**.
+
+**Custom Power BI on the FOCUS export.** Full control of the logic. Use the FinOps
+Toolkit Power BI templates as a starting point - they ship with commitment coverage,
+utilisation, and what-if commitment models. Cost: developer time to maintain. Best for
+customer-specific reports, when the customer wants to own the analytics layer, or when
+integration with non-Azure data is needed.
+
+**FinOps Hubs (Azure-native, open source).** Microsoft's reference implementation.
+Deploys an Azure Data Explorer or Fabric backend that ingests FOCUS exports, plus
+pre-built Power BI reports. Open source as software - but the ADX or Fabric capacity is
+real money. Small ADX cluster ~$300/month; Fabric capacity unit $2,500+/month depending
+on size. **The cost of running FinOps Hubs is itself a FinOps line item that should
+appear in the customer's cost model.** Best for customers committed to Azure-native,
+with engineering capacity to maintain it.
+
+**Third-party (Apptio Cloudability, Vantage, Cast.ai for AKS, Anodot, Spot.io, etc.).**
+Pre-built logic, multi-cloud, vendor managed. Cost: typically fixed $X/month or 1-3% of
+cloud spend. Best for customers with multi-cloud estates, no in-house FinOps engineering,
+or who want a managed view without maintaining infrastructure. Trade-off: dependency on
+the vendor data model, and vendor data typically lags Microsoft by 24-72 hours.
+
+**Decision tree:**
+
+```
+START: What does the customer need?
+|
++-- Single-cloud Azure, small FinOps team, native preference
+|   \-- FinOps Hubs
+|
++-- Multi-cloud, single pane of glass
+|   \-- Third-party (Apptio Cloudability, Vantage, etc.)
+|
++-- Specific reports off-the-shelf cannot handle,
+|   OR existing Power BI / Fabric / Databricks practice
+|   \-- Custom Power BI on FOCUS exports + FinOps Toolkit templates
+|
+\-- Short engagement (< 2 weeks)
+    \-- Cost Management portal + manual Excel export
+        Tooling decisions belong in Phase 2 roadmap, not Phase 1
+```
+
+#### Six-step commitment strategy framework
+
+The canonical sequence to run on any Azure commitment engagement:
+
+**Step 1 - Data foundation.** Daily FOCUS export to Storage Account, 90 days minimum
+of history (trigger backfill if the export is new). Azure Monitor diagnostic settings
+emitting VM metrics to a Log Analytics workspace.
+
+**Step 2 - Identify the always-on baseline.** For each SKU family + region, compute
+hourly running vCPUs from Azure Monitor over 90 days. The 5th-10th percentile is the
+steady-state floor. **This is the step you cannot do from cost data alone - it is
+forced by the granularity gap.**
+
+**Step 3 - Coverage planning.** Map the floor to instruments:
+- High baseline + low variability + AHB-eligible Windows -> 3-year RI with AHB
+- High baseline + low variability + Linux or non-AHB -> 1-year RI (3-year if conviction
+  is high)
+- Variable workload, stable $ floor -> Savings Plan, 1-year, sized at 70-80% of floor
+- Bursty / unpredictable -> PAYG with Spot for the spike layer
+
+**Step 4 - Validate against Advisor.** Pull Advisor's reservation and SP recommendations.
+Reconcile against your own calculation from Step 2. Differences usually reveal AHB not
+factored, scope mismatches, or workload changes Advisor cannot know.
+
+**Step 5 - Stagger purchases.** Do not buy the full recommendation at once. Stagger
+over 60-90 days so utilisation patterns confirm or surprise before each next tranche.
+Reservation exchange liquidity (see "Reservation and Savings Plan liquidity mechanics"
+above) gives you a recovery path if Step 4 missed something; SP commitments do not.
+
+**Step 6 - Quarterly re-evaluation.** Exchange RIs that no longer fit the workload.
+Track SP utilisation against committed $/hour. Adjust the next quarter's commitments
+based on prior actuals, not on Advisor's rolling backward-looking recommendation.
+
 ---
 
 ## Compute rightsizing
