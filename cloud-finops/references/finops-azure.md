@@ -2073,25 +2073,34 @@ more built-in liquidity mechanisms than AWS, but each has limits.
 
 | Mechanism | How it works | Applies to | Limits |
 |---|---|---|---|
-| **Reservation exchange** | Swap a Reservation for a different SKU of equal or greater value | Reservations only | Must be equal or greater value; exchanges count toward $50K refund cap |
-| **Reservation refund** | Cancel a Reservation and receive a pro-rated refund | Reservations only | $50,000 rolling 12-month cap across all refunds and exchanges |
-| **Reservation instance size flexibility** | A Reservation on one VM size covers other sizes in the same family at a normalised ratio | VM Reservations | Same VM family and region only |
+| **Reservation exchange** | Swap a Reservation for a different SKU within the same product family | Reservations only | Same product family. **No fee, no annual cap. Exchanges do NOT count against the $50K refund cap.** |
+| **Reservation refund (cancellation)** | Cancel a Reservation and receive a pro-rated refund | Reservations only | $50,000 rolling 12-month cap **per Billing Profile (MCA) or enrollment (EA)**. The cap restores day-by-day; 365 days after a refund, the original $50K is fully reinstated. |
+| **Reservation instance size flexibility (ISF)** | A Reservation on one VM size covers other sizes in the same family at a normalised ratio | VM Reservations | Same VM family and region only |
+| **Reservation trade-in to Savings Plan** | Convert RI to Savings Plan credit | Reservations only | No fee, no time limit |
 | **Staggered expiry** | Purchase commitments in phased blocks so only a fraction expires each quarter | All instruments (Reservations, Savings Plans) | Requires purchasing discipline |
+
+This table is the same set of mechanics as the "Reservation and Savings Plan
+liquidity mechanics" table earlier in this file - kept here in the commitment-
+portfolio context for engagement readers who land in this section first.
 
 **Key insight:** Reservations are more liquid than Savings Plans on Azure. This is
 the opposite of the common assumption. Savings Plans offer usage flexibility (any
 family, any region) but zero financial liquidity (no exchange, no refund, no
-cancellation). Reservations lock to a specific SKU but allow exchanges, refunds,
-and instance size flexibility. When choosing between the two, factor liquidity into
-the decision - not just discount depth and coverage breadth.
+cancellation). Reservations lock to a specific SKU but allow exchanges (no fee,
+no cap), refunds (within the $50K cap), trade-in to Savings Plan (no fee, no
+limit), and instance size flexibility within the family. When choosing between
+the two, factor liquidity into the decision - not just discount depth and coverage
+breadth.
 
-**The $50,000 refund cap.** Microsoft imposes a rolling 12-month cap of $50,000
-across all Reservation refunds and exchanges that result in a decrease in value.
-For organisations with large Reservation portfolios, this cap can be a binding
-constraint. If you need to reshape more than $50,000 in Reservations within a year,
-you will hit the ceiling. Plan exchanges early and spread them across the 12-month
-window. (See also the "Reservation and Savings Plan liquidity mechanics" table
-earlier in this file - the two views are complementary.)
+**The $50,000 refund cap (applies to refunds only, not exchanges).** Microsoft
+imposes a rolling 12-month cap of $50,000 on Reservation refunds per Billing
+Profile (MCA) or enrollment (EA). **Exchanges within the same product family do
+not count against this cap** - confirmed in current Microsoft docs. For
+organisations with large Reservation portfolios, the refund cap can still be a
+binding constraint if you need to cancel rather than exchange. The cap restores
+day-by-day; spread cancellations across the 12-month window where possible.
+
+Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations
 
 ### Phased purchasing
 
