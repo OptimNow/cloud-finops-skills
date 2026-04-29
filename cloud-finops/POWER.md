@@ -98,17 +98,17 @@ philosophy applied to all responses. Then load the domain reference that matches
 | AI costs, LLM inference, token economics, agentic cost patterns, AI ROI, AI cost allocation, GPU cost attribution, RAG harness costs | `references/finops-for-ai.md` |
 | AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management | `references/finops-ai-value-management.md` |
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
-| AWS billing, EC2 rightsizing, RIs, Savings Plans, CUR, Cost Explorer | `references/finops-aws.md` |
-| AWS Bedrock billing, provisioned throughput, model unit pricing, batch inference | `references/finops-bedrock.md` |
-| Azure cost management, reservations, Azure Advisor, Cost Management, EA-to-MCA transition | `references/finops-azure.md` |
-| Azure OpenAI Service, PTU reservations, GPT pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
-| Anthropic billing, Claude API costs, Claude Code costs, pricing, Fast mode, prompt caching, Batch API | `references/finops-anthropic.md` |
-| GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery optimization | `references/finops-gcp.md` |
-| GCP Vertex AI billing, Gemini pricing, provisioned throughput, batch prediction | `references/finops-vertexai.md` |
+| AWS billing, EC2 rightsizing, RIs, Savings Plans, commitment strategy, portfolio liquidity, phased purchasing, CUR, Data Exports for FOCUS 1.2, Cost Explorer hourly granularity, EDP negotiation, RDS cost management, database commitments, SageMaker AI Savings Plan, Database Savings Plan | `references/finops-aws.md` |
+| AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference, Application Inference Profiles, Bedrock Projects, prompt caching, IAM Principal Cost Allocation | `references/finops-bedrock.md` |
+| Azure cost management, reservations, Savings Plans, Azure Hybrid Benefit, AHB, commitment strategy, portfolio liquidity, phased purchasing, sizing methodology, MACC, Azure Advisor, compute rightsizing, AKS optimisation, Azure Linux retirement, Node Auto Provisioning, NAP, database optimisation, Azure SQL, Cosmos, Log Analytics cost control, backup and snapshot management, storage tiering, networking cost, tagging and Azure Policy governance, FOCUS exports, EA-to-MCA transition, MCA contractual mechanics, billing hierarchy, ISF CSV | `references/finops-azure.md` |
+| Azure OpenAI Service, Azure AI Foundry, PTU reservations, locality constraint, GPT-4o, GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
+| Anthropic billing, Claude API costs, Claude Code costs, Opus, Sonnet, Haiku pricing, Fast mode, prompt caching, Batch API, long-context pricing, Managed Agents | `references/finops-anthropic.md` |
+| GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery billing export, BigQuery optimisation, FOCUS export, Sustained Use Discounts, SUDs, Committed Use Discounts, CUDs, Flexible CUDs, Spot VMs, Cloud Carbon Footprint | `references/finops-gcp.md` |
+| GCP Vertex AI billing, Vertex provisioned throughput, Gemini pricing, Vertex batch prediction, default PAYG spillover | `references/finops-vertexai.md` |
 | Tagging strategy, naming conventions, IaC enforcement, MCP governance | `references/finops-tagging.md` |
-| FinOps framework, maturity model, phases, capabilities, personas | `references/finops-framework.md` |
-| Databricks clusters, jobs, Spark optimization, Unity Catalog costs | `references/finops-databricks.md` |
-| Snowflake warehouses, query optimization, storage, credits | `references/finops-snowflake.md` |
+| FinOps framework, 2024 baseline plus 2026 update, Executive Strategy Alignment, Usage Optimization, maturity model, phases, capabilities, personas | `references/finops-framework.md` |
+| Databricks clusters, jobs, Spark optimisation, Unity Catalog costs | `references/finops-databricks.md` |
+| Snowflake warehouses, query optimisation, storage, credits | `references/finops-snowflake.md` |
 | AI coding tools, Cursor costs, Claude Code costs, Copilot costs, Windsurf costs, Codex costs, dev tool FinOps, BYOK coding agents, LiteLLM proxy | `references/finops-ai-dev-tools.md` |
 | OCI compute, storage, networking optimization | `references/finops-oci.md` |
 | GreenOps, cloud carbon, sustainability, carbon-aware workloads | `references/greenops-cloud-carbon.md` |

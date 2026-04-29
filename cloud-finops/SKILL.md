@@ -117,24 +117,24 @@ premature - they risk committing to waste.
 | File | Contents | Lines |
 |---|---|---|
 | `optimnow-methodology.md` | OptimNow reasoning philosophy, 4 pillars, engagement principles, tools | ~155 |
-| `finops-for-ai.md` | AI cost management, LLM economics, agentic patterns, ROI framework | ~490 |
+| `finops-for-ai.md` | AI cost management, LLM economics, agentic patterns, ROI framework | ~330 |
 | `finops-ai-value-management.md` | AI investment governance: AI Investment Council, stage gates, incremental funding, practice operations, value metrics | ~275 |
-| `finops-genai-capacity.md` | GenAI capacity models: provisioned vs shared, traffic shape, spillover, waste types, cross-provider comparison | ~225 |
-| `finops-aws.md` | AWS FinOps: CUR, Cost Explorer, EC2, compute/database commitment decision trees, portfolio liquidity, phased purchasing, EDP negotiation, RDS strategy, 128 optimisation patterns | ~2240 |
-| `finops-bedrock.md` | AWS Bedrock billing: model pricing, provisioned throughput, batch inference, CloudWatch metrics, cost allocation | ~225 |
-| `finops-azure.md` | Azure FinOps: reservations, Savings Plans, AHB, compute/database commitment decision trees, portfolio liquidity, MACC, EA-to-MCA transition, Advisor rightsizing, AKS optimisation, database patterns, Log Analytics cost control, backup/snapshot management, storage tiering, networking cost, tagging and Azure Policy governance, FOCUS exports | ~1500 |
-| `finops-azure-openai.md` | Azure OpenAI Service: PTU reservations, spillover, GPT model pricing, prompt caching, fine-tuning costs | ~390 |
-| `finops-anthropic.md` | Anthropic billing: Claude Opus/Sonnet/Haiku pricing, Fast mode, long-context cliffs, prompt caching, Batch API, governance | ~180 |
-| `finops-gcp.md` | GCP optimisation: 26 patterns across Compute Engine, Cloud SQL, GCS, networking | ~265 |
-| `finops-vertexai.md` | GCP Vertex AI billing: Gemini pricing, provisioned throughput, batch prediction, Cloud Monitoring metrics | ~235 |
+| `finops-genai-capacity.md` | GenAI capacity models: provisioned vs shared, traffic shape, spillover (incl. Vertex AI default-PAYG), waste types, cross-provider comparison | ~225 |
+| `finops-aws.md` | AWS FinOps: CUR + Data Exports for FOCUS 1.2 (GA Nov 2025), Cost Explorer hourly + resource-level, EC2, compute/database commitment decision trees including SageMaker AI and Database Savings Plans, portfolio liquidity, phased purchasing, EDP negotiation, RDS strategy, optimisation patterns | ~2630 |
+| `finops-bedrock.md` | AWS Bedrock: model pricing, provisioned throughput, Application Inference Profiles, Bedrock Projects, prompt caching with 1-hour TTL, IAM Principal Cost Allocation, CloudWatch metrics, cost allocation | ~350 |
+| `finops-azure.md` | Azure FinOps: reservations, Savings Plans, AHB, compute/database commitment decision trees, sizing methodology (granularity, Advisor calibration, tooling), portfolio liquidity, MACC, EA-to-MCA contractual mechanics (three MCA flavours, billing hierarchy with role-per-level), reservation chargeback trap, ISF CSV deprecation 9 May 2026, Advisor rightsizing, AKS in depth (NAP, Azure Linux 2 retirement), database patterns, Log Analytics 5-lever cost control, backup/snapshot management, storage tiering, networking cost, tagging and Azure Policy governance, FOCUS exports, 48-pattern catalogue | ~2980 |
+| `finops-azure-openai.md` | Azure OpenAI / AI Foundry: PTU reservations (locality constraint), reservation discount path, spillover, GPT model pricing, prompt caching, fine-tuning costs | ~410 |
+| `finops-anthropic.md` | Anthropic billing: Claude Opus/Sonnet/Haiku pricing, Fast mode and Managed Agents (flagged emerging-assumption), per-model long-context picture, prompt caching, Batch API, governance | ~280 |
+| `finops-gcp.md` | GCP FinOps: BigQuery billing export (standard / detailed / pricing), FOCUS export, Sustained Use Discounts, Committed Use Discounts (resource-based vs Flexible/spend-based with current 28%/46% depths), BigQuery commitment model, Spot VMs, Cloud Carbon Footprint location-based vs market-based, 26 inefficiency patterns | ~480 |
+| `finops-vertexai.md` | GCP Vertex AI billing: Gemini pricing, provisioned throughput (default-PAYG spillover), batch prediction, Cloud Monitoring metrics | ~245 |
 | `finops-tagging.md` | Tagging strategy, IaC enforcement, virtual tagging, MCP automation | ~250 |
-| `finops-framework.md` | Full FinOps Foundation framework: 22 capabilities, personas, domains | ~280 |
+| `finops-framework.md` | FinOps Foundation framework - 2024 baseline (4 domains, 22 capabilities) plus 2026 update (Executive Strategy Alignment, Workload Optimization -> Usage Optimization), personas, principles, phases | ~390 |
 | `finops-databricks.md` | Databricks optimisation: 18 patterns for clusters, jobs, Spark, storage | ~185 |
 | `finops-snowflake.md` | Snowflake FinOps: credit model, hidden cost categories, 13 optimisation patterns for warehouses, queries, storage | ~200 |
-| `finops-ai-dev-tools.md` | AI coding tools: Cursor, Claude Code, Copilot, Windsurf, Codex billing models, cost attribution, optimisation levers | ~400 |
+| `finops-ai-dev-tools.md` | AI coding tools: Cursor (Pro/Ultra/Teams/Enterprise), Claude Code, GitHub Copilot (transition to AI Credits 1 June 2026), Windsurf, OpenAI Codex (incl. GPT-5.5), billing models, cost attribution, optimisation levers | ~445 |
 | `finops-oci.md` | OCI optimisation: 6 patterns for compute, storage, networking | ~75 |
-| `finops-sam.md` | SaaS asset management: discovery, licence optimisation, renewal governance, SMPs, shadow IT, AI transition | ~290 |
-| `finops-itam.md` | FinOps-ITAM collaboration: BYOL mechanics, marketplace channel governance, vendor co-management, consumption monitoring, joint operating model | ~325 |
+| `finops-sam.md` | SaaS asset management: discovery, licence optimisation, renewal governance, SMPs, shadow IT, AI transition | ~210 |
+| `finops-itam.md` | FinOps-ITAM collaboration: BYOL mechanics, marketplace channel governance, vendor co-management, consumption monitoring, joint operating model | ~320 |
 | `greenops-cloud-carbon.md` | GreenOps: carbon measurement, carbon-aware workloads, region selection, GHG Protocol | ~330 |
 
 ---
