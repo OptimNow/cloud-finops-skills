@@ -8,6 +8,14 @@
 >
 > Distilled from: [Explaining Anthropic billing changes in 2026](https://www.finout.io/blog/anthropic-billing-changes-2026)
 > by Asaf Liveanu (Finout), February 24, 2026 and [Anthropic just launched Managed Agents](https://www.finout.io/blog/anthropic-just-launched-managed-agents.-lets-talk-about-how-were-going-to-pay-for-this).
+>
+> **Source caveat:** Managed Agents and Fast mode mechanics in this file are partly sourced
+> from Finout commentary, not Anthropic primary documentation. Where exact pricing,
+> activation rules, or feature scope matter for a customer commitment, **verify against
+> Anthropic's primary docs** before quoting:
+> - https://docs.anthropic.com/en/docs/about-claude/pricing
+> - https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
+> - https://docs.anthropic.com/en/docs/claude-code/costs
 
 ---
 
@@ -22,7 +30,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 |---|---|
 | Model choice | Base token rate anchor (Opus 4.6: $5/$25 per MTok input/output) |
 | Performance tier | Standard vs Fast mode - 6× price multiplier |
-| Context length | Flat-rate 1M token context window with no surcharges |
+| Context length | **Per-model**: some models price flat across the context window; others (notably Claude Sonnet 4 with the 1M beta header) still apply premium long-context rates above 200K input tokens. Verify per model. |
 | Data residency | US-only inference adds a 1.1× multiplier |
 | Prompt caching | Writes are priced (1.25× or 2×), reads are discounted (0.1×) |
 | Tool usage | Web search and code execution have separate meters |
@@ -126,13 +134,27 @@ on February 7, 2026.
   Amazon Bedrock, Google Vertex AI, and Microsoft Azure Foundry. This fragments spend
   away from consolidated cloud agreements toward direct Anthropic invoices.
 
-### Context window pricing: flat-rate 1M tokens
+### Context window pricing - per-model, not uniform
 
-As of April 2026, Anthropic has moved to a flat-rate pricing model for the 1M context window:
-- No surcharges for long contexts
-- The same per-token rate applies regardless of context length
-- This removes the previous 200K input token cost cliff
-- Features that inflate context (tool results, retrieval dumps) no longer trigger premium pricing
+Long-context pricing is **not uniform across the Claude line-up as of April 2026.**
+Practical state:
+
+- **Newer models** (Opus 4.6, Sonnet 4.6, Haiku 4.5 in their default 200K context):
+  flat-rate per-token pricing within the supported context window. No surcharge tied
+  to context length within that window.
+- **Selected models with the 1M context beta header** (notably Claude Sonnet 4): per
+  Anthropic's primary pricing docs, **premium long-context rates apply above 200K
+  input tokens**. The "1M context cliff" is still real for those configurations.
+- **Features that inflate context** (tool results, retrieval dumps) trigger the
+  premium tier where it applies, just like any other input volume above the
+  threshold.
+
+**FinOps action:** before quoting that "long context is now free", check the specific
+model and beta-header combination the customer is using. The per-model picture
+matters for forecasts. The AI dev tools reference (`finops-ai-dev-tools.md`) carries
+the same warning for Anthropic-backed coding workflows.
+
+Source: https://docs.anthropic.com/en/docs/about-claude/pricing
 
 ---
 
