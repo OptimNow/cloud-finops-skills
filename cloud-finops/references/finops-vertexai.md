@@ -36,10 +36,27 @@ carry disproportionately higher costs.
 
 ## Model pricing reference
 
-### On-demand pricing structure
+### On-demand pricing structure - tokens AND characters
 
-Vertex AI on-demand pricing is per-million tokens, billed per API call. No minimum spend,
-no upfront commitment.
+Vertex AI on-demand pricing is per-million tokens for newer Gemini SKUs. **However,
+some Gemini APIs and earlier model versions still bill per 1,000 characters (input
+and output)** rather than per token. This is a real difference from AWS / OpenAI /
+Anthropic, which all bill per token.
+
+**Practical implications:**
+- Capacity-planning math from Anthropic or OpenAI engagements does not transpose
+  cleanly: 1,000 characters is roughly 250 tokens for English (ratio varies per
+  language - East Asian scripts can be 1:1 character-to-token, English is ~4:1).
+- Verify the unit on Vertex's pricing page per model before quoting. Two Gemini
+  variants on the same product family can use different units depending on model
+  version and surface (Vertex Studio, Vertex API, Gemini API).
+- For multilingual workloads, the character-based pricing is sometimes cheaper
+  than the token-based equivalent (the per-character rate can favour languages
+  that tokenise unfavourably under English-trained tokenisers).
+
+Source: https://cloud.google.com/vertex-ai/generative-ai/pricing
+
+No minimum spend, no upfront commitment, regardless of unit.
 
 | Model family | Relative cost tier | Notes |
 |---|---|---|
@@ -193,9 +210,37 @@ contract, cost per generated email) for margin modelling as usage scales.
 ### Prompt optimization
 
 - Audit system prompt length  - verbose instructions inflate every API call
-- Implement context caching where supported (Vertex AI supports context caching for Gemini)
+- Implement **Vertex AI Context Caching** where supported (Gemini Pro, Flash 1.5+) - see below
 - Truncate or summarize conversation history for multi-turn applications
 - Avoid sending redundant context in RAG pipelines
+
+### Vertex AI Context Caching - direct lever for long-context workloads
+
+Vertex AI supports **explicit context caching** for selected Gemini models (Gemini
+Pro, Flash 1.5 and later). Equivalent in spirit to Anthropic / Bedrock prompt
+caching - cache a stable context once, reuse it across many requests at a steeply
+discounted input-token rate.
+
+**Mechanics:**
+- Cache write: priced per cached token (or character) at a small premium over the
+  base input rate.
+- Cache hit (read): priced at a meaningfully lower rate than full input.
+- TTL: configurable cache lifetime (typically minutes to hours, model-dependent).
+- Minimum context size: caching is only beneficial above a token / character
+  threshold the model documents - small contexts do not break even.
+
+**Where it matters:**
+- RAG pipelines with stable retrieved context across many user queries.
+- Long system prompts (>1,000 tokens) reused across an interactive session.
+- Agentic loops re-sending tool definitions and conversation history.
+- Batch evaluation against a stable corpus.
+
+**Where it does not help:**
+- One-shot calls with unique input.
+- Workloads where the context changes substantively each request.
+- Models that do not support caching (verify per model and per region).
+
+Source: https://cloud.google.com/vertex-ai/generative-ai/docs/context-cache/context-cache-overview
 
 ### Context window management
 

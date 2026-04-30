@@ -277,6 +277,35 @@ Windsurf uses a credit system where each credit costs $0.04 and maps to the unde
 model provider's API price plus a 20% margin. Add-on credits are available at $10 for 250
 (individual) or $40 for 1,000 (Teams/Enterprise).
 
+### Gemini Code Assist
+
+Gemini Code Assist is Google's AI coding tool, distributed primarily via Google
+Cloud and Google Workspace channels rather than as a standalone subscription.
+Two distinct entitlement paths matter for FinOps:
+
+- **Bundled with Google Workspace / Google Cloud editions.** Some Workspace and
+  GCP editions include Gemini Code Assist in the seat licence. The marginal cost
+  of enabling it for already-licensed users is zero - which makes adoption
+  economics very different from the seat + usage model of Cursor or Copilot.
+- **Standalone subscription tiers** (Standard, Enterprise) for organisations
+  without bundling. Per-user monthly pricing; verify current rate against the
+  Google Cloud pricing page.
+
+**FinOps angle:**
+- For organisations already on a Workspace edition that includes Code Assist,
+  pay-per-seat tools (Cursor / Copilot) become harder to justify on cost alone -
+  the comparison is "Code Assist for $0 marginal cost" vs "Cursor at $X / month
+  per seat". Quality benchmarking still matters; cost is no longer the only
+  driver.
+- For BYOK comparisons, Gemini Code Assist's token consumption against your
+  Vertex AI quota is the relevant cost line - similar to how Claude Code on API
+  key mode bills against your Anthropic account. Apply the same cost-attribution
+  patterns documented for BYOK tools earlier in this file.
+- Gemini API context-caching pricing differs from token billing - see
+  `finops-vertexai.md` for Vertex AI Context Caching mechanics.
+
+Source: https://cloud.google.com/products/gemini/code-assist
+
 ---
 
 ## Cost attribution patterns
