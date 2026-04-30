@@ -1,7 +1,102 @@
 # FinOps on OCI
 
-> Oracle Cloud Infrastructure optimization patterns covering compute, storage, and networking. 6 inefficiency patterns for diagnosing waste and building optimization roadmaps.
-> Source: PointFive Cloud Efficiency Hub.
+> Oracle Cloud Infrastructure FinOps guidance covering cost data foundations
+> (Cost Reports, FOCUS, cost-tracking tags, Budgets, Universal Credits) and 6
+> inefficiency patterns for diagnosing waste and building optimisation roadmaps.
+
+---
+
+## OCI cost data foundations
+
+OCI's billing and cost-management primitives differ from AWS / Azure / GCP in
+naming and structure but cover the same conceptual ground. The five primitives
+below are the FinOps practitioner's starting kit on any OCI engagement.
+
+### Cost Reports (legacy CSV exports)
+
+OCI's billing data export. Cost Reports are CSVs delivered daily to a tenancy-
+owned Object Storage bucket, with one row per usage record. The schema covers
+service, SKU, compartment, tags, region, usage quantity, list rate, discounted
+rate, and effective cost.
+
+**Practical setup:**
+- Cost Reports are auto-generated daily once enabled at the tenancy root.
+- Files land in a dedicated Oracle-managed Object Storage bucket; access requires
+  a policy granting your tenancy read on `bling-bucket` (the canonical name).
+- Retention: typically 365 days of historical reports retained, but verify per
+  tenancy as Oracle has changed retention policy historically.
+- Daily granularity (no hourly), which is similar to Azure Cost Management
+  exports - the same daily-vs-hourly capacity-sizing nuance applies for OCI as
+  documented for Azure.
+
+Source: https://docs.oracle.com/iaas/Content/Billing/Concepts/costusagereportsoverview.htm
+
+### FOCUS Reports - the cross-cloud-conformant export
+
+OCI publishes a **FOCUS-conformant cost export** alongside the legacy Cost Reports.
+This is the path for multi-cloud customers who want OCI cost data in the same
+schema as AWS Data Exports for FOCUS 1.2 and Azure Cost Management's FOCUS 1.2
+preview. Coexistence pattern: enable both - FOCUS for multi-cloud normalisation
+into a unified warehouse, legacy Cost Reports for OCI-native columns the FOCUS
+schema doesn't surface.
+
+### Cost-tracking tags - first-class billing-attribution primitive
+
+OCI distinguishes three tag types, and only one of them flows into cost reports:
+
+| Tag type | Scope | Surfaces in Cost Reports? |
+|---|---|---|
+| **Freeform tags** | User-applied key/value | Limited - not native cost-allocation primitive |
+| **Defined tags** | Schema-enforced via tag namespaces | Yes, but verbose in cost data |
+| **Cost-tracking tags** | Subset of defined tags explicitly marked for billing | **Yes - the canonical cost-allocation tag** |
+
+**Practical implication:** mark the tags you want to allocate cost by - typically
+`cost_centre`, `team`, `application`, `environment` - as cost-tracking tags
+(maximum 10 per tenancy as of 2026, verify current limit). They then propagate
+to Cost Reports and become the primary cost-allocation grouping dimension. Tags
+not marked as cost-tracking still apply to resources but require manual joins to
+attribute spend.
+
+Day-1 audit on any OCI engagement: list cost-tracking tags via the Tagging
+console, verify against the customer's intended allocation dimensions, and add
+missing ones before the next billing cycle (the cap forces deliberate choice).
+
+### OCI Budgets
+
+OCI Budgets provide spend caps with email and event-grid alerts at the
+**compartment** or **cost-tracking tag** scope. Budgets are alert-only by default
+- they do not enforce hard stops the way Azure Budgets or Snowflake Budgets can.
+
+**Practical setup:**
+- One budget per top-level cost-allocation boundary (compartment for org-by-
+  project tenancies; cost-tracking tag for org-by-team tenancies).
+- Alert thresholds at 50%, 80%, 100% of forecast.
+- Route alerts to both FinOps and engineering team leads (FinOps-only alerts
+  create a bottleneck).
+
+Source: https://docs.oracle.com/iaas/Content/Billing/Concepts/budgetsoverview.htm
+
+### Universal Credits - Oracle's commercial commitment construct
+
+Universal Credits are Oracle's multi-year spend commitment, analogous to AWS EDP
+and Azure MACC. The customer commits to a defined dollar amount over 1-3 years;
+eligible OCI consumption draws down against that commitment.
+
+**FinOps responsibility under Universal Credits:**
+- **Burndown alignment** - track actual spend vs commitment trajectory monthly.
+  An optimisation programme that succeeds in reducing OCI spend can leave the
+  customer with an unspent Universal Credit balance at term end (the same
+  optimisation paradox documented for Azure MACC).
+- **Coverage** - most native OCI services count toward Universal Credit burndown,
+  but third-party Marketplace listings and certain Oracle SaaS products may not.
+  Verify product eligibility at procurement, not at burn-time.
+- **Annual commitment vs three-year commitment** - longer term gives deeper
+  discount but compounds the optimisation-vs-burndown tension. Evaluate
+  consumption stability before committing for three years.
+
+The Universal Credits / FinOps interaction mirrors the MACC framing in
+`finops-azure.md` - read that section for the full optimisation-paradox and
+operational-cadence guidance, then apply OCI-specific coverage rules.
 
 ---
 

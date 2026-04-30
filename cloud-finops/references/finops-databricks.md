@@ -1,7 +1,103 @@
 # FinOps on Databricks
 
-> Databricks-specific optimization patterns covering compute clusters, jobs, storage, and configuration. 18 inefficiency patterns for diagnosing waste and building optimization roadmaps.
-> Source: PointFive Cloud Efficiency Hub.
+> Databricks-specific FinOps guidance covering cost data foundations (system tables,
+> budget policies, serverless and model-serving attribution) and 18 inefficiency
+> patterns for diagnosing waste and building optimisation roadmaps.
+
+---
+
+## Cost data foundations on Databricks
+
+Databricks cost data lives primarily in **system tables** in Unity Catalog. Account-
+admin queries against these tables are the canonical FinOps source of truth - cluster
+UI snapshots, dashboards, and per-workspace reports all derive from the same data.
+Skip the UI for serious analytics; query the system tables directly.
+
+### `system.billing.usage` - the canonical billing table
+
+The single most important table for Databricks FinOps. One row per usage record
+(typically 1-hour granularity), with fields covering account, workspace, SKU, DBUs
+consumed, list-price USD, and identifiers for the workload that consumed the DBUs
+(`usage_metadata` includes job_id, cluster_id, warehouse_id, endpoint_id depending
+on workload type).
+
+**Practical usage patterns:**
+- Daily allocation by team / tag / project: join `usage_metadata.tags` to a team
+  mapping; aggregate `usage_quantity` (DBUs) and `usage_quantity * list_price` (USD).
+- Job-level cost trending: filter by `billing_origin_product = 'JOBS'` and join to
+  `system.lakeflow.jobs` for job names.
+- Anomaly detection: month-over-month delta per workspace per SKU, flagged at >20%.
+
+**Important nuances:**
+- Data is account-level (not workspace-level) - all workspaces under one account
+  show up in the same table, controlled by `account_id`.
+- List-price USD is the published price, not the customer's negotiated rate. For
+  effective cost, multiply by your contract discount or join to `system.billing.list_prices`
+  for historical price rate-card.
+- Usage records appear with a typical 24-48 hour lag; do not use this for real-time
+  alerting (use cluster-level metrics for that).
+
+Source: https://docs.databricks.com/aws/en/admin/system-tables/billing
+
+### Budget policies - programmatic spend governance
+
+Budget policies are Databricks' first-class spend-control primitive (GA 2025). Define
+a policy that attaches to compute (cluster, job, warehouse, serverless endpoint) and
+enforces a spend cap with alert and/or hard-stop modes.
+
+**What budget policies enable:**
+- **Serverless serverless cost attribution before the fact** - tag the workload with
+  the policy ID, and all serverless DBU consumption rolls up to that policy in
+  billing reports (this is the canonical way to attribute serverless spend, since
+  serverless workloads don't expose node-level visibility).
+- **Spend caps with alerts** at configurable thresholds (e.g. 50%, 80%, 100%).
+- **Hard-stop enforcement** for non-production policies - workload terminates when
+  the cap is reached.
+- **Workspace or account scope** - policies can be enforced org-wide or per-workspace.
+
+**FinOps integration pattern:** create one budget policy per team or per cost-centre,
+require all serverless workloads to declare a policy at submission time, and
+reconcile against `system.billing.usage` monthly. This converts serverless from an
+attribution-blind cost into a per-team accountable line item.
+
+Source: https://docs.databricks.com/aws/en/admin/usage/budget-policies
+
+### Serverless attribution - what changes vs classic compute
+
+Serverless compute (SQL Warehouses serverless, Jobs serverless, Model Serving)
+differs from classic compute in two FinOps-relevant ways:
+
+1. **No node-level visibility.** You don't see the underlying VMs - Databricks
+   manages capacity and charges per DBU consumed. Cluster-level monitoring
+   patterns (autoscaler tuning, node pool selection) don't apply.
+2. **Attribution flows through workload IDs and budget policies, not cluster tags.**
+   Tag the *workload* (job, warehouse, endpoint) or attach a budget policy; the tag
+   propagates to `system.billing.usage` via `usage_metadata`.
+
+The serverless billing system table - `system.billing.usage` filtered to serverless
+SKUs, plus the more detailed serverless-specific tables - is the right starting
+point for serverless cost analysis. Don't try to back-derive cost from query
+duration; let the billing system tell you what it cost.
+
+Source: https://docs.databricks.com/aws/en/admin/system-tables/serverless-billing
+
+### Model serving attribution
+
+Databricks Model Serving (foundation model APIs and custom-deployed models) bills
+through dedicated meters that show up in `system.billing.usage` with
+`billing_origin_product = 'MODEL_SERVING'` and per-endpoint identifiers in
+`usage_metadata`.
+
+**Two distinct cost categories within model serving:**
+- **Provisioned throughput** - dedicated capacity for production endpoints, billed
+  per DBU-hour regardless of request volume. Right-size against P95 throughput.
+- **Pay-per-token** - token-based billing for foundation model APIs (Llama, Mixtral,
+  etc. served by Databricks). Billed per 1k input/output tokens.
+
+**Per-endpoint attribution pattern:** require all model-serving endpoints to carry
+a `cost_centre` and `application` tag at deployment. Aggregate from
+`system.billing.usage` weekly to surface high-cost endpoints and re-evaluate
+provisioned-throughput sizing for ones consistently below 50% utilisation.
 
 ---
 

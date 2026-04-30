@@ -70,6 +70,111 @@ FinOps practitioners coming from AWS instinctively look for tags. On Snowflake, 
 
 ---
 
+## Modern cost-management primitives
+
+Snowflake's cost-attribution surface improved materially in 2025-2026. The FinOps
+practitioner's toolbox is no longer just `WAREHOUSE_METERING_HISTORY` and resource
+monitors - there are now per-query attribution views, programmable budgets, and AI
+feature governance.
+
+### `QUERY_ATTRIBUTION_HISTORY` - per-query credit attribution
+
+The right starting point for "which query consumed which credit" analysis.
+`SNOWFLAKE.ACCOUNT_USAGE.QUERY_ATTRIBUTION_HISTORY` exposes credit consumption per
+query with finer attribution than `QUERY_HISTORY`:
+
+| Column | What it gives |
+|---|---|
+| `QUERY_ID` | Joins to `QUERY_HISTORY` for query text and timing |
+| `CREDITS_ATTRIBUTED_COMPUTE` | Compute credits attributed to the specific query |
+| `CREDITS_USED_QUERY_ACCELERATION` | Query Acceleration Service credits per query |
+| `WAREHOUSE_ID`, `USER_NAME`, `ROLE_NAME` | Standard attribution dimensions |
+| `PARENT_QUERY_ID` | For procedures and nested queries |
+
+**Coverage spans virtual warehouses, serverless tasks, and Cortex AI** - this is the
+single view that ties all three to a credit number per query.
+
+**How it differs from `QUERY_HISTORY`:** `QUERY_HISTORY` shows execution metadata
+(duration, bytes scanned, rows returned). `QUERY_ATTRIBUTION_HISTORY` shows the
+actual credit cost, calculated by Snowflake based on warehouse utilisation during
+the query window. Two queries with similar execution times can have very different
+credit attributions if one ran on a busy warehouse and the other had the warehouse
+to itself.
+
+**Retention:** 365 days in `ACCOUNT_USAGE`, 14 days in `INFORMATION_SCHEMA.QUERY_ATTRIBUTION_HISTORY`.
+
+**Practical FinOps query:** top 50 queries by credits last 30 days, joined to
+`QUERY_HISTORY` for the SQL text - this surfaces the actual heavy hitters that
+warehouse-level metering hides.
+
+Source: https://docs.snowflake.com/en/sql-reference/account-usage/query_attribution_history
+
+### Snowflake Budgets - programmable spend governance
+
+Snowflake Budgets (GA 2024, AI feature budgets GA April 2026) provide spend caps
+with alerts at the account, database, schema, or feature level. The mechanic:
+define a budget object, attach it to a scope, set spend limits and notification
+recipients, and Snowflake enforces or alerts based on cumulative consumption.
+
+**Three useful patterns:**
+- **Account-level safety net** - one budget at the account level with alert at 80%
+  of monthly target, hard limit at 100%. This is the floor - every customer should
+  have it.
+- **Per-database or per-schema budgets** - aligns spend with logical workload
+  boundaries, useful where database = team or database = product.
+- **AI feature budgets** (GA April 2026) - a dedicated budget type that caps
+  Cortex AI consumption (LLM functions, vector search, document AI, etc.)
+  separately from warehouse compute. Important: Cortex spend is otherwise
+  invisible to resource monitors (see below) - AI feature budgets are the only
+  built-in mechanism to cap it.
+
+Sources: https://docs.snowflake.com/en/user-guide/budgets, https://docs.snowflake.com/en/release-notes/2026/other/2026-04-10-budgets-ai-features-ga
+
+### Resource monitors - the warehouse-only constraint
+
+Snowflake Resource Monitors are the older spend-control primitive and still useful,
+but they have a **critical scope limit**: resource monitors **only monitor virtual
+warehouses**. They do not cover:
+
+- **Cortex AI consumption** (LLM functions, document AI, etc.)
+- **Serverless tasks**
+- **Snowpipe ingest credits**
+- **Materialized view auto-refresh**
+- **Search optimisation service**
+- **Replication and failover**
+
+A resource monitor with "100 credits/month, suspend warehouse" enforcement does
+nothing if the credit burn is on Cortex or Snowpipe. **The common cost-control
+posture gap:** customer has resource monitors on every warehouse and assumes
+spend is capped, when serverless / Cortex / Snowpipe are unbounded. Fix: pair
+resource monitors with Snowflake Budgets at higher scopes, and use AI feature
+budgets specifically for Cortex.
+
+Source: https://docs.snowflake.com/en/user-guide/resource-monitors
+
+### Cortex AI cost governance
+
+Cortex AI consumption (Cortex LLM functions, Cortex Search, Cortex Analyst,
+Document AI) bills in credits like everything else, but with three FinOps-relevant
+differences from warehouse compute:
+
+1. **Per-function token-equivalent pricing.** Each Cortex function has a credit-
+   per-token (or credit-per-call) rate that varies by function and underlying
+   model. Cortex LLM functions in particular have a wide credit range across
+   models (e.g. cheaper Llama-class models vs Anthropic Claude-class models).
+2. **No node-level rightsizing.** Cortex is fully managed - no warehouse to size,
+   no autoscaler to tune. The optimisation lever is **prompt design and model
+   selection**, not infrastructure.
+3. **Resource monitors do not cover Cortex.** Use AI feature budgets (above) for
+   spend caps.
+
+Surface Cortex consumption via `QUERY_ATTRIBUTION_HISTORY` filtered to Cortex-
+related warehouses or via the dedicated Cortex usage views. Tag Cortex calls with
+session metadata (`SET QUERY_TAG = 'team:ds, app:rag-pipeline'`) so credit
+attribution carries the application context into `QUERY_HISTORY`.
+
+---
+
 ## Compute Optimization Patterns (5)
 
 **Inefficient Execution Of Repeated Queries**
