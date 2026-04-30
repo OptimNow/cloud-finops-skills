@@ -32,20 +32,20 @@ philosophy applied to all responses. Then load the domain reference that matches
 | AI costs, LLM inference, token economics, agentic cost patterns, AI ROI, AI cost allocation, GPU cost attribution, RAG harness costs | `references/finops-for-ai.md` |
 | AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations | `references/finops-ai-value-management.md` |
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
-| AWS billing, EC2 rightsizing, RIs, Savings Plans, commitment strategy, portfolio liquidity, phased purchasing, CUR, Cost Explorer, EDP negotiation, RDS cost management, database commitments | `references/finops-aws.md` |
-| AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference | `references/finops-bedrock.md` |
-| Azure cost management, reservations, Savings Plans, AHB, commitment strategy, portfolio liquidity, phased purchasing, Azure Advisor, compute rightsizing, AKS optimisation, database optimisation (Azure SQL, Postgres/MySQL, Cosmos), Log Analytics cost control, backup and snapshot management, storage tiering and lifecycle, networking cost, tagging and Azure Policy governance, FOCUS exports, MACC, EA-to-MCA transition | `references/finops-azure.md` |
-| Azure OpenAI Service, PTU reservations, GPT-4o / GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
-| Anthropic billing, Claude API costs, Claude Code costs, Opus, Sonnet, Haiku pricing, Fast mode, prompt caching, Batch API, long-context pricing | `references/finops-anthropic.md` |
-| GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery optimisation | `references/finops-gcp.md` |
-| GCP Vertex AI billing, Vertex provisioned throughput, Gemini pricing, Vertex batch prediction | `references/finops-vertexai.md` |
+| AWS billing, EC2 rightsizing, RIs, Savings Plans, commitment strategy, portfolio liquidity, phased purchasing, CUR, Data Exports for FOCUS 1.2, Cost Explorer hourly granularity, EDP negotiation, RDS cost management, database commitments, SageMaker AI Savings Plan, Database Savings Plan | `references/finops-aws.md` |
+| AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference, Application Inference Profiles, Bedrock Projects, prompt caching, IAM Principal Cost Allocation | `references/finops-bedrock.md` |
+| Azure cost management, reservations, Savings Plans, Azure Hybrid Benefit, AHB, commitment strategy, portfolio liquidity, phased purchasing, sizing methodology, MACC, Azure Advisor, compute rightsizing, AKS optimisation, Azure Linux retirement, Node Auto Provisioning, NAP, database optimisation (Azure SQL, Postgres/MySQL, Cosmos), Log Analytics cost control, backup and snapshot management, storage tiering and lifecycle, networking cost, tagging and Azure Policy governance, FOCUS exports, EA-to-MCA transition, MCA contractual mechanics, billing hierarchy, ISF CSV deprecation | `references/finops-azure.md` |
+| Azure OpenAI Service, Azure AI Foundry, PTU reservations, locality constraint, GPT-4o, GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
+| Anthropic billing, Claude API costs, Claude Code costs, Opus, Sonnet, Haiku pricing, Fast mode, prompt caching, Batch API, long-context pricing, Managed Agents | `references/finops-anthropic.md` |
+| GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery billing export, BigQuery optimisation, FOCUS export, Sustained Use Discounts, SUDs, Committed Use Discounts, CUDs, Flexible CUDs, Spot VMs, Cloud Carbon Footprint | `references/finops-gcp.md` |
+| GCP Vertex AI billing, Vertex provisioned throughput, Gemini pricing, Vertex batch prediction, default PAYG spillover | `references/finops-vertexai.md` |
 | Tagging strategy, naming conventions, IaC enforcement, MCP governance | `references/finops-tagging.md` |
-| FinOps framework, maturity model, phases, capabilities, personas | `references/finops-framework.md` |
+| FinOps framework, 2024 baseline plus 2026 update, Executive Strategy Alignment, Usage Optimization, maturity model, phases, capabilities, personas | `references/finops-framework.md` |
 | Databricks clusters, jobs, Spark optimisation, Unity Catalog costs, allocation and governance, DBU executor attribution, DBCU commitments, Photon multiplier, serverless premium, amortised vs PAYG split, Azure VM RI vs DBU clarification | `references/finops-databricks.md` |
 | Microsoft Fabric capacity FinOps, F-SKUs, Capacity Units, CU smoothing window, throttling, pause/resume, Reserved Capacity, Pro/PPU to Fabric migration governance, Capacity Metrics app, shared-capacity allocation | `references/finops-fabric.md` |
-| Snowflake warehouses, query optimisation, storage, credits | `references/finops-snowflake.md` |
+| Snowflake warehouses, query optimisation, storage, credits, QUERY_ATTRIBUTION_HISTORY, Budgets, Cortex governance, resource monitor scope | `references/finops-snowflake.md` |
 | AI coding tools, Cursor costs, Claude Code costs, Copilot costs, Windsurf costs, Codex costs, dev tool FinOps, seat + usage billing, BYOK coding agents, LiteLLM proxy | `references/finops-ai-dev-tools.md` |
-| OCI compute, storage, networking optimisation | `references/finops-oci.md` |
+| OCI compute, storage, networking optimisation, Cost Reports, FOCUS Reports, cost-tracking tags, Budgets, Universal Credits | `references/finops-oci.md` |
 | GreenOps, cloud carbon, sustainability, carbon-aware workloads | `references/greenops-cloud-carbon.md` |
 | SaaS management, licence optimisation, shadow IT, SaaS sprawl, renewal governance, SMP, SAM | `references/finops-sam.md` |
 | ITAM, IT asset management, BYOL, marketplace channel governance, licence compliance, vendor negotiation, FinOps-ITAM collaboration, entitlement management, consumption-based SaaS overages | `references/finops-itam.md` |
@@ -120,7 +120,7 @@ premature - they risk committing to waste.
 | File | Contents | Lines |
 |---|---|---|
 | `optimnow-methodology.md` | OptimNow reasoning philosophy, 4 pillars, engagement principles, tools | ~155 |
-| `finops-for-ai.md` | AI cost management, LLM economics, agentic patterns, ROI framework | ~330 |
+| `finops-for-ai.md` | AI cost management, LLM economics, agentic patterns, ROI framework | ~340 |
 | `finops-ai-value-management.md` | AI investment governance: AI Investment Council, stage gates, incremental funding, practice operations, value metrics | ~275 |
 | `finops-genai-capacity.md` | GenAI capacity models: provisioned vs shared, traffic shape, spillover (incl. Vertex AI default-PAYG), waste types, cross-provider comparison | ~225 |
 | `finops-aws.md` | AWS FinOps: CUR + Data Exports for FOCUS 1.2 (GA Nov 2025), Cost Explorer hourly + resource-level, EC2, compute/database commitment decision trees including SageMaker AI and Database Savings Plans, portfolio liquidity, phased purchasing, EDP negotiation, RDS strategy, optimisation patterns | ~2630 |
@@ -129,14 +129,14 @@ premature - they risk committing to waste.
 | `finops-azure-openai.md` | Azure OpenAI / AI Foundry: PTU reservations (locality constraint), reservation discount path, spillover, GPT model pricing, prompt caching, fine-tuning costs | ~410 |
 | `finops-anthropic.md` | Anthropic billing: Claude Opus/Sonnet/Haiku pricing, Fast mode and Managed Agents (flagged emerging-assumption), per-model long-context picture, prompt caching, Batch API, governance | ~280 |
 | `finops-gcp.md` | GCP FinOps: BigQuery billing export (standard / detailed / pricing), FOCUS export, Sustained Use Discounts, Committed Use Discounts (resource-based vs Flexible/spend-based with current 28%/46% depths), BigQuery commitment model, Spot VMs, Cloud Carbon Footprint location-based vs market-based, 26 inefficiency patterns | ~480 |
-| `finops-vertexai.md` | GCP Vertex AI billing: Gemini pricing, provisioned throughput (default-PAYG spillover), batch prediction, Cloud Monitoring metrics | ~245 |
+| `finops-vertexai.md` | GCP Vertex AI billing: Gemini pricing, provisioned throughput (default-PAYG spillover), batch prediction, Cloud Monitoring metrics | ~240 |
 | `finops-tagging.md` | Tagging strategy, IaC enforcement, virtual tagging, MCP automation | ~250 |
-| `finops-framework.md` | FinOps Foundation framework - 2024 baseline (4 domains, 22 capabilities) plus 2026 update (Executive Strategy Alignment, Workload Optimization -> Usage Optimization), personas, principles, phases | ~390 |
-| `finops-databricks.md` | Databricks FinOps: cost data foundations (system.billing.usage, budget policies, serverless and model-serving attribution), allocation and governance (workspace + DBU executor patterns, Azure VM RI vs DBU clarification, DBCU commitments, Photon and serverless multipliers, amortised vs PAYG split, monthly cadence, sequencing), 18 inefficiency patterns | ~440 |
-| `finops-fabric.md` | Microsoft Fabric capacity FinOps: F-SKU model, Capacity Units and 24-hour CU smoothing, throttling behaviour, manual pause / resume, Reserved Capacity, Pro/PPU to Fabric migration governance trap, shared-capacity allocation models, Capacity Metrics app, Pro vs PPU vs F-SKU breakeven | ~200 |
-| `finops-snowflake.md` | Snowflake FinOps: credit model, hidden cost categories, 13 optimisation patterns for warehouses, queries, storage | ~200 |
+| `finops-framework.md` | FinOps Foundation framework - 2024 baseline (4 domains, 22 capabilities) plus 2026 update (Executive Strategy Alignment, Workload Optimization -> Usage Optimization), personas, principles, phases | ~395 |
+| `finops-databricks.md` | Databricks FinOps: cost data foundations (system.billing.usage, budget policies, serverless and model-serving attribution), allocation and governance (workspace + DBU executor patterns, Azure VM RI vs DBU clarification, DBCU commitments, Photon and serverless multipliers, amortised vs PAYG split, monthly cadence, sequencing), 18 inefficiency patterns | ~445 |
+| `finops-fabric.md` | Microsoft Fabric capacity FinOps: F-SKU model, Capacity Units and 24-hour CU smoothing, throttling behaviour, manual pause / resume, Reserved Capacity, Pro/PPU to Fabric migration governance trap, shared-capacity allocation models, Capacity Metrics app, Pro vs PPU vs F-SKU breakeven | ~310 |
+| `finops-snowflake.md` | Snowflake FinOps: credit model, modern cost-management primitives (QUERY_ATTRIBUTION_HISTORY, Budgets including AI feature budgets, resource-monitor scope limit, Cortex governance), 13 optimisation patterns | ~305 |
 | `finops-ai-dev-tools.md` | AI coding tools: Cursor (Pro/Ultra/Teams/Enterprise), Claude Code, GitHub Copilot (transition to AI Credits 1 June 2026), Windsurf, OpenAI Codex (incl. GPT-5.5), billing models, cost attribution, optimisation levers | ~445 |
-| `finops-oci.md` | OCI optimisation: 6 patterns for compute, storage, networking | ~75 |
+| `finops-oci.md` | OCI FinOps: cost-data foundations (Cost Reports, FOCUS Reports, cost-tracking tags, OCI Budgets, Universal Credits) and 6 inefficiency patterns | ~170 |
 | `finops-sam.md` | SaaS asset management: discovery, licence optimisation, renewal governance, SMPs, shadow IT, AI transition | ~210 |
 | `finops-itam.md` | FinOps-ITAM collaboration: BYOL mechanics, marketplace channel governance, vendor co-management, consumption monitoring, joint operating model | ~320 |
 | `greenops-cloud-carbon.md` | GreenOps: carbon measurement, carbon-aware workloads, region selection, GHG Protocol | ~330 |
