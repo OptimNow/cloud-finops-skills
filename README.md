@@ -79,8 +79,9 @@ The skill provides accurate, framework-aligned guidance across the following dom
 - **Tagging governance** - tag taxonomy design, naming conventions, IaC enforcement,
   virtual tagging, MCP-based automation, and compliance monitoring
 - **FinOps Framework** - full FinOps Foundation framework, 22 capabilities, maturity model
-- **Databricks** - cluster optimisation, jobs, Spark, Unity Catalog costs
-- **Snowflake** - warehouse optimisation, query tuning, storage, credits
+- **Databricks** - cost data foundations (system.billing.usage, budget policies, serverless and model-serving attribution), allocation and governance (DBU executor patterns, DBCU commitments, Photon and serverless multipliers, amortised vs PAYG split, Azure VM RI vs DBU clarification), cluster optimisation, jobs, Spark, Unity Catalog costs
+- **Microsoft Fabric** - capacity FinOps (F-SKU model, Capacity Units, 24-hour CU smoothing, throttling), pause / resume, Reserved Capacity, the Pro/PPU to Fabric migration governance trap, shared-capacity allocation models, Capacity Metrics app
+- **Snowflake** - warehouse optimisation, query tuning, storage, credits, QUERY_ATTRIBUTION_HISTORY, Budgets including AI feature budgets, Cortex governance, resource monitor scope limit
 - **AI coding tools** - Cursor, Claude Code, Copilot, Windsurf, Codex billing models,
   cost attribution with LiteLLM proxy, seat + usage vs BYOK architecture comparison,
   optimisation levers, cross-tool spend overlap audit
@@ -240,7 +241,8 @@ cloud-finops-skills/
         ├── finops-vertexai.md                  ← GCP Vertex AI billing
         ├── finops-tagging.md                   ← Tagging and naming governance
         ├── finops-framework.md                 ← Full FinOps Foundation framework
-        ├── finops-databricks.md                ← Databricks optimisation
+        ├── finops-databricks.md                ← Databricks allocation, governance, and optimisation
+        ├── finops-fabric.md                    ← Microsoft Fabric capacity FinOps
         ├── finops-snowflake.md                 ← Snowflake optimisation
         ├── finops-ai-dev-tools.md             ← AI coding tools (Cursor, Claude Code, etc.)
         ├── finops-oci.md                       ← OCI optimisation

@@ -39,6 +39,13 @@ keywords:
   - cost explorer
   - cur
   - databricks cost
+  - dbu
+  - dbcu
+  - microsoft fabric
+  - fabric capacity
+  - f-sku
+  - capacity unit
+  - power bi premium
   - snowflake cost
   - oci cost
   - greenops
@@ -107,7 +114,8 @@ philosophy applied to all responses. Then load the domain reference that matches
 | GCP Vertex AI billing, Vertex provisioned throughput, Gemini pricing, Vertex batch prediction, default PAYG spillover | `references/finops-vertexai.md` |
 | Tagging strategy, naming conventions, IaC enforcement, MCP governance | `references/finops-tagging.md` |
 | FinOps framework, 2024 baseline plus 2026 update, Executive Strategy Alignment, Usage Optimization, maturity model, phases, capabilities, personas | `references/finops-framework.md` |
-| Databricks clusters, jobs, Spark optimisation, Unity Catalog costs | `references/finops-databricks.md` |
+| Databricks clusters, jobs, Spark optimisation, Unity Catalog costs, allocation and governance, DBU executor attribution, DBCU commitments, Photon multiplier, serverless premium, amortised vs PAYG split, Azure VM RI vs DBU clarification | `references/finops-databricks.md` |
+| Microsoft Fabric capacity FinOps, F-SKUs, Capacity Units, CU smoothing window, throttling, pause/resume, Reserved Capacity, Pro/PPU to Fabric migration governance, Capacity Metrics app, shared-capacity allocation | `references/finops-fabric.md` |
 | Snowflake warehouses, query optimisation, storage, credits | `references/finops-snowflake.md` |
 | AI coding tools, Cursor costs, Claude Code costs, Copilot costs, Windsurf costs, Codex costs, dev tool FinOps, BYOK coding agents, LiteLLM proxy | `references/finops-ai-dev-tools.md` |
 | OCI compute, storage, networking optimization | `references/finops-oci.md` |

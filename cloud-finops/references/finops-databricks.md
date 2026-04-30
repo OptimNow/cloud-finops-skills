@@ -1,8 +1,26 @@
 # FinOps on Databricks
 
 > Databricks-specific FinOps guidance covering cost data foundations (system tables,
-> budget policies, serverless and model-serving attribution) and 18 inefficiency
-> patterns for diagnosing waste and building optimisation roadmaps.
+> budget policies, serverless and model-serving attribution), allocation and
+> governance, commitment instruments, and 18 inefficiency patterns for diagnosing
+> waste and building optimisation roadmaps.
+
+---
+
+## The data-platform FinOps problem
+
+For Databricks (and Microsoft Fabric, see `finops-fabric.md` for the parallel
+treatment), the cost object the platform reports - workspace, capacity, DBU hours,
+query execution, capacity unit consumption - is rarely the same as the business
+object Finance wants to allocate against (application, product, team, business unit,
+data domain, use case). A shared workspace or shared Fabric capacity does not
+naturally tell Finance who consumed what. The FinOps model needs a translation
+layer between platform telemetry and business ownership. **Build the model around
+the consumption driver, then reconcile it back to the invoice - not the other way
+around.**
+
+This framing is shared with `finops-fabric.md`. The mechanics differ between the two
+platforms; the allocation problem is the same.
 
 ---
 
@@ -274,6 +292,151 @@ Databricks cost optimization begins with visibility. Unlike traditional IaaS ser
 - Storage: Align S3/ADLS/GCS usage with lifecycle policies and avoid excessive churn
 
 ---
+
+## Allocation and Governance
+
+The optimisation patterns above answer "where is the waste?" This section answers
+"who pays?" - the harder problem on a shared data platform.
+
+### Workspace-level reporting is necessary but not sufficient
+
+Workspace cost alone is too coarse. A single workspace is shared across teams, jobs,
+notebooks, pipelines, and experiments. Allocating only by workspace owner risks
+charging the platform owner or default business unit, not the actual consumer.
+
+A useful Databricks allocation model layers signals:
+
+| Layer | Allocation signal | Why it matters |
+|---|---|---|
+| Workspace | name, owner, business mapping | First-level showback |
+| Compute | cluster, job, pool usage | Identifies major technical cost drivers |
+| Execution | query executor, job owner, notebook owner | Links cost to users or teams |
+| Consumption | DBU hours | Core usage metric |
+| Financial view | amortised vs PAYG cost | Shows savings from commitments |
+
+The strongest single allocation pattern: **DBU hours by executor or workload,
+translated into amortised cost.**
+
+```sql
+-- DBU hours by executor / job, joined to workspace metadata, last 30 days
+-- Adjust to your account's system table location and tag conventions.
+WITH usage_by_executor AS (
+  SELECT
+    workspace_id,
+    coalesce(usage_metadata.job_id,
+             usage_metadata.cluster_id,
+             usage_metadata.warehouse_id,
+             usage_metadata.endpoint_id) AS workload_id,
+    coalesce(identity_metadata.run_as,
+             usage_metadata.created_by) AS executor,
+    sku_name,
+    sum(usage_quantity) AS dbu_hours,
+    sum(usage_quantity * list_price) AS list_usd
+  FROM system.billing.usage
+  LEFT JOIN system.billing.list_prices USING (sku_name, currency_code, usage_unit)
+  WHERE usage_date >= current_date() - INTERVAL 30 DAY
+  GROUP BY ALL
+)
+SELECT
+  workspace_id,
+  executor,
+  workload_id,
+  sku_name,
+  round(sum(dbu_hours), 2) AS dbu_hours,
+  round(sum(list_usd), 2) AS list_usd_30d
+FROM usage_by_executor
+GROUP BY ALL
+ORDER BY list_usd_30d DESC
+LIMIT 50;
+```
+
+The query is illustrative - your `system.billing.list_prices` schema and
+identity-metadata fields may differ; adapt column names to your account.
+
+### The Azure VM Reservation vs DBU clarification
+
+**Common trap.** Databricks compute runs on Azure VMs, so **Azure VM Reservations
+apply to the underlying VM compute layer**. But Databricks also charges a separate
+**DBU meter** for the Databricks platform layer, billed independently. **Azure VM
+RIs do not cover the DBU meter.**
+
+- Azure VM RI -> covers the VM hourly charge.
+- DBU meter -> covered by Databricks-specific commitments (DBCU, see below) or
+  paid PAYG.
+
+Customers coming from VM-only commitment thinking often assume an Azure RI on the
+underlying VM family covers their Databricks bill. It covers half of it. Surface
+both meters separately when modelling Databricks commitment economics.
+
+### Databricks commitment instruments
+
+- **DBCU (Databricks Commit Units)** - annual prepaid commitment to a $ amount of
+  DBUs. Separate from Azure RIs and Savings Plans; negotiated with Databricks /
+  Microsoft directly. Discount depth depends on commitment size and tier.
+- **Photon multiplier** - Photon-enabled clusters consume DBUs at roughly 2x the
+  base rate but execute 2-3x faster on supported workloads (vectorised SQL,
+  certain DataFrame ops). Net cost can go down despite the multiplier; depends on
+  workload. Validate per workload before defaulting Photon on or off org-wide.
+- **Serverless premium** - Serverless SQL Warehouses, jobs, and notebooks consume
+  DBUs at a higher rate (roughly 1.5-2x) than classic compute. Trade-off: no
+  cluster management overhead, near-instant start, no idle cost. Worth it for
+  spiky interactive work; not always worth it for steady-state heavy jobs.
+- **DBU rates differ by workload type** - Jobs Compute is the cheapest tier,
+  All-Purpose is the most expensive, SQL Warehouse sits between with tier-
+  dependent rates. Migrating a scheduled job from All-Purpose to Jobs Compute is
+  often a 30-40% saving with zero functional change. **Verify current rates
+  against the Databricks Azure pricing page; do not hard-code.**
+
+### Amortised vs PAYG visibility - splitting the conversation
+
+A useful Databricks cost report shows **both amortised cost and PAYG-equivalent
+cost.** This separates two distinct conversations:
+
+- **Consumption conversation** - "Who used the platform, and how much?" - driven
+  by DBU hours and PAYG-equivalent cost. The right view for showback to teams,
+  capacity planning, and unit-economics work.
+- **Commercial effectiveness conversation** - "How much did reservations or DBCU
+  commitments reduce the effective rate?" - driven by amortised vs PAYG delta.
+  The right view for finance to assess commitment ROI and for FinOps to track ESR
+  (Effective Savings Rate).
+
+Without this split, teams may believe their behaviour generated savings when the
+savings actually came from centralised commitment purchasing, or the reverse - a
+team that genuinely reduced consumption sees no impact in their amortised number
+because the contractual amortisation is fixed.
+
+### Monthly review cadence - Databricks side
+
+| Review item | Source signal |
+|---|---|
+| Top cost drivers | DBU hours by workspace, job, user (from `system.billing.usage` joined to `system.lakeflow.jobs`) |
+| Waste | Idle clusters, unused jobs, oversized clusters (cluster events + utilisation metrics) |
+| Allocation gaps | Unmapped workspaces, missing executor labels, untagged workloads |
+| Commitment status | DBCU utilisation, RI utilisation on underlying VMs, PAYG-equivalent vs amortised delta |
+| Anomalies | DBU hour spikes, query activity spikes (>20% week-over-week threshold) |
+| Actions | Tune jobs, remove clusters, fix labels, scope new commitments |
+
+This feeds Finance, platform engineering, and data owners simultaneously - the
+review is not three separate meetings.
+
+### Sequencing - clean up before committing
+
+Standard FinOps sequencing applies to Databricks specifically. Each step is a
+prerequisite for the next:
+
+1. Remove idle clusters and abandoned workspaces.
+2. Right-size clusters that survive cleanup.
+3. Migrate jobs from All-Purpose to Jobs Compute where appropriate (cheapest tier).
+4. Establish baseline consumption over 60-90 days post-cleanup.
+5. **Then** commit via DBCU and / or Azure VM RIs on the underlying compute.
+
+**Reserving before cleanup turns waste into a contractual baseline.** This is the
+single most expensive ordering mistake on Databricks engagements - DBCU commitments
+are non-trivial and a year-long commitment to over-provisioned clusters is hard to
+unwind.
+
+Source for the data-platform allocation framing: FinOps Foundation webinar -
+practitioner conversation on data-platform allocation (Databricks + Fabric).
 
 ---
 
