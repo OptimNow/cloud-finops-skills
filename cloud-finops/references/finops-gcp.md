@@ -144,7 +144,38 @@ CUDs cover **Compute Engine, GKE (via the underlying nodes), Cloud SQL, Cloud Ru
 cover Cloud Functions, BigQuery, GCS, or Pub/Sub - those services have their own
 commitment models (BigQuery slot reservations, etc.).
 
+**CUD Sharing - the single most-missed CUD setting.** By default, CUD discounts
+apply only **within the project that purchased them**. To pool CUDs across an
+organisation - the typical multi-team / multi-project scenario - you must
+explicitly enable **CUD Sharing** at the **billing-account level**. Without it,
+one project burns its CUDs to zero while sibling projects pay PAYG, and the
+billing-account-level coverage looks healthy in aggregate while individual
+project-level utilisation is poor. Day-1 audit on any GCP commitment engagement:
+verify whether CUD Sharing is enabled. Source:
+https://cloud.google.com/billing/docs/how-to/cud-analysis
+
 Sources: https://cloud.google.com/compute/docs/instances/committed-use-discounts-overview, https://cloud.google.com/compute/docs/instances/signing-up-flexible-committed-use-discounts
+
+### Compute SKU billing - vCPU and memory bill separately
+
+GCP bills Compute Engine resources with the **vCPU and memory components on
+separate SKUs**, unlike AWS where the EC2 instance is a single billable unit.
+This is invisible in the console summary but explicit in BigQuery billing export -
+a single VM produces multiple cost rows per day (one for vCPU, one for memory,
+plus disk, network, licensing, sustained-use credits, etc.).
+
+**Practical implications for cost analytics:**
+- Aggregating "cost per VM" requires summing across SKUs, not reading a single
+  line. Custom Power BI / BigQuery dashboards that treat one row = one resource
+  will under-report.
+- Right-sizing analysis must consider vCPU and memory independently - GCP's
+  custom machine types let you tune the ratio, which AWS cannot match at the
+  same granularity.
+- CUDs apply to the vCPU and memory components separately; mixed coverage is
+  possible (e.g. 100% vCPU CUD, 60% memory CUD) and shows as such in CUD
+  utilisation reports.
+
+Source: https://cloud.google.com/compute/all-pricing
 
 ### Spot VMs
 
