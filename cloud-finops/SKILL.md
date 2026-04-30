@@ -6,7 +6,9 @@ description: >
   CUR, commitment strategy), Azure (reservations, Savings Plans, AHB, OpenAI PTUs, portfolio
   liquidity), GCP (Vertex AI, Compute Engine, BigQuery), tagging governance, SaaS management
   (SAM, licence optimisation, SMPs, shadow IT), AI coding tools (Cursor, Claude Code,
-  Copilot, Windsurf, Codex), ITAM, Databricks, Snowflake, OCI, and GreenOps. Use for any
+  Copilot, Windsurf, Codex), ITAM, data platforms (Databricks allocation and governance with
+  DBCU commitments, Microsoft Fabric capacity FinOps with F-SKUs, CU smoothing, reservations,
+  pause/resume, Pro-to-Fabric migration governance), Snowflake, OCI, and GreenOps. Use for any
   query about technology cost, commitment portfolio management, rightsizing, cost allocation,
   SaaS sprawl, AI dev tool spend, or connecting spend to business value. Built by OptimNow.
 ---
@@ -39,7 +41,8 @@ philosophy applied to all responses. Then load the domain reference that matches
 | GCP Vertex AI billing, Vertex provisioned throughput, Gemini pricing, Vertex batch prediction | `references/finops-vertexai.md` |
 | Tagging strategy, naming conventions, IaC enforcement, MCP governance | `references/finops-tagging.md` |
 | FinOps framework, maturity model, phases, capabilities, personas | `references/finops-framework.md` |
-| Databricks clusters, jobs, Spark optimisation, Unity Catalog costs | `references/finops-databricks.md` |
+| Databricks clusters, jobs, Spark optimisation, Unity Catalog costs, allocation and governance, DBU executor attribution, DBCU commitments, Photon multiplier, serverless premium, amortised vs PAYG split, Azure VM RI vs DBU clarification | `references/finops-databricks.md` |
+| Microsoft Fabric capacity FinOps, F-SKUs, Capacity Units, CU smoothing window, throttling, pause/resume, Reserved Capacity, Pro/PPU to Fabric migration governance, Capacity Metrics app, shared-capacity allocation | `references/finops-fabric.md` |
 | Snowflake warehouses, query optimisation, storage, credits | `references/finops-snowflake.md` |
 | AI coding tools, Cursor costs, Claude Code costs, Copilot costs, Windsurf costs, Codex costs, dev tool FinOps, seat + usage billing, BYOK coding agents, LiteLLM proxy | `references/finops-ai-dev-tools.md` |
 | OCI compute, storage, networking optimisation | `references/finops-oci.md` |
@@ -129,7 +132,8 @@ premature - they risk committing to waste.
 | `finops-vertexai.md` | GCP Vertex AI billing: Gemini pricing, provisioned throughput (default-PAYG spillover), batch prediction, Cloud Monitoring metrics | ~245 |
 | `finops-tagging.md` | Tagging strategy, IaC enforcement, virtual tagging, MCP automation | ~250 |
 | `finops-framework.md` | FinOps Foundation framework - 2024 baseline (4 domains, 22 capabilities) plus 2026 update (Executive Strategy Alignment, Workload Optimization -> Usage Optimization), personas, principles, phases | ~390 |
-| `finops-databricks.md` | Databricks optimisation: 18 patterns for clusters, jobs, Spark, storage | ~185 |
+| `finops-databricks.md` | Databricks FinOps: cost data foundations (system.billing.usage, budget policies, serverless and model-serving attribution), allocation and governance (workspace + DBU executor patterns, Azure VM RI vs DBU clarification, DBCU commitments, Photon and serverless multipliers, amortised vs PAYG split, monthly cadence, sequencing), 18 inefficiency patterns | ~440 |
+| `finops-fabric.md` | Microsoft Fabric capacity FinOps: F-SKU model, Capacity Units and 24-hour CU smoothing, throttling behaviour, manual pause / resume, Reserved Capacity, Pro/PPU to Fabric migration governance trap, shared-capacity allocation models, Capacity Metrics app, Pro vs PPU vs F-SKU breakeven | ~200 |
 | `finops-snowflake.md` | Snowflake FinOps: credit model, hidden cost categories, 13 optimisation patterns for warehouses, queries, storage | ~200 |
 | `finops-ai-dev-tools.md` | AI coding tools: Cursor (Pro/Ultra/Teams/Enterprise), Claude Code, GitHub Copilot (transition to AI Credits 1 June 2026), Windsurf, OpenAI Codex (incl. GPT-5.5), billing models, cost attribution, optimisation levers | ~445 |
 | `finops-oci.md` | OCI optimisation: 6 patterns for compute, storage, networking | ~75 |
