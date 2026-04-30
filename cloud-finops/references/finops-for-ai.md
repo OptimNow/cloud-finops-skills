@@ -120,6 +120,14 @@ beyond token-based inference. Managed agents run in provider-controlled sandboxe
 environments with persistent sessions and autonomous execution capabilities. Cost drivers
 differ fundamentally from standard API calls:
 
+> **Source quality flag.** The Managed Agents cost-driver bullets below are sourced
+> primarily from Finout commentary and early community reporting, not from
+> Anthropic's primary pricing documentation. Treat as **emerging assumptions** to
+> validate against official Anthropic docs before quoting in customer engagements.
+> See `finops-anthropic.md` for the same caveat applied to the dedicated Anthropic
+> reference.
+
+
 - **Session-based billing** - charged per active session hour, not per token
 - **Compute resource allocation** - dedicated CPU/memory for agent execution
 - **Tool invocation costs** - each external API call or database query adds cost

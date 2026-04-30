@@ -130,7 +130,15 @@ become difficult to reverse.
 
 ---
 
-## The 4 Domains and 22 Capabilities
+## The 4 Domains and 22 Capabilities (2024 baseline)
+
+> The structure documented in this section is the **2024 framework baseline**. The
+> FinOps Foundation published a **2026 framework update** (Executive Strategy
+> Alignment dimension; Workload Optimization renamed to Usage Optimization;
+> capability list refreshed) - see "2026 framework update" further down for the
+> changes. In customer engagements as of 2026, use the 2026 capability names; the
+> 2024 baseline below remains useful for mapping legacy artefacts (older
+> assessments, vendor proposals, procurement decks) to current terminology.
 
 ### Domain 1: Understand Usage and Cost
 
