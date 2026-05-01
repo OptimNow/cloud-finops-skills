@@ -1,0 +1,25 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "optimnow",
+  "description": "Cloud Financial Management references and tooling by OptimNow.",
+  "owner": {
+    "name": "OptimNow",
+    "url": "https://optimnow.io"
+  },
+  "plugins": [
+    {
+      "name": "cloud-finops",
+      "description": "Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend. 21 reference files spanning AWS, Azure, GCP, Anthropic, Bedrock, Azure OpenAI, Vertex AI, Databricks, Microsoft Fabric, Snowflake, OCI, AI coding tools, FinOps Framework 2024+2026, GreenOps, SaaS asset management, and ITAM. Open source, model-agnostic, refreshed bi-monthly.",
+      "author": {
+        "name": "OptimNow",
+        "url": "https://optimnow.io"
+      },
+      "category": "knowledge",
+      "source": {
+        "source": "github",
+        "repo": "OptimNow/cloud-finops-skills"
+      },
+      "homepage": "https://github.com/OptimNow/cloud-finops-skills"
+    }
+  ]
+}
