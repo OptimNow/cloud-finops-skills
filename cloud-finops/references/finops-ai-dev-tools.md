@@ -193,24 +193,25 @@ Codex is OpenAI's coding agent, available through ChatGPT and as a CLI tool.
 at no extra per-token charge. ChatGPT Plus at $20/month is the cheapest access path.
 
 **API key mode:** when switched to API key mode, Codex bills per token at standard OpenAI
-API rates. The Codex model line-up moves quickly - **OpenAI announced GPT-5.5
-availability in API and Codex on 24 April 2026**, and prior generations (codex-mini,
-GPT-5, GPT-5.4, GPT-5.3-Codex) remain in the catalogue alongside it. Current rates
-must be verified against the live pricing page; the table below is illustrative of
-the rate structure, not a quotable price sheet:
+API rates. As of March 2026, OpenAI's API pricing structure includes:
 
 | Model | Input ($/MTok) | Output ($/MTok) |
 |---|---|---|
-| GPT-5.5 | Verify on pricing page | Verify on pricing page |
-| GPT-5 | $1.25 | $10.00 |
-| codex-mini-latest | $1.50 | $6.00 |
+| GPT-4o | $2.50 | $10.00 |
+| GPT-4o mini | $0.15 | $0.60 |
+| o1 | $15.00 | $60.00 |
+| o1-mini | $3.00 | $12.00 |
+
+**Note:** OpenAI announced GPT-5.5 availability in API and Codex on 24 April 2026. Verify
+current rates for GPT-5.5 and other models against the live pricing page before capacity
+planning.
 
 OpenAI claims Codex CLI is approximately 4x more token-efficient than Claude Code, meaning
 the same budget covers more work. This claim should be validated against your own workloads
 before using it for capacity planning - the comparison is sensitive to which models the
 two tools route to and how each handles context.
 
-Sources: https://openai.com/index/introducing-gpt-5-5/, https://help.openai.com/en/articles/20001106, https://openai.com/api/pricing/
+Sources: https://www.finout.io/blog/openai-pricing-in-2026, https://openai.com/index/introducing-gpt-5-5/, https://help.openai.com/en/articles/20001106, https://openai.com/api/pricing/
 
 ### Cost tracking
 
@@ -322,154 +323,4 @@ Limitations: Enterprise tier often required, no native team grouping, no alertin
 
 **Third-party FinOps platforms**: tools like Vantage, CloudZero, or Finout support native
 Cursor integrations and can aggregate spend, create virtual team tags from developer
-emails, provide trending and alerting, and show AI dev tool costs alongside cloud
-infrastructure spend.
-
-**Manual spreadsheet**: pull Admin API data periodically, map developer emails to teams,
-build charts. Works for small teams. Does not scale.
-
-### For BYOK tools (Claude Code, Codex in API key mode)
-
-**API gateway / proxy (LiteLLM)**: this is the most powerful option. Route all API calls
-through a self-hosted LiteLLM proxy to:
-
-- Inject metadata at request level (team ID, project, feature, environment)
-- Set per-team or per-project budget caps with automatic enforcement
-- Track usage by any dimension you define
-- Get unified analytics across Claude Code, Codex, and any other tool using the same
-  API keys
-- LiteLLM auto-detects tool type via User-Agent header (Claude Code, Codex CLI, etc.)
-
-**Dedicated tracking tools**: ClaudeXray for Claude Code provides purpose-built cost
-visibility without requiring a proxy setup.
-
-**Provider console**: Anthropic Console and OpenAI Dashboard provide organisation-level
-billing data but limited per-developer or per-team granularity.
-
-### Attribution maturity model
-
-| Maturity | Approach | Granularity |
-|---|---|---|
-| Crawl | Invoice total, headcount-based allocation | Organisation-level |
-| Walk | Admin API or provider console, spreadsheet rollup | Developer-level |
-| Run | API gateway with metadata injection + third-party aggregation | Team / project / feature level |
-
----
-
-## Optimisation levers
-
-### For seat + usage tools (Cursor, Copilot, Windsurf)
-
-**Model routing governance** - the single highest-impact lever. Ensure expensive reasoning
-models (Opus, GPT-5) are used for tasks that benefit from them, not for routine code
-completions. A team defaulting to the most capable model for every request will spend
-10-50x more than one using the auto-routing or budget models for standard work.
-
-**Max mode / premium mode governance** - make premium modes opt-in per task, not default-on
-organisation-wide. Max mode increases input token consumption on every request by using the
-full context window.
-
-**Plan tier right-sizing** - track the ratio of included usage to overage spend monthly.
-If overages consistently exceed the subscription cost, either upgrade the tier or
-investigate whether usage patterns can be adjusted. If included usage is consistently
-underconsumed, you may be over-provisioned on seats.
-
-**Seat hygiene** - audit active vs licensed seats quarterly. Offboard promptly. Identify
-developers who have not used the tool in 30+ days and reclaim seats.
-
-**Context window policies** - large context windows cost more in input tokens. Not every
-task requires the full codebase as context. Teams that scope context deliberately spend
-less per request.
-
-### For BYOK tools (Claude Code, Codex)
-
-**Model selection** - Anthropic and OpenAI models span a wide rate range (Haiku /
-Sonnet / Opus on Anthropic, codex-mini / GPT-5 / GPT-5.5 on OpenAI). The typical
-spread is roughly 5x between cheapest and most capable model in each provider's
-line-up. Choose the model that matches the task complexity; default to the more
-efficient model and escalate only when needed. **Verify current per-token rates
-on the Anthropic and OpenAI pricing pages before using them in capacity planning -
-both providers re-price model lines on a multi-month cadence.**
-
-**Prompt caching** (Anthropic) - cache reads cost 0.1x the base input price. Cache writes
-cost 1.25x (5-minute TTL) or 2x (1-hour TTL). For repetitive workflows with stable system
-prompts, caching provides significant savings. See `finops-anthropic.md` for the full
-mechanics.
-
-**Batch API** (Anthropic) - 50% discount on all token costs for asynchronous workloads.
-Not applicable to interactive coding sessions, but useful for batch code review, test
-generation, or codebase analysis tasks.
-
-**LiteLLM budget caps** - set hard or soft budget limits per team or project at the proxy
-level. Prevents runaway spend from a single developer or workflow.
-
-**Context window management** - for Anthropic specifically, the 200K input-token
-threshold reprices the request at premium rates **for selected models running with
-the 1M context beta header** (notably Claude Sonnet 4). The newer 4.6 generation in
-its default 200K window has flat-rate pricing - no cliff to monitor. Confirm which
-models and headers your tooling actually uses before assuming either profile applies;
-see `finops-anthropic.md` for the per-model picture and Anthropic's primary pricing
-docs.
-
----
-
-## Cross-tool spend overlap
-
-Many engineering organisations use multiple AI coding tools simultaneously - for example,
-Cursor for IDE-based work and Claude Code for terminal-based agentic tasks, with some
-developers also using direct Anthropic or OpenAI API keys for custom scripts.
-
-This is not inherently wasteful. Different tools serve different workflows. But it
-becomes a cost problem when:
-
-- The same developer is paying for Cursor Business ($40/month) and a Claude Max 5x
-  subscription ($100/month) but only actively using one
-- Cursor is routing requests to Claude models while the team also pays for direct
-  Anthropic API usage for the same models
-- Multiple API keys exist across the organisation with no centralised tracking, creating
-  shadow AI spend
-
-### How to audit
-
-1. List all AI dev tool subscriptions (Cursor, Copilot, Windsurf seats) and API accounts
-   (Anthropic, OpenAI)
-2. Map developer overlap - which individuals appear in multiple billing streams
-3. Assess whether the overlap is intentional (different tools for different workflows) or
-   accidental (tool proliferation without governance)
-4. Consolidate API keys where possible and route through a single proxy for unified
-   visibility
-5. Establish a policy on which tools are sanctioned and for which use cases
-
----
-
-## Pricing comparison (April 2026)
-
-Verify live pricing against each vendor's official page before quoting - the AI dev
-tools market has been re-pricing every few months.
-
-| Tool | Type | Seat cost | Token / usage model | Enterprise option | Proxy-compatible |
-|---|---|---|---|---|---|
-| **Cursor** | Seat + usage | Pro / Ultra (individual) / Teams / Enterprise (verify on pricing page) | Request allotment + usage-based after limits | Yes (custom) | No (vendor-mediated) |
-| **Claude Code** | BYOK or subscription | $20 (Pro) / $100 (Max 5x) / $200 (Max 20x) | API key: $3-$25/MTok depending on model | Via Anthropic Enterprise | Yes (API key mode) |
-| **OpenAI Codex** | BYOK or subscription | $20 (ChatGPT Plus) and up | API key: per-token rates including GPT-5.5 (verify) | Via OpenAI Enterprise | Yes (API key mode) |
-| **GitHub Copilot** | Seat + usage (transitioning) | $10 (Pro) / $19 (Business) / $39 (Enterprise) | Premium-request until 31 May 2026; **GitHub AI Credits from 1 June 2026** | Yes ($60/seat total with GH Enterprise Cloud) | No (vendor-mediated) |
-| **Windsurf** | Seat + usage | $20-$200 (individual) / $40 (Teams) | Credit-based ($0.04/credit, provider cost + 20% margin) | Yes (custom) | No (vendor-mediated) |
-
----
-
-## Diagnostic questions for a new engagement
-
-1. Which AI coding tools are in use across the organisation, and is adoption sanctioned or shadow IT?
-2. How many seats are active vs licensed? When was the last seat audit?
-3. For seat + usage tools: what is the ratio of included usage to overage spend?
-4. Are developers also using direct API keys (Anthropic, OpenAI) alongside IDE tools?
-5. Is there any cost attribution beyond the total invoice? Can you see spend by team?
-6. Are premium modes (max mode, Fast mode) governed or default-on?
-7. Is an API gateway or proxy in place for BYOK tools?
-8. What is the monthly cost per developer, and how does it compare to the productivity value delivered?
-
----
-
----
-
-> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+emails, provide trending and alerting, and show

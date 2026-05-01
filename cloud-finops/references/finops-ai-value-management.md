@@ -123,6 +123,17 @@ AI tools can assist with spend forecasting, anomaly detection, and cost attribut
 Note: high variance and non-determinism in AI outputs means human review remains
 required. AI accelerates FinOps work; it does not replace judgment.
 
+### Communicate AI value to executives
+
+Practitioner experience from Google Cloud and Shopify highlights the importance of
+proactive CFO communication:
+
+- Frame AI investments in business outcomes, not technical metrics
+- Provide regular updates before surprises occur - weekly during rapid scaling phases
+- Use scenario planning to show cost ranges under different growth assumptions
+- Build trust through transparency about both successes and failures
+- Create executive dashboards that show cost-to-value ratios, not just spend
+
 ---
 
 ## The AI Investment Council
@@ -246,6 +257,33 @@ Auto-escalate to council if a project:
 
 ---
 
+## Scaling AI without surprises
+
+Leading practitioners emphasise these patterns for scaling AI investments:
+
+### Phased scaling approach
+
+- Start with controlled experiments in low-risk areas
+- Establish cost baselines before expanding scope
+- Use progressive rollouts with clear go/no-go criteria
+- Build organisational muscle memory through smaller projects first
+
+### Operational governance patterns
+
+- Implement automated cost controls that enforce limits, not just alert
+- Create self-service dashboards for teams to monitor their own spend
+- Use infrastructure-as-code to standardise AI deployments and cost controls
+- Establish clear escalation paths before issues arise
+
+### Communication cadence
+
+- Weekly updates during rapid scaling or experimentation phases
+- Monthly business reviews focused on value delivery, not just cost
+- Quarterly strategic reviews to align AI portfolio with business priorities
+- Ad-hoc escalations for any spend anomaly >10% of forecast
+
+---
+
 ## Defining success for AI investments
 
 An AI investment is considered successful when it demonstrates:
@@ -269,6 +307,7 @@ intentional, attributed, and tied to outcomes the organisation has agreed to pur
 
 ---
 
-> Sources: FinOps Foundation AI Working Group paper, State of FinOps 2026.
+> Sources: FinOps Foundation AI Working Group paper, State of FinOps 2026, Google Cloud
+> and Shopify practitioner insights on AI scaling governance.
 
 > *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
