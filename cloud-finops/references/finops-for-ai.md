@@ -266,11 +266,13 @@ Systems showing no improvement after 8–12 weeks warrant scrutiny.
 Treat model selection like instance rightsizing. Defaulting to the largest or latest model
 for every feature is the AI equivalent of running all workloads on ml.p4d.24xlarge.
 
-| Model tier | Use case | Cost ratio example |
-|---|---|---|
-| Small / fast (e.g. Claude Haiku, GPT-4o mini) | Classification, routing, simple Q&A | 1× |
-| Mid-tier (e.g. Claude Sonnet, GPT-4o) | Complex reasoning, code generation | 12× |
-| Large (e.g. Claude Opus, GPT-4) | Research, nuanced judgment | 60× |
+As of March 2026, OpenAI's pricing structure demonstrates the cost impact of model selection:
+
+| Model tier | Use case | Cost ratio example | OpenAI example (per 1M tokens) |
+|---|---|---|---|
+| Small / fast (e.g. GPT-4o mini) | Classification, routing, simple Q&A | 1× | $0.15 input / $0.60 output |
+| Mid-tier (e.g. GPT-4o) | Complex reasoning, code generation | 17× | $2.50 input / $10.00 output |
+| Large (e.g. o1) | Research, nuanced judgment | 100× | $15.00 input / $60.00 output |
 
 Implement tiered routing: classify query complexity first (cheap), then route to the
 appropriate model. Simple queries to small models, complex queries to large models.
@@ -322,18 +324,4 @@ The following inference parameters directly affect output length and therefore c
 - Require AI cost estimates (COGS modelling) before feature deployment
 - Mandate application-layer metadata tagging as a development standard
 - Establish a model approval process - preventing shadow AI through procurement
-  controls is more effective than prohibition after the fact
-- Define escalation paths when unit economics deteriorate
-- Create specific policies for managed agent deployments (session limits, tool allowlists)
-
-**Shadow AI:**
-Research indicates 90% of employee AI tool usage does not appear in corporate billing
-systems. The remainder occurs through personal subscriptions, departmental cards, or
-free-tier accounts that bypass procurement. Shadow AI is not only a governance issue -
-it destroys cost attribution and makes forecasting impossible.
-
-Detection approach:
-- Audit for marketplace subscriptions (AWS, Azure, GCP) that may not appear in
-  centralized cost management tools
-- Review expense reports for recurring SaaS charges from known AI vendors
-- Survey teams on tools in active use before assuming billing
+  controls is more effective than

@@ -173,7 +173,7 @@ become difficult to reverse.
 
 | Capability | Description |
 |---|---|
-| FinOps Practice Operations | Running the FinOps team and driving organizational adoption |
+| FinOps Practice Operations | Running the FinOps team and driving organizational adoption. This includes both reactive and intentional team building patterns - organisations often start reactively (responding to unexplained bills or unattributed spend) before transitioning to proactive practice establishment. |
 | FinOps Assessment | Measuring maturity across all capabilities |
 | FinOps Education and Enablement | Training teams to incorporate FinOps into daily work |
 | Onboarding Workflows | Managing cost implications of cloud migrations |
@@ -305,6 +305,38 @@ beginning to include labour costs.
 from "Advancing the People who manage the Value of Cloud" to "Advancing the People who
 manage the Value of Technology."
 
+### Building FinOps teams: Reactive vs. intentional approaches
+
+Organisations typically form FinOps teams through one of two patterns:
+
+**Reactive team formation** occurs when organisations respond to immediate pain points:
+- Unexplained cloud bills that shock finance teams
+- Unattributed spend that prevents accountability
+- Budget overruns that trigger executive attention
+- Failed cloud migrations due to unexpected costs
+
+**Intentional team formation** happens when organisations proactively establish FinOps:
+- As part of cloud adoption strategy
+- Before major digital transformation initiatives
+- When establishing platform teams or cloud centres of excellence
+- During organisational restructuring that creates new accountability models
+
+**Transitioning from reactive to proactive:**
+1. **Stabilise the immediate crisis** - address the triggering issue first to build credibility
+2. **Document lessons learned** - use the reactive trigger as a case study for broader adoption
+3. **Establish forward-looking processes** - shift from firefighting to prevention
+4. **Build cross-functional relationships** - expand beyond the initial crisis team
+5. **Define long-term charter** - move from ad hoc responses to strategic practice
+
+**Common triggers that drive FinOps team formation:**
+- Cloud spend exceeding 10% of IT budget
+- Failed audit findings on cloud cost controls
+- M&A activity requiring cloud estate consolidation
+- Board-level questions about cloud ROI
+- Competitive pressure to improve unit economics
+
+Source: Holori Blog on building FinOps teams (https://holori.com/how-to-build-a-finops-team/)
+
 ---
 
 ## Maturity Model - Detailed
@@ -312,85 +344,3 @@ manage the Value of Technology."
 ### Crawl
 - Processes are manual, reactive, and inconsistent
 - Basic cost visibility exists but allocation is incomplete (<50%)
-- Optimization is ad hoc - one-off projects rather than continuous practice
-- FinOps is driven by one person or team with limited organizational reach
-- Commitment discount coverage is low and unmanaged
-
-**Priority at Crawl:** Establish visibility and allocation before anything else.
-Do not attempt chargeback. Do not purchase large commitment discounts without allocation.
-
-### Walk
-- Processes are documented and repeatable
-- Cost allocation >80%, showback reports delivered to teams
-- Optimization is proactive - rightsizing and waste elimination run continuously
-- FinOps is cross-functional - engineering and finance participate regularly
-- Commitment discount coverage ~70%, managed with utilization monitoring
-
-**Priority at Walk:** Establish unit economics, expand optimization scope, begin
-governance automation. Evaluate readiness for chargeback.
-
-### Run
-- Processes are automated and self-improving
-- Cost allocation >90%, real-time visibility, anomalies auto-detected
-- Optimization is embedded in engineering workflows - not a separate activity
-- FinOps culture is distributed - teams own their costs without central policing
-- Commitment discount coverage 80%+, managed by automation with human oversight
-- Chargeback implemented where organizationally appropriate
-
-**Priority at Run:** Continuous improvement, automation of governance, agentic FinOps
-patterns where they add value without introducing risk.
-
----
-
-## Common FinOps implementation mistakes
-
-**Starting with optimization before visibility**
-Rightsizing without allocation produces savings no one can claim or repeat. Establish
-who owns what before optimizing what.
-
-**Purchasing commitment discounts on unallocated spend**
-Committing to reserved capacity before understanding usage patterns creates stranded
-reservations. Analyze 90+ days of usage before purchasing commitments.
-
-**Implementing chargeback before showback**
-Organizations that jump to financial accountability before teams understand their costs
-create resistance, not ownership. Show first, charge second.
-
-**Building dashboards instead of processes**
-A new dashboard without a defined review cadence and decision-making process is
-documentation, not FinOps. The meeting matters as much as the data.
-
-**Treating tagging as a one-time project**
-Tagging compliance degrades over time without enforcement. Treat it as an ongoing
-operational process with automated compliance checking.
-
-**Centralizing all FinOps decisions**
-A FinOps team that owns all decisions creates a bottleneck and removes team ownership.
-The FinOps function should enable distributed decision-making, not replace it.
-
-**Building practices without community support**
-Developing FinOps practices in isolation without engaging the broader FinOps community
-misses valuable lessons learned. Leverage community resources, attend meetups, and
-participate in forums to avoid reinventing solutions.
-
-**Allowing inaccurate data to erode engineering trust**
-Engineers quickly lose faith in FinOps initiatives when cost data is wrong, incomplete,
-or misattributed. Prioritise data accuracy and validation before pushing adoption -
-one bad report can undermine months of relationship building.
-
-**Managing commitments manually**
-Spreadsheet-based commitment management becomes unmanageable at scale and leads to
-underutilisation or overcommitment. Automate commitment tracking, recommendations,
-and purchasing workflows early.
-
-**Running unproductive cost review meetings**
-Meetings that review costs without clear actions, ownership, or follow-up waste time
-and create FinOps fatigue. Structure meetings with specific agendas, action items,
-and accountability mechanisms.
-
----
-
-> Sources: FinOps Foundation (finops.org/framework, 2024 version; State of FinOps 2026);
-> FinOps Weekly podcast on common implementation mistakes; FinOps Weekly blog on shift-left practices.
-
-> *Cloud FinOps Skill by [OptimNow](https://optimnow.io)  - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
