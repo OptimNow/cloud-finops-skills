@@ -268,7 +268,7 @@ For Claude Code users, the skill is also distributed as a self-hosted plugin wit
 auto-update support. Two commands:
 
 ```bash
-/plugin marketplace add OptimNow/cloud-finops-skills
+/plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git
 /plugin install cloud-finops@optimnow
 ```
 
@@ -277,6 +277,12 @@ To pull the latest content (including the bi-monthly automated updates):
 ```bash
 /plugin update cloud-finops@optimnow
 ```
+
+**Note on the URL form:** the explicit HTTPS URL above avoids an SSH-authentication
+prompt that some Claude Code installs hit when given the `OptimNow/cloud-finops-skills`
+shorthand (the shorthand can resolve to `git@github.com:` and require an SSH key
+on file with GitHub). The repository is fully public over HTTPS - no credentials
+needed.
 
 For Claude Desktop / claude.ai users, the manual zip-upload path stays as documented
 in `INSTALLATION.md` (Option 1). Both distribution channels share the same skill
