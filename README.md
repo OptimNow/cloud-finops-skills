@@ -262,6 +262,26 @@ domain-specific content is shared.
 See **[INSTALLATION.md](./INSTALLATION.md)** for step-by-step setup instructions
 covering Claude Code, Kiro IDE, Claude.ai, and API integration.
 
+### Quick install: Claude Code plugin
+
+For Claude Code users, the skill is also distributed as a self-hosted plugin with
+auto-update support. Two commands:
+
+```bash
+/plugin marketplace add OptimNow/cloud-finops-skills
+/plugin install cloud-finops@optimnow
+```
+
+To pull the latest content (including the bi-monthly automated updates):
+
+```bash
+/plugin update cloud-finops@optimnow
+```
+
+For Claude Desktop / claude.ai users, the manual zip-upload path stays as documented
+in `INSTALLATION.md` (Option 1). Both distribution channels share the same skill
+content - pick the one that matches how you use Claude.
+
 ---
 
 ## This skill is actively maintained

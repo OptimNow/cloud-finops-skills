@@ -1,0 +1,35 @@
+{
+  "name": "cloud-finops",
+  "version": "1.10.0",
+  "description": "Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic).",
+  "author": {
+    "name": "OptimNow",
+    "url": "https://optimnow.io"
+  },
+  "repository": "https://github.com/OptimNow/cloud-finops-skills",
+  "license": "CC-BY-SA-4.0",
+  "homepage": "https://github.com/OptimNow/cloud-finops-skills",
+  "keywords": [
+    "finops",
+    "cloud-cost",
+    "ai-cost",
+    "saas-cost",
+    "multi-cloud",
+    "aws",
+    "azure",
+    "gcp",
+    "anthropic",
+    "vertex-ai",
+    "bedrock",
+    "azure-openai",
+    "databricks",
+    "snowflake",
+    "fabric",
+    "oci",
+    "greenops",
+    "cost-allocation",
+    "commitment-strategy",
+    "rightsizing",
+    "tag-governance"
+  ]
+}
