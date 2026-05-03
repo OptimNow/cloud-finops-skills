@@ -101,6 +101,14 @@ keywords:
   - layered detection
   - threshold tuning
   - new-region detection
+  - chargeback maturity
+  - soft chargeback
+  - hard chargeback
+  - allocation methodology
+  - effectivecost
+  - invoiceid reconciliation
+  - shared services allocation
+  - chargeback dispute process
 ---
 
 # Cloud FinOps - Expert Guidance
@@ -152,6 +160,7 @@ matching the query.
 | SaaS management, licence optimisation, shadow IT, SaaS sprawl, renewal governance, SMP, SAM | `references/finops-sam.md` |
 | ITAM, IT asset management, BYOL, marketplace channel governance, licence compliance, vendor negotiation, FinOps-ITAM collaboration, entitlement management, consumption-based SaaS overages | `references/finops-itam.md` |
 | Cost anomaly management, anomaly detection, masked anomalies, layered detection, threshold tuning, AWS Cost Anomaly Detection config, Azure anomaly detection, GCP budget anomaly alerts, new-region detection, security integration | `references/finops-anomaly-management.md` |
+| Chargeback, showback, soft chargeback, hard chargeback, allocation methodology, EffectiveCost vs BilledCost, InvoiceId reconciliation, defensible allocation keys, shared-services allocation (network, observability, ingress), chargeback maturity, dispute process, financial accountability | `references/finops-chargeback.md` |
 | Multi-domain query | Load all relevant references, synthesise |
 
 ### Reasoning sequence (apply to every response)

@@ -103,6 +103,13 @@ The skill provides accurate, framework-aligned guidance across the following dom
   philosophy (absolute dollars plus percentage), layered detection across service,
   region, account, and tag scopes, the masked-anomaly failure mode, new-region
   detection, integration with Security
+- **Chargeback and showback** - four-tier maturity ladder (no visibility to
+  showback to soft chargeback to hard chargeback), `EffectiveCost`-based
+  allocation methodology, `InvoiceId` reconciliation, defensible allocation
+  keys, shared-services hard cases (network, observability, security, ingress),
+  monthly with quarterly true-up cadence, dispute process design, and the
+  chargeback-revolt anti-pattern that costs organisations 12-18 months of
+  credibility when skipped
 
 All guidance is framed through OptimNow's methodology: connecting cost to business value,
 diagnosing before prescribing, and recommending actions matched to organisational maturity.
@@ -266,7 +273,8 @@ cloud-finops-skills/
         ├── finops-sam.md                       ← SaaS asset management (SAM)
         ├── finops-itam.md                     ← ITAM collaboration (BYOL, marketplace, entitlements)
         ├── greenops-cloud-carbon.md            ← GreenOps and cloud carbon
-        └── finops-anomaly-management.md        ← Anomaly management (standalone Inform-phase capability)
+        ├── finops-anomaly-management.md        ← Anomaly management (standalone Inform-phase capability)
+        └── finops-chargeback.md                ← Chargeback and showback maturity ladder
 ```
 
 The `SKILL.md` file is the entry point for Claude Code and generic agents. `POWER.md` is
