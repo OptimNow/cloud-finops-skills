@@ -106,9 +106,17 @@ keywords:
   - hard chargeback
   - allocation methodology
   - effectivecost
+  - amortised vs unblended
   - invoiceid reconciliation
   - shared services allocation
   - chargeback dispute process
+  - erp readiness
+  - inter-bu p&l
+  - transfer pricing
+  - intercompany cloud recharge
+  - cross-border tax
+  - pillar 2 minimum tax
+  - sox chargeback controls
 ---
 
 # Cloud FinOps - Expert Guidance
@@ -160,7 +168,7 @@ matching the query.
 | SaaS management, licence optimisation, shadow IT, SaaS sprawl, renewal governance, SMP, SAM | `references/finops-sam.md` |
 | ITAM, IT asset management, BYOL, marketplace channel governance, licence compliance, vendor negotiation, FinOps-ITAM collaboration, entitlement management, consumption-based SaaS overages | `references/finops-itam.md` |
 | Cost anomaly management, anomaly detection, masked anomalies, layered detection, threshold tuning, AWS Cost Anomaly Detection config, Azure anomaly detection, GCP budget anomaly alerts, new-region detection, security integration | `references/finops-anomaly-management.md` |
-| Chargeback, showback, soft chargeback, hard chargeback, allocation methodology, EffectiveCost vs BilledCost, InvoiceId reconciliation, defensible allocation keys, shared-services allocation (network, observability, ingress), chargeback maturity, dispute process, financial accountability | `references/finops-chargeback.md` |
+| Chargeback, showback, soft chargeback, hard chargeback, allocation methodology, EffectiveCost vs BilledCost (FOCUS), amortised vs unblended (AWS legacy), InvoiceId reconciliation, defensible allocation keys, shared-services allocation (network, observability, ingress), Finance and accounting prerequisites, ERP readiness, inter-BU P&L impact, transfer pricing, cross-border tax (VAT, Pillar 2, GILTI), SOX controls, chargeback maturity, dispute process | `references/finops-chargeback.md` |
 | Multi-domain query | Load all relevant references, synthesise |
 
 ### Reasoning sequence (apply to every response)

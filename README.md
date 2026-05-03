@@ -105,11 +105,14 @@ The skill provides accurate, framework-aligned guidance across the following dom
   detection, integration with Security
 - **Chargeback and showback** - four-tier maturity ladder (no visibility to
   showback to soft chargeback to hard chargeback), `EffectiveCost`-based
-  allocation methodology, `InvoiceId` reconciliation, defensible allocation
-  keys, shared-services hard cases (network, observability, security, ingress),
-  monthly with quarterly true-up cadence, dispute process design, and the
-  chargeback-revolt anti-pattern that costs organisations 12-18 months of
-  credibility when skipped
+  allocation methodology with explicit AWS legacy column mapping (amortised /
+  unblended / blended-trap warning), `InvoiceId` reconciliation, defensible
+  allocation keys, shared-services hard cases (network, observability, security,
+  ingress), and the Finance and accounting prerequisites that determine whether
+  hard chargeback is operationally possible at all (ERP readiness, inter-BU
+  P&L impact and incentive alignment, transfer pricing for intercompany
+  recharges, cross-border tax mechanics including VAT, Pillar 2 minimum tax,
+  GILTI, and SOX-equivalent controls)
 
 All guidance is framed through OptimNow's methodology: connecting cost to business value,
 diagnosing before prescribing, and recommending actions matched to organisational maturity.

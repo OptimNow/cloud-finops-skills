@@ -54,7 +54,7 @@ matching the query.
 | SaaS management, licence optimisation, shadow IT, SaaS sprawl, renewal governance, SMP, SAM | `references/finops-sam.md` |
 | ITAM, IT asset management, BYOL, marketplace channel governance, licence compliance, vendor negotiation, FinOps-ITAM collaboration, entitlement management, consumption-based SaaS overages | `references/finops-itam.md` |
 | Cost anomaly management, anomaly detection, masked anomalies, layered detection, threshold tuning, AWS Cost Anomaly Detection config, Azure anomaly detection, GCP budget anomaly alerts, new-region detection, security integration | `references/finops-anomaly-management.md` |
-| Chargeback, showback, soft chargeback, hard chargeback, allocation methodology, EffectiveCost vs BilledCost, InvoiceId reconciliation, defensible allocation keys, shared-services allocation (network, observability, ingress), chargeback maturity, dispute process, financial accountability | `references/finops-chargeback.md` |
+| Chargeback, showback, soft chargeback, hard chargeback, allocation methodology, EffectiveCost vs BilledCost (FOCUS), amortised vs unblended (AWS legacy), InvoiceId reconciliation, defensible allocation keys, shared-services allocation (network, observability, ingress), Finance and accounting prerequisites, ERP readiness, inter-BU P&L impact, transfer pricing, cross-border tax (VAT, Pillar 2, GILTI), SOX controls, chargeback maturity, dispute process | `references/finops-chargeback.md` |
 | Multi-domain query | Load all relevant references, synthesize |
 
 ### Reasoning sequence (apply to every response)
@@ -148,7 +148,7 @@ premature - they risk committing to waste.
 | `finops-itam.md` | FinOps-ITAM collaboration: BYOL mechanics, marketplace channel governance, vendor co-management, consumption monitoring, joint operating model | ~320 |
 | `greenops-cloud-carbon.md` | GreenOps: carbon measurement, carbon-aware workloads, region selection, GHG Protocol | ~330 |
 | `finops-anomaly-management.md` | Cost anomaly management as a standalone Inform-phase capability: native tooling per cloud (AWS Cost Anomaly Detection, Azure Cost Management, GCP Budgets), threshold philosophy (absolute dollars + percentage), layered detection across service / region / account / tag, the masked-anomaly failure mode, new-region detection, Security integration, Crawl/Walk/Run progression | ~325 |
-| `finops-chargeback.md` | Chargeback and showback operational treatment: four-tier maturity ladder (no visibility / showback / soft chargeback / hard chargeback), EffectiveCost-based allocation methodology, InvoiceId reconciliation, defensible allocation keys, shared-services hard cases (network, observability, security, ingress), monthly + quarterly true-up cadence, dispute process, the chargeback-revolt anti-pattern | ~310 |
+| `finops-chargeback.md` | Chargeback and showback operational treatment: four-tier maturity ladder (no visibility / showback / soft chargeback / hard chargeback), EffectiveCost-based allocation with AWS legacy column mapping (amortised / unblended / blended-trap warning), InvoiceId reconciliation, defensible allocation keys, shared-services hard cases (network, observability, security, ingress), Finance and accounting prerequisites for hard chargeback (ERP readiness, inter-BU P&L impact, transfer pricing, cross-border tax incl. Pillar 2 and GILTI, SOX controls), monthly + quarterly true-up cadence, dispute process | ~480 |
 
 ---
 

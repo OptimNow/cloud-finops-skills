@@ -75,12 +75,31 @@ capacity in March should be allocated 10% of the cluster's cost for March,
 even if the cluster runs on a Reservation that was paid in full in January.
 
 - **`EffectiveCost`** spreads prepaid commitment costs across the periods of
-  consumption. Use it for showback, chargeback, trend analysis, and team
-  attribution.
-- **`BilledCost`** ties to the invoice. Use it for invoice reconciliation
-  against `InvoiceId`. Do not use it for chargeback - it would attribute a
-  $1M annual prepay entirely to whoever consumed the first kilowatt-hour after
-  the purchase.
+  consumption. This is the **amortised** view. Use it for showback, chargeback,
+  trend analysis, and team attribution.
+- **`BilledCost`** ties to the invoice (cash-basis). Use it for invoice
+  reconciliation against `InvoiceId`. Do not use it for chargeback - it would
+  attribute a $1M annual prepay entirely to whoever consumed the first
+  kilowatt-hour after the purchase.
+
+**Mapping to AWS legacy cost columns** (the most common point of confusion):
+
+| FOCUS column | What it is | AWS legacy analogue |
+|---|---|---|
+| `EffectiveCost` | All discounts applied, prepaid commitments amortised across the consumption period | `line_item_amortized_cost` (CUR), Cost Explorer "Amortized" view |
+| `BilledCost` | Cash-basis invoice view; Reservation purchases land as a Purchase row in their billing month | `line_item_unblended_cost` (CUR), Cost Explorer "Unblended" view |
+| `ListCost` | List rate × Pricing Quantity, no discounts | (no direct CUR column - compute as `pricing_public_on_demand_cost`) |
+| `ContractedCost` | Negotiated rate × Pricing Quantity, before commitment discounts | (no direct CUR column - compute from EDP / private pricing rate sheet) |
+
+**Avoid `blended_cost` (AWS) entirely for chargeback.** Blended cost is a
+payer-account averaging artefact: it averages Reservation-discounted rates
+across all linked accounts that consumed the same instance type, regardless
+of which account actually owns the Reservation. FOCUS deliberately has no
+equivalent column because the concept is misleading - it does not reflect
+either invoice reality (use `BilledCost`) or true accrual attribution
+(use `EffectiveCost`). Teams that build chargeback on `blended_cost`
+discover the error the first time a controller asks "why does our
+Reservation appear to discount another team's spend?"
 
 If your billing pipeline only exposes one cost column, configure it to surface
 the amortised view (Azure: amortized cost export; AWS: Cost Explorer amortised
@@ -192,6 +211,167 @@ Allocate by request count if the gateway has per-route or per-client
 attribution. If it does not, configure that attribution before chargeback
 moves past showback. An ingress allocation that cannot survive a "where did
 this number come from?" question will be the first chargeback dispute.
+
+---
+
+## Finance and accounting prerequisites for hard chargeback
+
+Allocation methodology is the FinOps half of chargeback. The Finance, Controller,
+and Tax half determines whether hard chargeback is operationally possible at all.
+A FinOps team that designs an elegant allocation model and hands it to Finance
+only to discover the ERP cannot post the journals has burned six to nine months.
+Surface these questions early - ideally before showback hits month four - so the
+hard-chargeback go-live date is set against real operational constraints rather
+than aspiration.
+
+### Accounting system readiness
+
+Hard chargeback is an accounting transaction. The receiving cost centre's P&L
+takes a charge; the source cost centre's P&L sees the offsetting credit. The
+ERP has to support this:
+
+- **Chart of accounts** - is there an account code for cloud-cost recharges?
+  Some organisations need to create one. Some need to split it (compute /
+  storage / network / managed services) for downstream reporting.
+- **Cost-centre setup** - every receiving team needs a cost centre that exists
+  in the ERP, is open for posting, and is mapped to the right legal entity
+  and reporting hierarchy. Acquired or recently-renamed teams often fail this
+  check.
+- **Inter-cost-centre transfer mechanism** - in SAP, this is CO module
+  configuration (KSU3 cycles, SKF statistical key figures, or distribution
+  cycles). In Oracle / Workday / NetSuite, the equivalents exist but require
+  configuration. The FinOps team almost never owns this; the Controller does.
+- **Posting cadence** - hard chargeback journals need to post inside the
+  monthly close window (typically days 3-5 after period end). A FinOps
+  allocation pipeline that delivers on day 10 is useless for hard chargeback
+  regardless of how good the methodology is. Confirm the close calendar with
+  Finance and engineer the pipeline backwards from it.
+
+A practical first step: have FinOps and the Controller's office walk through
+one mock chargeback journal end-to-end before any commitment is made on
+go-live timing. Block-and-tackle issues (missing cost centre, account code
+not yet created, cycle not configured) surface in hours instead of months.
+
+### Inter-business-unit P&L impact
+
+When Engineering's cloud spend gets recharged to Product Line A, A's operating
+margin drops. A central IT cost line shrinks correspondingly. This is the
+intended outcome - that is the entire point of hard chargeback. But the
+side-effects need executive alignment before the first quarterly close lands:
+
+- **Bonus and incentive plans** - division GMs whose bonuses are tied to
+  operating margin will see margin move from causes outside their control
+  unless their plan is updated to either (a) include cloud spend in their
+  budget envelope, or (b) measure them on a margin metric that excludes
+  recharged IT cost
+- **Segment reporting** - public companies that report by segment need the
+  CFO and Controller aligned on whether recharged cloud cost shows up in
+  segment cost or as a corporate allocation. The choice affects analyst-facing
+  metrics
+- **Board-level reporting** - if board metrics include divisional gross or
+  operating margin, the first quarter of chargeback will move those numbers
+  in ways that need to be explained in advance, not discovered in a board
+  pack
+- **Budget process integration** - hard chargeback only works if the recharged
+  cost is included in the receiving team's budget for the year. Otherwise the
+  team posts variance every month against a budget that ignored the line.
+  Hard chargeback go-live should align with the start of a fiscal year, not
+  mid-year
+
+The CFO has to be the executive sponsor of hard chargeback for this reason.
+FinOps owns the methodology; the CFO owns the accounting and incentive
+implications. Hard chargeback without CFO sponsorship reverts to soft
+chargeback within two quarters.
+
+### Transfer pricing (multi-entity groups)
+
+Intercompany cloud recharges between legal entities are transfer-pricing
+transactions. They need an arm's-length basis, supporting documentation, and
+tax-team review. Most groups land on a cost-plus methodology (cost + 5-7%
+margin) for centrally-procured cloud recharged to operating subsidiaries, but
+the right answer depends on the local tax authority's expectations and the
+group's existing transfer-pricing policy.
+
+The pattern that breaks: a US parent procures cloud centrally and recharges
+to a French operating subsidiary at exact cost. The French tax authority
+re-characterises the transaction under their transfer-pricing rules, imputes
+a margin, and assesses tax on the imputed amount. The remediation cost is
+typically 2-4x the original tax delta.
+
+Engage the tax team before chargeback crosses a legal-entity boundary. They
+will tell you which methodology applies, what documentation is needed, and
+whether an existing transfer-pricing study covers the new recharge or
+requires an update.
+
+### Cross-border tax mechanics
+
+Cross-border intercompany services have additional considerations:
+
+- **VAT / GST treatment** - in the EU, intercompany services across borders
+  typically use the reverse-charge mechanism (the receiving entity self-assesses
+  VAT and recovers it on the same return), but the rules vary by jurisdiction
+  and by what the service is classified as. UK / EU / APAC each have their
+  own treatments
+- **Withholding tax** - some jurisdictions impose withholding on intercompany
+  service payments; bilateral tax treaties usually provide relief but require
+  documentation
+- **Permanent establishment risk** - aggressive recharging from one entity to
+  another can, in some structures, create PE exposure for the source entity
+  in the destination country
+- **Pillar 2 minimum tax (EU + OECD)** - for groups subject to the global
+  minimum tax (revenue > €750M), the effective tax rate calculation in each
+  jurisdiction picks up intercompany cost allocations. Material chargeback
+  flows can shift jurisdictional ETRs and trigger top-up tax in unexpected
+  places
+- **US GILTI / FDII / BEAT** - for US-parented groups, intercompany cloud
+  recharges interact with the international tax provisions in ways that are
+  rarely intuitive
+
+None of these are FinOps decisions. All of them mean "tax has to be in the
+room before hard chargeback crosses a border."
+
+### Audit trail and controls
+
+Hard chargeback creates accounting transactions that auditors will sample.
+The control framework needs evidence:
+
+- **Source data immutability** - the FOCUS dataset (or equivalent) used for
+  allocation must be archived in a form that cannot be altered after the
+  close; auditors need to be able to reproduce the chargeback calculation
+  for any closed period
+- **Approval workflow** - the chargeback methodology and the monthly journals
+  need documented approval before posting; "FinOps decided" is not an
+  audit-acceptable approval chain
+- **Segregation of duties** - the team that designs allocation keys should
+  not be the team that posts the journals. In small organisations this is
+  hard but achievable through ERP-level approver roles
+- **Exception logging** - any manual override (e.g. correcting a previous
+  month's chargeback in the current month) must be logged with rationale
+  and approver
+- **SOX or equivalent (US public, large EU) ** - if the recharged amounts
+  are material to a public company's segment reporting, the chargeback
+  process becomes a SOX-relevant control. ICFR documentation, walkthroughs,
+  and annual testing apply
+
+Engage Internal Audit at the soft-chargeback stage, not at hard-chargeback
+go-live. They will surface control gaps that take months to remediate.
+
+### When to involve which Finance role
+
+| Decision | Owner / co-owner |
+|---|---|
+| Allocation methodology design | FinOps + Controller |
+| Cost-centre and chart-of-accounts setup | Controller |
+| ERP transfer-mechanism configuration | Controller + IT-Finance |
+| Inter-BU P&L impact and incentive-plan alignment | CFO + HR |
+| Transfer pricing methodology | Tax team + external advisor (rarely Internal) |
+| Cross-border tax treatment (VAT, withholding, PE) | Tax team + external advisor |
+| Audit and SOX-relevant controls | Internal Audit + Controller |
+| Budget process integration | FP&A + receiving-team Finance partners |
+
+The FinOps practitioner's job is not to answer these questions; it is to
+surface them at the right moment so the right Finance role can address them
+before the chargeback go-live commitment is made.
 
 ---
 
