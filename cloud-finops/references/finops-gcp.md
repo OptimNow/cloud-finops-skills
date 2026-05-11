@@ -206,24 +206,84 @@ abrupt termination.
 
 Source: https://cloud.google.com/compute/docs/instances/spot
 
-### BigQuery commitment model (separate from CUDs)
+### BigQuery commitments (separate from Compute CUDs)
 
-BigQuery has its own commitment model unrelated to Compute CUDs:
+BigQuery has its own pricing layers and **two distinct commitment levers**. Treat
+them as independent from Compute CUDs - the resource-based vs spend-based CUD
+framing from Compute does not map directly here.
 
-- **On-demand pricing:** $/TiB scanned
-- **Capacity-based pricing:** slot reservations (Standard, Enterprise, Enterprise Plus
-  editions). Reserve slots for predictable workload; Autoscaler scales up beyond the
-  baseline at usage rates.
-- **Slot commitments:** 1-year or 3-year for additional discount on top of the
-  edition rate.
+#### PAYG pricing layers
 
-**The BigQuery cost trap** (in the patterns catalogue): teams adopt slot reservations
-to stabilise costs, then query volumes drop and slots sit underused. The reservation
-discount is wasted. Separately, **inefficient query design** (unpartitioned tables,
-broad SELECT *, missing clustering) is often a 10-100x cost amplifier - fix the
-queries before sizing the reservation.
+| Layer | Pricing model | When it is the right default |
+|---|---|---|
+| **On-demand** | $/TiB scanned | Unpredictable or low-volume usage; compute-heavy queries that scan little data; no slot-waste penalty (you always pay list for what you scan) |
+| **Standard edition** | $/slot-hour PAYG, ~33% cheaper than Enterprise, 1600-slot cap | Scan-heavy workloads that do not need Enterprise features; often the cheapest tier overall for queries that process a lot of data |
+| **Enterprise edition** | $/slot-hour PAYG | Enterprise features required, or individual queries demand high slot counts beyond the 1600-slot Standard cap |
+| **Enterprise Plus edition** | $/slot-hour PAYG, highest rate | Multi-region requirements, advanced governance, CMEK at scale |
 
-Source: https://cloud.google.com/bigquery/docs/reservations-intro
+**Autoscaler under the hood**: regardless of edition, the BigQuery Autoscaler is
+implemented as a series of **60-second slot commitments stitched together**. This
+is why the autoscaler bills a 60-second minimum per scale-up and why "scale to
+zero" has a 1-minute floor. Useful mental model when an engineering team is
+surprised that a sub-minute query left billed slots running for a full minute.
+
+#### Two commitment levers
+
+| Lever | Discount depth | How it applies | Trade-off |
+|---|---|---|---|
+| **Slot commitments** (capacity commits) | 20% (1yr) / 40% (3yr) on Enterprise | Always-on baseline; PAYG slots bill on top at the edition rate when usage exceeds the baseline | High lock-in; only pays off when workload can be binpacked into the baseline or the team accepts the performance penalty of stretching peak work across longer windows |
+| **BigQuery spend-based CUDs** (introduced at Cloud Next 2025) | 10% (1yr) / 20% (3yr) | Applies **hourly** across all capacity SKUs (Standard, Enterprise, Enterprise Plus); no baseline-vs-overage split | Lower headline discount, but no architectural rework, no overage stack, and the discount survives an edition switch |
+
+**The slot-commitment trap (the math that catches teams out).** A 500-slot
+1-year commitment at 20% discount **can net out as a cost increase** when the
+workload is spiky. If the workload averages 500 slots per hour but peaks at
+1500 slots in short bursts, the committed 500 slots are paid in full whether
+used or not, AND the peak overage is billed PAYG on top at the edition rate.
+A 3-year commitment at 40% can net out as only ~5% savings, not the headline
+40%. Commitments only pay off when the team can either flatten the workload
+into the baseline or accept stretching peak work across longer windows. In
+the example above, going all-in on the 500-slot baseline turns 1500-slot
+6-minute bursts into 500-slot 18-minute runs - which may break a 9am
+dashboard SLA.
+
+**Slot waste factor**: define `waste_factor = billed_slots / utilised_slots`.
+A reservation with a waste factor of 1.5 pays 50% more per useful slot than
+its list rate. This is the right cost lens for capacity reservations, not
+the slot-hour list price. A surprising number of "we have a BigQuery cost
+problem" engagements are really waste-factor problems hidden behind a
+reservation discount that looked fine on paper.
+
+#### Progressive ladder for BigQuery commitments
+
+The recommended order of operations, especially for clients earlier in
+maturity (Crawl or early Walk):
+
+1. **Query hygiene first**: partitioning, clustering, eliminate broad
+   `SELECT *`, fix unpartitioned scans. Inefficient queries are a 10-100x
+   cost amplifier; commitments lock in the inefficiency for 1-3 years.
+2. **Right-size the edition**: many scan-heavy workloads belong on
+   Standard, not Enterprise. The ~33% cost gap is structural, not a
+   commitment discount, and is available without lock-in.
+3. **Spend-based CUDs on top of PAYG**: cover the predictable baseline at
+   10/20% without architectural rework or concurrency trade-offs. Applies
+   across all capacity SKUs, so the discount does not strand if the team
+   later switches editions.
+4. **Slot commitments**: only when there is a genuinely stable, binpackable
+   baseline AND the team has re-architected concurrency to fit it. Start
+   small (50-100 slots) and expand based on observed waste factor.
+
+Jumping straight to step 4 - the "I'll just commit to my observed average
+usage" reflex - is the single most common BigQuery commitment failure.
+
+**Frame for clients**: BigQuery commitments trade flexibility for
+predictability, and often performance for predictability. The right
+question is not "what discount can we get" but "what is the SLA the
+business actually needs, and what is the cheapest pricing mix that meets
+it without breaking that SLA".
+
+Sources:
+- https://cloud.google.com/bigquery/docs/reservations-intro
+- https://cloud.google.com/bigquery/pricing#commitments
 
 ---
 
