@@ -165,7 +165,17 @@ GitHub issues, which track in-flight work.
   double-HR check; `apply_with_guard_rails` with snapshot + rollback; run-level
   fail-safe at 2 failures), and 9 unit tests pass against synthesised failure
   modes. What is missing is end-to-end validation, hardening of the rest of the
-  pipeline, and a decision on public release. Four phases:
+  pipeline, and a decision on public release.
+
+  **Phase 1 (Audit) landed:** [`docs/pipeline-audit-2026-05.md`](docs/pipeline-audit-2026-05.md)
+  covers module-by-module contracts, LLM-call inventory, destructive-actions
+  inventory, guard-rails verification (9/9 tests pass; full suite 43/43 green),
+  implicit assumptions, gap analysis vs Phase-2 targets, recommended
+  remediation order (9 items, 5 blocking unfreeze), and proposed unfreeze
+  criteria (U1-U4 from the Roadmap below, plus U5-U8 from the audit). The
+  remaining three phases are still below; Phase 2 (Harden) is the next PR.
+
+  Four phases:
 
   1. **Audit (week 1).** Read every module - `scanner/` (fetch + classify),
      `proposer/` (CHANGES.md report builder), `applier/` (file rewrite, now
