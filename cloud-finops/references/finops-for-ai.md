@@ -166,6 +166,57 @@ reducing waste and improving allocation accuracy.
 | Cost attribution | OpenCost or Kubecost |
 | GPU partitioning | NVIDIA MIG + GPU Operator |
 
+**GPU utilisation is misleading - read the right DCGM metrics:**
+
+The single biggest mistake in GPU FinOps is trusting `nvidia-smi`'s
+`GPU-Util` percentage (also surfaced as CloudWatch `GPUUtilization` on EC2,
+and as the default in many monitoring stacks). The metric reports whether
+the GPU did **anything** during the sampling interval, not how much of its
+compute capacity was used. A workload occupying 1 streaming multiprocessor
+(SM) out of 108 on an H100 reports `GPU-Util: 100%`. Rightsizing decisions
+based on that signal are systematically wrong.
+
+A GPU can appear busy while being significantly underused. The real
+signals come from NVIDIA DCGM (Data Center GPU Manager) profiling metrics,
+exposed via DCGM Exporter:
+
+| DCGM metric | What it measures | When to use it |
+|---|---|---|
+| `DCGM_FI_DEV_GPU_UTIL` | (legacy) GPU did something this interval | **Ignore** for rightsizing decisions |
+| `DCGM_FI_PROF_GR_ENGINE_ACTIVE` | Fraction of time the graphics engine is active | First honest signal of compute usage |
+| `DCGM_FI_PROF_SM_ACTIVE` | Fraction of SMs with at least one warp resident | Parallel-occupancy signal |
+| `DCGM_FI_PROF_SM_OCCUPANCY` | Resident warps / max warps per SM | Density of SM utilisation |
+| `DCGM_FI_PROF_PIPE_TENSOR_ACTIVE` | Tensor core pipeline activity | Critical for ML inference / training - separates "doing matrix maths" from "doing kernel launches" |
+| `DCGM_FI_PROF_DRAM_ACTIVE` | GPU memory bandwidth in use | Detects memory-bound workloads (signal to move to higher-bandwidth SKU or batch differently) |
+| `DCGM_FI_DEV_FB_USED` | Frame buffer (GPU memory) used | Sizing decisions, MIG candidacy, OOM risk |
+
+A workload is genuinely well-sized when `DCGM_FI_PROF_GR_ENGINE_ACTIVE` and
+`DCGM_FI_PROF_PIPE_TENSOR_ACTIVE` are both > 40-60% during steady-state
+traffic. If `GR_ENGINE_ACTIVE` is high but `PIPE_TENSOR_ACTIVE` is low for
+an ML workload, the GPU is doing work that is not matrix multiplication -
+usually a sign of poor batching, memory copies, or framework overhead, and
+a candidate for code optimisation before infrastructure rightsizing.
+
+**Practical deployment:**
+
+- **On Kubernetes (EKS/AKS/GKE)**: install NVIDIA GPU Operator, which
+  bundles DCGM Exporter. Metrics scrape into Prometheus with `gpu` and pod
+  labels for per-workload attribution.
+- **On bare EC2**: deploy DCGM Exporter via systemd or SSM Run Command,
+  scrape with a CloudWatch agent or Prometheus.
+- **On SageMaker managed endpoints**: DCGM is not exposed natively. The
+  available CloudWatch metrics (`GPUUtilization`, `GPUMemoryUtilization`)
+  are the legacy signals and overestimate real usage. For honest GPU
+  telemetry on SageMaker, either run a custom container that emits DCGM
+  metrics, or run inference on self-managed EKS with DCGM and use
+  SageMaker only for training / Studio / managed catalogue features.
+
+This metric reference is the foundation for the GPU rightsizing
+playbooks: [aws-gpu-instance-oversized](../playbooks/aws-gpu-instance-oversized.md),
+[aws-multi-gpu-underutilized](../playbooks/aws-multi-gpu-underutilized.md),
+[aws-mig-candidate](../playbooks/aws-mig-candidate.md),
+[aws-gpu-for-cpu-bound-workload](../playbooks/aws-gpu-for-cpu-bound-workload.md).
+
 **Observability cost feedback loop:**
 Token-level logging for every AI request generates large log volumes. Cloud observability
 platforms charge by the GB for ingestion and retention. A production AI system with full

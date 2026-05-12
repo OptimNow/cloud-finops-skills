@@ -4,7 +4,7 @@ displayName: "Cloud FinOps by OptimNow"
 description: >
   Expert FinOps guidance covering cloud, AI, and SaaS technology spend. Includes AI cost
   management, GenAI capacity planning, self-hosted vs managed AI inference decisioning,
-  Anthropic billing, AWS (EC2, Bedrock, Savings Plans,
+  Anthropic billing, AWS (EC2, Bedrock, SageMaker, GPU rightsizing, Savings Plans,
   CUR, commitment strategy), Azure (reservations, Savings Plans, AHB, OpenAI PTUs, portfolio
   liquidity), GCP (Vertex AI, Compute Engine, BigQuery), tagging governance, SaaS management
   (SAM, licence optimisation, SMPs, shadow IT), AI coding tools (Cursor, Claude Code,
@@ -160,6 +160,36 @@ keywords:
   - realised savings
   - wasteline
   - optimnow waste taxonomy
+  - sagemaker
+  - sagemaker endpoint
+  - sagemaker notebook
+  - sagemaker studio
+  - sagemaker mme
+  - multi-model endpoints
+  - inference components
+  - sagemaker deployment pattern
+  - async inference
+  - serverless inference
+  - batch transform
+  - notebook auto-shutdown
+  - lifecycle configuration
+  - gpu rightsizing
+  - oversized gpu
+  - multi-gpu underutilized
+  - mig
+  - multi-instance gpu
+  - gpu partitioning
+  - outdated gpu generation
+  - gpu modernization
+  - cpu-bound ai workload
+  - gpu for cpu workload
+  - dcgm
+  - nvidia dcgm
+  - dcgm exporter
+  - gpu telemetry
+  - tensor core
+  - gpu memory bandwidth
+  - gpu utilization misleading
 ---
 
 # Cloud FinOps - Expert Guidance
@@ -189,11 +219,11 @@ matching the query.
 
 | Query topic | Load reference |
 |---|---|
-| AI costs, LLM inference, token economics, agentic cost patterns, AI ROI, AI cost allocation, GPU cost attribution, RAG harness costs | `references/finops-for-ai.md` |
+| AI costs, LLM inference, token economics, agentic cost patterns, AI ROI, AI cost allocation, GPU cost attribution, GPU telemetry, DCGM metrics, "GPU utilization is misleading", tensor core activity, GPU memory bandwidth, RAG harness costs | `references/finops-for-ai.md` |
 | AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations | `references/finops-ai-value-management.md` |
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | Self-hosted vs managed AI inference, build vs buy LLM, vLLM, SGLang, llama.cpp, GPU rental, RunPod, CoreWeave, Lambda, hidden cost surface, ML-Ops maturity rubric, hybrid routing (LiteLLM, Portkey) | `references/finops-ai-self-hosted-vs-managed.md` |
-| AWS billing, EC2 rightsizing, RIs, Savings Plans, commitment strategy, portfolio liquidity, phased purchasing, CUR, Data Exports for FOCUS 1.2, Cost Explorer hourly granularity, EDP negotiation, RDS cost management, database commitments, SageMaker AI Savings Plan, Database Savings Plan | `references/finops-aws.md` |
+| AWS billing, EC2 rightsizing, RIs, Savings Plans, commitment strategy, portfolio liquidity, phased purchasing, CUR, Data Exports for FOCUS 1.2, Cost Explorer hourly granularity, EDP negotiation, RDS cost management, database commitments, SageMaker AI Savings Plan, Database Savings Plan, SageMaker operational FinOps (real-time vs serverless vs async vs batch deployment patterns, Multi-Model Endpoints, Inference Components, notebook auto-shutdown), GPU instance rightsizing, MIG candidates, multi-GPU underutilization, outdated GPU generation modernization | `references/finops-aws.md` |
 | AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference, Application Inference Profiles, Bedrock Projects, prompt caching, IAM Principal Cost Allocation | `references/finops-bedrock.md` |
 | Azure cost management, reservations, Savings Plans, Azure Hybrid Benefit, AHB, commitment strategy, portfolio liquidity, phased purchasing, sizing methodology, MACC, Azure Advisor, compute rightsizing, AKS optimisation, Azure Linux retirement, Node Auto Provisioning, NAP, database optimisation (Azure SQL, Postgres/MySQL, Cosmos), Log Analytics cost control, backup and snapshot management, storage tiering and lifecycle, networking cost, tagging and Azure Policy governance, FOCUS exports, EA-to-MCA transition, MCA contractual mechanics, billing hierarchy, ISF CSV deprecation | `references/finops-azure.md` |
 | Azure OpenAI Service, Azure AI Foundry, PTU reservations, locality constraint, GPT-4o, GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
@@ -216,7 +246,7 @@ matching the query.
 | Onboarding workloads, migration-time cost hygiene, intake gate, mandatory tags at go-live, 60-90 day forecast-then-commit rule, double-bubble cost (parallel-run source and target), migration cost estimate vs actuals, network-cost trap (data-centre to cloud), M&A integration patterns, FOCUS-during-migration, architecture review integration, post-migration FinOps owner | `references/finops-onboarding-workloads.md` |
 | Kubernetes FinOps, K8s cost allocation, OpenCost, Kubecost, GKE Cost Allocation, EKS Split Cost Allocation, AKS Cost Analysis, FOCUS-emitting K8s allocation, container rightsizing (VPA, p95/p99 with safety margins), node-level autoscaling (Karpenter, Cluster Autoscaler), Pod Disruption Budgets, Spot diversification, idle node cost, node efficiency KPI | `references/finops-kubernetes.md` |
 | Waste detection playbooks, orphaned resources, idle resources, overprovisioned resources, commitment mismatches, schedule blindness, modernization opportunities, AI/ML inefficiency, two-signal classification, classification confidence (obvious / likely / possible), realised vs potential savings, WasteLine appliance, OptimNow waste taxonomy | `references/finops-waste-detection-playbooks.md` |
-| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift) | `playbooks/<slug>.md` (see `playbooks/README.md` for the full list) |
+| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation) | `playbooks/<slug>.md` (see `playbooks/README.md` for the full list) |
 | Multi-domain query | Load all relevant references, synthesise |
 
 ### Reasoning sequence (apply to every response)

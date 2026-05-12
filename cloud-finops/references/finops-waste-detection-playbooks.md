@@ -503,10 +503,16 @@ provider-specific AI billing, see `finops-bedrock.md`,
 | Orphaned custom Bedrock models | Custom or imported model with zero invocations | Bedrock model inventory + invocation history |
 | Bedrock on-demand in short bursts | Usage concentrated in short windows that batch-inference would handle | Invocation pattern analysis |
 | Top-tier Bedrock model concentration | High share of tokens going to the most expensive model | Token-by-model breakdown (a conversation starter, not a hard rule) |
-| Idle SageMaker notebook instances | Notebook running, no kernel activity over 7 days | SageMaker inventory + activity check |
-| Idle SageMaker endpoints | Endpoint deployed, zero invocations over 30 days | CloudWatch SageMaker invocation metrics |
+| Idle SageMaker notebook instances ([aws-sagemaker-notebook-always-on](../playbooks/aws-sagemaker-notebook-always-on.md)) | Notebook running, no kernel activity over 7 days | SageMaker inventory + activity check |
+| Idle SageMaker endpoints ([aws-sagemaker-idle-endpoint](../playbooks/aws-sagemaker-idle-endpoint.md)) | Endpoint deployed, zero invocations over 30 days | CloudWatch SageMaker invocation metrics |
 | Stale SageMaker Studio apps | Studio app running > 24 hours without user activity | Studio app metadata |
 | Training jobs on-demand instead of Spot | SageMaker training job uses on-demand instances; checkpointing supported | SageMaker training job inventory |
+| SageMaker endpoint sprawl ([aws-sagemaker-mme-consolidation](../playbooks/aws-sagemaker-mme-consolidation.md)) | 3+ lightly-used endpoints in same account/region, each on dedicated instance | Endpoint inventory grouped by account/region + invocation rates |
+| Oversized GPU instance ([aws-gpu-instance-oversized](../playbooks/aws-gpu-instance-oversized.md)) | `DCGM_FI_PROF_GR_ENGINE_ACTIVE` < 20% AND `DCGM_FI_DEV_FB_USED` < 40% over 14 days | DCGM Exporter telemetry (CloudWatch `GPUUtilization` is misleading - see `finops-for-ai.md`) |
+| Multi-GPU instance running single-GPU workload ([aws-multi-gpu-underutilized](../playbooks/aws-multi-gpu-underutilized.md)) | 7 of 8 GPUs near-zero utilisation on a multi-GPU instance | Per-GPU DCGM telemetry; CloudWatch does not expose per-device breakdown |
+| GPU partition (MIG) candidate ([aws-mig-candidate](../playbooks/aws-mig-candidate.md)) | A100/H100 workload using < 1/7 of compute AND < 10 GB frame buffer | DCGM `DCGM_FI_PROF_GR_ENGINE_ACTIVE` + `DCGM_FI_DEV_FB_USED` |
+| GPU instance for CPU-bound workload ([aws-gpu-for-cpu-bound-workload](../playbooks/aws-gpu-for-cpu-bound-workload.md)) | GPU idle (`GR_ENGINE_ACTIVE` < 5%) while CPU saturated (> 60%) | DCGM + CloudWatch `CPUUtilization` |
+| Outdated GPU generation ([aws-outdated-gpu-generation](../playbooks/aws-outdated-gpu-generation.md)) | Significant hours on P3/G4dn while workload is compatible with G5/G6/P4d/P5 | CUR `product_instance_type` filter + workload framework check |
 
 ### Fix sequence
 

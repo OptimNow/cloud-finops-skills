@@ -724,6 +724,129 @@ Container rightsizing requires different tooling than EC2 rightsizing.
 - Right-size the pod requests/limits before right-sizing the underlying node group
 - Node group rightsizing savings are partially offset by bin-packing efficiency changes
 
+### GPU instance rightsizing
+
+GPU instances (G4dn, G5, G6, P3, P4d/P4de, P5/P5e/P5en, Inf2, Trn1) are
+the highest-dollar rightsizing candidates in any AWS account running ML.
+GPU rightsizing is **not** the same problem as CPU rightsizing because the
+basic `nvidia-smi` / CloudWatch `GPUUtilization` metric reports whether
+the GPU did anything in the interval, not how much of its capacity was
+used. A workload using 1 SM out of 108 on an H100 reports `GPU-Util: 100%`.
+For real signals, use NVIDIA DCGM Exporter metrics (`DCGM_FI_PROF_GR_ENGINE_ACTIVE`,
+`DCGM_FI_PROF_PIPE_TENSOR_ACTIVE`, `DCGM_FI_PROF_DRAM_ACTIVE`,
+`DCGM_FI_DEV_FB_USED`). See `finops-for-ai.md` section "GPU utilization is
+misleading" for the metric reference.
+
+The four highest-leverage GPU rightsizing patterns, each with a dedicated
+playbook:
+
+- **Oversized GPU instance** - workload uses < 30% of GPU compute and
+  < 40% of GPU memory.
+  [aws-gpu-instance-oversized](../playbooks/aws-gpu-instance-oversized.md)
+- **Multi-GPU instance running single-GPU workload** - 7 of 8 GPUs idle
+  on a `g5.48xlarge` or `p4d.24xlarge`.
+  [aws-multi-gpu-underutilized](../playbooks/aws-multi-gpu-underutilized.md)
+- **MIG candidate** - workload uses < 1/7 of an A100 or H100; partition
+  via NVIDIA Multi-Instance GPU.
+  [aws-mig-candidate](../playbooks/aws-mig-candidate.md)
+- **GPU for CPU-bound workload** - the GPU is idle while the CPU is
+  saturated; migrate to a `c7i` or `inf2` instance.
+  [aws-gpu-for-cpu-bound-workload](../playbooks/aws-gpu-for-cpu-bound-workload.md)
+- **Outdated GPU generation** - P3 (V100) or G4dn (T4) workloads that
+  would run cheaper per inference on G5, G6, P4d, or P5.
+  [aws-outdated-gpu-generation](../playbooks/aws-outdated-gpu-generation.md)
+
+---
+
+## SageMaker operational FinOps
+
+SageMaker spend has two cost shapes that differ from generic EC2 and need
+their own operational discipline.
+
+### The billed-while-idle trap
+
+SageMaker real-time endpoints and notebook instances are billed at the
+underlying instance hourly rate **as long as they are provisioned**,
+whether traffic flows through them or not. This differs from
+consumption-based services like Lambda or Bedrock on-demand. A small
+endpoint at `ml.m5.xlarge` costs ~$170/month if left running; a GPU
+endpoint at `ml.g4dn.xlarge` is ~$540/month; a `p4d.24xlarge` endpoint
+is ~$27,500/month. Forgotten POC endpoints, never-decommissioned A/B
+variants, and notebook instances left `InService` over a weekend are the
+two highest-density waste patterns in any account running SageMaker.
+
+Detection and remediation playbooks:
+- [aws-sagemaker-idle-endpoint](../playbooks/aws-sagemaker-idle-endpoint.md)
+- [aws-sagemaker-notebook-always-on](../playbooks/aws-sagemaker-notebook-always-on.md)
+
+### Inference deployment pattern selection
+
+SageMaker offers four deployment patterns. The right choice is workload-
+driven: matching the wrong pattern to the wrong workload is itself a waste
+pattern (a real-time endpoint serving bursty traffic, a serverless endpoint
+behind a strict latency SLA).
+
+| Pattern | Best fit | Optimisation focus | When to avoid |
+|---|---|---|---|
+| **Real-time endpoint** | User-facing API, strict latency, steady traffic | Rightsizing, autoscaling, GPU vs CPU choice | Intermittent or bursty traffic; long-running batch |
+| **Serverless inference** | Intermittent or low-volume traffic, no dedicated capacity needed | Memory configuration, cold-start tolerance, cost per request | Strict p99 SLA; high sustained throughput |
+| **Asynchronous inference** | Bursty traffic, large payloads, tolerable response delay | Queue depth, scale-down settings, scale-to-zero | Synchronous request-response APIs |
+| **Batch transform** | Offline scoring, scheduled jobs, large datasets | Spot, partitioning, instance type for throughput | Interactive inference; user-facing immediate response |
+
+The default in most teams is real-time. The most common silent waste is a
+real-time endpoint serving traffic that would be a clean fit for
+serverless or asynchronous - keeping the endpoint always-on for what is
+actually a few requests per hour or per day.
+
+### Endpoint consolidation - MME and Inference Components
+
+When several lightly-used real-time endpoints exist in the same account
+and region (each on its own dedicated instance), consolidation onto a
+shared endpoint is one of the largest savings opportunities in SageMaker.
+Two consolidation mechanisms:
+
+- **Multi-Model Endpoints (MME)** - one container, multiple models loaded
+  dynamically from S3 on demand. Best for tens to thousands of small,
+  homogeneous models that share a runtime (all sklearn, all XGBoost, all
+  TensorFlow Serving). Cold-start on cache-miss adds 100 ms - 2 s of
+  latency.
+- **Inference Components (IC)** - newer mechanism (introduced 2023). Each
+  Inference Component is a model + container deployed onto a shared
+  instance pool with per-component autoscaling. Best for 5-50 models with
+  heterogeneous frameworks or different scaling characteristics. IC is
+  generally the right default for new builds unless MME's homogeneous-
+  runtime model is a genuine fit.
+
+Decision: same container + same framework + many small models → MME;
+heterogeneous frameworks or per-model scaling needs → Inference Components.
+
+Detection and remediation playbook:
+[aws-sagemaker-mme-consolidation](../playbooks/aws-sagemaker-mme-consolidation.md)
+
+### Notebook hygiene
+
+SageMaker notebook instances are valuable while someone is actively
+working in them and a pure cost drag when they are not. The practical
+controls:
+
+- **Lifecycle Configurations (LCC)** with the standard
+  `auto-stop-idle` script (AWS publishes the reference in the
+  `amazon-sagemaker-notebook-instance-lifecycle-config-samples` repo).
+  Run every 5 minutes, stop the instance after N hours of kernel
+  inactivity. A 2-hour idle threshold is the practical default; 4 hours
+  for teams running long evaluations.
+- **EventBridge scheduled stop/start** for predictable office-hours
+  patterns (start 09:00 weekday, stop 19:00 weekday, never weekends).
+  Cheaper and more predictable than LCC for teams that never use
+  notebooks off-hours.
+- **Migrate new work to SageMaker Studio**. Studio bills the Studio app
+  per-second, supports native idle shutdown via the Studio admin console,
+  and avoids the per-notebook EBS footprint. Existing notebook instances
+  do not need in-place migration.
+
+Detection and remediation playbook:
+[aws-sagemaker-notebook-always-on](../playbooks/aws-sagemaker-notebook-always-on.md)
+
 ---
 
 ## AWS cost allocation
