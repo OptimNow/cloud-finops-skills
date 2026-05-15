@@ -82,14 +82,31 @@ cloud-finops-skills/
 
 ## Content update pipeline
 
-The `pipeline/` folder contains a twice-monthly content scanner (around the 1st
-and 15th) that detects FinOps-relevant
-changes across 29 sources and proposes updates to the reference files. It is gitignored
+The `pipeline/` folder contains a **monthly** content scanner (1st of each month
+at 9:00 AM CET via Windows Task Scheduler) that detects FinOps-relevant changes
+across ~30 sources and proposes updates to the reference files. It is gitignored
 and not part of the public distribution.
 
-The pipeline is human-in-the-loop: nothing is changed automatically. Every proposed
-update goes through review (list, preview diffs, approve/reject) before touching any
-reference file. See `pipeline/README.md` for the full workflow.
+**Cadence note (2026-05-15).** The pipeline was originally twice-monthly (1st
+and 15th). After the 2026-05-15 incident-and-recovery session (see Lessons
+learned below) it became clear each run requires 2-4 hours of focused human
+review for a typical 12-item batch. The 15th-of-month task is now disabled
+in Task Scheduler (preserved for re-enable if a mid-month refresh is needed).
+A monthly cadence trades some freshness for sustainable operating effort.
+
+The pipeline is human-in-the-loop: nothing is changed automatically. Every
+proposed update goes through preview, approve/reject, and a guard-railed
+execute pass before touching any reference file.
+
+**Operational reference:** `pipeline/MONTHLY_WORKFLOW.md` (gitignored,
+private; only present in the maintainer's local repo) is the step-by-step
+doctrine for running a monthly batch - pre-flight checks, per-item review,
+execute, PR management, failure-mode handling, cost guidance. The
+`pipeline/README.md` alongside it covers the same workflow at a lower
+technical level. Both are intentionally kept out of public Git history -
+they document an operating discipline that depends on credentials, file
+paths, and infrastructure specific to the maintainer's setup, none of
+which belong in the public repo.
 
 ---
 
@@ -183,6 +200,47 @@ broken proposal now prints "REJECTED by guard rail" rather than a
 See `docs/pipeline-audit-2026-05.md` "Correction (2026-05-15)" and
 `docs/pipeline-harden-plan.md` "Status update (2026-05-15)" for the full
 forensic.
+
+### Content update pipeline is a proposal engine, not an automated updater (2026-05-15)
+
+The 2026-05-15 first-real-run session (~5 hours, ~$13-15 in Anthropic credits,
+2 PRs of content shipped + 3 doctrine PRs) clarified the operational reality
+of the content-update pipeline. **The pipeline detects, classifies, and
+proposes; the human reviews, approves, integrates.** Full automation was
+never the goal, but the day's debugging proved it isn't even theoretically
+achievable for files >1500 lines without manual intervention.
+
+What the session established:
+- **Cadence dropped to monthly** (was twice-monthly). Each run takes 2-4
+  hours of focused review; twice-monthly was unsustainable.
+- **Architecture: FIND/REPLACE plain-text edits**, not whole-file rewrites
+  and not JSON tool-use hunks. Whole-file rewrites hit Opus's 32K output
+  token ceiling on big files and silently truncated. Tool-use hunks failed
+  because Opus regressed to legacy XML format under `tool_choice`. Plain-
+  text FIND/REPLACE blocks with a regex parser is the only approach that
+  worked reliably in production.
+- **Operating doctrine documented** at `pipeline/MONTHLY_WORKFLOW.md`
+  (gitignored, maintainer-local) - step-by-step monthly workflow,
+  failure modes with detection criteria, cost guidance, PR conflict
+  handling. Read it before running the pipeline manually.
+- **Three durable engineering changes** retained from the day:
+  - `pipeline/smoke_test.py` - real-API smoke test against the smallest
+    reference file. Run before any batch; ~$0.05 catches the issues that
+    mock-only unit tests miss.
+  - Per-run structured report at `pipeline/state/runs/<id>/report.json` -
+    written by every run including failed ones, the audit primitive.
+  - Preview-mode guard rails - `_validate_content` runs against the
+    proposed content before showing it as a diff, so unsafe proposals
+    print "REJECTED by guard rail" instead of a 1000-line broken diff.
+- **Big files are at the edge of the auto-edit envelope.** `finops-aws.md`
+  (2657 lines) and `finops-azure.md` (~3000 lines) routinely produce
+  guard-rail rejections or anchor failures for non-additive changes.
+  Structural changes to these files need manual integration. Additive
+  edits (new subsection, new note) work fine.
+
+The pipeline now sits in a sustainable operating shape. Future work is
+about *simplification* (reducing the manual review surface), not adding
+more automation.
 
 ---
 
@@ -364,7 +422,7 @@ GitHub issues, which track in-flight work.
   `README.md`'s install table. Maintenance burden: a GitHub Action that re-builds the
   artefacts on each release, plus a manual re-upload to ChatGPT (their API does not
   expose a "publish new version" endpoint for Custom GPTs). Cadence target: monthly
-  refresh on top of the twice-monthly source updates.
+  refresh on top of the monthly source-update batch.
 
 - **Public Gemini Gem for Gemini users.** Same shape as the ChatGPT GPT. Build
   steps: (1) run `./install.sh --tool gemini` to produce the 10 grouped knowledge
