@@ -55,6 +55,17 @@ Multiple tools serving the same function across different teams. Marketing uses 
 - Use feature-level usage data (not just login frequency) to determine which tool best serves the organisation's needs
 - Involve end users in consolidation decisions to reduce resistance
 
+**Per-Query Agent Billing**
+Type: Emerging Cost Model
+
+SaaS vendors are introducing per-query pricing specifically for AI agent interactions, moving beyond traditional seat-based models. As of March 2026, this represents a fundamental shift: agents do not need seats, but they generate thousands of API calls. A single agent workflow might query multiple SaaS systems, each charging per interaction.
+
+- Monitor agent-to-SaaS API call volumes as a new cost driver
+- Implement rate limiting and caching strategies to control per-query costs
+- Negotiate bulk query packages or agent-specific pricing tiers during renewals
+- Track cost-per-outcome metrics: what business value did those queries generate?
+- Consider hybrid models: human seats plus agent query allowances
+
 **Shadow SaaS**
 Type: Governance Gap
 
@@ -153,10 +164,10 @@ Segment applications by function (horizontal vs. vertical) and criticality (core
 ### Optimise
 
 **License Optimisation**
-Rightsize license tiers, reharvest unused seats, and eliminate shelfware. This is the SaaS equivalent of IaaS rightsizing. Requires feature-level usage data, not just login frequency.
+Rightsize license tiers, reharvest unused seats, and eliminate shelfware. This is the SaaS equivalent of IaaS rightsizing. Requires feature-level usage data, not just login frequency. With per-query agent billing emerging, optimisation now includes both human seat allocation and agent API consumption patterns.
 
 **Renewal Management**
-Centralised tracking of all renewal dates, notice periods, and contract terms. Usage data from the Inform phase becomes negotiation leverage. The goal: no renewal happens without a data-backed review of whether the tool is still needed, at the right tier, at a competitive price.
+Centralised tracking of all renewal dates, notice periods, and contract terms. Usage data from the Inform phase becomes negotiation leverage. The goal: no renewal happens without a data-backed review of whether the tool is still needed, at the right tier, at a competitive price. Include agent usage projections in renewal negotiations - vendors are increasingly open to hybrid pricing models that account for both human and agent interactions.
 
 **Build vs. Buy Decisions**
 Data-driven comparison between purchasing SaaS versus building internal solutions. Factor in Total Cost of Ownership (TCO) including maintenance, integration, and opportunity cost - not just license price versus development cost.
@@ -291,6 +302,8 @@ Always-on SaaS services, duplicated infrastructure across overlapping tools, and
 | Cost per employee (SaaS) | Total SaaS spend / headcount | Benchmark against industry |
 | Redundant app count | Apps with overlapping functionality | Decreasing |
 | Time to deprovision | Days between employee departure and SaaS access revocation | <1 day |
+| Agent query cost ratio | Per-query agent costs / total SaaS spend | Monitor trend |
+| Cost per agent outcome | Total agent query costs / business outcomes delivered | Establish baseline |
 
 ---
 

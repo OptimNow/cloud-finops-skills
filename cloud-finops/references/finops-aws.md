@@ -51,7 +51,7 @@ generally available - the canonical path for FOCUS-conformant cost data on AWS.
 - FOCUS 1.2 data flows into the same S3-backed pattern: configure once, query via Athena
   or any FOCUS-aware tool.
 - For multi-cloud customers, the FOCUS 1.2 schema aligns with Azure Cost Management's
-  FOCUS 1.2 preview export and GCP's FOCUS export, enabling true cross-cloud
+  FOCUS 1.2 export and GCP's FOCUS 1.0 export, enabling true cross-cloud
   normalisation in a single warehouse.
 
 **Cross-account delivery (March 2026, GA).** AWS Data Exports now supports
@@ -831,6 +831,82 @@ These actions typically deliver savings within 30 days with low risk.
 | Right-size over-provisioned RDS instances | 20–50% RDS cost | Medium (test first) | Medium |
 | Convert gp2 EBS volumes to gp3 | 20% EBS cost (same IOPS baseline) | Low | Low |
 | Review and right-size NAT Gateway usage | Variable | Medium | Medium |
+
+---
+
+## Database cost optimisation
+<!-- src:holori-database-optimization -->
+
+Database services often represent 20-40% of cloud spend, yet many organisations treat them as black boxes from a cost perspective. The following patterns apply across AWS RDS, Azure SQL Database, and GCP Cloud SQL.
+
+### Common database cost drivers
+
+**1. Overprovisioning for peak load**
+- Databases sized for Black Friday traffic that run at 10% utilisation for 11 months
+- Solution: Implement auto-scaling (where supported) or scheduled scaling for predictable patterns
+- AWS: Aurora Serverless v2, RDS Proxy for connection pooling
+- Azure: SQL Database serverless compute tier, elastic pools
+- GCP: Cloud SQL automatic storage increases, read replica auto-scaling
+
+**2. High availability in non-production**
+- Multi-AZ/zone deployments double infrastructure costs
+- Dev/test rarely needs synchronous replication
+- Solution: Single-zone deployments for non-prod, with automated backups for recovery
+
+**3. Storage inefficiencies**
+- Provisioned IOPS when standard storage suffices (AWS: gp3 vs io1/io2)
+- Retained backups and snapshots beyond business requirements
+- Uncompressed or poorly indexed tables driving storage growth
+- Solution: Regular storage audits, lifecycle policies, compression strategies
+
+**4. Backup retention overkill**
+- 35-day retention when 7 days meets actual RTO/RPO
+- Manual snapshots never deleted after migrations
+- Solution: Align retention to documented recovery requirements, automate cleanup
+
+### Database-specific optimisation strategies
+
+**For transactional workloads (OLTP):**
+- Right-size based on connection count and active sessions, not just CPU/memory
+- Implement connection pooling to reduce instance size requirements
+- Consider managed connection proxies (RDS Proxy, Azure SQL Database built-in pooling)
+
+**For analytical workloads (OLAP):**
+- Evaluate columnar storage options (Redshift, BigQuery, Synapse)
+- Implement result caching to reduce repeated query costs
+- Schedule large queries during off-peak for better pricing (BigQuery flex slots)
+
+**For mixed workloads:**
+- Separate OLTP and OLAP with read replicas or data warehouse offload
+- Use change data capture (CDC) for real-time sync instead of expensive ETL
+
+### Commitment strategies by database type
+
+**Open-source engines (MySQL, PostgreSQL, MariaDB):**
+- Maximum flexibility for commitments due to version compatibility
+- Size flexibility within instance families on AWS RDS
+- Consider Aurora for better price-performance at scale
+
+**Commercial engines (Oracle, SQL Server):**
+- License costs often exceed infrastructure costs
+- BYOL can save 40-80% if you have existing licenses
+- Evaluate migration to open-source for non-critical workloads
+
+**NoSQL and managed services:**
+- DynamoDB: On-Demand vs Provisioned can be 5-10x cost difference
+- Cosmos DB: Request unit (RU) optimisation more impactful than storage
+- Firestore/Datastore: Document size and index strategy drive costs
+
+### Quick wins checklist
+
+- [ ] Identify databases with <20% average CPU utilisation for downsizing
+- [ ] Review Multi-AZ/HA configurations in non-production environments  
+- [ ] Audit backup retention policies against actual recovery requirements
+- [ ] Check for orphaned snapshots from deleted databases
+- [ ] Evaluate storage tier options (standard vs provisioned IOPS/throughput)
+- [ ] Implement connection pooling for high-connection workloads
+- [ ] Schedule non-production databases to stop outside business hours
+- [ ] Review commercial database licenses for BYOL opportunities
 
 ---
 
@@ -1917,10 +1993,13 @@ Effective implementation requires collaboration across roles:
 ### Database commitment discount decision tree
 
 AWS now offers a **Database Savings Plan** alongside service-specific Reserved
-Instances for managed databases. Compute Savings Plans still do not cover managed
-databases - those workloads need either RIs or the Database Savings Plan, depending
-on the service. Choosing the wrong instrument - or committing too early - is the
-most common database FinOps mistake.
+Instances for managed databases. Database Savings Plans provide up to 35% discount
+on serverless databases (Aurora Serverless v2, DynamoDB On-Demand, Neptune Serverless)
+and up to 20% on provisioned database instances (RDS, Aurora, ElastiCache, MemoryDB,
+OpenSearch). Compute Savings Plans still do not cover managed databases - those
+workloads need either RIs or the Database Savings Plan, depending on the service.
+Choosing the wrong instrument - or committing too early - is the most common database
+FinOps mistake.
 
 Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html
 
@@ -1928,14 +2007,14 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 
 | Service | Reserved Instances | Database Savings Plan | Compute Savings Plans | Notes |
 |---|---|---|---|---|
-| RDS (MySQL, PostgreSQL, MariaDB) | Yes - size-flexible within family | Yes - covers eligible RDS engines | No | RI size flexibility means right-sizing does not invalidate the commitment. Database SP adds spend-based flexibility across engines. |
+| RDS (MySQL, PostgreSQL, MariaDB) | Yes - size-flexible within family | Yes - up to 20% discount | No | RI size flexibility means right-sizing does not invalidate the commitment. Database SP adds spend-based flexibility across engines. |
 | RDS (Oracle, SQL Server) | Yes - locked to instance type | Eligibility varies - verify per engine | No | No size flexibility for commercial engines; must match instance exactly |
-| Aurora (MySQL, PostgreSQL) | Yes - size-flexible within family | Yes - covers eligible Aurora engines | No | Same RI pool as RDS open-source engines |
-| DynamoDB | Yes - Reserved Capacity | No | No | Commit to read/write capacity units; only viable for Provisioned mode |
-| ElastiCache (Redis, Memcached) | Yes - node-type specific | No | No | Locked to node type, no size flexibility |
-| MemoryDB | Yes - node-type specific | No | No | Same mechanics as ElastiCache RIs |
-| Neptune | Yes - instance-type specific | No | No | Low discount depth compared to RDS RIs |
-| OpenSearch | Yes - instance-type specific | No | No | Also covers legacy Elasticsearch domains |
+| Aurora (MySQL, PostgreSQL) | Yes - size-flexible within family | Yes - up to 20% discount (provisioned), up to 35% (Serverless v2) | No | Same RI pool as RDS open-source engines |
+| DynamoDB | Yes - Reserved Capacity | Yes - up to 35% discount (On-Demand mode) | No | Commit to read/write capacity units for Provisioned mode; Database SP covers On-Demand |
+| ElastiCache (Redis, Memcached) | Yes - node-type specific | Yes - up to 20% discount | No | Locked to node type, no size flexibility |
+| MemoryDB | Yes - node-type specific | Yes - up to 20% discount | No | Same mechanics as ElastiCache RIs |
+| Neptune | Yes - instance-type specific | Yes - up to 35% discount (Serverless) | No | Low discount depth compared to RDS RIs |
+| OpenSearch | Yes - instance-type specific | Yes - up to 20% discount | No | Also covers legacy Elasticsearch domains |
 | Redshift | Yes - node-type specific | No | No | Consider Redshift Serverless for variable workloads (no RI available) |
 | DocumentDB | Yes - instance-type specific | No | No | Same RI mechanics as RDS commercial engines |
 
@@ -2037,11 +2116,14 @@ flexibility. The decision is rarely purely financial.
 1. **EDP as base** - if eligible, the portfolio-wide EDP discount applies to both
    EC2 and RDS, reducing the effective rate before any RI is applied
 2. **Right-size and optimise** - complete the 9-step RDS framework before committing
-3. **Reserve the steady-state floor** - commit RIs for the baseline that will not
-   change during the term. Leave headroom for scaling
-4. **On-Demand for the variable layer** - peaks, new workloads, and workloads under
+3. **Database Savings Plan for serverless** - if using Aurora Serverless v2, DynamoDB
+   On-Demand, or Neptune Serverless, Database SP provides up to 35% discount with
+   spend-based flexibility
+4. **Reserve the steady-state floor** - commit RIs for provisioned baseline that will
+   not change during the term. Leave headroom for scaling
+5. **On-Demand for the variable layer** - peaks, new workloads, and workloads under
    evaluation stay on On-Demand until they stabilise
-5. **Review quarterly** - commitment coverage should increase as workloads mature,
+6. **Review quarterly** - commitment coverage should increase as workloads mature,
    not as a one-time purchasing event
 
 **Diagnostic questions:**
@@ -2649,8 +2731,6 @@ Billing transfer is a delegation mechanism that allows one payer account (the "b
 | Credits shared | No | No |
 | Supported tools | Cost Explorer, budgets, dashboards, reports | Cost Explorer, budgets, bills page |
 | Pricing | Free (API surcharge for multi-org) | Free (basic) / $50/org/month (custom pricing plan) |
-
----
 
 ---
 

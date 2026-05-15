@@ -57,6 +57,8 @@ be explicit, not assumed.
 - Tag all AI resources at provisioning time (model, team, project, environment)
 - Decide what to track: performance, cost, or both - and be explicit about priority
 - Treat cost data quality as a prerequisite for any value conversation
+- Monitor per-query charges from SaaS vendors as AI agents interact with their APIs
+- Implement cost attribution for agent-driven SaaS usage separate from human usage
 
 ### Expand the FinOps collaboration model
 
@@ -90,6 +92,8 @@ The less structured or proven an AI project is, the more frequently it should be
   are too slow for AI workloads
 - Implement hard spend caps for experimental or high-speed workloads
 - Make spend caps visible to the teams operating the workloads, not only to finance
+- Track per-query SaaS charges separately from traditional seat-based licensing
+- Set query budgets for AI agents interacting with external SaaS APIs
 
 ### Build new skills in the FinOps team
 
@@ -182,11 +186,11 @@ FinOps provides:
 
 | Area | FinOps contribution |
 |---|---|
-| Financial oversight | Cloud infrastructure, training, inference, third-party AI services, experimentation budgets |
+| Financial oversight | Cloud infrastructure, training, inference, third-party AI services, experimentation budgets, per-query SaaS charges |
 | ROI and value measurement | Business value metrics, cost-to-value ratios, payback periods |
-| Cost transparency and chargeback | Showback/chargeback models; visibility into which teams, products, or models drive cost |
-| Optimisation guidance | Attribution of shared AI platforms; model selection trade-offs; compute rightsizing |
-| Risk and compliance input | Guardrail recommendations; anomaly thresholds; tagging schema validation |
+| Cost transparency and chargeback | Showback/chargeback models; visibility into which teams, products, or models drive cost; attribution of agent-driven SaaS queries |
+| Optimisation guidance | Attribution of shared AI platforms; model selection trade-offs; compute rightsizing; query optimisation for SaaS APIs |
+| Risk and compliance input | Guardrail recommendations; anomaly thresholds; tagging schema validation; query rate limits |
 
 ### Council membership
 
@@ -258,6 +262,8 @@ Required inputs per project:
 - [ ] Model routing policy documented
 - [ ] Prompt caching enabled where applicable
 - [ ] Tagging schema present and validated
+- [ ] Per-query SaaS budgets established for agent workflows
+- [ ] Query rate limits configured for external API calls
 
 ### Escalation rules
 

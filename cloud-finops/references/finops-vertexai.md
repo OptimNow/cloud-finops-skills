@@ -163,6 +163,11 @@ For Vertex AI:
 - Use `sku.description` to differentiate model inference, batch prediction, and
   provisioned throughput charges
 
+**AI Cost Summary Agent (Preview):** As of May 2026, GCP launched the AI Cost Summary
+Agent in preview, providing dedicated AI spend analysis across Gemini API and Vertex AI
+services through a Billing Overview widget. This native tool addresses the AI cost
+visibility gap, offering spend attribution and insights specifically for AI workloads.
+
 **Limitation:** native billing does not provide token-level granularity per request.
 For unit economics, combine billing data with application-level metrics from
 Cloud Monitoring or your own instrumentation.

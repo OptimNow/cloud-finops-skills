@@ -104,6 +104,13 @@ call. In observed enterprise deployments, the harness represents 40-60% of total
 feature cost. In RAG-heavy architectures with multi-region data pipelines, it can exceed
 inference cost.
 
+**The emerging SaaS dimension:** Beyond infrastructure harness costs, AI agents are
+introducing a new cost category: per-query charges from SaaS vendors. As agents interact
+with CRM, ERP, and analytics platforms via APIs, vendors are shifting from seat-based
+pricing to consumption models that charge per data query. This fundamentally changes how
+organisations budget for SaaS tools - a sales intelligence agent querying Salesforce
+thousands of times daily can generate costs that dwarf traditional per-seat licensing.
+
 **Harness cost map:**
 
 | Cost component | Primary driver | Allocation difficulty | Attribution approach |
@@ -117,6 +124,7 @@ inference cost.
 | Orchestration layer | Lambda/Fargate invocations, Step Functions | Low-Medium | Tags + application logging |
 | Reranking models | Token volume for secondary ranking calls | Medium | Per-request metadata logging |
 | Observability and logging | Log ingestion volume | Medium | Tiered logging strategy |
+| SaaS API queries | Per-query charges from agent interactions | High - new billing model | Agent-level metering + SaaS cost APIs |
 
 **Vector database marketplace attribution:**
 Managed vector databases (Pinecone, Weaviate, Qdrant) purchased through a cloud
@@ -173,6 +181,7 @@ version); log full request and response content only for sampled traffic or erro
 | Training job attribution | SageMaker tags -> CUR | AzureML resource group + tags -> Cost Management | Vertex AI project labels -> BigQuery |
 | Inference attribution | Tags on provisioned throughput + app instrumentation | Separate AOAI accounts + tags + app instrumentation | Project labels + API call labels + Cloud Monitoring |
 | Token-level unit economics | App instrumentation + CloudWatch | App instrumentation + Azure Monitor | App instrumentation + Cloud Monitoring |
+| AI cost visibility | Bedrock inference profiles (limited) | Cost Management AI views | AI Cost Summary Agent (preview) |
 
 The common thread: native billing does not provide feature-level or user-level cost
 attribution for inference out of the box. Account and project separation handles
@@ -337,14 +346,19 @@ committed capacity with low utilization.
 ### 3. Agentic loops
 AI agents calling other agents create multiplicative cost patterns. Retry logic, recursive
 calls, validation loops, or agents that invoke themselves multiply token consumption by
-5–50× per user request.
+5–50× per user request. This compounds when agents interact with SaaS APIs that charge
+per query - each retry or validation loop triggers additional SaaS charges alongside
+model costs.
 
 *Real example:* A sales intelligence agent validated its own output with a second API
 call. When validation failed, it retried the full sequence. A single user query generated
-47 API calls at $2.30 each. At 12,000 queries/month: $27,600 in unintended cost.
+47 API calls at $2.30 each. At 12,000 queries/month: $27,600 in unintended cost. When
+the same agent began querying Salesforce data, per-query charges added another $18,000/month
+that appeared in the SaaS bill, not the AI infrastructure budget.
 
 *Detection signal:* Average tokens per request significantly above design estimate; high
-variance in cost per session; cost growing faster than user volume.
+variance in cost per session; cost growing faster than user volume; unexpected increases
+in SaaS API usage charges.
 
 ### 4. Data egress in AI pipelines
 RAG systems that store data in one region, generate embeddings in another, and run
@@ -393,11 +407,13 @@ Use this to diagnose an organization's current state before recommending solutio
 - [ ] Budget alerts configured at feature level
 - [ ] Process exists to detect and decommission zombie features
 - [ ] Shadow AI audit conducted in last 12 months
+- [ ] SaaS API query costs included in agent budget planning
+- [ ] Monitoring for agent-driven SaaS consumption spikes
 
 **Scoring:**
 - 0–4 ✓: Crawl - start with visibility. Nothing else is meaningful without it.
 - 5–8 ✓: Walk - focus on unit economics and model optimization.
-- 9–12 ✓: Run - focus on governance automation and agentic FinOps patterns.
+- 9–14 ✓: Run - focus on governance automation and agentic FinOps patterns.
 
 ---
 

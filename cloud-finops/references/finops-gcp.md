@@ -34,10 +34,26 @@ contract sits at the Billing Account level.
 - [ ] Budgets with email + Pub/Sub alerts at 50% / 80% / 100% thresholds, per project
 - [ ] BigQuery billing export enabled (see below) - this is the canonical analytics path
 - [ ] Pricing data export to BigQuery for SKU price reconciliation
+- [ ] AI Cost Summary Agent widget in Billing Overview (preview) for AI workload visibility
 
 The Cloud Billing console is sufficient for ad-hoc visualisation and budget alerting.
 For any serious FinOps analytics, the BigQuery billing export is the right primitive,
 not the console.
+
+### AI Cost Summary Agent - native AI spend visibility
+
+As of May 2026, GCP launched the **AI Cost Summary Agent** in preview, providing
+dedicated AI spend analysis across Gemini API and Vertex AI services through a
+Billing Overview widget. This addresses the AI cost visibility gap that FinOps teams
+face when managing AI workloads on GCP.
+
+**Key capabilities:**
+- Aggregated AI spend across Gemini API and Vertex AI services
+- Native tooling for AI spend attribution without third-party tools
+- Integrated into the Cloud Billing console for unified cost management
+
+For detailed AI cost optimisation strategies, see `finops-vertexai.md` and
+`finops-for-ai.md`.
 
 ### BigQuery billing export - the canonical GCP cost data path
 
@@ -69,8 +85,10 @@ schema is optimised for multi-cloud joins, while the native exports retain GCP-
 specific columns the FOCUS spec does not surface.
 
 For multi-cloud customers normalising AWS / Azure / GCP cost in one warehouse, the
-FOCUS export is the path that aligns with AWS Data Exports for FOCUS 1.2 (GA Nov 2025)
-and Azure Cost Management's FOCUS 1.2 preview.
+FOCUS export is the path that aligns with AWS Data Exports for FOCUS 1.2 and
+Azure Cost Management's FOCUS 1.2 support. Note that GCP currently supports FOCUS 1.0
+while AWS and Azure have moved to v1.2, with additional providers like Databricks,
+Vercel, and Grafana Cloud also joining the FOCUS ecosystem.
 
 Source: https://cloud.google.com/billing/docs/how-to/export-data-bigquery-focus
 

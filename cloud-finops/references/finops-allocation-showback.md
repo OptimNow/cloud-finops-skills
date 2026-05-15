@@ -59,6 +59,8 @@ translation.
 | **`ListCost`** | List rate × Pricing Quantity, no discounts. | Measuring rate-optimisation savings |
 | **`ContractedCost`** | Negotiated rate × Pricing Quantity, before commitment discounts. | Measuring commitment-specific savings |
 
+> **Note on FOCUS adoption**: As of March 2026, FOCUS v1.2 is available for AWS and Azure, v1.0 for GCP and Oracle, with newer providers like Vercel, Grafana Cloud, Redis, and Databricks also supporting various FOCUS versions. This expanded ecosystem significantly simplifies multi-cloud allocation by providing consistent cost columns across providers.
+
 **Use `EffectiveCost` for allocation.** Allocation is an accrual concept: a
 workload that consumes 10% of cluster capacity in March should be allocated
 10% of the cluster's cost for March, even if the cluster runs on a Reservation
@@ -92,7 +94,10 @@ If your billing pipeline only exposes one cost column, configure it to surface
 the amortised view (Azure: amortized cost export; AWS: Cost Explorer amortised
 view or CUR `line_item_amortized_cost`; GCP: BigQuery export's amortised cost
 columns). FOCUS-conformant exports surface both `EffectiveCost` and
-`BilledCost` natively.
+`BilledCost` natively. With the expanded FOCUS ecosystem (AWS v1.2, Azure v1.2,
+GCP v1.0, and newer providers supporting various versions), organisations can
+increasingly rely on FOCUS exports as their primary data source for multi-cloud
+allocation, reducing the complexity of maintaining provider-specific mappings.
 
 ### Reconcile to invoice via `InvoiceId`
 

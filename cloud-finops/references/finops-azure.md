@@ -50,6 +50,7 @@ Source for scope rules: https://learn.microsoft.com/en-us/azure/cost-management-
 - **Cost Management exports** support a **FOCUS 1.2 preview** dataset, with documented conformance gaps against the published 1.2 spec.
 - **FinOps Toolkit v12 / FinOps Hubs** ingest the preview and provide FOCUS 1.2-aligned analytics on top.
 - FOCUS 1.0 went GA in Cost Management in June 2024 - that remains the historical baseline; FOCUS 1.2 is the current direction. Configure for multi-cloud normalisation alongside traditional actual/amortized exports.
+- **FOCUS 1.3** implementations are emerging across the ecosystem (AWS, Vercel, Grafana Cloud, Redis, Databricks) - Azure's roadmap for 1.3 support has not been announced as of April 2026.
 
 Sources: https://learn.microsoft.com/en-us/cloud-computing/finops/focus/conformance-summary, https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/changelog
 
@@ -105,10 +106,12 @@ to be layered, not chosen in isolation.
 
 | Instrument | Discount depth | Flexibility | Commitment type | Term | Covers |
 |---|---|---|---|---|---|
-| Azure Reservation | Up to 72% | Lowest - locked to VM family, region, size | Capacity-based (specific SKU) | 1yr or 3yr | VMs, Dedicated Hosts, App Service (Isolated), specific services |
+| Azure Reservation | Up to 72% | Lowest - locked to VM family, region, size | Capacity-based (specific SKU) | 1yr or 3yr (see note) | VMs, Dedicated Hosts, App Service (Isolated), specific services |
 | Azure Savings Plan for Compute | Up to 65% | High - any VM family, region, size | Spend-based ($/hr) | 1yr or 3yr | VMs, Dedicated Hosts, Container Instances, App Service (Premium v3 / Isolated v2) |
 | Azure Hybrid Benefit (AHB) | Up to 40% (Windows), 55% (SQL) | Highest - no commitment, no lock-in | Licensing overlay | None | VMs, SQL Database, SQL MI, Red Hat/SUSE Linux |
 | Spot Virtual Machines | Up to 90% | Variable - can be evicted with 30s notice | None (market-priced) | None | VMs, VMSS, AKS node pools |
+
+**Note on one-year Reserved VM Instances:** As of July 1, 2026, Azure is retiring one-year Reserved VM Instances for select older VM series. This affects new purchases and renewals for these specific series. Three-year reservations remain available for all VM series. When planning reservation strategies, verify current eligibility for one-year terms on your target VM series.
 
 **Critical distinctions:**
 
@@ -142,6 +145,12 @@ to be layered, not chosen in isolation.
 6. **Spot is not a commitment** - it is a market mechanism with a 30-second eviction
    notice and no SLA. It belongs in the compute cost strategy but should not be compared
    directly against commitment instruments.
+
+7. **VM series lifecycle impacts reservation strategy.** With the July 1, 2026 retirement
+   of one-year Reserved VM Instances for select older VM series, factor VM generation
+   lifecycle into commitment decisions. For older VM series approaching retirement,
+   either plan migration to newer generations or use three-year reservations if the
+   workload will remain on the legacy series.
 
 **Reservation and Savings Plan liquidity mechanics (current as of April 2026):**
 
@@ -180,10 +189,16 @@ START: What Azure compute service runs the workload?
 │   │           ├── NO → Right-size first. Do not commit to waste.
 │   │           │
 │   │           └── YES → Will it stay on the same VM family + region?
-│   │               ├── YES → Azure Reservation (up to 72%)
-│   │               │         Deepest discount. Can be exchanged for a
-│   │               │         different SKU if workload changes (subject
-│   │               │         to exchange policy limits).
+│   │               ├── YES → Is the VM series eligible for 1yr reservations?
+│   │               │         (Check: older series may only support 3yr after
+│   │               │         July 1, 2026)
+│   │               │         ├── YES → Azure Reservation (up to 72%)
+│   │               │         │         Deepest discount. Can be exchanged for a
+│   │               │         │         different SKU if workload changes (subject
+│   │               │         │         to exchange policy limits).
+│   │               │         │
+│   │               │         └── NO → Consider 3yr reservation or migration to
+│   │               │                  newer VM series that supports 1yr terms
 │   │               │
 │   │               └── NO / UNSURE → Savings Plan for Compute (up to 65%)
 │   │                     Covers any VM family and region. ~7% shallower
@@ -614,10 +629,12 @@ forced by the granularity gap.**
 
 **Step 3 - Coverage planning.** Map the floor to instruments:
 - High baseline + low variability + AHB-eligible Windows -> 3-year RI with AHB
-- High baseline + low variability + Linux or non-AHB -> 1-year RI (3-year if conviction
-  is high)
+- High baseline + low variability + Linux or non-AHB -> 1-year RI if VM series supports
+  it (verify post-July 2026 eligibility), otherwise 3-year RI if conviction is high
 - Variable workload, stable $ floor -> Savings Plan, 1-year, sized at 70-80% of floor
 - Bursty / unpredictable -> PAYG with Spot for the spike layer
+- Older VM series approaching retirement -> Plan migration to newer generation or commit
+  via 3-year reservation if workload must remain on legacy series
 
 **Step 4 - Validate against Advisor.** Pull Advisor's reservation and SP recommendations.
 Reconcile against your own calculation from Step 2. Differences usually reveal AHB not
@@ -1805,6 +1822,11 @@ Toolkit v12 ingest the 1.2 preview into 1.2-aligned analytics. The schema fields
 below cover the 1.0 GA columns most useful for FinOps work - additional 1.2 columns
 become available once the preview export is enabled.
 
+**Multi-cloud normalisation context:** With FOCUS 1.2 implementations now available
+across AWS, Azure, and emerging providers (Nebius, Vercel, Grafana Cloud, Redis,
+Databricks), organisations can build unified cost reporting across their entire
+cloud estate. Azure's 1.2 preview aligns with this broader ecosystem trend.
+
 | Field | Use |
 |---|---|
 | `BilledCost` | What appears on the invoice - use for billing reconciliation |
@@ -2069,6 +2091,46 @@ announcement - verify current rates before purchasing.
   disks.
 - **High availability has a cost.** Balance resilience requirements against budget
   per environment.
+
+### PostgreSQL and MySQL Flexible Server optimisation
+
+**Compute rightsizing patterns:**
+- Use B-series (burstable) for dev/test with <30% average CPU
+- Monitor `cpu_percent` and `memory_percent` metrics over 30 days
+- Size for P75 utilisation, not peak - autoscaling handles spikes
+- Enable read replicas only when query offload justifies the cost
+
+**Storage optimisation:**
+- **Auto-grow**: Enable with 20% increment to prevent manual interventions
+- **IOPS scaling**: Use default provisioned IOPS unless workload requires more
+- **Backup retention**: 7 days default; only extend for compliance requirements
+- **Storage type**: Premium SSD only for production; Standard SSD for dev/test
+
+**High availability considerations:**
+- **Zone-redundant HA**: Doubles compute cost - use only for critical production
+- **Same-zone HA**: Lower cost option when RPO/RTO allows
+- **Read replicas**: More cost-effective than HA for read scaling
+- **Geo-redundant backup**: Only enable where DR requirements mandate
+
+### Cosmos DB cost optimisation patterns
+
+**Throughput optimisation:**
+- **Autoscale vs Manual**: Use autoscale for >3:1 peak-to-trough ratio
+- **Shared throughput**: Pool RU/s across containers with similar access patterns
+- **Serverless**: Consider for <1M requests/month or sporadic workloads
+- **Time-based scaling**: Use Azure Functions to scale RU/s by schedule
+
+**Data modelling for cost:**
+- **Partition key design**: Poor partitioning forces over-provisioning
+- **Document size**: Smaller documents = lower RU consumption
+- **Indexing policy**: Exclude unused paths to reduce write RUs
+- **TTL (Time-to-live)**: Auto-expire old data to control storage growth
+
+**Multi-region considerations:**
+- Each additional region multiplies RU/s cost
+- Use regional failover (manual) instead of multi-master where possible
+- Place read regions close to users, write region close to data sources
+- Monitor cross-region replication lag to validate region necessity
 
 ---
 

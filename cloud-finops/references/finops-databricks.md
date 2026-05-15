@@ -42,6 +42,12 @@ admin queries against these tables are the canonical FinOps source of truth - cl
 UI snapshots, dashboards, and per-workspace reports all derive from the same data.
 Skip the UI for serious analytics; query the system tables directly.
 
+**FOCUS support:** As of December 2024, Databricks supports FOCUS v1.0 for
+standardised cost data export, enabling cross-cloud normalisation with other
+FOCUS-compliant providers (AWS v1.2, Azure v1.2, GCP v1.0). This simplifies
+multi-cloud FinOps implementations by providing a common schema for cost allocation
+and analysis across platforms.
+
 ### `system.billing.usage` - the canonical billing table
 
 The single most important table for Databricks FinOps. One row per usage record
