@@ -280,6 +280,9 @@ provider-specific behaviour.
 ```
 cloud-finops-skills/
 ├── README.md                                   ← This file
+├── CLAUDE.md                                   ← Project context for Claude Code and contributors
+├── AGENTS.md                                   ← Codex CLI entry point (mirrors CLAUDE.md)
+├── llms.txt                                    ← LLM discovery index (cross-agent)
 ├── INSTALLATION.md                             ← Setup instructions (incl. MCP server)
 ├── LICENSE.md                                  ← CC BY-SA 4.0
 ├── install.sh                                  ← Cross-tool installer (12 targets)
