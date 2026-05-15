@@ -185,6 +185,10 @@ jobs:
         with:
           name: pypi-dist
           path: mcp_server/dist/
+          # Inter-job plumbing only; the durable copy is on PyPI. Default
+          # retention is 90 days, which is far longer than this artifact's
+          # value (zero once the publish job succeeds).
+          retention-days: 7
 
   publish-mcp:
     name: Publish cloud-finops-mcp to PyPI
