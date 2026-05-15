@@ -39,7 +39,7 @@ fcp_maturity_entry: "Crawl"
    is an asset. Commit to baseline, keep growth variable, avoid over-provisioning.
 
 **Common principle violations to identify:**
-- Teams optimizing in isolation without cross-functional alignment (violates #1)
+- Teams optimising in isolation without cross-functional alignment (violates #1)
 - Cost cutting that degrades revenue-generating systems (violates #2)
 - All FinOps work done by one team with no engineering engagement (violates #3)
 - Monthly reporting with no anomaly detection (violates #4)
@@ -50,9 +50,9 @@ fcp_maturity_entry: "Crawl"
 
 ## The 3 Phases
 
-FinOps phases are iterative, not sequential. Organizations cycle through them continuously
+FinOps phases are iterative, not sequential. Organisations cycle through them continuously
 as their cloud usage evolves. Being in "Operate" for one capability does not mean an
-organization has left "Inform" for another.
+organisation has left "Inform" for another.
 
 ### Inform - Establish visibility and allocation
 
@@ -81,7 +81,7 @@ organization has left "Inform" for another.
 - Implement lifecycle policies for storage and data
 
 **Crawl targets:** Obvious waste eliminated, basic rightsizing started
-**Walk targets:** 70% commitment discount coverage, documented optimization process
+**Walk targets:** 70% commitment discount coverage, documented optimisation process
 **Run targets:** 80%+ commitment coverage, continuous rightsizing, automated policies
 
 ### Operate - Operationalize through governance and automation
@@ -133,7 +133,7 @@ become difficult to reverse.
 - Automated cost anomaly detection in staging environments
 - Cost-based approval workflows for resource provisioning
 - Developer cost budgets with real-time tracking
-- Cost optimization suggestions in code reviews
+- Cost optimisation suggestions in code reviews
 
 ---
 
@@ -245,7 +245,7 @@ relationships. Bridges engineering and finance. Does not own all decisions - ena
 to make good ones.
 
 **Engineering**
-Implements optimization recommendations. Owns rightsizing, architecture decisions, and
+Implements optimisation recommendations. Owns rightsizing, architecture decisions, and
 tagging at the resource level. Needs cost visibility in their existing workflows (not
 separate dashboards).
 
@@ -269,7 +269,7 @@ commitment purchases.
 ### Allied Personas
 
 **ITAM (IT Asset Management)** - manages software licenses, intersects with license
-optimization and cloud license portability (BYOL, AHUB).
+optimisation and cloud license portability (BYOL, AHUB).
 
 **Sustainability** - connects cloud efficiency work to carbon metrics and ESG reporting.
 
@@ -314,8 +314,8 @@ manage the Value of Technology."
 ### Crawl
 - Processes are manual, reactive, and inconsistent
 - Basic cost visibility exists but allocation is incomplete (<50%)
-- Optimization is ad hoc - one-off projects rather than continuous practice
-- FinOps is driven by one person or team with limited organizational reach
+- Optimisation is ad hoc - one-off projects rather than continuous practice
+- FinOps is driven by one person or team with limited organisational reach
 - Commitment discount coverage is low and unmanaged
 
 **Priority at Crawl:** Establish visibility and allocation before anything else.
@@ -324,20 +324,20 @@ Do not attempt chargeback. Do not purchase large commitment discounts without al
 ### Walk
 - Processes are documented and repeatable
 - Cost allocation >80%, showback reports delivered to teams
-- Optimization is proactive - rightsizing and waste elimination run continuously
+- Optimisation is proactive - rightsizing and waste elimination run continuously
 - FinOps is cross-functional - engineering and finance participate regularly
 - Commitment discount coverage ~70%, managed with utilization monitoring
 
-**Priority at Walk:** Establish unit economics, expand optimization scope, begin
+**Priority at Walk:** Establish unit economics, expand optimisation scope, begin
 governance automation. Evaluate readiness for chargeback.
 
 ### Run
 - Processes are automated and self-improving
 - Cost allocation >90%, real-time visibility, anomalies auto-detected
-- Optimization is embedded in engineering workflows - not a separate activity
+- Optimisation is embedded in engineering workflows - not a separate activity
 - FinOps culture is distributed - teams own their costs without central policing
 - Commitment discount coverage 80%+, managed by automation with human oversight
-- Chargeback implemented where organizationally appropriate
+- Chargeback implemented where organisationally appropriate
 
 **Priority at Run:** Continuous improvement, automation of governance, agentic FinOps
 patterns where they add value without introducing risk.
@@ -346,16 +346,16 @@ patterns where they add value without introducing risk.
 
 ## Common FinOps implementation mistakes
 
-**Starting with optimization before visibility**
+**Starting with optimisation before visibility**
 Rightsizing without allocation produces savings no one can claim or repeat. Establish
-who owns what before optimizing what.
+who owns what before optimising what.
 
 **Purchasing commitment discounts on unallocated spend**
 Committing to reserved capacity before understanding usage patterns creates stranded
 reservations. Analyze 90+ days of usage before purchasing commitments.
 
 **Implementing chargeback before showback**
-Organizations that jump to financial accountability before teams understand their costs
+Organisations that jump to financial accountability before teams understand their costs
 create resistance, not ownership. Show first, charge second.
 
 **Building dashboards instead of processes**

@@ -12,9 +12,9 @@ fcp_maturity_entry: "Walk"
 # FinOps on Azure
 
 > Azure-specific guidance covering cost management tools, commitment discounts, compute
-> rightsizing, database and storage optimization, cost allocation, and governance.
+> rightsizing, database and storage optimisation, cost allocation, and governance.
 > Covers Cost Management exports, FOCUS exports, Azure Advisor, Reservations, Savings
-> Plans, Azure Hybrid Benefit, Azure Policy and tagging governance, AKS optimization,
+> Plans, Azure Hybrid Benefit, Azure Policy and tagging governance, AKS optimisation,
 > database optimisation (Azure SQL, Postgres/MySQL Flexible, Cosmos DB), Log Analytics
 > cost control, backup and snapshot management, storage tiering and lifecycle, and
 > networking cost.
@@ -76,7 +76,7 @@ Microsoft's open-source FinOps Toolkit provides pre-built solutions including Po
 report templates, Azure Workbooks, and FinOps Hubs for automated cost data ingestion.
 
 **FinOps Hubs** normalize cost exports into a consistent schema and feed Power BI reports.
-Recommended for organizations that want production-grade reporting without building custom
+Recommended for organisations that want production-grade reporting without building custom
 data pipelines. FinOps Hubs (Toolkit v12) ingest the **FOCUS 1.2 preview** from Cost
 Management and provide 1.2-aligned analytics on top, enabling standardised multi-cloud
 cost reporting (see "FOCUS export support" above for the layered preview vs GA picture).
@@ -2471,7 +2471,7 @@ Ordered by priority: highest savings + lowest risk first.
 | 4 | Remove unassociated public IP addresses | 100% of IP cost | None | Low |
 | 5 | Shut down idle VMs (CPU <5% for 14+ days) | 100% of VM compute cost | Low | Low |
 | 6 | Move cold blob storage to Cool or Archive tier | 50-90% storage cost | Low | Low |
-| 7 | Set Log Analytics daily cap + optimize retention | 30-60% monitoring cost | Low | Low |
+| 7 | Set Log Analytics daily cap + optimise retention | 30-60% monitoring cost | Low | Low |
 | 8 | Use ephemeral OS disks for stateless workloads | 100% of OS disk cost | Low | Low |
 | 9 | Auto-pause dev SQL databases (Serverless tier) | 70-90% during idle | Low | Low |
 | 10 | Use B-series for dev/test web servers | 15-55% vs D-series | Low | Medium |
@@ -2482,12 +2482,12 @@ Ordered by priority: highest savings + lowest risk first.
 
 ---
 
-## Case study: 2-tier web app optimization
+## Case study: 2-tier web app optimisation
 
 **Baseline:** 12 VMs across prod/pre-prod/dev (D4_v5 Windows web + E8_v5 Linux DB),
 all running 24/7. Monthly cost: ~5,071 EUR. Non-prod CPU utilization: 3-5%.
 
-**Optimization waterfall (compute only):**
+**Optimisation waterfall (compute only):**
 
 ```
 Current compute       3,747 EUR/mo
@@ -2496,7 +2496,7 @@ Current compute       3,747 EUR/mo
  - Rightsize Web     -   97  -->  1,536  (D4_v5 -> B2ms for non-prod)
  - Rightsize DB      -  331  -->  1,205  (E8_v5 -> E2_v5 for non-prod)
                                ------
-Optimized compute     1,205 EUR/mo  (-67.9% compute reduction)
+Optimised compute     1,205 EUR/mo  (-67.9% compute reduction)
 Annual savings       30,515 EUR/year
 ```
 

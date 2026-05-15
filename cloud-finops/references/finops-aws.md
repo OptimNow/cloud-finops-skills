@@ -694,7 +694,7 @@ works best when stacked with other instruments:
 
 ### EC2 rightsizing
 
-Rightsizing is the highest-ROI optimization for most AWS environments at Crawl/Walk maturity.
+Rightsizing is the highest-ROI optimisation for most AWS environments at Crawl/Walk maturity.
 
 **Data sources for rightsizing analysis:**
 - AWS Compute Optimizer - ML-based recommendations using CloudWatch metrics
@@ -712,7 +712,7 @@ Rightsizing is the highest-ROI optimization for most AWS environments at Crawl/W
 **Common rightsizing mistakes:**
 - Acting on CPU metrics alone without checking memory (CloudWatch memory requires agent)
 - Downsizing during off-peak analysis periods without accounting for peak loads
-- Rightsizing stateful databases without testing failover behavior
+- Rightsizing stateful databases without testing failover behaviour
 - Missing network-intensive workloads that appear CPU-idle but are IO-bound
 
 ### Container rightsizing (ECS / EKS)

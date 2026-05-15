@@ -9,7 +9,7 @@ fcp_personas_collaborating: ["Sustainability", "Leadership", "Finance"]
 fcp_maturity_entry: "Walk"
 ---
 
-# GreenOps & Cloud Carbon Optimization
+# GreenOps & Cloud Carbon Optimisation
 
 > Practical guidance for measuring, reducing, and governing cloud carbon emissions.
 > Covers carbon measurement tooling (native and open source), FinOps-to-GreenOps
@@ -50,7 +50,7 @@ significantly.
 
 **Important distinction:** Market-based measurement uses Renewable Energy Certificates
 (RECs) and can mask actual grid carbon intensity. Location-based measurement uses the
-real carbon intensity of the local grid. For optimization decisions, prefer location-based
+real carbon intensity of the local grid. For optimisation decisions, prefer location-based
 data. For ESG reporting, understand which method your auditors require.
 
 **AWS Sustainability Console setup checklist:**
@@ -156,7 +156,7 @@ rather than averages.
 
 **When to use CCF over native tools:**
 - You need cross-cloud visibility in one place
-- You need workload-level granularity for optimization (not just reporting)
+- You need workload-level granularity for optimisation (not just reporting)
 - You want location-based emission factors rather than market-based
 
 Repository: https://www.cloudcarbonfootprint.org/
@@ -218,7 +218,7 @@ This trade-off should be explicit, documented, and time-bounded.
 
 ## Region selection for carbon reduction
 
-Region selection is the single highest-impact optimization available. Research from
+Region selection is the single highest-impact optimisation available. Research from
 Microsoft's Carbon Aware SDK project shows that location-shifting can reduce carbon
 emissions by up to 75% for a given workload.
 
@@ -566,7 +566,7 @@ and the energy required to maintain it.
 Running identical workloads across multiple clouds for redundancy purposes often creates
 carbon waste. Audit cross-cloud replication to confirm it is operationally justified.
 
-**Expected impact:** Optimizations typically reduce cloud carbon footprint by 20–40%
+**Expected impact:** Optimisations typically reduce cloud carbon footprint by 20–40%
 and generate cost savings of 15–40% simultaneously.
 
 ---
@@ -586,7 +586,7 @@ Cloud providers report their data center emissions under Scope 1 and 2.
 
 ### Regulatory context
 
-- **EU Energy Efficiency Directive (Data Centers in Europe):** European organizations
+- **EU Energy Efficiency Directive (Data Centers in Europe):** European organisations
   must report on data center energy use, PUE, renewable energy share, water usage,
   and waste heat reuse. Reporting obligations apply from 2024 onward.
 - **EU CSRD:** Large companies must report Scope 1, 2, and 3 emissions with third-party
@@ -614,7 +614,7 @@ Cloud providers report their data center emissions under Scope 1 and 2.
 | AWS Sustainability Console | Native | AWS Scope 1/2/3 reporting (renamed from CCFT 31 March 2026; Methodology v3 Oct 2025) | aws.amazon.com/sustainability/tools |
 | GCP Carbon Footprint | Native | GCP emissions, most granular | console.cloud.google.com |
 | Azure Emissions Impact Dashboard | Native | Azure Scope 1/2/3 reporting | portal.azure.com |
-| Cloud Carbon Footprint (CCF) | Open source | Multi-cloud, workload optimization | cloudcarbonfootprint.org |
+| Cloud Carbon Footprint (CCF) | Open source | Multi-cloud, workload optimisation | cloudcarbonfootprint.org |
 | Carbon Aware SDK (GSF) | Open source | Workload shifting, carbon-aware scheduling | github.com/Green-Software-Foundation/carbon-aware-sdk |
 | Kepler (CNCF) | Open source | Per-pod power and carbon metrics in Kubernetes | github.com/sustainable-computing-io/kepler |
 | Electricity Maps | Data provider | Real-time and forecast grid carbon intensity | electricitymaps.com |
@@ -625,7 +625,7 @@ Cloud providers report their data center emissions under Scope 1 and 2.
 
 ## Common mistakes
 
-**Relying on market-based provider data for optimization decisions.**
+**Relying on market-based provider data for optimisation decisions.**
 RECs and renewable energy purchases reduce reported emissions on paper but do not
 reflect the actual carbon intensity of the electricity running your workloads. Use
 location-based data when making workload placement or shifting decisions.
@@ -636,12 +636,12 @@ making any commitment. A Reserved Instance on an overprovisioned VM is still was
 now locked in for 1–3 years.
 
 **Treating GreenOps as a separate program.**
-Organizations that create a separate sustainability team disconnected from FinOps
+Organisations that create a separate sustainability team disconnected from FinOps
 typically fail to operationalize carbon reduction. Carbon data needs to be in the same
 dashboards, the same team reviews, and the same governance processes as cost data.
 
 **Measuring without acting.**
-Carbon dashboards have low value if they are not connected to an optimization workflow.
+Carbon dashboards have low value if they are not connected to an optimisation workflow.
 Establish a feedback loop: measure → identify top emitters → assign owners → reduce →
 re-measure.
 

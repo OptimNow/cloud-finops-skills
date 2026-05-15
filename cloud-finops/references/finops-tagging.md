@@ -12,7 +12,7 @@ fcp_maturity_entry: "Crawl"
 # FinOps Tagging and Naming Governance
 
 > Tagging is the foundation of cost allocation, accountability, and automation.
-> Without it, FinOps visibility is incomplete and optimization savings are unattributable.
+> Without it, FinOps visibility is incomplete and optimisation savings are unattributable.
 > This file covers tagging strategy design, naming conventions, enforcement, remediation,
 > and MCP-based automation.
 
@@ -27,14 +27,14 @@ operational discipline that requires design, enforcement, and continuous monitor
 **Tagging enables:**
 - Cost allocation to teams, products, cost centers, and environments
 - Accountability - teams cannot own what they cannot see
-- Optimization attribution - savings must be linked to a resource owner
+- Optimisation attribution - savings must be linked to a resource owner
 - Governance automation - policies act on tag values, not resource IDs
 - Chargeback - financial accountability requires accurate attribution
 - Security and compliance - resource classification drives access and audit controls
 
 **The cost of poor tagging:**
 - Untagged spend cannot be allocated - it falls into shared cost pools or "unknown"
-- Optimization savings cannot be credited to teams - removing the incentive to act
+- Optimisation savings cannot be credited to teams - removing the incentive to act
 - Anomaly detection produces false positives - spikes in untagged spend are uninvestigable
 - Commitment discounts applied to untagged resources create stranded capacity
 
@@ -48,7 +48,7 @@ powerful complement but a fragile substitute. Fix the source before adding abstr
 
 ### Mandatory tags (minimum viable set)
 
-Every organization needs a minimum set of tags that apply to all resources, without
+Every organisation needs a minimum set of tags that apply to all resources, without
 exception. Start small - enforcement of 5 tags is more valuable than partial compliance
 on 20.
 
@@ -232,7 +232,7 @@ tag them manually. This typically achieves 15–20% allocation improvement in on
 ## Common tagging mistakes
 
 **Too many tags at launch**
-Organizations that define 25 mandatory tags at launch achieve lower compliance than those
+Organisations that define 25 mandatory tags at launch achieve lower compliance than those
 that enforce 5. Start with the minimum viable set. Add tags only when there is a clear use
 case for them.
 

@@ -83,7 +83,7 @@ Standard pricing is per-million tokens, billed per API call. No upfront commitme
 | GPT-4o | Mid | General purpose, balanced capability/cost |
 | GPT-4.1 | Mid | Updated GPT-4 generation |
 | GPT-5 | High | Complex reasoning, frontier capability |
-| o3-mini | Mid | Reasoning model, cost-optimized |
+| o3-mini | Mid | Reasoning model, cost-optimised |
 | o3 | High | Full reasoning model |
 
 Representative pricing (verify against current Azure pricing documentation):
@@ -255,7 +255,7 @@ This creates a structural visibility gap:
   attribute costs by application - even if model deployments are separated
 - Native Cost Management shows what was spent, but not which application or
   workflow drove the spend
-- Without deployment-level or application-level attribution, optimization and
+- Without deployment-level or application-level attribution, optimisation and
   capacity planning remain reactive: teams discover inefficiency only after the
   bill arrives
 
@@ -291,20 +291,20 @@ actively; this waste is invisible unless you build a dedicated utilisation view.
 
 ---
 
-## Cost optimization patterns
+## Cost optimisation patterns
 
-### Optimization levers framework
+### Optimisation levers framework
 
-LLM cost optimization operates across four distinct levers. Address them in order  -
+LLM cost optimisation operates across four distinct levers. Address them in order  -
 rate is the least impactful lever in isolation; model interaction often delivers the
 highest ROI for the effort.
 
 | Lever | Description | Example actions |
 |---|---|---|
 | **Rate** | Baseline pricing for model usage | Commitment discounts (PTU reservations, EA terms) |
-| **Infrastructure configuration** | Deployment parameters affecting cost without changing model behavior | Right-sizing PTU allocation, adjusting rate limits, deployment locality choice |
+| **Infrastructure configuration** | Deployment parameters affecting cost without changing model behaviour | Right-sizing PTU allocation, adjusting rate limits, deployment locality choice |
 | **Model selection** | Choice of model type and version | Switching GPT-4o → GPT-4o mini for eligible tasks; o1 → o3 for reasoning workloads |
-| **Model interaction** | How applications engage the model | Prompt optimization, context truncation, caching |
+| **Model interaction** | How applications engage the model | Prompt optimisation, context truncation, caching |
 
 ### Model right-sizing and modernization
 
@@ -312,7 +312,7 @@ highest ROI for the effort.
 - Test GPT-4o mini / GPT-4.1 mini before defaulting to GPT-4o or GPT-5
 - Reasoning models (o3-mini vs o3) have significant cost differences - benchmark both
 - Use the lowest-cost model that meets your quality threshold
-- **Model modernization is an optimization lever in its own right:** newer models within
+- **Model modernisation is an optimisation lever in its own right:** newer models within
   the same capability tier are often faster and cheaper than the models they replace.
   Replacing o1 with o3 can deliver up to 80–90% cost reduction on reasoning workloads.
   Treat model refresh as a recurring FinOps activity, not a one-time migration.
@@ -327,7 +327,7 @@ Effective for:
 - RAG pipelines with consistent prefixes
 - Multi-turn conversations with stable context
 
-### Prompt optimization
+### Prompt optimisation
 
 - Audit system prompt length - verbose instructions inflate every API call
 - Truncate or summarize conversation history for multi-turn applications
@@ -358,7 +358,7 @@ delivering production value.
   spillover tolerance and can absorb occasional throttling
 - Reserve PTU allocations for production workloads with consistent, latency-sensitive
   demand
-- This is one of the highest-ROI, lowest-risk optimizations available on Azure OpenAI
+- This is one of the highest-ROI, lowest-risk optimisations available on Azure OpenAI
 
 ### Use case economics: beyond token totals
 
@@ -372,7 +372,7 @@ cost per token. This outcome-based view:
 
 - Provides a common frame of reference for engineering and finance teams
 - Makes it possible to evaluate whether an AI feature is financially viable
-- Guides optimization priorities: a 20% token reduction on a low-volume workflow
+- Guides optimisation priorities: a 20% token reduction on a low-volume workflow
   has less impact than a 10% reduction on a high-volume one
 
 To build use case economics:
@@ -382,10 +382,10 @@ To build use case economics:
    middleware
 3. Establish a cost-per-outcome baseline, then track it over time as models and
    architectures change
-4. Use this data to prioritize optimization work: focus on the use cases where
+4. Use this data to prioritize optimisation work: focus on the use cases where
    cost-per-outcome is highest relative to the business value delivered
 
-Without this instrumentation layer, optimization remains reactive and teams cannot
+Without this instrumentation layer, optimisation remains reactive and teams cannot
 distinguish which AI investments are efficient from which are not.
 
 ### Azure Hybrid Benefit and MACC

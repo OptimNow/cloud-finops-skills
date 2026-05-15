@@ -40,21 +40,21 @@ model, or a poorly bounded loop can change spend materially in seconds, not week
 | Dimension | Traditional Cloud | AI Workloads |
 |---|---|---|
 | Cost unit | vCPU-hour, GB-month | Token, inference call, GPU-second |
-| Predictability | High - instance type × hours | Low - depends on user behavior and model design |
+| Predictability | High - instance type × hours | Low - depends on user behaviour and model design |
 | Billing speed | Hourly/daily accumulation | Per-request, immediate COGS |
 | Attribution unit | Infrastructure tag | Application-layer metadata |
-| Optimization lever | Rightsizing, reservations | Model selection, prompt design, caching, routing |
-| FinOps sequence | Report → Allocate → Optimize | Allocate first → Real-time ingest → Report |
-| Variance source | Provisioning decisions | User behavior, prompt length, context window |
+| Optimisation lever | Rightsizing, reservations | Model selection, prompt design, caching, routing |
+| FinOps sequence | Report → Allocate → Optimise | Allocate first → Real-time ingest → Report |
+| Variance source | Provisioning decisions | User behaviour, prompt length, context window |
 
 **The structural mismatch:** Traditional FinOps was built for predictable infrastructure.
 AI workloads behave more like real-time COGS than capacity plans. A feature estimated
 at $1,600/month can cost $8,800 without any infrastructure change - the variance comes
-entirely from user behavior and model design decisions.
+entirely from user behaviour and model design decisions.
 
 **The critical inversion:** For AI workloads, the FinOps sequence must run in reverse.
 Cost allocation must happen *before* the cost is created, not after the bill arrives.
-Organizations that wait for monthly invoices to understand AI spend are already operating
+Organisations that wait for monthly invoices to understand AI spend are already operating
 with a structural disadvantage that compounds with every new model deployment.
 
 ---
@@ -284,7 +284,7 @@ Payback period = fixed_costs / monthly_profit (months)
 
 **ROI time dimension:** AI systems follow a predictable ramp.
 - Month 1: Negative ROI - integration costs dominate
-- Month 3: Near cost parity - prompts improve, routing optimizes
+- Month 3: Near cost parity - prompts improve, routing optimises
 - Month 6+: Positive ROI - learning effects compound, volume absorbs fixed costs
 
 Tolerating early losses is rational if the weekly trajectory toward breakeven is positive.
@@ -388,7 +388,7 @@ Actual value delivered: negligible.
 ### 2. Technology churn debt
 Each AI provider or framework migration leaves behind infrastructure that continues
 incurring charges: API keys, Lambda functions, S3 buckets, committed capacity reservations.
-Organizations running 3+ AI providers simultaneously often find 30–40% of AI spend
+Organisations running 3+ AI providers simultaneously often find 30–40% of AI spend
 supports abandoned experiments rather than production features.
 
 *Detection signal:* Active resources in accounts or regions with no recent deployments;
@@ -436,7 +436,7 @@ declining as volume increases.
 
 ## AI cost readiness assessment
 
-Use this to diagnose an organization's current state before recommending solutions.
+Use this to diagnose an organisation's current state before recommending solutions.
 
 **Visibility (prerequisite - assess first):**
 - [ ] Token counts captured per feature, not just per account or model
@@ -463,7 +463,7 @@ Use this to diagnose an organization's current state before recommending solutio
 
 **Scoring:**
 - 0–4 ✓: Crawl - start with visibility. Nothing else is meaningful without it.
-- 5–8 ✓: Walk - focus on unit economics and model optimization.
+- 5–8 ✓: Walk - focus on unit economics and model optimisation.
 - 9–14 ✓: Run - focus on governance automation and agentic FinOps patterns.
 
 ---
@@ -472,7 +472,7 @@ Use this to diagnose an organization's current state before recommending solutio
 
 Agentic systems introduce cost patterns that require a different governance model. Unlike
 static applications, agents make runtime decisions that directly affect spend - model
-selection, context retention, tool invocation frequency, and retry behavior all create
+selection, context retention, tool invocation frequency, and retry behaviour all create
 variable costs that no static budget can fully anticipate.
 
 **Three architectural pillars for cost-safe agents:**
@@ -489,7 +489,7 @@ Stateful agents accumulate context over time - necessary for meaningful investig
 expensive if unbounded. Naive implementations store entire conversation histories, creating
 context windows that balloon to hundreds of thousands of tokens. Effective architectures
 use short-term memory for recent exchanges and long-term memory for persistent preferences
-and organizational context, with explicit token budgets for each layer.
+and organisational context, with explicit token budgets for each layer.
 
 **3. Policy-generation over direct mutation**
 The safest agentic architecture for FinOps generates governance policies for human review
@@ -499,7 +499,7 @@ An agent that stops instances autonomously is not - regardless of how sophistica
 reasoning is. Governance, not technology capability, is the real constraint on autonomous
 FinOps agents.
 
-**Key insight:** Agents will be advisory long before they are autonomous. Organizations
+**Key insight:** Agents will be advisory long before they are autonomous. Organisations
 making progress treat agent development as iterative learning, not project delivery.
 
 ---

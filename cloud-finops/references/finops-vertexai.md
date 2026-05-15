@@ -71,7 +71,7 @@ No minimum spend, no upfront commitment, regardless of unit.
 
 | Model family | Relative cost tier | Notes |
 |---|---|---|
-| Gemini Flash (1.5, 2.0) | Low | High throughput, cost-optimized |
+| Gemini Flash (1.5, 2.0) | Low | High throughput, cost-optimised |
 | Gemini Pro (1.5, 2.0) | Mid | Balanced capability and cost |
 | Gemini Ultra / Advanced | High | Complex reasoning, multimodal |
 | Anthropic Claude Haiku | Low | Available via Vertex Model Garden |
@@ -214,7 +214,7 @@ contract, cost per generated email) for margin modelling as usage scales.
 
 ---
 
-## Cost optimization patterns
+## Cost optimisation patterns
 
 ### Model right-sizing
 
@@ -223,7 +223,7 @@ contract, cost per generated email) for margin modelling as usage scales.
 - Use the lowest-cost model that meets your quality threshold
 - For third-party models (Claude, Llama), apply the same benchmark process
 
-### Prompt optimization
+### Prompt optimisation
 
 - Audit system prompt length - verbose instructions inflate every API call
 - Implement **Vertex AI Context Caching** where supported (Gemini Pro, Flash 1.5+) - see below

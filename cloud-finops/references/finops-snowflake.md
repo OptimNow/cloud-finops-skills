@@ -18,7 +18,7 @@ fcp_maturity_entry: "Walk"
 
 ## Snowflake FinOps fundamentals
 
-Snowflake differs from IaaS providers (AWS, Azure, GCP) in ways that require a distinct FinOps approach. Understanding the model before optimizing it is essential.
+Snowflake differs from IaaS providers (AWS, Azure, GCP) in ways that require a distinct FinOps approach. Understanding the model before optimising it is essential.
 
 ### The credit abstraction
 

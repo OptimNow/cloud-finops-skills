@@ -129,7 +129,7 @@ Key dimensions available for filtering and grouping:
 - Model ID
 - Operation type (InvokeModel, InvokeModelWithResponseStream, BatchInference)
 - Region
-- Account (for multi-account organizations)
+- Account (for multi-account organisations)
 
 **Limitation:** native Cost Explorer does not provide token-level granularity. For
 unit economics (cost per 1,000 tokens, cost per API call), you need to combine billing
@@ -274,16 +274,16 @@ Key metrics to monitor for cost and performance:
 
 ---
 
-## Cost optimization patterns
+## Cost optimisation patterns
 
 ### Model right-sizing
 
-The highest-impact optimization. Before committing to a model tier:
+The highest-impact optimisation. Before committing to a model tier:
 - Define a quality benchmark for your specific task (not a generic leaderboard score)
 - Test Haiku, Sonnet, and Opus (or equivalent tiers for other publishers) against that benchmark
 - Use the lowest-cost model that meets your quality threshold
 
-### Prompt optimization
+### Prompt optimisation
 
 Input token volume is directly controllable:
 - Audit system prompt length - verbose instructions inflate every API call
