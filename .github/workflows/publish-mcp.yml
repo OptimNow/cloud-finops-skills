@@ -1,27 +1,33 @@
 name: Publish cloud-finops-mcp to PyPI
 
 on:
-  # Manual tag pushes from a developer machine (git push v1.x.y) still work.
+  # Manual tag pushes from a developer machine (git push v1.x.y) trigger
+  # this workflow normally - GitHub only blocks recursive triggers from
+  # GITHUB_TOKEN, not from PATs or developer machines.
   push:
     tags:
       - 'v*'
-  # Auto-tag-on-plugin-bump.yml calls this workflow after pushing the tag,
-  # because tags pushed by GITHUB_TOKEN do not re-trigger the `push: tags`
-  # event. Without this entry, plugin.json bumps would build the release zip
-  # but never publish the matching cloud-finops-mcp version to PyPI.
-  workflow_call:
+  # Manual recovery path: if auto-tag-on-plugin-bump.yml's inline publish
+  # job fails for any reason, you can re-publish a previously-tagged version
+  # by running `gh workflow run publish-mcp.yml -f tag=v1.x.y` (or via the
+  # Actions UI). The 2026-05-15 PyPI publish failure was the immediate
+  # motivator for this entry.
+  workflow_dispatch:
     inputs:
       tag:
         required: true
         type: string
-        description: 'Tag to publish (e.g. v1.22.1)'
+        description: 'Tag to publish, e.g. v1.22.1'
 
 # Trusted publishing via OIDC. No PyPI API token in repo secrets.
-# One-time setup: in PyPI project settings for "cloud-finops-mcp", add this
-# repo (OptimNow/cloud-finops-skills) as a trusted publisher with workflow
-# filename "publish-mcp.yml" and environment "pypi". The workflow filename
-# claim does not change when invoked via workflow_call, so the same trusted
-# publisher config works for both trigger paths.
+# One-time setup: in PyPI project settings for "cloud-finops-mcp", this repo
+# (OptimNow/cloud-finops-skills) is registered as a trusted publisher with
+# workflow filename "publish-mcp.yml" and environment "pypi". A SECOND
+# trusted-publisher entry exists for "auto-tag-on-plugin-bump.yml" so the
+# inline publish job in that workflow can also publish on plugin.json bumps.
+# Reusable-workflow (workflow_call) invocation is NOT used here because PyPI's
+# trusted publishing does not support reusable workflows
+# (https://docs.pypi.org/trusted-publishers/troubleshooting/#reusable-workflows-on-github).
 
 permissions:
   contents: read
@@ -37,13 +43,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # When triggered via push:tags, github.ref_name is the tag and the
-          # default checkout grabs the tagged commit. When invoked via
-          # workflow_call from auto-tag-on-plugin-bump.yml, the default checkout
-          # would grab the caller's main HEAD; that SHA is identical to the tag
-          # in practice (auto-tag pushes the tag at HEAD before calling this
-          # workflow), so we explicitly use the tag input when provided to make
-          # the contract obvious.
+          # push:tags -> github.ref is refs/tags/<tag>; default checkout grabs
+          # the tagged commit. workflow_dispatch -> use the explicit tag input
+          # so manual recovery can target any historical tag.
           ref: ${{ inputs.tag || github.ref }}
 
       - name: Set up Python
@@ -56,10 +58,8 @@ jobs:
         env:
           INPUT_TAG: ${{ inputs.tag }}
         run: |
-          # When invoked via workflow_call, ${GITHUB_REF_NAME} is the calling
-          # workflow's ref (typically "main"), not a tag. Prefer the explicit
-          # tag input when provided; fall back to GITHUB_REF_NAME for the
-          # `push: tags` trigger.
+          # workflow_dispatch -> use the explicit tag input.
+          # push:tags -> GITHUB_REF_NAME is the tag.
           TAG="${INPUT_TAG:-${GITHUB_REF_NAME}}"
           VERSION="${TAG#v}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
