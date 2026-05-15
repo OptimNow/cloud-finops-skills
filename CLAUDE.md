@@ -147,6 +147,43 @@ truncated state will conclude the other repo is more comprehensive than it reall
 Always check that key reference files end with the OptimNow footer (and not
 mid-sentence) before drawing any coverage comparison.
 
+### The May 2026 truncations had a config root cause, not a prompt-instruction one (2026-05-15)
+
+The "Pipeline applier truncated 8 reference files" lesson above states that
+the LLM "ignored instructions roughly 5% of the time" on long files. **That
+framing was wrong, and the audit doc (`docs/pipeline-audit-2026-05.md`)
+inherited it.** The actual root cause was `pipeline/config.yaml`
+`max_tokens: 4096`. Reference files like `finops-aws.md` (2657 lines, ~12K
+output tokens) cannot be returned in full when the model is capped at 4096
+output tokens; the model writes from the top, hits the cap, stops mid-file,
+and the result reads as "the model ignored the footer instruction". It was
+100% deterministic on any file >3K tokens, not "5% of the time".
+
+The fix is one line: `max_tokens: 16384`. The elaborate tool-use migration
+that the audit recommended as Phase-2 Item 1 was solving the wrong problem
+and was rolled back on 2026-05-15 after Opus regressed to legacy XML format
+under `tool_choice` (it emitted XML strings inside the JSON `hunks` field).
+
+**Compounding error: 79 passing tests with hand-crafted mocks of the
+Anthropic response gave false confidence.** None of the Harden A or B tests
+talked to the real API. The tool-use migration looked correct in tests and
+failed in the first production run. Lesson for future LLM-loop work in this
+repo: **at least one real-API smoke test must pass before declaring any
+batch ready.** `pipeline/smoke_test.py` is the answer; run it before any
+production scan.
+
+**A separate guard-rail gap surfaced on the same day.** The three guards in
+`validate_post_apply` only ran inside `apply_with_guard_rails`, which only
+runs during `--execute`. Preview mode showed proposals without validation,
+so a 89%-deletion diff displayed cleanly in the user's terminal. Preview-mode
+guard rails were added via `_validate_content` in `_process_change`; a
+broken proposal now prints "REJECTED by guard rail" rather than a
+1000-line unified diff.
+
+See `docs/pipeline-audit-2026-05.md` "Correction (2026-05-15)" and
+`docs/pipeline-harden-plan.md` "Status update (2026-05-15)" for the full
+forensic.
+
 ---
 
 ## Roadmap

@@ -7,8 +7,48 @@
 
 **Plan date:** 2026-05-11
 **Author:** Claude (Opus 4.7, agent-assisted), reviewed by Jean
-**Status:** Draft - changes to pipeline code begin only after this plan is
-approved.
+**Status:** Items 1 (applier tool-use) **rolled back**; items 2-5 partially
+landed; new items added on 2026-05-15. See the Status update box below.
+
+---
+
+## Status update (2026-05-15): tool-use rolled back, max_tokens was the real fix
+
+The first production run of the Harden code on 15 May 2026 surfaced
+material issues with this plan. See
+[`docs/pipeline-audit-2026-05.md`](pipeline-audit-2026-05.md) "Correction
+(2026-05-15)" section for the full forensic.
+
+Summary:
+- **Item 1 (applier tool-use migration): ROLLED BACK.** Opus regressed to
+  legacy XML format under `tool_choice` and emitted XML inside the JSON
+  `hunks` field. 1200+ malformed-hunk warnings per file. Free-form rewrite
+  is the production path again. Forensic at
+  `pipeline/applier/file_updater.py.harden-a-tool-use-attempt.bak`.
+- **The actual fix for the May 2026 truncation incidents:**
+  `pipeline/config.yaml` `max_tokens: 4096` -> `16384`. The audit
+  misidentified the root cause; this plan inherited that error.
+- **Item 2 (per-run structured report): LANDED.** Working.
+- **Item 3 (fetcher content-type/min-payload/bozo validation): LANDED.**
+  Caught 5 dead sources on the first run (databricks, snowflake, infracost,
+  azure-updates, azure-openai-pricing); sources.yaml was fixed.
+- **Item 4 (classifier tool-use migration): LANDED, but suspect.** Same
+  Opus-emits-XML risk exists; the classifier-side hasn't yet shown the
+  failure in production but should be considered fragile until proven.
+- **Item 5 (proposer well-formedness validation): LANDED.** Working.
+- **Plus dropped-URL tracking** (`classify_items` returns
+  `(classified, dropped_urls)`; URLs that hit API errors are NOT marked
+  as processed, so they retry next scan).
+- **Plus preview-mode guard rails** (`_validate_content` called from
+  `_process_change` before showing a diff). Closes the gap that allowed
+  a 90%-deletion proposal to display to the user without warning.
+- **Plus `pipeline/smoke_test.py`**, a real-API smoke test to run before
+  any production batch. The 79 passing mock-based tests were
+  self-confirming and gave false production-readiness signal in May 2026.
+
+The text below is the original plan, preserved for the record. Read it
+knowing that Item 1 did not work in production and that the actual
+production fix was a one-line config change.
 
 ---
 

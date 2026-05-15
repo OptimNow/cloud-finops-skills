@@ -14,6 +14,85 @@ scope (see section 11).
 
 ---
 
+## Correction (2026-05-15): root cause was max_tokens, not prompt-instruction failure
+
+The first production run of the Harden PR A and B code on the 15 May 2026
+scheduled scan surfaced three concrete failures that materially correct the
+original audit. **The audit below should be read with these corrections in
+mind; some of its conclusions and recommendations were wrong.**
+
+**Correction 1: the actual root cause of the April-May 2026 truncations was
+`max_tokens: 4096` in `pipeline/config.yaml`, not prompt-instruction
+failure.** Reference files like `finops-aws.md` (2657 lines, ~12K output
+tokens) cannot be returned in full when the model is capped at 4096 output
+tokens. The model writes from the top, hits the cap, and stops mid-file -
+which presents as "the model truncated despite being told to preserve the
+footer". It is deterministic on any file >3K tokens, not the "~5% of the
+time" the audit hypothesised. The fix is a one-line config bump
+(`max_tokens: 16384`); the elaborate tool-use migration the audit
+recommended as Phase-2 Item 1 was solving a problem we did not have.
+
+**Correction 2: the tool-use migration (Harden Item 1) does not work
+reliably with the current Opus.** Under `tool_choice` forcing, the model
+regressed to the legacy XML tool-call format and emitted XML strings
+*inside* the JSON `hunks` field (e.g. `<parameter name="before">...`).
+Python then iterated the string character-by-character, producing 1200+
+malformed-hunk warnings per file. The migration was rolled back on
+2026-05-15; forensic preserved at
+`pipeline/applier/file_updater.py.harden-a-tool-use-attempt.bak`.
+Free-form rewrite is the production path again, now with an adequate
+`max_tokens` budget and a real-API smoke test.
+
+**Correction 3: 79 passing tests with hand-crafted mocks of the Anthropic
+response gave false confidence.** None of the Harden PR A or B tests
+talked to the real API. The tool-use migration looked correct in tests but
+failed instantly in production because the mocks I wrote never emitted the
+shape (XML-in-JSON) that the real model emits. The audit and Harden plan
+both implicitly assumed mock fidelity. A `pipeline/smoke_test.py` is now
+in place that runs the real API against the smallest reference file
+before any production batch.
+
+**Correction 4: the guard rails are reactive, not preventive - and the
+original audit didn't catch that distinction.** The three guards
+(`validate_post_apply`, lines 75-116) only fire inside
+`apply_with_guard_rails`, which only runs during `--execute`. Preview mode
+(`--preview`) showed proposals to the user without validation. On
+2026-05-15 the user saw a diff in their terminal with everything after
+line 288 of a 2657-line file deleted - a max-tokens artefact that the
+guard rails would have rolled back at execute time but that should never
+have been displayed at all. Preview-mode guard rails were added to
+`_process_change` (via `_validate_content`) on the same day so an unsafe
+proposal now prints "REJECTED by guard rail" instead of a 1000-line
+unified diff.
+
+**What remains valid from the original audit:**
+- The module-by-module contracts (section 2) - accurate
+- The destructive-actions inventory (section 4) - accurate
+- The state-directory shape (section 5) - accurate
+- The guard-rail logic and tests (section 6) - accurate; the guard rails
+  themselves work, the gap was where they were invoked
+- The implicit-assumptions list (section 7) - mostly accurate; should add
+  "config.yaml max_tokens is sized for the largest reference file" as
+  assumption #12, which was violated since at least the original 2024
+  implementation
+- The unfreeze criteria (section 10) - U1 and U3 still apply; U6 (tool-use
+  migration) should be removed since the migration was rolled back
+
+**What is wrong in the original audit:**
+- The framing in the Executive Summary and section 8 that tool-use
+  migration is the highest-value remediation - it isn't, max_tokens is
+- The "~5% of the time on long files" framing in section 6's
+  introduction - it was 100% on files >3K tokens
+- The unfreeze criterion U6 (tool-use migration done) - cannot be met
+  with current Opus behaviour
+- The implicit framing throughout that 79 passing mock tests means the
+  pipeline is safe to run - they meant nothing for production fitness
+
+The rest of the document below is the original audit, preserved unchanged
+for the historical record. Read it knowing what we now know.
+
+---
+
 ## 1. Executive summary
 
 The pipeline scans 30 cloud-provider and FinOps content sources every 15 days,
