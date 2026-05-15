@@ -19,7 +19,7 @@ MCP-compatible agent.
 - **AGENTS.md** - entry point for Codex CLI (this file)
 - **references/** - 28 domain-specific content files (billing mechanics, pricing,
   optimisation patterns)
-- **INSTALLATION.md** - cross-tool installer covering 11 tool integrations, plus
+- **INSTALLATION.md** - cross-tool installer covering 12 tool integrations, plus
   a model-agnostic response contract for non-Claude models
 
 All entry points route to the same reference files. No content is duplicated.
@@ -52,8 +52,8 @@ sub-modules, see CLAUDE.md.
 
 ## Content update pipeline
 
-The `pipeline/` folder contains a twice-monthly content scanner (around the 1st
-and the 15th) that detects FinOps-relevant changes across 29 sources and proposes
+The `pipeline/` folder contains a monthly content scanner (around the 1st of each
+month) that detects FinOps-relevant changes across 29 sources and proposes
 updates to the reference files. It is gitignored and not part of the public
 distribution.
 

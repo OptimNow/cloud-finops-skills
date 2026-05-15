@@ -13,7 +13,7 @@ Claude, GPT, Gemini, or any MCP-compatible agent.
 - **SKILL.md** - entry point for Claude Code and generic agents
 - **POWER.md** - entry point for Kiro IDE (same references, different format)
 - **references/** - domain-specific content files (billing mechanics, pricing, optimisation patterns)
-- **INSTALLATION.md** - one cross-tool installer covering 11 tool integrations, plus
+- **INSTALLATION.md** - one cross-tool installer covering 12 tool integrations, plus
   a model-agnostic response contract (system-prompt-injection section) for non-Claude
   models
 
@@ -30,7 +30,7 @@ differ.
 cloud-finops-skills/
 ├── CLAUDE.md              <- You are here
 ├── README.md              <- Public-facing documentation
-├── INSTALLATION.md        <- Setup instructions (11 tool integrations) + response contract
+├── INSTALLATION.md        <- Setup instructions (12 tool integrations) + response contract
 ├── LICENSE.md             <- CC BY-SA 4.0
 ├── install.sh             <- One-liner installer script
 ├── assets/                <- Screenshots for installation guide
@@ -66,6 +66,16 @@ cloud-finops-skills/
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
 │       └── finops-waste-detection-playbooks.md  <- Seven-category waste taxonomy + WasteLine
+├── cloud-finops/playbooks/   <- 23 named-pattern runbooks (`<scope>-<pattern>.md`,
+│                                ~2-3KB each, FIND/DETECT/FIX/SOURCES format) +
+│                                README.md index. RAG-friendly chunks routed from
+│                                SKILL.md / POWER.md "named waste pattern" rows
+├── mcp_server/            <- `cloud-finops-mcp` PyPI package (six MCP tools,
+│                             faceted retrieval over references + playbooks)
+├── scripts/               <- `fcp-coverage.sh` (parses FCP frontmatter, emits
+│                             `fcp-coverage.md` matrix)
+├── fcp-coverage.md        <- Generated FCP capability coverage matrix (22 caps)
+├── .gitattributes         <- Force LF on *.sh for Windows checkouts
 └── pipeline/              <- Content update pipeline (gitignored, private)
     ├── run_scan.py        <- Weekly scan entry point
     ├── run_apply.py       <- Review and apply entry point
@@ -154,7 +164,7 @@ the only signal was the missing footer at the end, which no automated check veri
 had not kept pace with reference growth (AGENTS.md and llms.txt listed only 17
 references when 28 existed; install.sh ChatGPT/Gemini routing missed the 6-7 newest
 domains; "6 setup options" appeared in 4 files when INSTALLATION.md had moved to
-11 tools). The PR-checklist in this file now requires updating AGENTS.md, llms.txt,
+12 tools). The PR-checklist in this file now requires updating AGENTS.md, llms.txt,
 and the install.sh per-tool routing whenever a reference is added.
 
 ### When in doubt, validate the baseline before comparing
@@ -382,35 +392,6 @@ GitHub issues, which track in-flight work.
   framing from `optimnow-methodology.md` and replace it with a pointer to the doctrine
   layer.
 
-- **Playbooks directory** (`cloud-finops/playbooks/`). Extract the named-pattern
-  catalogues currently embedded in `finops-aws.md` (48 patterns), `finops-azure.md`
-  (48 patterns), `finops-gcp.md` (26 patterns), and the seven-category taxonomy in
-  `finops-waste-detection-playbooks.md` into individual playbook files (~2-3KB each).
-  Format per playbook: symptoms / detection (CUR / KQL / BigQuery SQL) / fix /
-  anti-pattern / sources. The reference files keep the patterns as in-context narrative
-  for linear reading; the `playbooks/` directory exposes them as RAG-friendly chunks
-  for ChatGPT / Gemini / generic LLM retrieval. Routing rule to add to SKILL.md and
-  POWER.md: "named waste pattern X -> `playbooks/X.md`". Drift risk to manage: changes
-  to a pattern must be applied in both places, or the reference file should be updated
-  to reference the playbook by an inline Markdown link (e.g.
-  `[aws-zombie-nat-gateway](../playbooks/aws-zombie-nat-gateway.md)`) instead of
-  duplicating the content.
-
-- **FCP coverage matrix tooling.** Adapt the approach from Cletrics' `fcp-coverage.sh`:
-  a small bash script that parses `fcp_domain` / `fcp_capability` /
-  `fcp_capabilities_secondary` from every reference frontmatter and emits a top-level
-  `fcp-coverage.md` table mapping the 22 FCP capabilities to the references that cover
-  them. Adds three benefits: (1) honesty signal vis-a-vis the framework - the matrix
-  computes coverage from the actual repo, not from claims; (2) PR check - new
-  references with a non-canonical capability or a missing frontmatter trip the script;
-  (3) Roadmap-driven view - the matrix shows which capabilities have no primary owner
-  yet. Current true gaps after the frontmatter-truth pass: KPIs & Benchmarking,
-  Executive Strategy Alignment, FinOps Education & Enablement (all in the deferred
-  table below). Budgeting and Automation Tools & Services were initially flagged
-  as gaps but are covered dispersed - the matrix now renders them as `[~]`
-  secondary-only after the frontmatter was updated to reflect that reality (PR
-  following the FCP-2026 migration).
-
 - **Public Custom GPT for ChatGPT users.** The current ChatGPT install path is
   self-host: `./install.sh --tool chatgpt --grouped` produces 10 grouped knowledge
   files the user uploads themselves. A public Cloud FinOps GPT in the OpenAI GPT
@@ -503,6 +484,13 @@ These files shipped during the white-space analysis follow-up (PRs #48, #50, #51
 - `finops-kubernetes.md` (PR #54) - Cross-cluster K8s discipline (EKS/GKE/AKS)
 - `finops-waste-detection-playbooks.md` (PR #56) - Seven-category waste taxonomy + WasteLine
 - YAML FCP frontmatter pass across all 22 pre-existing references (PR #53)
+- `cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - 23 RAG-friendly
+  named-pattern playbooks (`<scope>-<pattern>.md`, ~2-3KB each, FIND/DETECT/FIX/SOURCES
+  format) covering AWS (incl. SageMaker + GPU), Azure, GCP, and cross-cloud waste patterns.
+  Routed from SKILL.md and POWER.md "named waste pattern" rows
+- `scripts/fcp-coverage.sh` + top-level `fcp-coverage.md` (PR #64) - bash matrix that
+  parses FCP frontmatter from every reference and renders a 22-capability coverage table.
+  Run on each PR; `[~]` secondary-only cells distinguish dispersed coverage from true gaps
 
 ---
 

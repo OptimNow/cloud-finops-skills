@@ -30,6 +30,11 @@ permissions:
 jobs:
   tag-and-release:
     runs-on: ubuntu-latest
+    outputs:
+      # Surfaced so the downstream publish-mcp job knows which tag to publish
+      # (and whether to skip when this push didn't actually need a new tag).
+      tag: ${{ steps.read_version.outputs.tag }}
+      skip: ${{ steps.check_tag.outputs.skip }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -112,4 +117,20 @@ jobs:
 
             The attached `cloud-finops-${{ steps.read_version.outputs.tag }}.zip` is the skill bundle for upload into Claude Desktop / claude.ai (Settings -> Skills -> Upload).
 
-            For Claude Code users (and 10 other tools), see [INSTALLATION.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/INSTALLATION.md) for the cross-tool installer and the model-agnostic response contract.
+            For Claude Code users (and 11 other tools), see [INSTALLATION.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/INSTALLATION.md) for the cross-tool installer and the model-agnostic response contract.
+
+  # Tags pushed by GITHUB_TOKEN above do NOT re-trigger publish-mcp.yml's
+  # `push: tags` event (GitHub blocks recursive workflow runs from the
+  # default token). Calling it explicitly via workflow_call closes the
+  # gap: every plugin.json bump now publishes the matching cloud-finops-mcp
+  # version to PyPI alongside the GitHub Release zip.
+  publish-mcp:
+    name: Publish cloud-finops-mcp to PyPI
+    needs: tag-and-release
+    if: needs.tag-and-release.outputs.skip == 'false'
+    permissions:
+      contents: read
+      id-token: write   # publish-mcp.yml needs OIDC for trusted publishing
+    uses: ./.github/workflows/publish-mcp.yml
+    with:
+      tag: ${{ needs.tag-and-release.outputs.tag }}

@@ -1,7 +1,7 @@
 # cloud-finops-mcp
 
 MCP server exposing the [OptimNow Cloud FinOps skill](https://github.com/OptimNow/cloud-finops-skills)
-(28 reference files + 15 named-pattern playbooks) as queryable tools for any
+(28 reference files + 23 named-pattern playbooks) as queryable tools for any
 MCP-aware client (Claude Code, Cursor, Codex CLI, Windsurf, Aider, Cline, etc.).
 
 The skill itself ships in canonical Claude Agent-Skills format and is also installable

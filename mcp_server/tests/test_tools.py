@@ -106,10 +106,10 @@ def test_find_filters_echo_input() -> None:
 # --- list_playbooks ---------------------------------------------------------
 
 
-def test_list_playbooks_returns_15() -> None:
+def test_list_playbooks_returns_23() -> None:
     result = tools.list_playbooks()
-    assert result["total"] == 15
-    assert len(result["playbooks"]) == 15
+    assert result["total"] == 23
+    assert len(result["playbooks"]) == 23
     sample = result["playbooks"][0]
     assert {"name", "title", "scope", "waste_category", "confidence", "lines"}.issubset(sample)
 
@@ -141,7 +141,7 @@ def test_get_playbook_empty_name_rejects() -> None:
 
 def test_find_playbooks_no_filters_returns_everything() -> None:
     result = tools.find_playbooks()
-    assert result["total"] == 15
+    assert result["total"] == 23
     assert result["filters"] == {}
 
 

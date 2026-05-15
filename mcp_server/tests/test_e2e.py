@@ -93,7 +93,7 @@ async def test_e2e_list_playbooks(server_params: StdioServerParameters) -> None:
             await session.initialize()
             result = await session.call_tool("list_playbooks", {})
             payload = _payload(result)
-            assert payload["total"] == 15
+            assert payload["total"] == 23
 
 
 @pytest.mark.asyncio

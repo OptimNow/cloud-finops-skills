@@ -43,9 +43,9 @@ def test_lookup_unknown_returns_none() -> None:
 # --- playbook index ---------------------------------------------------------
 
 
-def test_playbook_index_returns_15() -> None:
+def test_playbook_index_returns_23() -> None:
     playbooks = metadata.get_playbook_index()
-    assert len(playbooks) == 15
+    assert len(playbooks) == 23
 
 
 def test_playbook_index_excludes_readme() -> None:

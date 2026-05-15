@@ -1,0 +1,8 @@
+# Force LF line endings for shell scripts so they work on Windows checkouts
+# where core.autocrlf=true would otherwise rewrite them as CRLF and break bash.
+# Discovered by Codex review (2026-05-15): bash install.sh and bash
+# scripts/fcp-coverage.sh both failed with parser errors on a Windows
+# checkout because git had stored them as w/crlf.
+*.sh text eol=lf
+
+# Markdown stays platform-default; YAML/JSON inherit git's auto-detection.

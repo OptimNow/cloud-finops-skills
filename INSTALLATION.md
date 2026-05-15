@@ -12,7 +12,7 @@ the conversion for every supported tool. Per-tool blocks below are copy-pasteabl
 
 ---
 
-## Quick reference: one installer, eleven tools
+## Quick reference: one installer, twelve tools
 
 ```bash
 # Auto-detect tools in the current project / $HOME and install for each
@@ -111,10 +111,10 @@ Builds two artefacts in `dist/chatgpt/`:
 - `instructions.md` - target ≤ 8000 chars; the routing logic, reasoning sequence, and
   response contract that go into the GPT's Instructions field. The installer warns if
   the file exceeds the limit.
-- `knowledge/*.md` - **42 files** in the default per-reference build:
+- `knowledge/*.md` - **50 files** in the default per-reference build:
   - 27 reference files (one per domain; `optimnow-methodology.md` is **merged into
     `finops-for-ai.md`**)
-  - 15 playbook files prefixed `playbook-<slug>.md` so they sort together in the
+  - 23 playbook files prefixed `playbook-<slug>.md` so they sort together in the
     GPT Knowledge UI
   - The instructions routing contract points named waste patterns
     (zombie NAT, snapshot sprawl, etc.) at `playbook-<slug>.md` and other queries at

@@ -76,6 +76,12 @@ artifacts = []
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+# Force pytest to import from the local src/ tree, not whatever
+# `cloud_finops_mcp` happens to be installed in site-packages. Without
+# this, a stale `pip install` of the package would silently mask drift
+# between the test assertions and this checkout. See Codex review
+# (2026-05-15) for the failure mode this prevents.
+pythonpath = ["src"]
 
 [tool.ruff]
 line-length = 100
