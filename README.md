@@ -287,35 +287,36 @@ cloud-finops-skills/
 └── cloud-finops/                               ← Install this folder
     ├── SKILL.md                                ← Entry point + domain router (Claude Code, generic agents)
     ├── POWER.md                                ← Entry point (Kiro IDE)
-    └── references/
-        ├── optimnow-methodology.md             ← OptimNow reasoning philosophy
-        ├── finops-for-ai.md                    ← AI cost management
-        ├── finops-ai-value-management.md       ← AI investment governance
-        ├── finops-genai-capacity.md            ← GenAI capacity models (cross-provider)
-        ├── finops-ai-self-hosted-vs-managed.md ← Self-hosted vs managed AI inference decision
-        ├── finops-anthropic.md                 ← Anthropic billing + governance
-        ├── finops-aws.md                       ← AWS-specific FinOps
-        ├── finops-bedrock.md                   ← AWS Bedrock billing
-        ├── finops-azure.md                     ← Azure-specific FinOps
-        ├── finops-azure-openai.md              ← Azure OpenAI Service (PTUs)
-        ├── finops-gcp.md                       ← GCP-specific FinOps
-        ├── finops-vertexai.md                  ← GCP Vertex AI billing
-        ├── finops-tagging.md                   ← Tagging and naming governance
-        ├── finops-framework.md                 ← Full FinOps Foundation framework
-        ├── finops-databricks.md                ← Databricks allocation, governance, and optimisation
-        ├── finops-fabric.md                    ← Microsoft Fabric capacity FinOps
-        ├── finops-snowflake.md                 ← Snowflake optimisation
-        ├── finops-ai-dev-tools.md             ← AI coding tools (Cursor, Claude Code, etc.)
-        ├── finops-oci.md                       ← OCI optimisation
-        ├── finops-sam.md                       ← SaaS asset management (SAM)
-        ├── finops-itam.md                     ← ITAM collaboration (BYOL, marketplace, entitlements)
-        ├── greenops-cloud-carbon.md            ← GreenOps and cloud carbon
-        ├── finops-anomaly-management.md        ← Anomaly management (standalone Inform-phase capability)
-        ├── finops-allocation-showback.md       ← Cost allocation methodology + showback
-        ├── finops-chargeback.md                ← Chargeback maturity ladder + Finance/accounting prerequisites
-        ├── finops-onboarding-workloads.md      ← Migration-time cost hygiene + M&A integration
-        ├── finops-kubernetes.md                ← Kubernetes cross-cluster discipline (EKS/GKE/AKS)
-        └── finops-waste-detection-playbooks.md ← Seven-category waste taxonomy + WasteLine
+    ├── references/
+    │   ├── optimnow-methodology.md             ← OptimNow reasoning philosophy
+    │   ├── finops-for-ai.md                    ← AI cost management
+    │   ├── finops-ai-value-management.md       ← AI investment governance
+    │   ├── finops-genai-capacity.md            ← GenAI capacity models (cross-provider)
+    │   ├── finops-ai-self-hosted-vs-managed.md ← Self-hosted vs managed AI inference decision
+    │   ├── finops-anthropic.md                 ← Anthropic billing + governance
+    │   ├── finops-aws.md                       ← AWS-specific FinOps
+    │   ├── finops-bedrock.md                   ← AWS Bedrock billing
+    │   ├── finops-azure.md                     ← Azure-specific FinOps
+    │   ├── finops-azure-openai.md              ← Azure OpenAI Service (PTUs)
+    │   ├── finops-gcp.md                       ← GCP-specific FinOps
+    │   ├── finops-vertexai.md                  ← GCP Vertex AI billing
+    │   ├── finops-tagging.md                   ← Tagging and naming governance
+    │   ├── finops-framework.md                 ← Full FinOps Foundation framework
+    │   ├── finops-databricks.md                ← Databricks allocation, governance, and optimisation
+    │   ├── finops-fabric.md                    ← Microsoft Fabric capacity FinOps
+    │   ├── finops-snowflake.md                 ← Snowflake optimisation
+    │   ├── finops-ai-dev-tools.md             ← AI coding tools (Cursor, Claude Code, etc.)
+    │   ├── finops-oci.md                       ← OCI optimisation
+    │   ├── finops-sam.md                       ← SaaS asset management (SAM)
+    │   ├── finops-itam.md                     ← ITAM collaboration (BYOL, marketplace, entitlements)
+    │   ├── greenops-cloud-carbon.md            ← GreenOps and cloud carbon
+    │   ├── finops-anomaly-management.md        ← Anomaly management (standalone Inform-phase capability)
+    │   ├── finops-allocation-showback.md       ← Cost allocation methodology + showback
+    │   ├── finops-chargeback.md                ← Chargeback maturity ladder + Finance/accounting prerequisites
+    │   ├── finops-onboarding-workloads.md      ← Migration-time cost hygiene + M&A integration
+    │   ├── finops-kubernetes.md                ← Kubernetes cross-cluster discipline (EKS/GKE/AKS)
+    │   └── finops-waste-detection-playbooks.md ← Seven-category waste taxonomy + WasteLine
+    └── playbooks/                              ← 23 RAG-friendly named-pattern runbooks (~2-4 KB each)
 ```
 
 The `SKILL.md` file is the entry point for Claude Code and generic agents. `POWER.md` is

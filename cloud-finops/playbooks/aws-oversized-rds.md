@@ -90,3 +90,7 @@ aws cloudwatch get-metric-statistics \
 - `references/finops-aws.md` - RDS commitment strategy, Database Savings
   Plans, Aurora vs RDS economics
 - `playbooks/aws-snapshot-sprawl.md` - related RDS snapshot sprawl
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

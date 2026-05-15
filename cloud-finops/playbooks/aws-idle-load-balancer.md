@@ -84,3 +84,7 @@ aws elbv2 describe-target-groups \
 - `references/finops-aws.md` - ELB pricing tiers, LCU mechanics
 - `playbooks/aws-zombie-nat-gateway.md` - same idle-resource pattern,
   different service
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

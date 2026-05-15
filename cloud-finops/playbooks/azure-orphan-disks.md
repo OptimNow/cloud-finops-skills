@@ -88,3 +88,7 @@ costManagementBillingData
   tiers, MCA contractual mechanics
 - `references/finops-waste-detection-playbooks.md` - "orphaned" category
   rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

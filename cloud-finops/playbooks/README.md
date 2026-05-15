@@ -2,10 +2,13 @@
 
 Named-pattern runbooks for the highest-frequency waste and cost-anomaly
 patterns across AWS, Azure, GCP, and cross-cloud concerns. Each playbook is
-a small (~2-4 KB), self-contained chunk optimised for **retrieval-augmented
+a small (~2-6 KB), self-contained chunk optimised for **retrieval-augmented
 generation** (RAG) - so ChatGPT, Gemini, or any LLM that fetches knowledge
 chunks pulls exactly the relevant pattern instead of loading the full
-provider reference file.
+provider reference file. AI/ML playbooks (SageMaker, GPU) sit at the upper
+end of the band because the detection queries and remediation steps need
+more space; cloud-native patterns (NAT gateways, orphaned disks) stay
+closer to ~2-3 KB.
 
 ## How playbooks differ from reference files
 
@@ -56,7 +59,17 @@ confidence: obvious | likely | possible
 
 ## See also
 <links to related references and playbooks>
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
 ```
+
+The trailing `---` + OptimNow / CC BY-SA footer is required on every
+playbook. Playbooks redistribute through the PyPI bundle (`cloud-finops-mcp`)
+and the `install.sh --grouped` build, so per-file attribution is the right
+license-hygiene default rather than relying on reference to the repo
+`LICENSE.md` alone.
 
 ## Confidence tiers (matching `finops-waste-detection-playbooks.md`)
 

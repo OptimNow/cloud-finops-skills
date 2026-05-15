@@ -95,3 +95,7 @@ Prerequisite: the instance must be A100 or H100. G5 / G6 / G4dn / P3 do
   pod-level cost attribution
 - `references/finops-waste-detection-playbooks.md` - Category 7 (AI/ML
   inefficiency) taxonomy
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

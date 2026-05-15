@@ -90,3 +90,7 @@ ORDER BY cost_30d DESC;
 - `playbooks/aws-snapshot-sprawl.md` - related snapshot accumulation
 - `references/finops-waste-detection-playbooks.md` - "orphaned" category
   rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

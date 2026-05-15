@@ -13,7 +13,7 @@ prompt, the agent calls tools to discover, filter, and fetch only what it needs.
 
 Six tools, all read-only, split across two surfaces.
 
-**References** — long-form provider and discipline files (~300-500 lines each):
+**References** - long-form provider and discipline files (~300-500 lines each):
 
 | Tool | Purpose |
 |---|---|
@@ -29,11 +29,11 @@ The reference faceted query supports any combination of:
 - `persona` - matches both primary and collaborating personas
 - `maturity` - `Crawl`, `Walk`, `Run`
 
-**Playbooks** — small named-pattern runbooks (~80-130 lines each):
+**Playbooks** - small named-pattern runbooks (~80-130 lines each):
 
 | Tool | Purpose |
 |---|---|
-| `list_playbooks()` | List all 15 named-pattern playbooks with their metadata. |
+| `list_playbooks()` | List all 23 named-pattern playbooks with their metadata. |
 | `get_playbook(name)` | Fetch the full markdown body of one playbook. |
 | `find_playbooks(scope?, service?, waste_category?, confidence?)` | Faceted query over the playbook frontmatter. |
 

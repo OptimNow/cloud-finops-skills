@@ -229,7 +229,7 @@ entry point.
 
 The `mcp` target prints install hint + per-client config snippets. It does not run
 `pip` for you. The MCP server is a separate Python package (`cloud-finops-mcp`) that
-exposes the 28 references and 15 named-pattern playbooks as queryable tools - useful
+exposes the 28 references and 23 named-pattern playbooks as queryable tools - useful
 for agents that need search-style retrieval rather than full-context injection.
 
 **Install the server:**
@@ -251,7 +251,7 @@ References (long-form provider/discipline files):
 
 Playbooks (small named-pattern runbooks):
 
-- `list_playbooks()` - 15 playbooks with scope / service / waste-category metadata
+- `list_playbooks()` - 23 playbooks with scope / service / waste-category metadata
 - `get_playbook(name)` - full markdown body of one playbook
 - `find_playbooks(scope?, service?, waste_category?, confidence?)` - faceted query
 
@@ -432,8 +432,8 @@ already covers the major FinOps query types.
 the limit. If it does, manually trim the routing table to only the providers you care
 about, or upload the trimmed routing as a knowledge file and keep instructions minimal.
 
-**ChatGPT rejects the knowledge upload (file count):** the default build produces 42
-knowledge files (27 references + 15 playbooks; methodology merged into
+**ChatGPT rejects the knowledge upload (file count):** the default build produces 50
+knowledge files (27 references + 23 playbooks; methodology merged into
 `finops-for-ai.md`). If ChatGPT enforces a lower cap, re-run with the grouped flag:
 `./install.sh --tool chatgpt --grouped`. The grouped build packs the same content into
 10 thematic files in `dist/chatgpt/` and emits a matching routing contract.

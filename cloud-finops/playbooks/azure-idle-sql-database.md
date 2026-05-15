@@ -82,3 +82,7 @@ AzureMetrics
   Serverless vs Provisioned, Hyperscale architecture
 - `references/finops-waste-detection-playbooks.md` - "idle" category
   rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

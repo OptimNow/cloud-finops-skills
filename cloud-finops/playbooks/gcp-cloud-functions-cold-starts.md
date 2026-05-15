@@ -106,3 +106,7 @@ gcloud monitoring metrics list --filter="metric.type:cloudfunctions.googleapis.c
   connector costs
 - `references/finops-vertexai.md` - similar cold-start economics for
   Vertex AI batch prediction
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

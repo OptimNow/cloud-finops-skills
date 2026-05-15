@@ -107,3 +107,7 @@ the diagnosis is near-certain - confirm with one DCGM run, then move.
   self-hosted inference compute
 - `references/finops-waste-detection-playbooks.md` - Category 7 (AI/ML
   inefficiency) taxonomy
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

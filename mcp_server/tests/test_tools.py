@@ -12,10 +12,10 @@ def setup_function() -> None:
 # --- list_references --------------------------------------------------------
 
 
-def test_list_returns_28() -> None:
+def test_list_returns_all_references(expected_references: int) -> None:
     result = tools.list_references()
-    assert result["total"] == 28
-    assert len(result["references"]) == 28
+    assert result["total"] == expected_references
+    assert len(result["references"]) == expected_references
     sample = result["references"][0]
     assert {"name", "description", "fcp_domain", "fcp_phases", "lines"}.issubset(sample)
 
@@ -45,9 +45,9 @@ def test_get_reference_empty_name_rejects() -> None:
 # --- find_references --------------------------------------------------------
 
 
-def test_find_no_filters_returns_everything() -> None:
+def test_find_no_filters_returns_everything(expected_references: int) -> None:
     result = tools.find_references()
-    assert result["total"] == 28
+    assert result["total"] == expected_references
     assert result["filters"] == {}
 
 
@@ -106,10 +106,10 @@ def test_find_filters_echo_input() -> None:
 # --- list_playbooks ---------------------------------------------------------
 
 
-def test_list_playbooks_returns_23() -> None:
+def test_list_playbooks_returns_all(expected_playbooks: int) -> None:
     result = tools.list_playbooks()
-    assert result["total"] == 23
-    assert len(result["playbooks"]) == 23
+    assert result["total"] == expected_playbooks
+    assert len(result["playbooks"]) == expected_playbooks
     sample = result["playbooks"][0]
     assert {"name", "title", "scope", "waste_category", "confidence", "lines"}.issubset(sample)
 
@@ -139,9 +139,9 @@ def test_get_playbook_empty_name_rejects() -> None:
 # --- find_playbooks ---------------------------------------------------------
 
 
-def test_find_playbooks_no_filters_returns_everything() -> None:
+def test_find_playbooks_no_filters_returns_everything(expected_playbooks: int) -> None:
     result = tools.find_playbooks()
-    assert result["total"] == 23
+    assert result["total"] == expected_playbooks
     assert result["filters"] == {}
 
 

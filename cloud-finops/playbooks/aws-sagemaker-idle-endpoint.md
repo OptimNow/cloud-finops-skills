@@ -114,3 +114,7 @@ endpoint is genuinely idle or just lightly used.
   endpoints that should stay alive but on a smaller GPU
 - `references/finops-waste-detection-playbooks.md` - Category 7 (AI/ML
   inefficiency) taxonomy
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

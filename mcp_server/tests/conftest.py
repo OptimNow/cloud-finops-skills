@@ -40,3 +40,17 @@ def _populate_data() -> None:
     # Ensure a fresh import picks up data/ — important when the tree was
     # populated mid-session.
     sys.modules.pop("cloud_finops_mcp.metadata", None)
+
+
+# Authoritative reference/playbook counts read from disk at collection
+# time. Tests assert the function output matches these counts, so adding a
+# new reference or playbook does not require hand-editing count assertions
+# across multiple test files.
+@pytest.fixture(scope="session")
+def expected_references() -> int:
+    return len(list(REFERENCES_SOURCE.glob("*.md")))
+
+
+@pytest.fixture(scope="session")
+def expected_playbooks() -> int:
+    return len([p for p in PLAYBOOKS_SOURCE.glob("*.md") if p.name != "README.md"])

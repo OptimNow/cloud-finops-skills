@@ -113,3 +113,7 @@ ORDER BY cost_30d DESC;
 - `references/finops-gcp.md` - Compute Engine scheduling patterns
 - `references/finops-waste-detection-playbooks.md` - "schedule-
   blindness" category rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

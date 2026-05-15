@@ -90,3 +90,7 @@ LIMIT 50;
 - `references/finops-kubernetes.md` - Karpenter and AZ-aware node
   scheduling
 - `playbooks/aws-zombie-nat-gateway.md` - related egress pattern
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

@@ -116,3 +116,7 @@ to enumerate live instances and tag-check ownership.
   RI/SP on modernisation timing), AWS GPU family map
 - `references/finops-waste-detection-playbooks.md` - Category 7 (AI/ML
   inefficiency) and the "modernization" waste category
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

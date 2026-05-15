@@ -84,3 +84,7 @@ ORDER BY cost_30d DESC;
 - `references/finops-kubernetes.md` - GKE volume management, CSI
   reclaim policies
 - `playbooks/gcp-idle-gke-autopilot.md` - related GKE waste pattern
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

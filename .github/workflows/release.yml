@@ -42,4 +42,4 @@ jobs:
 
             The attached `cloud-finops-${{ github.ref_name }}.zip` is the skill bundle for upload into Claude Desktop / claude.ai (Settings → Skills → Upload).
 
-            For Claude Code users (and 10 other tools), see [INSTALLATION.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/INSTALLATION.md) for the cross-tool installer and the model-agnostic response contract.
+            For Claude Code users (and 11 other tools), see [INSTALLATION.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/INSTALLATION.md) for the cross-tool installer and the model-agnostic response contract.

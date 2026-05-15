@@ -105,3 +105,7 @@ AzureMetrics
   App Service vs AKS vs Container Apps trade-offs
 - `references/finops-waste-detection-playbooks.md` - "overprovisioned"
   category rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cloud-finops-mcp"
-version = "1.13.0"
-description = "MCP server exposing the OptimNow Cloud FinOps skill (28 references) as queryable tools."
+version = "1.22.2"
+description = "MCP server exposing the OptimNow Cloud FinOps skill (28 references + 23 named-pattern playbooks) as queryable tools."
 readme = "README.md"
 license = { text = "CC-BY-SA-4.0" }
 authors = [

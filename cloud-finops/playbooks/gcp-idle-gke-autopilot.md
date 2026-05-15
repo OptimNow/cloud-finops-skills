@@ -88,3 +88,7 @@ kubectl get pods --all-namespaces \
 - `references/finops-kubernetes.md` - GKE cost attribution, cluster
   consolidation patterns
 - `playbooks/gcp-orphan-persistent-disks.md` - related orphan pattern
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

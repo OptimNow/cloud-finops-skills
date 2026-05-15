@@ -89,3 +89,7 @@ For real-time validation, the canonical CloudWatch metrics are
   pattern
 - `references/finops-waste-detection-playbooks.md` - the seven-category
   taxonomy this pattern fits ("idle")
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

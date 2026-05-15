@@ -1,7 +1,7 @@
 """Cloud FinOps MCP server.
 
-Exposes the OptimNow Cloud FinOps skill (28 references) as queryable tools
-via the Model Context Protocol.
+Exposes the OptimNow Cloud FinOps skill (28 references + 23 named-pattern
+playbooks) as queryable tools via the Model Context Protocol.
 """
 
 from importlib.metadata import PackageNotFoundError, version

@@ -9,9 +9,9 @@ def setup_function() -> None:
     metadata.reset_cache()
 
 
-def test_index_returns_28_references() -> None:
+def test_index_returns_all_references(expected_references: int) -> None:
     refs = metadata.get_index()
-    assert len(refs) == 28
+    assert len(refs) == expected_references
 
 
 def test_index_is_sorted_by_name() -> None:
@@ -43,9 +43,9 @@ def test_lookup_unknown_returns_none() -> None:
 # --- playbook index ---------------------------------------------------------
 
 
-def test_playbook_index_returns_23() -> None:
+def test_playbook_index_returns_all(expected_playbooks: int) -> None:
     playbooks = metadata.get_playbook_index()
-    assert len(playbooks) == 23
+    assert len(playbooks) == expected_playbooks
 
 
 def test_playbook_index_excludes_readme() -> None:

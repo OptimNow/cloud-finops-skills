@@ -130,3 +130,7 @@ LIMIT 100;
 - `references/finops-onboarding-workloads.md` - intake gate patterns
 - `references/finops-waste-detection-playbooks.md` - "orphaned" category
   rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

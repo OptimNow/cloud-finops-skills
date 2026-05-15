@@ -621,8 +621,18 @@ Good test patterns:
       learned" section for the documentation-drift correction)
 - [ ] install.sh per-tool routing updated: ChatGPT inline routing table, Gemini
       grouped knowledge, and Cursor description must mention the new domain
-- [ ] File ends with the OptimNow footer (`> *Cloud FinOps Skill by [OptimNow]...
-      CC BY-SA 4.0...*`); no truncation mid-sentence or mid-table
+- [ ] File ends with the OptimNow / CC BY-SA footer. References use
+      `> *Cloud FinOps Skill by [OptimNow]... CC BY-SA 4.0...*`; playbooks use
+      `> *Cloud FinOps Playbook by [OptimNow]... CC BY-SA 4.0...*`. No
+      truncation mid-sentence or mid-table.
+- [ ] If adding a new playbook, follow the format in
+      `cloud-finops/playbooks/README.md` (frontmatter schema, FIND / DETECT /
+      FIX / SOURCES sections, OptimNow CC BY-SA footer), update the named-
+      pattern parenthetical in SKILL.md, POWER.md, and the ChatGPT / grouped
+      routing tables in install.sh, and bump the "23 named-pattern playbooks"
+      count in README.md, AGENTS.md, llms.txt, marketplace.json,
+      mcp_server/README.md, mcp_server/pyproject.toml description, and
+      mcp_server/src/cloud_finops_mcp/__init__.py docstring.
 - [ ] Plugin version bumped in `.claude-plugin/plugin.json` (minor for user-visible feature)
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
       reference file count and topic list
