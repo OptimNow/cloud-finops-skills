@@ -21,11 +21,14 @@ jobs:
           ZIP_NAME="cloud-finops-${VERSION}.zip"
           cd "${GITHUB_WORKSPACE}"
           # Exclude local-only directories that may exist in worktrees
-          # (e.g. .claude/settings.local.json from Claude Code worktrees)
-          zip -r "${ZIP_NAME}" cloud-finops \
+          # (e.g. .claude/settings.local.json from Claude Code worktrees).
+          # cd into skills/ so the zip root contains `cloud-finops/...` rather
+          # than `skills/cloud-finops/...`. Backward-compatible with the
+          # Claude.ai / Claude Desktop upload path (Settings -> Skills -> Upload).
+          (cd skills && zip -r "../${ZIP_NAME}" cloud-finops \
             -x 'cloud-finops/.claude/*' \
             -x 'cloud-finops/**/.backups/*' \
-            -x 'cloud-finops/.git/*'
+            -x 'cloud-finops/.git/*')
           ls -lh "${ZIP_NAME}"
           unzip -l "${ZIP_NAME}" | head -5  # log the first few entries to verify forward-slash paths
           echo "ZIP_NAME=${ZIP_NAME}" >> "$GITHUB_ENV"

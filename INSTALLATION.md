@@ -199,7 +199,7 @@ Aider auto-reads `CONVENTIONS.md`. Default coverage is the four general referenc
 (AWS, Azure, GCP, AI). Add specific references at runtime with:
 
 ```bash
-aider --read cloud-finops/references/finops-bedrock.md ...
+aider --read skills/cloud-finops/references/finops-bedrock.md ...
 ```
 
 ### GitHub Copilot

@@ -98,10 +98,13 @@ jobs:
           ZIP_NAME="cloud-finops-${tag}.zip"
           # Same exclusions as release.yml so the artefact is identical
           # whether it comes from auto-tag or from a manual tag push.
-          zip -r "${ZIP_NAME}" cloud-finops \
+          # cd into skills/ so the zip root contains `cloud-finops/...` rather
+          # than `skills/cloud-finops/...`. Backward-compatible with the
+          # Claude.ai / Claude Desktop upload path (Settings -> Skills -> Upload).
+          (cd skills && zip -r "../${ZIP_NAME}" cloud-finops \
             -x 'cloud-finops/.claude/*' \
             -x 'cloud-finops/**/.backups/*' \
-            -x 'cloud-finops/.git/*'
+            -x 'cloud-finops/.git/*')
           ls -lh "${ZIP_NAME}"
           unzip -l "${ZIP_NAME}" | head -5
           echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"

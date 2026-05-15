@@ -10,7 +10,7 @@ project context, this one is just shorter.
 ## What this repo is
 
 A structured, model-agnostic FinOps knowledge skill for AI agents. The
-`cloud-finops/` folder contains reference files that give any LLM accurate
+`skills/cloud-finops/` folder contains reference files that give any LLM accurate
 Cloud FinOps expertise - Claude, GPT, Gemini, Codex, or any
 MCP-compatible agent.
 
@@ -38,7 +38,7 @@ cloud-finops-skills/
 ├── install.sh             <- One-liner installer script
 ├── llms.txt               <- llms.txt index for cross-agent discovery
 ├── assets/                <- Screenshots for installation guide
-├── cloud-finops/          <- The skill (this is what gets installed)
+├── skills/cloud-finops/          <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
 │   └── references/        <- 28 reference files, all with YAML FCP frontmatter

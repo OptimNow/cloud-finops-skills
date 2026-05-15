@@ -6,7 +6,7 @@ Project context for AI assistants and human contributors working on this reposit
 
 ## What this repo is
 
-A structured, model-agnostic FinOps knowledge skill for AI agents. The `cloud-finops/`
+A structured, model-agnostic FinOps knowledge skill for AI agents. The `skills/cloud-finops/`
 folder contains reference files that give any LLM accurate Cloud FinOps expertise -
 Claude, GPT, Gemini, or any MCP-compatible agent.
 
@@ -34,7 +34,7 @@ cloud-finops-skills/
 ├── LICENSE.md             <- CC BY-SA 4.0
 ├── install.sh             <- One-liner installer script
 ├── assets/                <- Screenshots for installation guide
-├── cloud-finops/          <- The skill (this is what gets installed)
+├── skills/cloud-finops/          <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
 │   └── references/        <- 28 reference files, all with YAML FCP frontmatter
@@ -66,7 +66,7 @@ cloud-finops-skills/
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
 │       └── finops-waste-detection-playbooks.md  <- Seven-category waste taxonomy + WasteLine
-├── cloud-finops/playbooks/   <- 23 named-pattern runbooks (`<scope>-<pattern>.md`,
+├── skills/cloud-finops/playbooks/   <- 23 named-pattern runbooks (`<scope>-<pattern>.md`,
 │                                ~2-3KB each, FIND/DETECT/FIX/SOURCES format) +
 │                                README.md index. RAG-friendly chunks routed from
 │                                SKILL.md / POWER.md "named waste pattern" rows
@@ -147,7 +147,7 @@ A truncated file looks valid in `git diff` review (the diff stops where the file
 the only signal was the missing footer at the end, which no automated check verified.
 
 **Guard rails added (`pipeline/applier/file_updater.py`):**
-- Before each apply, snapshot the file to `cloud-finops/references/.backups/` with
+- Before each apply, snapshot the file to `skills/cloud-finops/references/.backups/` with
   a timestamped name
 - After each apply, run `validate_post_apply`:
   - **Deletion threshold**: reject any update whose net change is < -20% of the
@@ -288,7 +288,7 @@ GitHub issues, which track in-flight work.
      module's contract (inputs, outputs, side effects, failure modes), the
      LLM prompts in use, and any place where the pipeline takes a destructive
      action. Identify implicit assumptions and any other module besides
-     `applier/` that can write to `cloud-finops/references/` or `cloud-finops/playbooks/`
+     `applier/` that can write to `skills/cloud-finops/references/` or `skills/cloud-finops/playbooks/`
      - if anything else writes there, it must inherit the same guard-rail
      contract.
   2. **Harden (week 1-2).** Bring code-level validators to the modules that
@@ -353,7 +353,7 @@ GitHub issues, which track in-flight work.
   connect cost to value, recommend progressively). The intent is to grow this into a
   named doctrine that takes opinionated, opposable positions vs the FinOps Foundation
   framework rather than restating it. Theses to develop, each as its own short doctrine
-  file in a future `cloud-finops/doctrine/` directory:
+  file in a future `skills/cloud-finops/doctrine/` directory:
 
   - **Business value before maturity.** Every recommendation must answer "what business
     outcome does this protect or unlock?" Cost reduction without a value lens is a leak.
@@ -484,7 +484,7 @@ These files shipped during the white-space analysis follow-up (PRs #48, #50, #51
 - `finops-kubernetes.md` (PR #54) - Cross-cluster K8s discipline (EKS/GKE/AKS)
 - `finops-waste-detection-playbooks.md` (PR #56) - Seven-category waste taxonomy + WasteLine
 - YAML FCP frontmatter pass across all 22 pre-existing references (PR #53)
-- `cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - 23 RAG-friendly
+- `skills/cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - 23 RAG-friendly
   named-pattern playbooks (`<scope>-<pattern>.md`, ~2-3KB each, FIND/DETECT/FIX/SOURCES
   format) covering AWS (incl. SageMaker + GPU), Azure, GCP, and cross-cloud waste patterns.
   Routed from SKILL.md and POWER.md "named waste pattern" rows
@@ -514,7 +514,7 @@ discount mechanics.
 
 Follow these five steps whenever you add a new domain:
 
-1. **Create the reference file** in `cloud-finops/references/`
+1. **Create the reference file** in `skills/cloud-finops/references/`
    - Name it `finops-{domain}.md` (or `{category}-{domain}.md` for non-FinOps topics like `greenops-cloud-carbon.md`)
    - Follow the structure of an existing reference file as a template
    - Include practical guidance, not abstract theory
@@ -569,7 +569,7 @@ Why this matters:
 
 Do **not** add a `description` field to reference-file frontmatter. The visible blockquote
 description on line 3 (after the H1) already serves that role; a frontmatter description
-would render twice in some tools. The exception is `cloud-finops/SKILL.md` which DOES need
+would render twice in some tools. The exception is `skills/cloud-finops/SKILL.md` which DOES need
 a `description` field for the Claude.ai upload skill loader (see "Content rules" below).
 
 ---
@@ -626,7 +626,7 @@ Good test patterns:
       `> *Cloud FinOps Playbook by [OptimNow]... CC BY-SA 4.0...*`. No
       truncation mid-sentence or mid-table.
 - [ ] If adding a new playbook, follow the format in
-      `cloud-finops/playbooks/README.md` (frontmatter schema, FIND / DETECT /
+      `skills/cloud-finops/playbooks/README.md` (frontmatter schema, FIND / DETECT /
       FIX / SOURCES sections, OptimNow CC BY-SA footer), update the named-
       pattern parenthetical in SKILL.md, POWER.md, and the ChatGPT / grouped
       routing tables in install.sh, and bump the "23 named-pattern playbooks"

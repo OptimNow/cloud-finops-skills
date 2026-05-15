@@ -70,9 +70,9 @@ usage() {
 }
 
 resolve_source() {
-  if [[ -f "$SCRIPT_DIR/cloud-finops/SKILL.md" ]]; then
+  if [[ -f "$SCRIPT_DIR/skills/cloud-finops/SKILL.md" ]]; then
     SRC_DIR="$SCRIPT_DIR"
-  elif [[ -f "$PWD/cloud-finops/SKILL.md" ]]; then
+  elif [[ -f "$PWD/skills/cloud-finops/SKILL.md" ]]; then
     SRC_DIR="$PWD"
   else
     info "Source not found locally. Cloning repo..."
@@ -96,13 +96,13 @@ strip_frontmatter() {
 # so the playbooks must be inlined too - otherwise the routing contract points
 # the model at files that are not present in the installed artefact.
 write_concat_body() {
-  strip_frontmatter "$SRC_DIR/cloud-finops/SKILL.md"
+  strip_frontmatter "$SRC_DIR/skills/cloud-finops/SKILL.md"
   echo
   echo "---"
   echo
   echo "## Reference files"
   echo
-  for ref in "$SRC_DIR/cloud-finops/references"/*.md; do
+  for ref in "$SRC_DIR/skills/cloud-finops/references"/*.md; do
     echo "### $(basename "$ref" .md)"
     echo
     cat "$ref"
@@ -110,11 +110,11 @@ write_concat_body() {
     echo "---"
     echo
   done
-  if [[ -d "$SRC_DIR/cloud-finops/playbooks" ]]; then
+  if [[ -d "$SRC_DIR/skills/cloud-finops/playbooks" ]]; then
     echo
     echo "## Playbooks"
     echo
-    for pb in "$SRC_DIR/cloud-finops/playbooks"/*.md; do
+    for pb in "$SRC_DIR/skills/cloud-finops/playbooks"/*.md; do
       local pb_name
       pb_name=$(basename "$pb")
       # Skip the directory's own README - it documents the format /
@@ -146,7 +146,7 @@ do_write() {
 # Idempotent directory copy with dry-run support.
 # Excludes local-only artefacts that may exist in the maintainer's worktree:
 #   .claude/         - local Claude Code settings
-#   .backups/        - pipeline backups (cloud-finops/references/.backups/)
+#   .backups/        - pipeline backups (skills/cloud-finops/references/.backups/)
 #   .git/            - if SRC happens to be a git repo
 do_copy_dir() {
   local src="$1" dest="$2"
@@ -216,7 +216,7 @@ install_claude_code() {
   else
     target="$PWD/.claude/skills/$SKILL_NAME"
   fi
-  do_copy_dir "$SRC_DIR/cloud-finops" "$target"
+  do_copy_dir "$SRC_DIR/skills/cloud-finops" "$target"
   ok "Claude Code: skill copied -> $target"
   dim "  Restart Claude Code or run /reload-plugins to pick up changes."
 }
@@ -229,7 +229,7 @@ install_claude_projects() {
   fi
   mkdir -p "$outdir"
   if command -v python3 >/dev/null 2>&1; then
-    python3 - "$SRC_DIR/cloud-finops" "$outdir/cloud-finops.zip" <<'PYEOF'
+    python3 - "$SRC_DIR/skills/cloud-finops" "$outdir/cloud-finops.zip" <<'PYEOF'
 import os, sys, zipfile
 src_dir, out_zip = sys.argv[1], sys.argv[2]
 src_root = os.path.dirname(os.path.abspath(src_dir))
@@ -243,7 +243,7 @@ with zipfile.ZipFile(out_zip, 'w', zipfile.ZIP_DEFLATED) as z:
             z.write(full, arcname)
 PYEOF
   elif command -v zip >/dev/null 2>&1; then
-    (cd "$SRC_DIR" && zip -r -q "$outdir/cloud-finops.zip" cloud-finops \
+    (cd "$SRC_DIR/skills" && zip -r -q "$outdir/cloud-finops.zip" cloud-finops \
       -x 'cloud-finops/.claude/*' \
       -x 'cloud-finops/**/.backups/*' \
       -x 'cloud-finops/.git/*')
@@ -325,8 +325,8 @@ install_chatgpt() {
   else
     # Per-reference build: one knowledge file per reference, methodology merged
     # into finops-for-ai.md. 27 files - may exceed ChatGPT's historical cap.
-    local methodology="$SRC_DIR/cloud-finops/references/optimnow-methodology.md"
-    for ref in "$SRC_DIR/cloud-finops/references"/*.md; do
+    local methodology="$SRC_DIR/skills/cloud-finops/references/optimnow-methodology.md"
+    for ref in "$SRC_DIR/skills/cloud-finops/references"/*.md; do
       local name
       name=$(basename "$ref")
       if [[ "$name" == "optimnow-methodology.md" ]]; then
@@ -350,8 +350,8 @@ install_chatgpt() {
     # so each playbook must be uploadable as a knowledge file too. Prefix
     # the filename so they group together in the GPT Knowledge UI and don't
     # collide with reference filenames.
-    if [[ -d "$SRC_DIR/cloud-finops/playbooks" ]]; then
-      for pb in "$SRC_DIR/cloud-finops/playbooks"/*.md; do
+    if [[ -d "$SRC_DIR/skills/cloud-finops/playbooks" ]]; then
+      for pb in "$SRC_DIR/skills/cloud-finops/playbooks"/*.md; do
         local pb_name
         pb_name=$(basename "$pb")
         [[ "$pb_name" == "README.md" ]] && continue
@@ -552,7 +552,7 @@ install_gemini() {
 
 build_gemini_grouped_knowledge() {
   local outdir="$1"
-  local refs="$SRC_DIR/cloud-finops/references"
+  local refs="$SRC_DIR/skills/cloud-finops/references"
 
   # cat_required <output> <input1> [<input2> ...]
   # Concatenates the inputs into the output. Fails loudly if any input is
@@ -599,7 +599,7 @@ build_gemini_grouped_knowledge() {
   # playbooks/<slug>.md, so the grouped artefact must include the
   # playbook content too. Bundled into a single playbooks.md to keep
   # the grouped layout's 1-bundle-per-domain shape.
-  local playbooks="$SRC_DIR/cloud-finops/playbooks"
+  local playbooks="$SRC_DIR/skills/cloud-finops/playbooks"
   if [[ -d "$playbooks" ]]; then
     {
       echo "# Cloud FinOps Playbooks Bundle"
@@ -632,7 +632,7 @@ install_gemini_cli() {
   else
     target="$HOME/.gemini/skills/$SKILL_NAME"
   fi
-  do_copy_dir "$SRC_DIR/cloud-finops" "$target"
+  do_copy_dir "$SRC_DIR/skills/cloud-finops" "$target"
   ok "Gemini CLI: skill copied -> $target"
 }
 
@@ -672,7 +672,7 @@ install_aider() {
   do_write "$target" build_aider_conventions
   ok "Aider: conventions written -> $target"
   dim "  Aider auto-reads CONVENTIONS.md. For more references, add via --read flags:"
-  dim "    aider --read cloud-finops/references/finops-bedrock.md ..."
+  dim "    aider --read skills/cloud-finops/references/finops-bedrock.md ..."
 }
 
 build_aider_conventions() {
@@ -683,18 +683,18 @@ When asked about cloud cost, AI cost, SaaS cost, commitment strategy, rightsizin
 tagging, or FinOps practice questions, apply the guidance below. Default coverage
 is the four most general areas (AWS, Azure, GCP, AI). For richer coverage on
 Bedrock, Vertex AI, Databricks, Microsoft Fabric, Snowflake, OCI, etc., add the
-specific references via `aider --read cloud-finops/references/<file>.md`.
+specific references via `aider --read skills/cloud-finops/references/<file>.md`.
 
 EOF
-  strip_frontmatter "$SRC_DIR/cloud-finops/SKILL.md"
+  strip_frontmatter "$SRC_DIR/skills/cloud-finops/SKILL.md"
   for ref in finops-aws.md finops-azure.md finops-gcp.md finops-for-ai.md; do
-    if [[ -f "$SRC_DIR/cloud-finops/references/$ref" ]]; then
+    if [[ -f "$SRC_DIR/skills/cloud-finops/references/$ref" ]]; then
       echo
       echo "---"
       echo
       echo "## Reference: $ref"
       echo
-      cat "$SRC_DIR/cloud-finops/references/$ref"
+      cat "$SRC_DIR/skills/cloud-finops/references/$ref"
     fi
   done
 }
@@ -716,11 +716,11 @@ commitment strategy (Reserved Instances, Savings Plans, CUDs), rightsizing, tagg
 or FinOps practices, apply the guidance below.
 
 EOF
-  strip_frontmatter "$SRC_DIR/cloud-finops/SKILL.md"
+  strip_frontmatter "$SRC_DIR/skills/cloud-finops/SKILL.md"
   echo
   echo "## Available reference files (for deeper context, see source repo)"
   echo
-  for ref in "$SRC_DIR/cloud-finops/references"/*.md; do
+  for ref in "$SRC_DIR/skills/cloud-finops/references"/*.md; do
     local fname
     fname=$(basename "$ref")
     local desc
@@ -733,7 +733,7 @@ EOF
 
 install_kiro() {
   local target="${DEST_OVERRIDE:-$PWD}/.kiro/powers/$SKILL_NAME"
-  do_copy_dir "$SRC_DIR/cloud-finops" "$target"
+  do_copy_dir "$SRC_DIR/skills/cloud-finops" "$target"
   ok "Kiro IDE: power copied -> $target"
   dim "  Kiro reads POWER.md as the entry point."
 }
@@ -836,7 +836,7 @@ main() {
   resolve_source
 
   printf "\n${C_BOLD}Cloud FinOps Skill - cross-tool installer${C_RESET}\n"
-  dim "  Source: $SRC_DIR/cloud-finops/"
+  dim "  Source: $SRC_DIR/skills/cloud-finops/"
   printf "\n"
 
   local selected=()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy ``cloud-finops/references/*.md`` and ``cloud-finops/playbooks/*.md`` into
+"""Copy ``skills/cloud-finops/references/*.md`` and ``skills/cloud-finops/playbooks/*.md`` into
 the bundled ``data/`` folder.
 
 Runs automatically before each wheel build (declared in ``pyproject.toml`` as a
@@ -22,8 +22,8 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-REFERENCES_SRC = REPO_ROOT / "cloud-finops" / "references"
-PLAYBOOKS_SRC = REPO_ROOT / "cloud-finops" / "playbooks"
+REFERENCES_SRC = REPO_ROOT / "skills" / "cloud-finops" / "references"
+PLAYBOOKS_SRC = REPO_ROOT / "skills" / "cloud-finops" / "playbooks"
 
 DATA_ROOT = Path(__file__).resolve().parents[1] / "src" / "cloud_finops_mcp" / "data"
 REFERENCES_DEST = DATA_ROOT

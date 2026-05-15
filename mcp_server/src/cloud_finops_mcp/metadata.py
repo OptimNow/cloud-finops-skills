@@ -163,7 +163,7 @@ def get_by_name(name: str) -> Reference | None:
 class Playbook:
     """One indexed named-pattern playbook.
 
-    Playbooks live in ``cloud-finops/playbooks/`` and follow a different
+    Playbooks live in ``skills/cloud-finops/playbooks/`` and follow a different
     frontmatter schema from references: a single waste-pattern slug plus
     ``scope``, ``service``, ``waste_category``, and ``confidence``.
     """

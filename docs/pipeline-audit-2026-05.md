@@ -100,7 +100,7 @@ classifies relevant changes via Claude Sonnet, generates a CHANGES.md report,
 optionally opens a GitHub issue, and is reviewed and applied through a
 separate `run_apply.py` flow that calls Claude Opus to rewrite the target
 reference files. Between 15 April and 1 May 2026, two consecutive runs of the
-applier silently truncated 8 reference files in `cloud-finops/references/`
+applier silently truncated 8 reference files in `skills/cloud-finops/references/`
 (see `CLAUDE.md` "Lessons learned"). Hard guard rails landed in
 `pipeline/applier/file_updater.py` after the incident and the runner was
 renamed `run_apply.py.FROZEN` until the rest of the pipeline reaches the same
@@ -123,13 +123,13 @@ The audit finds:
 - **The pipeline writes to only one location in the public content
   tree** (`applier/file_updater.py:154`), and that one write is
   guard-railed. No other module can touch
-  `cloud-finops/references/` or `cloud-finops/playbooks/` directly. This
+  `skills/cloud-finops/references/` or `skills/cloud-finops/playbooks/` directly. This
   was the explicit pre-condition for the snapshot+rollback discipline to
   be sufficient.
 - **24 deprecation warnings** are emitted on every test run from the
   widespread use of `datetime.utcnow()` (Python 3.12 deprecation). Not a
   correctness issue today; will break on Python 3.13+.
-- **20+ `.bak` files** sit under `cloud-finops/references/.backups/` as
+- **20+ `.bak` files** sit under `skills/cloud-finops/references/.backups/` as
   forensic artefacts from the April-May 2026 runs. The current code
   retains every snapshot for ever; no retention or cleanup policy.
 
@@ -157,7 +157,7 @@ failure modes, and gaps. Every claim cites `pipeline/<file>:<line>`.
 - `state/last-run.json` via `load_state()` at line 60 (defaults to empty
   shell if absent, line 66-76)
 - Reference file content via `load_reference_contents()` at line 41 - reads
-  every `*.md` under `cloud-finops/references/`, capped at 300 lines per
+  every `*.md` under `skills/cloud-finops/references/`, capped at 300 lines per
   file (line 55) to stay under the Anthropic input-TPM ceiling
 
 **Outputs:**
@@ -230,9 +230,9 @@ line until then.
 **Side effects:**
 - Anthropic API calls during `--preview` and `--execute` (one per
   affected file in each change)
-- File writes to `cloud-finops/references/<filename>` (only path that
+- File writes to `skills/cloud-finops/references/<filename>` (only path that
   writes the public tree, via `applier/file_updater.py:154`)
-- File copies to `cloud-finops/references/.backups/<filename>.<iso>.bak`
+- File copies to `skills/cloud-finops/references/.backups/<filename>.<iso>.bak`
   (via `applier/file_updater.py:151`)
 
 **Failure modes:**
@@ -242,7 +242,7 @@ line until then.
   been written to disk at this point** - the abort happens after apply.
 - If `args.execute` succeeds and `--pr` is omitted, files are on disk
   but uncommitted. The user is expected to run `git diff
-  cloud-finops/references/` (line 188).
+  skills/cloud-finops/references/` (line 188).
 - No rollback of applied changes if PR creation fails. The applier's
   guard rails roll back individual files when the *content* fails
   validation, but not when the *downstream git/PR* fails.
@@ -253,7 +253,7 @@ line until then.
   branch. Means content commits can land on an in-progress feature branch
   inadvertently. The safer behaviour would be to refuse and require a
   fresh branch.
-- No verification that `cloud-finops/references/` has no unstaged changes
+- No verification that `skills/cloud-finops/references/` has no unstaged changes
   before apply. A user with mid-edit state in those files could lose
   uncommitted edits when the applier overwrites.
 
@@ -556,7 +556,7 @@ working directory.
 
 | Action | Location | Guarded? | Notes |
 |---|---|---|---|
-| Write to `cloud-finops/references/<filename>.md` | `pipeline/applier/file_updater.py:154` | **Yes** (snapshot+validate+rollback, run-level fail-safe) | Only public-tree write |
+| Write to `skills/cloud-finops/references/<filename>.md` | `pipeline/applier/file_updater.py:154` | **Yes** (snapshot+validate+rollback, run-level fail-safe) | Only public-tree write |
 | Restore from snapshot on guard failure | `pipeline/applier/file_updater.py:162` | N/A (the recovery itself) | Read from backup, write to source |
 | Copy reference file to `.backups/<filename>.<iso>.bak` | `pipeline/applier/file_updater.py:151` | Always - precedes every write | No retention policy |
 | Write `state/last-run.json` | `pipeline/run_scan.py:84`, `pipeline/run_scan.py:289`, `pipeline/run_scan.py:335`, `pipeline/run_scan.py:357` | No locking | Concurrent runs would corrupt |
@@ -578,8 +578,8 @@ working directory.
 (`applier/file_updater.py:154`), and that writer is guard-railed. The
 guard-rail discipline is **necessary and sufficient** for the public
 content tree as long as no other module starts writing there. Any future
-module that writes to `cloud-finops/references/` or
-`cloud-finops/playbooks/` must inherit the same snapshot+validate+rollback
+module that writes to `skills/cloud-finops/references/` or
+`skills/cloud-finops/playbooks/` must inherit the same snapshot+validate+rollback
 contract.
 
 ---
@@ -610,7 +610,7 @@ state/
 - `applied-archive-*.json` format is referenced but not documented. The
   May 1 file is 505 lines. Schema inference is required to use it.
 
-`cloud-finops/references/.backups/` (gitignored, but live on disk):
+`skills/cloud-finops/references/.backups/` (gitignored, but live on disk):
 
 20+ `.bak` files surviving from the April-May 2026 runs. Pattern:
 `<reference-file>.<YYYYMMDD-HHMMSS>.bak`. No retention policy in code.
@@ -761,7 +761,7 @@ hardening, ordered by impact.
 
 10. **Reference files have no unstaged changes at apply time** - not
     checked. The applier overwrites
-    `cloud-finops/references/<filename>` without first verifying that
+    `skills/cloud-finops/references/<filename>` without first verifying that
     the working tree is clean for that file. A user mid-edit could lose
     work.
 
@@ -842,7 +842,7 @@ Sequenced by risk x value. Each item tagged "blocks unfreeze" or
    disk growth.
 
 7. **[nice-to-have] Pre-flight git cleanliness check in `run_apply`.**
-   Before any apply, verify `git status --porcelain cloud-finops/references/`
+   Before any apply, verify `git status --porcelain skills/cloud-finops/references/`
    is empty. If not, refuse to apply (the user has in-flight edits that
    could be clobbered).
 
@@ -893,7 +893,7 @@ Audit additions:
 - **U7.** Backup retention policy in place: after a successful apply,
   `.backups/<filename>.*.bak` is pruned to the most recent N.
 - **U8.** Pre-flight clean-tree check refuses to apply when
-  `cloud-finops/references/` has unstaged changes.
+  `skills/cloud-finops/references/` has unstaged changes.
 
 The unfreeze decision is recorded in the `Lessons learned` section of
 `CLAUDE.md` with citations to the PRs that landed U5-U8 and the test
@@ -924,7 +924,7 @@ The audit deliberately does not cover:
   inspects state; it does not run the pipeline.
 - **Other writers to public content tree.** Verified during audit that
   only `pipeline/applier/file_updater.py:154` writes to
-  `cloud-finops/references/`. No `cloud-finops/playbooks/` writers
+  `skills/cloud-finops/references/`. No `skills/cloud-finops/playbooks/` writers
   exist either. If a future module is added that writes to either
   tree, it must re-trigger this audit's destructive-actions inventory.
 

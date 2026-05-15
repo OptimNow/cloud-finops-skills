@@ -349,7 +349,7 @@ Path: `pipeline/state/runs/<YYYYMMDDTHHMMSSZ>/report.json`.
         "hunks_applied": 2,
         "hunks_anchor_missing": 0,
         "hunks_anchor_ambiguous": 0,
-        "backup_path": "cloud-finops/references/.backups/finops-aws.md.2026-05-11T14-46-12.bak"
+        "backup_path": "skills/cloud-finops/references/.backups/finops-aws.md.2026-05-11T14-46-12.bak"
       }
     ]
   },

@@ -98,7 +98,7 @@ and follow the installation steps, you can add FinOps expertise to any compatibl
   tends to substitute slideware for those outputs. In the agentic era this matters
   more, not less: agents execute discipline, not culture.
 
-These principles will grow into a `cloud-finops/doctrine/` directory of opposable
+These principles will grow into a `skills/cloud-finops/doctrine/` directory of opposable
 theses with their own primary sources; see the `Roadmap` section of `CLAUDE.md`.
 
 ---
@@ -287,7 +287,7 @@ cloud-finops-skills/
 ├── LICENSE.md                                  ← CC BY-SA 4.0
 ├── install.sh                                  ← Cross-tool installer (12 targets)
 ├── mcp_server/                                 ← cloud-finops-mcp PyPI package
-└── cloud-finops/                               ← Install this folder
+└── skills/cloud-finops/                               ← Install this folder
     ├── SKILL.md                                ← Entry point + domain router (Claude Code, generic agents)
     ├── POWER.md                                ← Entry point (Kiro IDE)
     ├── references/
@@ -406,8 +406,8 @@ in any of the layers below.
   match the latest contract terms. Cite the primary source (provider doc, your
   invoice, an enrollment agreement) so the change is verifiable.
 - **New named playbook.** A waste pattern you see in the field that is not yet in
-  `cloud-finops/playbooks/`. Follow the format documented in
-  [`playbooks/README.md`](./cloud-finops/playbooks/README.md): symptoms / detection
+  `skills/cloud-finops/playbooks/`. Follow the format documented in
+  [`playbooks/README.md`](./skills/cloud-finops/playbooks/README.md): symptoms / detection
   query / fix / anti-pattern / sources, ~2-4 KB. Examples we'd love: Lambda
   cold-start sprawl, Bedrock model proliferation, Snowflake warehouse fragmentation,
   Databricks all-purpose-cluster default-on, Cloud Run min-instance creep.
