@@ -59,6 +59,12 @@ be explicit, not assumed.
 - Treat cost data quality as a prerequisite for any value conversation
 - Monitor per-query charges from SaaS vendors as AI agents interact with their APIs
 - Implement cost attribution for agent-driven SaaS usage separate from human usage
+- Maintain a live **agent inventory**: every agent in production, its business
+  owner, and the KPI it is supposed to move. "Agent sprawl" - Copilot rollouts,
+  chatbots, coding assistants, and business-unit deployments central IT never sees -
+  is the AI-era shadow-IT pattern, and most enterprises cannot produce this list
+- Record P(success), T(verify), T(do), and failure blast radius per use case at
+  stage-gate reviews (see the agent deployment inequality in `finops-for-ai.md`)
 
 ### Expand the FinOps collaboration model
 
@@ -113,7 +119,9 @@ Waiting for the monthly invoice is not a viable operating model for AI spend.
 ### Define and track unit economics
 
 Token-level cost visibility is table stakes. The more important metric is cost per
-unit of business value.
+unit of business value. **ROI is not a KPI - it is computed from KPIs and cost.**
+If success KPIs are undefined, inference-layer optimisation is premature
+optimisation.
 
 | Metric level | Example |
 |---|---|

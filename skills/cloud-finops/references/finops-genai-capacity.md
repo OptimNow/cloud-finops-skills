@@ -185,6 +185,34 @@ the required reservation size (and cost) while maintaining data privacy for sens
 
 ---
 
+## The capacity cliff and the pool-siloing anti-pattern
+
+**The cliff (rule of thumb, Pay-i-reported):** around $3M annual spend concentrated
+on a single provider + single model, shared (PAYG) infrastructure starts failing in
+production - time-outs, rate limits, shortages - and provisioned capacity becomes
+forced, not optional. Failures typically surface when a new agent or team is
+onboarded, because provisioned capacity does not degrade gracefully.
+
+**Treat the transition as a graduation:** the variable-cost line becomes a
+fixed-cost line, with the planning discipline that implies (utilisation targets,
+break-even analysis, renewal governance - see sections above). Load-test against
+the real production traffic mix *before* crossing the threshold, and negotiate
+mid-commitment model refresh terms - a newer model will ship during your term.
+
+**The pool-siloing anti-pattern.** Defensive engineering teams provision a separate
+capacity pool per use case so no agent can starve another. This destroys the
+economics of provisioning, which depend on diverse workloads sharing peaks.
+Observed result: paying for 2-3x the capacity actually needed (Pay-i-reported).
+
+- Default: shared pools mixing workloads with different traffic shapes, spillover
+  used deliberately (sized for average, spill the peaks) - not as a failover accident
+- Silo only for regulatory or hard-isolation reasons, and price the silo premium
+  explicitly so the requesting team sees it
+- Same portfolio logic as commitment management: capacity is a portfolio, reviewed
+  as one
+
+---
+
 ## Decision framework
 
 ### Step 1 - Qualify the workload

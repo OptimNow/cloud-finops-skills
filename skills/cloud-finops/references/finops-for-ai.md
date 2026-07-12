@@ -125,6 +125,7 @@ thousands of times daily can generate costs that dwarf traditional per-seat lice
 | Reranking models | Token volume for secondary ranking calls | Medium | Per-request metadata logging |
 | Observability and logging | Log ingestion volume | Medium | Tiered logging strategy |
 | SaaS API queries | Per-query charges from agent interactions | High - new billing model | Agent-level metering + SaaS cost APIs |
+| Evaluation & trace curation | LLM-as-judge calls, trace storage, corpus curation and versioning | Medium | Per-use-case metering; treat as a standing cost line, not a one-off |
 
 **Vector database marketplace attribution:**
 Managed vector databases (Pinecone, Weaviate, Qdrant) purchased through a cloud
@@ -323,6 +324,41 @@ Payback period = fixed_costs / monthly_profit (months)
 Tolerating early losses is rational if the weekly trajectory toward breakeven is positive.
 Systems showing no improvement after 8–12 weeks warrant scrutiny.
 
+#### The agent deployment inequality (go/no-go economics)
+
+The deployment inequality (David Tepper, Pay-i): an agent adds value when
+
+```
+P(success) > T(verify) / T(do)
+```
+
+where T(verify) is the human time to check the agent's work and T(do) the human time
+to do the task. Example: a 2-hour task verifiable in 6 minutes gives a threshold of
+5% - the agent only needs to succeed 1 time in 20 to be net positive. For a large
+class of enterprise work, the bar is far lower than intuition suggests.
+
+**The agency tax - when the clean math breaks.** The inequality holds only when
+failure leaves the environment unchanged (a bad draft is discarded, no harm done).
+When failure changes the environment - a wrong refund promised to a customer, a bad
+commit merged - add recovery cost:
+
+```
+Cost of failure = T(verify) + rework/recovery cost
+```
+
+In production, rework is rarely zero. Environment-changing use cases need a
+sharply higher reliability bar; assess this use case by use case before deployment.
+
+**Why expensive models can be the cheap option:** a more capable model raises
+P(success) AND typically shrinks T(verify). If a pricier model cuts verification
+from ten minutes to two, the productivity gain usually swamps the extra token
+spend. Per-token price comparison misses this entirely - evaluate at the level of
+the inequality, not the rate card.
+
+**Practice note:** use the inequality as a stage-gate artefact (see
+`finops-ai-value-management.md`): estimate P(success), T(verify), T(do), and
+whether failure is environment-changing, per use case, before funding.
+
 ### Phase 3: Optimize
 
 **Model selection** (highest impact lever):
@@ -397,6 +433,19 @@ length and routinely dominates. Optimise both sides.
   the corpus. Context selection is a cost decision, not just a quality decision.
 - **RAG retrieval precision** - broad-match retrieval stuffs marginally relevant
   fragments into every prompt; tune top-k and relevance thresholds
+
+**The multilingual token tax:**
+
+Tokenizers fragment non-English text into more tokens per unit of meaning - the
+same conversation costs materially more in some languages. For multilingual
+deployments:
+
+- Include language mix in cost-per-task baselines and forecasts; a rollout to new
+  geographies raises unit cost with zero functional change
+- Compare tokenizer efficiency across candidate models for the dominant languages
+  (it varies by model family)
+- On Vertex AI, character-based pricing can be cheaper for verbose target languages
+  (see `finops-vertexai.md`)
 
 **Format and schema (agent-to-agent traffic):**
 
@@ -553,6 +602,48 @@ Agentic systems introduce cost patterns that require a different governance mode
 static applications, agents make runtime decisions that directly affect spend - model
 selection, context retention, tool invocation frequency, and retry behaviour all create
 variable costs that no static budget can fully anticipate.
+
+### Workflow, pipeline, agent - three cost problems under one word
+
+Cost and evaluation behave differently across three system types that all get sold
+as "agents":
+
+| Type | Definition | Cost behaviour | Evaluation |
+|---|---|---|---|
+| **Workflow** | Traditional software with GenAI bolted into one or more steps | Bounded per invocation | Standard test set |
+| **Pipeline** | Predetermined steps, LLM called at one or more of them (most chatbots) | Bounded: per-call cost × known number of calls | LLM-as-judge works (fixed trajectory) |
+| **True agent** | Broad objective, tools available, decides at run time what to call, in what order, for how long | **Unbounded per task** - up to ~30x token variance on the same prompt (Pay-i-reported) | LLM-as-judge breaks: the agent constructs its own prompts, signal lives in the trajectory, not the final output |
+
+**FinOps implications:**
+
+- Budget and forecast per type. Workflows and pipelines can be unit-priced; true
+  agents must be budgeted as a **cost distribution** (P50/P90 per task), not a point
+  estimate.
+- **Procurement diligence:** most vendors selling an "agent" are selling a pipeline.
+  Often that is exactly what the client needs - but bounded-cost pipelines and
+  unbounded-cost agents deserve different contract and budget treatment. Ask which
+  one you are buying.
+- Agent failures rarely occur at the last step - they occur earlier and are masked
+  by later steps. Output-only quality gates therefore under-detect failure, which
+  understates the true cost per successful task.
+
+### Agentic cost anatomy - where the tokens actually go
+
+- **Refinement is the sink.** ~60% of an agentic task's cost sits in checking,
+  repairing, and re-verifying - not in generating the first answer (59.4%
+  review/refinement share, 53.9% average input-token share; arXiv:2601.14470,
+  analysis of 20 production agentic *coding* workflows - the mechanism generalises,
+  exact ratios vary by workload).
+- **Agentic tasks consume ~1,000x the tokens** of comparable single-turn or chat
+  interactions (arXiv:2604.22750; consistent with Anthropic's multi-agent research
+  system write-up). Long-lived context is an operating asset and a dominant cost.
+- **Multi-model by default:** ~3.5 different models per agent run on average, often
+  across providers (Pay-i-reported). Single-provider cost views structurally
+  under-count agent cost - attribution must be per task, across providers.
+- **Track cost per completed task, not per token.** Per-token price for fixed
+  capability has been falling (~6.67%/month compounding, Pay-i-reported), yet cost
+  per completed task rises in most production workloads because task ambition grows
+  faster than prices fall. Falling rate cards are not a savings forecast.
 
 **Three architectural pillars for cost-safe agents:**
 
