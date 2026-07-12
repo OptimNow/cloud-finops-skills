@@ -217,6 +217,39 @@ playbooks: [aws-gpu-instance-oversized](../playbooks/aws-gpu-instance-oversized.
 [aws-mig-candidate](../playbooks/aws-mig-candidate.md),
 [aws-gpu-for-cpu-bound-workload](../playbooks/aws-gpu-for-cpu-bound-workload.md).
 
+**Training vs serving - two different FinOps problems (Capital One framing):**
+
+Do not manage a training fleet and an inference fleet with the same metrics, levers,
+or cost models:
+
+| | Training | Inference / serving |
+|---|---|---|
+| Problem type | **Scheduling** - maximise saturation across batch jobs with predictable durations | **Sizing** - engineer for real-time variable traffic under latency SLOs |
+| Economic unit | GPU-hour utilised | Tokens: tokens/sec, **cost per million tokens**, input:output ratio |
+| Primary signal | GPU utilisation (find idle pockets by hour/day) + DCGM profiling | Token throughput vs latency; GPU-util is misleading (a "20% utilised" GPU may be memory-bound and saturated) |
+| Levers | Job packing, scheduling windows, capacity sharing | Instance selection, batching, quantisation, model size, autoscaling |
+| Latency metrics | Not applicable | TTFT (user experience), time per output token, end-to-end - tolerance is use-case specific (chatbot vs batch classification) |
+
+CloudWatch now exposes TTFT and estimated token consumption metrics for Bedrock
+workloads - token-economics tracking no longer requires custom instrumentation for
+managed inference.
+
+**Inference instance selection** balances three factors, and they interact: model
+(architecture, parameter count, quantisation), memory footprint (single vs multi-GPU),
+and traffic (peak/average, SLO, batch size). Counter-intuitive outcomes are normal -
+a larger model can be cheaper if it halves the number of calls; a quantised smaller
+model may meet the SLO on far cheaper hardware. Benchmark with FMBench before
+committing; SageMaker real-time inference (auto-scaling, multi-model endpoints,
+inference components) is the managed path.
+
+**ODCR sharing across accounts:**
+
+On-Demand Capacity Reservations for GPU instances can be shared across accounts via
+AWS RAM. Pattern: instead of team A holding idle reserved GPU capacity while team B
+is starved, treat ODCRs as a portfolio and move capacity to demand. Same governance
+logic as commitment portfolio management - utilisation review cadence, plus internal
+allocation rules for who draws on shared capacity when.
+
 **Observability cost feedback loop:**
 Token-level logging for every AI request generates large log volumes. Cloud observability
 platforms charge by the GB for ingestion and retention. A production AI system with full
@@ -339,6 +372,52 @@ The following inference parameters directly affect output length and therefore c
 - `temperature` - higher values produce longer, more varied outputs
 - `top_p` / `top_k` - affect output distribution and length
 - `max_tokens` - the single most important cost guardrail; always set it
+
+#### Token engineering - the input/output optimisation menu
+
+Per-token, input is roughly 4-5x cheaper than output. That price signal misleads:
+**in multi-turn conversations and agent loops, the entire history is re-billed as
+input on every turn.** Input token spend compounds quadratically with conversation
+length and routinely dominates. Optimise both sides.
+
+**Input side - before the request:**
+
+| Lever | Mechanism | Impact |
+|---|---|---|
+| Lexical pre-filtering | Strip filler ("please", greetings, niceties) via rules before the call | Small per-call, large at fleet scale |
+| Prompt compression | Automated compression (e.g. LLMLingua) removes low-information tokens | Workload-dependent |
+| Small-model preprocessing | Cheap model (Haiku-class) condenses input before the expensive model sees it | Pays when big-model rates dominate |
+
+**Input side - during the conversation:**
+
+- **Rolling context window** - keep only the last N turns (cheap, loses long context)
+- **Selective history pruning** - drop niceties, resolved clarifications, dead ends
+- **Summarisation checkpoints** - compress history into a summary near context limits
+- **Minimum viable context (MVC)** - one file, not the repository; one document, not
+  the corpus. Context selection is a cost decision, not just a quality decision.
+- **RAG retrieval precision** - broad-match retrieval stuffs marginally relevant
+  fragments into every prompt; tune top-k and relevance thresholds
+
+**Format and schema (agent-to-agent traffic):**
+
+- Minifying JSON (strip whitespace/newlines) between agents: 30-50% token reduction
+  (AWS-reported) with zero information loss
+- CSV instead of JSON where structure allows: ~30-40% fewer tokens (no repeated keys)
+- Constrain inter-agent outputs to the minimum schema (a number, a label) - verbose
+  prose between agents is pure waste and degrades downstream parsing
+
+**Output side:**
+
+- `max_tokens` remains the blunt guardrail (see "Model parameters" above)
+- **System-prompt output constraints** are the better lever: instructing the model to
+  answer only what is asked, in a fixed format. AWS session demo (Nova): same
+  question, output dropped 400 → 90 tokens, latency 6s → 1.3s, ~75% cheaper per call.
+- Few-shot examples anchor output format and length
+- **Reasoning/chain-of-thought only where justified** (compliance, high-stakes
+  accuracy) - reasoning tokens are output tokens; disable or pick non-reasoning
+  models for routine tasks
+- **Task decomposition** - route sub-tasks to smaller models; reserve the large model
+  for synthesis (this is the supervisor/worker agentic pattern priced correctly)
 
 ### Phase 4: Govern
 

@@ -183,6 +183,14 @@ propagates tags applied to that principal into the Cost and Usage Report and Cos
 - The feature gives visibility, not chargeback automation - downstream showback or
   chargeback still needs to be built on top of the CUR
 
+**Coverage caveat:** some Bedrock features do not execute under the calling IAM role.
+**Guardrails** usage, notably, appears in CUR without the `line_item_iam_principal`
+value - only resource tags carry the attribution. IAM Principal Cost Allocation
+therefore does not eliminate the tagging requirement: teams still need tag discipline
+for guardrails and similar non-principal line items. Also note that CUR 2.0 exports
+can now be edited in place to add the IAM principal column - no need to recreate the
+export.
+
 **When to use it vs. account separation:**
 
 | Scenario | Preferred approach |
@@ -272,6 +280,33 @@ Key metrics to monitor for cost and performance:
 | `InvocationsThrottled` | Signals capacity exhaustion (on-demand or provisioned) |
 | `ProvisionedModelThroughputUtilization` | Utilization of provisioned capacity (target >80%) |
 
+### Bedrock model invocation logging - the missing FinOps data source
+
+By default, Bedrock emits only high-level aggregates to CloudWatch (token counts and
+latency per model). **Model invocation logging** is off by default, enabled per account
+and per region, and pushes full request-level records - prompts, completions, input and
+output token counts, and caller identity - to S3 and/or CloudWatch Logs.
+
+Without it, several optimisation decisions are guesswork. With it, the logs answer:
+
+| Question | Optimisation decision it unlocks |
+|---|---|
+| Are the same prompts (or prefixes) recurring? | Prompt caching candidacy - quantify expected hit rate before enabling |
+| Which roles/services call which models, at what avg token counts? | Model right-sizing per workload, chargeback sanity checks |
+| Is prompt routing actually sending traffic to the cheaper model? | Verify routing policies deliver the promised mix |
+| What is the real input:output token ratio per application? | Capacity and commitment sizing (ratios drive provisioned throughput maths) |
+
+**Operational notes:**
+
+- A default **automatic CloudWatch dashboard for Bedrock** exists in every account
+  (Dashboards > Automatic dashboards > Bedrock): per-model invocations, token counts,
+  latency. Zero setup - useful as the first artefact to show a client.
+- CloudWatch Logs Insights includes a **natural-language query generator** - practitioners
+  can query invocation logs (e.g. "prompts with total input/output tokens") without
+  writing Logs Insights syntax.
+- Full request/response logging at scale has its own ingestion cost. Apply the tiered
+  logging strategy from `finops-for-ai.md`: metadata always, full content sampled.
+
 ---
 
 ## Cost optimisation patterns
@@ -282,6 +317,51 @@ The highest-impact optimisation. Before committing to a model tier:
 - Define a quality benchmark for your specific task (not a generic leaderboard score)
 - Test Haiku, Sonnet, and Opus (or equivalent tiers for other publishers) against that benchmark
 - Use the lowest-cost model that meets your quality threshold
+
+### Model evaluation tooling - make selection an evidence decision
+
+Two AWS tools operationalise the benchmarking step behind model right-sizing:
+
+| Tool | What it does | When to use |
+|---|---|---|
+| **Amazon Bedrock Evaluations** | Built-in; evaluates multiple models against your prompts/data; supports LLM-as-judge scoring | First pass, no tooling investment |
+| **FMBench** (open source, AWS) | Benchmarks cost AND performance across Bedrock, SageMaker, EC2; per-instance-type comparisons, charts | Deeper analysis; also serves GPU serving instance selection |
+
+Evaluate on three axes: **modality** (does the workload need vision/audio, or is a
+text-only model sufficient and cheaper?), **domain strengths** (code, finance), and
+**efficacy on your own data** - not leaderboard scores.
+
+### Intelligent Prompt Routing
+
+Native Bedrock feature: routes each request within one model family (e.g. between
+Haiku and Sonnet) based on predicted response quality at lowest cost. AWS-reported
+savings up to 30% versus sending everything to the larger model, with internal tests
+reaching higher on some workloads. Complements - does not replace - explicit tiered
+routing logic. For cross-family or cross-provider routing, use a gateway
+(LiteLLM, Portkey, OpenRouter - see `finops-ai-self-hosted-vs-managed.md`).
+
+Verification step: use invocation logging (see "Cost visibility and allocation") to
+confirm the realised routing mix and savings - routers are probabilistic, not
+guaranteed.
+
+### Model distillation
+
+Train a small "student" model on outputs of a large "teacher" model for a specific
+task. AWS-reported results for Bedrock Model Distillation: distilled models up to
+500% faster and up to 75% less expensive than the teacher, with <2% accuracy loss on
+use cases like RAG. FinOps positioning: distillation converts a recurring per-token
+premium into a one-off training cost - a candidate when a task is narrow, stable, and
+high-volume. Contrast with fine-tuning (static-knowledge injection) and RAG
+(fresh-data injection): distillation targets capability transfer at lower unit cost.
+
+### Related patterns: MoE and plan/execute model splitting
+
+- **Mixture-of-experts models** (DeepSeek, Qwen) activate sub-models per query -
+  often cheaper and faster per token, and viable on smaller hardware.
+- **Plan/execute splitting**: e.g. Claude Code "Opus Plan" mode uses Opus to plan and
+  Sonnet to execute; AWS-reported ~10-15% cheaper than Opus-only. The general pattern
+  (expensive model for decomposition, cheap model for execution) applies to any
+  agentic architecture (see task decomposition in `finops-for-ai.md`).
 
 ### Prompt optimisation
 
@@ -355,6 +435,17 @@ Candidates: document enrichment, bulk classification, evaluation pipelines, repo
 - [ ] Review provisioned throughput utilization monthly
 - [ ] Establish a model review cadence - AWS Bedrock model catalog changes frequently
 - [ ] Document which workloads use provisioned vs on-demand capacity and why
+- [ ] SCPs / IAM policies enforcing a **model allowlist** (deny unapproved Bedrock
+      models) and denying unapproved GPU instance families - with a documented,
+      fast approval path communicated to developers
+- [ ] **Cost-safe IaC defaults**: Terraform modules / blueprints default to a small
+      model, prompt caching enabled, low temperature, `max_tokens` set. Developers
+      must actively opt into expensive configurations (the gp3-as-default pattern
+      applied to GenAI)
+- [ ] Bedrock invocation logging enabled (S3/CloudWatch) with tiered retention
+- [ ] Post-optimisation observability: after each change (model swap, routing,
+      caching), verify impact in invocation logs and token metrics - optimisations
+      regress silently
 
 ---
 
