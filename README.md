@@ -319,7 +319,7 @@ cloud-finops-skills/
     │   ├── finops-onboarding-workloads.md      ← Migration-time cost hygiene + M&A integration
     │   ├── finops-kubernetes.md                ← Kubernetes cross-cluster discipline (EKS/GKE/AKS)
     │   └── finops-waste-detection-playbooks.md ← Seven-category waste taxonomy + WasteLine
-    └── playbooks/                              ← 23 RAG-friendly named-pattern runbooks (~2-4 KB each)
+    └── playbooks/                              ← RAG-friendly named-pattern runbooks (~2-4 KB each)
 ```
 
 The `SKILL.md` file is the entry point for Claude Code and generic agents. `POWER.md` is

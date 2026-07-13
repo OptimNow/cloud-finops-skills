@@ -617,8 +617,9 @@ Good test patterns:
 - [ ] Routing table updated in both SKILL.md and POWER.md
 - [ ] README directory listing and "What this skill covers" section updated
 - [ ] CLAUDE.md "Repository structure" directory listing updated
-- [ ] AGENTS.md and llms.txt updated to reflect the new reference (see "Lessons
-      learned" section for the documentation-drift correction)
+- [ ] AGENTS.md and llms.txt updated to reflect the new reference (the llms.txt
+      "Key files" list is CI-gated by `scripts/check-llms-txt.sh` - a missing or
+      stale entry fails the `CI` workflow, so this can't drift silently)
 - [ ] install.sh per-tool routing updated: ChatGPT inline routing table, Gemini
       grouped knowledge, and Cursor description must mention the new domain
 - [ ] File ends with the OptimNow / CC BY-SA footer. References use
