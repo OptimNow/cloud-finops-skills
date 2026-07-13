@@ -200,6 +200,16 @@ with human-in-the-loop confirmation is in active testing. Fully autonomous tag r
 (without per-operation confirmation) is intentionally not implemented - governance requires
 human approval for write operations.
 
+**Azure-native counterpart:**
+As of July 2026, Microsoft's **Azure Resource Manager MCP Server** (public preview)
+supports the same pattern natively on Azure: agents query tag compliance tenant-wide via
+Azure Resource Graph and remediate through auditable ARM template deployments, all in the
+signed-in user's identity (Reader + Resource Graph Reader for auditing; Contributor only
+where writes are needed). Microsoft's own PoC catalogue includes a "Tag Hygiene Czar"
+agent that finds resources missing required tags, generates a patch template, and deploys
+on approval - the same read-freely / write-behind-confirmation guardrail described above.
+See `finops-azure.md` ("Agentic FinOps on Azure") for the full treatment.
+
 ---
 
 ## Tagging maturity progression
