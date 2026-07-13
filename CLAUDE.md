@@ -37,7 +37,7 @@ cloud-finops-skills/
 ├── skills/cloud-finops/          <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
-│   └── references/        <- 28 reference files, all with YAML FCP frontmatter
+│   └── references/        <- reference files, all with YAML FCP frontmatter
 │       ├── optimnow-methodology.md         <- OptimNow reasoning lens, 4 pillars
 │       ├── finops-framework.md             <- FinOps Foundation framework reference
 │       ├── finops-for-ai.md                <- AI cost management discipline
@@ -66,7 +66,7 @@ cloud-finops-skills/
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
 │       └── finops-waste-detection-playbooks.md  <- Seven-category waste taxonomy + WasteLine
-├── skills/cloud-finops/playbooks/   <- 23 named-pattern runbooks (`<scope>-<pattern>.md`,
+├── skills/cloud-finops/playbooks/   <- named-pattern runbooks (`<scope>-<pattern>.md`,
 │                                ~2-3KB each, FIND/DETECT/FIX/SOURCES format) +
 │                                README.md index. RAG-friendly chunks routed from
 │                                SKILL.md / POWER.md "named waste pattern" rows
@@ -178,7 +178,7 @@ mid-sentence) before drawing any coverage comparison.
 
 The "Pipeline applier truncated 8 reference files" lesson above states that
 the LLM "ignored instructions roughly 5% of the time" on long files. **That
-framing was wrong, and the audit doc (`docs/pipeline-audit-2026-05.md`)
+framing was wrong, and the audit doc (`pipeline/pipeline-audit-2026-05.md`)
 inherited it.** The actual root cause was `pipeline/config.yaml`
 `max_tokens: 4096`. Reference files like `finops-aws.md` (2657 lines, ~12K
 output tokens) cannot be returned in full when the model is capped at 4096
@@ -207,8 +207,8 @@ guard rails were added via `_validate_content` in `_process_change`; a
 broken proposal now prints "REJECTED by guard rail" rather than a
 1000-line unified diff.
 
-See `docs/pipeline-audit-2026-05.md` "Correction (2026-05-15)" and
-`docs/pipeline-harden-plan.md` "Status update (2026-05-15)" for the full
+See `pipeline/pipeline-audit-2026-05.md` "Correction (2026-05-15)" and
+`pipeline/pipeline-harden-plan.md` "Status update (2026-05-15)" for the full
 forensic.
 
 ### Content update pipeline is a proposal engine, not an automated updater (2026-05-15)
@@ -272,7 +272,7 @@ GitHub issues, which track in-flight work.
   modes. What is missing is end-to-end validation, hardening of the rest of the
   pipeline, and a decision on public release.
 
-  **Phase 1 (Audit) landed:** [`docs/pipeline-audit-2026-05.md`](docs/pipeline-audit-2026-05.md)
+  **Phase 1 (Audit) landed:** [`pipeline/pipeline-audit-2026-05.md`](pipeline/pipeline-audit-2026-05.md)
   covers module-by-module contracts, LLM-call inventory, destructive-actions
   inventory, guard-rails verification (9/9 tests pass; full suite 43/43 green),
   implicit assumptions, gap analysis vs Phase-2 targets, recommended
@@ -541,7 +541,7 @@ Follow these five steps whenever you add a new domain:
 
 ## Reference-file frontmatter
 
-All 28 reference files carry YAML FCP frontmatter that maps the file to the FinOps Framework
+All reference files carry YAML FCP frontmatter that maps the file to the FinOps Framework
 Capability it serves. New files must follow the same convention. Minimum schema:
 
 ```yaml
@@ -627,12 +627,13 @@ Good test patterns:
       truncation mid-sentence or mid-table.
 - [ ] If adding a new playbook, follow the format in
       `skills/cloud-finops/playbooks/README.md` (frontmatter schema, FIND / DETECT /
-      FIX / SOURCES sections, OptimNow CC BY-SA footer), update the named-
+      FIX / SOURCES sections, OptimNow CC BY-SA footer), and update the named-
       pattern parenthetical in SKILL.md, POWER.md, and the ChatGPT / grouped
-      routing tables in install.sh, and bump the "23 named-pattern playbooks"
-      count in README.md, AGENTS.md, llms.txt, marketplace.json,
-      mcp_server/README.md, mcp_server/pyproject.toml description, and
-      mcp_server/src/cloud_finops_mcp/__init__.py docstring.
+      routing tables in install.sh.
+      (Exact reference/playbook counts were removed from prose across the repo in
+      2026-07 precisely so they no longer need hand-bumping - do not reintroduce
+      hardcoded "N references / N playbooks" counts; use "the reference library"
+      phrasing. `llms.txt` is the one list to keep current.)
 - [ ] Plugin version bumped in `.claude-plugin/plugin.json` (minor for user-visible feature)
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
       reference file count and topic list

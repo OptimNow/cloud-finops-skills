@@ -61,6 +61,12 @@ def _sync(label: str, src_dir: Path, dest_dir: Path, *, skip: set[str]) -> int:
     for src in sorted(src_dir.glob("*.md")):
         if src.name in skip:
             continue
+        # Skip symlinks: a malicious *.md symlink landed in the skill dir
+        # (via a bad PR) would otherwise have its target's content copied
+        # verbatim into the published wheel. We only ship real reference files.
+        if src.is_symlink():
+            print(f"[sync_references] {label}: skipping symlink {src.name}")
+            continue
         shutil.copy2(src, dest_dir / src.name)
         copied += 1
 

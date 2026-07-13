@@ -112,9 +112,9 @@ Builds two artefacts in `dist/chatgpt/`:
   response contract that go into the GPT's Instructions field. The installer warns if
   the file exceeds the limit.
 - `knowledge/*.md` - **50 files** in the default per-reference build:
-  - 27 reference files (one per domain; `optimnow-methodology.md` is **merged into
+  - the reference files (one per domain; `optimnow-methodology.md` is **merged into
     `finops-for-ai.md`**)
-  - 23 playbook files prefixed `playbook-<slug>.md` so they sort together in the
+  - the playbook files prefixed `playbook-<slug>.md` so they sort together in the
     GPT Knowledge UI
   - The instructions routing contract points named waste patterns
     (zombie NAT, snapshot sprawl, etc.) at `playbook-<slug>.md` and other queries at
@@ -229,7 +229,7 @@ entry point.
 
 The `mcp` target prints install hint + per-client config snippets. It does not run
 `pip` for you. The MCP server is a separate Python package (`cloud-finops-mcp`) that
-exposes the 28 references and 23 named-pattern playbooks as queryable tools - useful
+exposes the references and named-pattern playbooks as queryable tools - useful
 for agents that need search-style retrieval rather than full-context injection.
 
 **Install the server:**
@@ -244,14 +244,14 @@ uvx cloud-finops-mcp
 
 References (long-form provider/discipline files):
 
-- `list_references()` - 28 references with their FCP metadata
+- `list_references()` - all references with their FCP metadata
 - `get_reference(name)` - full markdown body of one reference
 - `find_references(domain?, capability?, phase?, persona?, maturity?)` - faceted query
   over the FinOps Capability/Phase frontmatter
 
 Playbooks (small named-pattern runbooks):
 
-- `list_playbooks()` - 23 playbooks with scope / service / waste-category metadata
+- `list_playbooks()` - all playbooks with scope / service / waste-category metadata
 - `get_playbook(name)` - full markdown body of one playbook
 - `find_playbooks(scope?, service?, waste_category?, confidence?)` - faceted query
 
@@ -433,7 +433,7 @@ the limit. If it does, manually trim the routing table to only the providers you
 about, or upload the trimmed routing as a knowledge file and keep instructions minimal.
 
 **ChatGPT rejects the knowledge upload (file count):** the default build produces 50
-knowledge files (27 references + 23 playbooks; methodology merged into
+knowledge files (references + playbooks; methodology merged into
 `finops-for-ai.md`). If ChatGPT enforces a lower cap, re-run with the grouped flag:
 `./install.sh --tool chatgpt --grouped`. The grouped build packs the same content into
 10 thematic files in `dist/chatgpt/` and emits a matching routing contract.

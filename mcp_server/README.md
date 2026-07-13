@@ -1,7 +1,7 @@
 # cloud-finops-mcp
 
 MCP server exposing the [OptimNow Cloud FinOps skill](https://github.com/OptimNow/cloud-finops-skills)
-(28 reference files + 23 named-pattern playbooks) as queryable tools for any
+(reference library + named-pattern playbooks) as queryable tools for any
 MCP-aware client (Claude Code, Cursor, Codex CLI, Windsurf, Aider, Cline, etc.).
 
 The skill itself ships in canonical Claude Agent-Skills format and is also installable
@@ -17,7 +17,7 @@ Six tools, all read-only, split across two surfaces.
 
 | Tool | Purpose |
 |---|---|
-| `list_references()` | List all 28 references with their FCP metadata. |
+| `list_references()` | List all references with their FCP metadata. |
 | `get_reference(name)` | Fetch the full markdown body of one reference. |
 | `find_references(domain?, capability?, phase?, persona?, maturity?)` | Faceted query over the FinOps Capability/Phase frontmatter. |
 
@@ -33,7 +33,7 @@ The reference faceted query supports any combination of:
 
 | Tool | Purpose |
 |---|---|
-| `list_playbooks()` | List all 23 named-pattern playbooks with their metadata. |
+| `list_playbooks()` | List all named-pattern playbooks with their metadata. |
 | `get_playbook(name)` | Fetch the full markdown body of one playbook. |
 | `find_playbooks(scope?, service?, waste_category?, confidence?)` | Faceted query over the playbook frontmatter. |
 
