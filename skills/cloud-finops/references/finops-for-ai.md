@@ -268,6 +268,13 @@ version); log full request and response content only for sampled traffic or erro
 | Token-level unit economics | App instrumentation + CloudWatch | App instrumentation + Azure Monitor | App instrumentation + Cloud Monitoring |
 | AI cost visibility | Bedrock inference profiles (limited) | Cost Management AI views | AI Cost Summary Agent (preview) |
 
+As of July 2026, Anthropic ships native cost governance tooling directly (announced 2 July
+2026, independent of any model release): a spend dashboard, model entitlements, threshold
+alerts, and supporting APIs. This narrows the visibility and governance gaps previously flagged
+in Anthropic's ecosystem, though it is not yet a complete solution - verify exact feature scope
+against Anthropic's official announcement before relying on specifics. See `finops-anthropic.md`
+for detail (Source: Anthropic release, 2 July 2026; Finout commentary).
+
 The common thread: native billing does not provide feature-level or user-level cost
 attribution for inference out of the box. Account and project separation handles
 team-level allocation. Application-layer instrumentation is required for feature-level
