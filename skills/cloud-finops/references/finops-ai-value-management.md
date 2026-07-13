@@ -65,6 +65,11 @@ be explicit, not assumed.
   is the AI-era shadow-IT pattern, and most enterprises cannot produce this list
 - Record P(success), T(verify), T(do), and failure blast radius per use case at
   stage-gate reviews (see the agent deployment inequality in `finops-for-ai.md`)
+- Maintain an inventory of agent payment instruments (wallets): owner, funding
+  source and budget, platform (AgentCore, Cloudflare, other), and the use case
+  each serves
+- Ingest agent payment ledgers (wallet/session level) into cost reporting
+  alongside token spend and SaaS per-query charges
 
 ### Expand the FinOps collaboration model
 
@@ -272,6 +277,8 @@ Required inputs per project:
 - [ ] Tagging schema present and validated
 - [ ] Per-query SaaS budgets established for agent workflows
 - [ ] Query rate limits configured for external API calls
+- [ ] Payment session caps, expiry, and merchant allowlists configured for any
+      agent with a payment instrument (x402/MPP)
 
 ### Escalation rules
 
