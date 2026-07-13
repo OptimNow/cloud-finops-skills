@@ -142,7 +142,7 @@ skill into the prompt.
 Agent prompt: *"Pull the AWS reference."*
 
 Calls `get_reference(name="finops-aws")` and gets back the full markdown body
-(~300 lines) instead of the entire 28-file knowledge base.
+(~300 lines) instead of the entire knowledge base.
 
 Agent prompt: *"Show me the obvious-confidence AWS waste playbooks."*
 
