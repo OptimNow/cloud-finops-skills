@@ -211,22 +211,24 @@ Source: https://docs.anthropic.com/en/docs/about-claude/pricing
 
 As of July 2026, Anthropic released a set of native cost governance features - without
 an accompanying model release - that directly address cost visibility and governance
-gaps previously flagged in this file:
+gaps previously flagged in this file. **Scope note:** the release targets **Claude
+Enterprise** plan admins (covering Claude chat, Cowork, and Claude Code seat usage);
+it is not a billing surface for raw API platform spend:
 
 | Feature | What it does |
 |---|---|
-| Spend dashboard | Native view of organisation spend across models and workloads |
-| Model entitlements | Admin control over which models (and tiers) teams may access |
-| Threshold alerts | Configurable spend thresholds that trigger notifications |
-| Supporting APIs | Programmatic access to spend and entitlement data for FinOps tooling |
+| Spend dashboard | Admin analytics showing usage and cost by group and by user, with output (artifacts, files edited, skills/connectors used) shown next to cost |
+| Model entitlements | Admin control over which models are available per role or org-wide, and which model new conversations default to (chat, Cowork, Claude Code) |
+| Threshold alerts | Admins notified at 75% and 90% of an org-level spend limit; users notified in-app at 75% and 95%, with in-product limit-increase requests |
+| Admin API | Programmatic spend controls - automate limit-increase reviews, flag members near their spend limit, detect rapidly changing usage |
 
 **Assessment (as of July 2026):** this is a meaningful step toward native cost
 governance, but Finout's analysis suggests it is not yet a complete solution -
-notably around granular allocation and cross-workload attribution. Verify exact
-feature scope against Anthropic's official announcement before quoting specifics
-in a customer engagement.
+notably around granular allocation and cross-workload attribution, and it does
+not cover raw API platform spend.
 
-Source: [Anthropic keeps signaling where AI cost governance needs to go](https://www.finout.io/blog/anthropic-keeps-signaling-where-ai-cost-governance-needs-to-go.-its-not-all-the-way-there-yet) (Finout), plus Anthropic's own release.
+Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend) (primary),
+[Anthropic keeps signaling where AI cost governance needs to go](https://www.finout.io/blog/anthropic-keeps-signaling-where-ai-cost-governance-needs-to-go.-its-not-all-the-way-there-yet) (Finout commentary).
 
 ### Managed Agents governance
 

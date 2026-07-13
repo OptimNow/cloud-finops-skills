@@ -296,7 +296,8 @@ usage" reflex - is the single most common BigQuery commitment failure.
 #### Principal-based reservation assignments - native slot attribution
 
 As of July 2026, BigQuery reservation assignments support an optional
-**`principal` property**, allowing queries to be routed to specific reservations
+**`principal` property** (in Preview per Google's documentation), allowing queries
+to be routed to specific reservations
 based on the calling user, service account, or third-party identity. This gives
 FinOps teams a native mechanism to attribute BigQuery slot consumption to specific
 principals/teams, directly addressing the shared-reservation attribution problem
@@ -319,7 +320,8 @@ baseline per team/service account. Combine with the waste-factor lens above to
 identify which principal is over-consuming committed slots, and to enforce
 per-principal budget guardrails inside a single shared reservation.
 
-Source: https://finopsweekly.com/news/gcp-updates-2026-07-02/
+Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments (primary),
+https://finopsweekly.com/news/gcp-updates-2026-07-02/
 
 **Frame for clients**: BigQuery commitments trade flexibility for
 predictability, and often performance for predictability. The right
