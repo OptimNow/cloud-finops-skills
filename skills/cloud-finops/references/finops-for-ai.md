@@ -125,6 +125,7 @@ thousands of times daily can generate costs that dwarf traditional per-seat lice
 | Reranking models | Token volume for secondary ranking calls | Medium | Per-request metadata logging |
 | Observability and logging | Log ingestion volume | Medium | Tiered logging strategy |
 | SaaS API queries | Per-query charges from agent interactions | High - new billing model | Agent-level metering + SaaS cost APIs |
+| Evaluation & trace curation | LLM-as-judge calls, trace storage, corpus curation and versioning | Medium | Per-use-case metering; treat as a standing cost line, not a one-off |
 
 **Vector database marketplace attribution:**
 Managed vector databases (Pinecone, Weaviate, Qdrant) purchased through a cloud
@@ -217,6 +218,39 @@ playbooks: [aws-gpu-instance-oversized](../playbooks/aws-gpu-instance-oversized.
 [aws-mig-candidate](../playbooks/aws-mig-candidate.md),
 [aws-gpu-for-cpu-bound-workload](../playbooks/aws-gpu-for-cpu-bound-workload.md).
 
+**Training vs serving - two different FinOps problems (Capital One framing):**
+
+Do not manage a training fleet and an inference fleet with the same metrics, levers,
+or cost models:
+
+| | Training | Inference / serving |
+|---|---|---|
+| Problem type | **Scheduling** - maximise saturation across batch jobs with predictable durations | **Sizing** - engineer for real-time variable traffic under latency SLOs |
+| Economic unit | GPU-hour utilised | Tokens: tokens/sec, **cost per million tokens**, input:output ratio |
+| Primary signal | GPU utilisation (find idle pockets by hour/day) + DCGM profiling | Token throughput vs latency; GPU-util is misleading (a "20% utilised" GPU may be memory-bound and saturated) |
+| Levers | Job packing, scheduling windows, capacity sharing | Instance selection, batching, quantisation, model size, autoscaling |
+| Latency metrics | Not applicable | TTFT (user experience), time per output token, end-to-end - tolerance is use-case specific (chatbot vs batch classification) |
+
+CloudWatch now exposes TTFT and estimated token consumption metrics for Bedrock
+workloads - token-economics tracking no longer requires custom instrumentation for
+managed inference.
+
+**Inference instance selection** balances three factors, and they interact: model
+(architecture, parameter count, quantisation), memory footprint (single vs multi-GPU),
+and traffic (peak/average, SLO, batch size). Counter-intuitive outcomes are normal -
+a larger model can be cheaper if it halves the number of calls; a quantised smaller
+model may meet the SLO on far cheaper hardware. Benchmark with FMBench before
+committing; SageMaker real-time inference (auto-scaling, multi-model endpoints,
+inference components) is the managed path.
+
+**ODCR sharing across accounts:**
+
+On-Demand Capacity Reservations for GPU instances can be shared across accounts via
+AWS RAM. Pattern: instead of team A holding idle reserved GPU capacity while team B
+is starved, treat ODCRs as a portfolio and move capacity to demand. Same governance
+logic as commitment portfolio management - utilisation review cadence, plus internal
+allocation rules for who draws on shared capacity when.
+
 **Observability cost feedback loop:**
 Token-level logging for every AI request generates large log volumes. Cloud observability
 platforms charge by the GB for ingestion and retention. A production AI system with full
@@ -290,6 +324,41 @@ Payback period = fixed_costs / monthly_profit (months)
 Tolerating early losses is rational if the weekly trajectory toward breakeven is positive.
 Systems showing no improvement after 8–12 weeks warrant scrutiny.
 
+#### The agent deployment inequality (go/no-go economics)
+
+The deployment inequality (David Tepper, Pay-i): an agent adds value when
+
+```
+P(success) > T(verify) / T(do)
+```
+
+where T(verify) is the human time to check the agent's work and T(do) the human time
+to do the task. Example: a 2-hour task verifiable in 6 minutes gives a threshold of
+5% - the agent only needs to succeed 1 time in 20 to be net positive. For a large
+class of enterprise work, the bar is far lower than intuition suggests.
+
+**The agency tax - when the clean math breaks.** The inequality holds only when
+failure leaves the environment unchanged (a bad draft is discarded, no harm done).
+When failure changes the environment - a wrong refund promised to a customer, a bad
+commit merged - add recovery cost:
+
+```
+Cost of failure = T(verify) + rework/recovery cost
+```
+
+In production, rework is rarely zero. Environment-changing use cases need a
+sharply higher reliability bar; assess this use case by use case before deployment.
+
+**Why expensive models can be the cheap option:** a more capable model raises
+P(success) AND typically shrinks T(verify). If a pricier model cuts verification
+from ten minutes to two, the productivity gain usually swamps the extra token
+spend. Per-token price comparison misses this entirely - evaluate at the level of
+the inequality, not the rate card.
+
+**Practice note:** use the inequality as a stage-gate artefact (see
+`finops-ai-value-management.md`): estimate P(success), T(verify), T(do), and
+whether failure is environment-changing, per use case, before funding.
+
 ### Phase 3: Optimize
 
 **Model selection** (highest impact lever):
@@ -339,6 +408,65 @@ The following inference parameters directly affect output length and therefore c
 - `temperature` - higher values produce longer, more varied outputs
 - `top_p` / `top_k` - affect output distribution and length
 - `max_tokens` - the single most important cost guardrail; always set it
+
+#### Token engineering - the input/output optimisation menu
+
+Per-token, input is roughly 4-5x cheaper than output. That price signal misleads:
+**in multi-turn conversations and agent loops, the entire history is re-billed as
+input on every turn.** Input token spend compounds quadratically with conversation
+length and routinely dominates. Optimise both sides.
+
+**Input side - before the request:**
+
+| Lever | Mechanism | Impact |
+|---|---|---|
+| Lexical pre-filtering | Strip filler ("please", greetings, niceties) via rules before the call | Small per-call, large at fleet scale |
+| Prompt compression | Automated compression (e.g. LLMLingua) removes low-information tokens | Workload-dependent |
+| Small-model preprocessing | Cheap model (Haiku-class) condenses input before the expensive model sees it | Pays when big-model rates dominate |
+
+**Input side - during the conversation:**
+
+- **Rolling context window** - keep only the last N turns (cheap, loses long context)
+- **Selective history pruning** - drop niceties, resolved clarifications, dead ends
+- **Summarisation checkpoints** - compress history into a summary near context limits
+- **Minimum viable context (MVC)** - one file, not the repository; one document, not
+  the corpus. Context selection is a cost decision, not just a quality decision.
+- **RAG retrieval precision** - broad-match retrieval stuffs marginally relevant
+  fragments into every prompt; tune top-k and relevance thresholds
+
+**The multilingual token tax:**
+
+Tokenizers fragment non-English text into more tokens per unit of meaning - the
+same conversation costs materially more in some languages. For multilingual
+deployments:
+
+- Include language mix in cost-per-task baselines and forecasts; a rollout to new
+  geographies raises unit cost with zero functional change
+- Compare tokenizer efficiency across candidate models for the dominant languages
+  (it varies by model family)
+- On Vertex AI, character-based pricing can be cheaper for verbose target languages
+  (see `finops-vertexai.md`)
+
+**Format and schema (agent-to-agent traffic):**
+
+- Minifying JSON (strip whitespace/newlines) between agents: 30-50% token reduction
+  (AWS-reported) with zero information loss
+- CSV instead of JSON where structure allows: ~30-40% fewer tokens (no repeated keys)
+- Constrain inter-agent outputs to the minimum schema (a number, a label) - verbose
+  prose between agents is pure waste and degrades downstream parsing
+
+**Output side:**
+
+- `max_tokens` remains the blunt guardrail (see "Model parameters" above)
+- **System-prompt output constraints** are the better lever: instructing the model to
+  answer only what is asked, in a fixed format. AWS session demo (Nova): same
+  question, output dropped 400 → 90 tokens, latency 6s → 1.3s, ~75% cheaper per call.
+- Few-shot examples anchor output format and length
+- **Reasoning/chain-of-thought only where justified** (compliance, high-stakes
+  accuracy) - reasoning tokens are output tokens; disable or pick non-reasoning
+  models for routine tasks
+- **Task decomposition** - route sub-tasks to smaller models; reserve the large model
+  for synthesis (this is the supervisor/worker agentic pattern priced correctly)
 
 ### Phase 4: Govern
 
@@ -475,6 +603,48 @@ static applications, agents make runtime decisions that directly affect spend - 
 selection, context retention, tool invocation frequency, and retry behaviour all create
 variable costs that no static budget can fully anticipate.
 
+### Workflow, pipeline, agent - three cost problems under one word
+
+Cost and evaluation behave differently across three system types that all get sold
+as "agents":
+
+| Type | Definition | Cost behaviour | Evaluation |
+|---|---|---|---|
+| **Workflow** | Traditional software with GenAI bolted into one or more steps | Bounded per invocation | Standard test set |
+| **Pipeline** | Predetermined steps, LLM called at one or more of them (most chatbots) | Bounded: per-call cost × known number of calls | LLM-as-judge works (fixed trajectory) |
+| **True agent** | Broad objective, tools available, decides at run time what to call, in what order, for how long | **Unbounded per task** - up to ~30x token variance on the same prompt (Pay-i-reported) | LLM-as-judge breaks: the agent constructs its own prompts, signal lives in the trajectory, not the final output |
+
+**FinOps implications:**
+
+- Budget and forecast per type. Workflows and pipelines can be unit-priced; true
+  agents must be budgeted as a **cost distribution** (P50/P90 per task), not a point
+  estimate.
+- **Procurement diligence:** most vendors selling an "agent" are selling a pipeline.
+  Often that is exactly what the client needs - but bounded-cost pipelines and
+  unbounded-cost agents deserve different contract and budget treatment. Ask which
+  one you are buying.
+- Agent failures rarely occur at the last step - they occur earlier and are masked
+  by later steps. Output-only quality gates therefore under-detect failure, which
+  understates the true cost per successful task.
+
+### Agentic cost anatomy - where the tokens actually go
+
+- **Refinement is the sink.** ~60% of an agentic task's cost sits in checking,
+  repairing, and re-verifying - not in generating the first answer (59.4%
+  review/refinement share, 53.9% average input-token share; arXiv:2601.14470,
+  analysis of 20 production agentic *coding* workflows - the mechanism generalises,
+  exact ratios vary by workload).
+- **Agentic tasks consume ~1,000x the tokens** of comparable single-turn or chat
+  interactions (arXiv:2604.22750; consistent with Anthropic's multi-agent research
+  system write-up). Long-lived context is an operating asset and a dominant cost.
+- **Multi-model by default:** ~3.5 different models per agent run on average, often
+  across providers (Pay-i-reported). Single-provider cost views structurally
+  under-count agent cost - attribution must be per task, across providers.
+- **Track cost per completed task, not per token.** Per-token price for fixed
+  capability has been falling (~6.67%/month compounding, Pay-i-reported), yet cost
+  per completed task rises in most production workloads because task ambition grows
+  faster than prices fall. Falling rate cards are not a savings forecast.
+
 **Three architectural pillars for cost-safe agents:**
 
 **1. Data connectivity with cost awareness**
@@ -498,6 +668,60 @@ resources and drafts a Cloud Custodian policy or OpenOps rule for review is prod
 An agent that stops instances autonomously is not - regardless of how sophisticated its
 reasoning is. Governance, not technology capability, is the real constraint on autonomous
 FinOps agents.
+
+### Agents as cost actors: agent-initiated payments (x402 / MPP)
+
+Agent spend historically reached the organisation through two mediated channels:
+token consumption (cloud/model bill) and SaaS or API contracts signed by humans.
+A third, unmediated channel is now live: agents paying for resources directly -
+per request, from a funded wallet, with no account, API key, or procurement step.
+
+**The mechanics.** Both protocols are built on HTTP `402 Payment Required`: the
+agent requests a resource, receives a 402 challenge (amount, recipient, network),
+pays - typically in USDC stablecoin - and retries with a payment proof; the seller
+verifies, settles, and returns the resource with a receipt.
+
+| Layer | What exists (as of July 2026) |
+|---|---|
+| Protocol | **x402** - open standard, created by Coinbase, now a Linux Foundation project (x402 Foundation; Coinbase and Cloudflare founding members; AWS, Stripe, Vercel among members). **MPP** (Machine Payments Protocol) - Stripe + Tempo Labs, IETF standards track, adds card rails and streaming payment sessions, backwards-compatible with x402 |
+| Platform rails | **Amazon Bedrock AgentCore Payments** - managed wallets via Coinbase CDP or Stripe (Privy); every payment runs in a *payment session* with a spending cap (`maxSpendAmount`) and expiry; wallets start empty and the end user explicitly grants the agent transaction permission; AgentCore Gateway reaches paid MCP servers/APIs incl. the Coinbase x402 Bazaar catalogue. **Cloudflare Agents SDK** - agents that pay (optional human-in-the-loop confirmation per payment) and services that charge (`paidTool`, one-line middleware) |
+| Control plane | **Ampersend** (Edge & Node, on x402 + Google A2A) - team wallets, funding automation, approvals, spend observability. Early entrant; expect a category |
+
+Scale signal: x402.org self-reported counters showed ~75M transactions / ~$24M
+volume / ~22k sellers over 30 days in July 2026 - an average of ~$0.32 per
+transaction. Micro-transactions at high frequency, not few large charges.
+
+**FinOps implications:**
+
+- **Attribution gap.** This spend settles on wallet ledgers - outside the cloud
+  bill and outside SaaS invoices. It is also *prepaid* (fund wallet, draw down),
+  inverting the invoice-in-arrears assumption of most cost reporting. Ingest
+  wallet/session ledgers as a first-class cost source next to token spend, and
+  tag payment sessions to use cases.
+- **Pre-spend controls are native on day one** - unusual for a new cost category.
+  Session caps, expiry, explicit permission grants, merchant allowlists,
+  human-in-the-loop confirmation. Make them IaC defaults so an uncapped payment
+  session is an active choice, not an accident.
+- **New shadow-spend vector.** x402 removes exactly the friction (accounts, KYC,
+  procurement) that used to force spend through central visibility. A wallet
+  funded on an engineer's card is invisible to billing exports. Define who may
+  create and fund payment instruments, from which budget. Wallets hold stablecoin
+  balances - custody and accounting questions belong to treasury/compliance, not
+  FinOps alone.
+- **Unit economics.** Cost per completed task must include direct purchases
+  (paid MCP tools, specialist APIs, licensed content, agent-to-agent payments)
+  alongside tokens and harness. Extends the per-query SaaS dimension described
+  above: same mechanism, but contract-free and invoice-free.
+- **Anomaly profile changes.** Many sub-dollar transactions behave differently
+  from the few large charges existing thresholds expect; alert on session
+  patterns and velocity, not only on amounts.
+- **Seller side.** The same rails let an organisation charge agents for its own
+  APIs, data, or MCP tools per call, without onboarding friction - a
+  monetisation option to evaluate, not only a cost risk.
+
+Sources: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/payments-how-it-works.html,
+https://developers.cloudflare.com/agents/tools/payments/, https://x402.org/,
+https://ampersend.ai/
 
 **Key insight:** Agents will be advisory long before they are autonomous. Organisations
 making progress treat agent development as iterative learning, not project delivery.
