@@ -140,6 +140,13 @@ Unlike token-based API calls, Managed Agents introduce new cost drivers:
 > (Fast mode is a premium-priced channel, governance matters) is reliable; specific
 > multipliers and behaviours need verification against Anthropic docs before being
 > quoted as policy in customer engagements.
+>
+> **Update (as of July 2026):** Anthropic's native cost governance release (model
+> entitlements, spend dashboard, threshold alerts) provides primary-source
+> confirmation that Anthropic now treats admin-level spend controls as first-class.
+> This partially validates the governance posture described here, though the specific
+> Fast mode multipliers and retroactive-repricing behaviour still require verification
+> against Anthropic's primary pricing docs.
 
 ### What Fast mode is
 
@@ -200,6 +207,29 @@ Source: https://docs.anthropic.com/en/docs/about-claude/pricing
 | Batch jobs or background agents | Not allowed |
 | Production usage | Require approval or alerting |
 
+### Native cost governance tooling (July 2026)
+
+As of July 2026, Anthropic released a set of native cost governance features - without
+an accompanying model release - that directly address cost visibility and governance
+gaps previously flagged in this file. **Scope note:** the release targets **Claude
+Enterprise** plan admins (covering Claude chat, Cowork, and Claude Code seat usage);
+it is not a billing surface for raw API platform spend:
+
+| Feature | What it does |
+|---|---|
+| Spend dashboard | Admin analytics showing usage and cost by group and by user, with output (artifacts, files edited, skills/connectors used) shown next to cost |
+| Model entitlements | Admin control over which models are available per role or org-wide, and which model new conversations default to (chat, Cowork, Claude Code) |
+| Threshold alerts | Admins notified at 75% and 90% of an org-level spend limit; users notified in-app at 75% and 95%, with in-product limit-increase requests |
+| Admin API | Programmatic spend controls - automate limit-increase reviews, flag members near their spend limit, detect rapidly changing usage |
+
+**Assessment (as of July 2026):** this is a meaningful step toward native cost
+governance, but Finout's analysis suggests it is not yet a complete solution -
+notably around granular allocation and cross-workload attribution, and it does
+not cover raw API platform spend.
+
+Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend) (primary),
+[Anthropic keeps signaling where AI cost governance needs to go](https://www.finout.io/blog/anthropic-keeps-signaling-where-ai-cost-governance-needs-to-go.-its-not-all-the-way-there-yet) (Finout commentary).
+
 ### Managed Agents governance
 
 | Control | Recommendation |
@@ -227,6 +257,10 @@ Source: https://docs.anthropic.com/en/docs/about-claude/pricing
 - [ ] Detect Fast mode usage in CI/CD or batch jobs (anomaly detection)
 - [ ] Track Managed Agent runtime hours and resource utilisation
 - [ ] Monitor agent session persistence costs
+- [ ] Use Anthropic's native spend dashboard for organisation-level spend visibility (as of July 2026)
+- [ ] Configure native threshold alerts for spend limits per team or workload
+- [ ] Apply model entitlements to restrict access to premium models/tiers where appropriate
+- [ ] Integrate Anthropic's spend and entitlement APIs into existing FinOps tooling
 
 ---
 

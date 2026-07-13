@@ -174,6 +174,18 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
    guaranteed capacity in a specific AZ (e.g. GPU instances, high-demand regions),
    Standard RIs with capacity reservation are the only option.
 
+   **EC2 Auto Scaling reservations-first placement (as of July 2026).** EC2 Auto
+   Scaling now defaults to a reservations-then-balanced strategy: it prioritises
+   consuming existing Capacity Reservations (ODCRs, Capacity Blocks, and
+   Interruptible Capacity Reservations) before balancing new capacity across
+   Availability Zones. This improves reservation utilisation automatically and
+   reduces the risk of idle reserved capacity when Auto Scaling groups scale up
+   and down. For teams managing Capacity Reservations and ODCR sharing across
+   accounts, this is a relevant governance and optimisation detail: reserved
+   capacity is now more likely to be consumed by ASG-launched instances without
+   manual placement configuration, which affects how you track capacity
+   utilisation. Source: https://finopsweekly.com/news/aws-updates-2026-07-02/
+
 4. **Convertible RIs provide mid-term liquidity.** EC2 Instance Savings Plans offer
    similar flexibility at equal or better discount depth, but they are locked for
    the full term - no modifications allowed once purchased. Convertible RIs can be
@@ -295,6 +307,9 @@ START: What compute service runs the workload?
     │   - Spot nodes work well for stateless pods with proper
     │     disruption budgets and node affinity rules
     │   - For cost attribution: see Kubernetes cost management below
+    │   - EKS Auto Mode GPU fee reduction (see note below) makes
+    │     Auto Mode more cost-competitive vs self-managed node groups
+    │     for GPU workloads
     │
     └── EKS on Fargate → use Fargate decision tree above
 ```
@@ -755,6 +770,18 @@ playbook:
 - **Outdated GPU generation** - P3 (V100) or G4dn (T4) workloads that
   would run cheaper per inference on G5, G6, P4d, or P5.
   [aws-outdated-gpu-generation](../playbooks/aws-outdated-gpu-generation.md)
+
+**EKS Auto Mode / ECS Managed Instances GPU fee reduction.** As of 1 July
+2026, AWS reduced the EKS Auto Mode management fee for GPU and accelerated
+instance types - a 35% reduction for G-series instances and a 60% reduction
+for P-series and Trainium instances. The identical fee reduction applies to
+ECS Managed Instances. The reduction is applied automatically with no
+customer action required. This meaningfully narrows the cost gap between
+managed GPU infrastructure and self-managed node groups, making EKS Auto
+Mode a more cost-competitive option for GPU workloads (ML inference,
+fine-tuning, and batch). Re-evaluate the EKS Auto Mode vs Karpenter /
+self-managed cost comparison for GPU node pools in light of this change.
+Source: https://aws.amazon.com/about-aws/whats-new/2026/07/amazon-eks-auto-mode-gpu-price
 
 ---
 
@@ -2138,7 +2165,7 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 | MemoryDB | Yes - node-type specific | Yes - up to 20% discount | No | Same mechanics as ElastiCache RIs |
 | Neptune | Yes - instance-type specific | Yes - up to 35% discount (Serverless) | No | Low discount depth compared to RDS RIs |
 | OpenSearch | Yes - instance-type specific | Yes - up to 20% discount | No | Also covers legacy Elasticsearch domains |
-| Redshift | Yes - node-type specific | No | No | Consider Redshift Serverless for variable workloads (no RI available) |
+| Redshift | Yes - node-type specific (All Upfront / Partial Upfront / No Upfront for 1yr) | No | No | Consider Redshift Serverless for variable workloads (no RI available). As of July 2026, 1-year Redshift RIs support All Upfront and Partial Upfront payment options alongside No Upfront. |
 | DocumentDB | Yes - instance-type specific | No | No | Same RI mechanics as RDS commercial engines |
 
 **Verify Database Savings Plan eligibility per engine and instance class** at the
@@ -2197,6 +2224,12 @@ Is the database workload stable and predictable (90+ days of consistent usage)?
         │
         ├── Redshift
         │   → Reserved Nodes for stable provisioned clusters
+        │     - As of July 2026, 1-year Redshift RIs support All Upfront
+        │       and Partial Upfront payment options alongside the existing
+        │       No Upfront term, adding commitment flexibility. All Upfront
+        │       yields the deepest discount; Partial Upfront balances
+        │       discount depth against capital outlay.
+        │       Source: https://finopsweekly.com/news/aws-updates-2026-07-02/
         │   → For variable workloads: Redshift Serverless (no RI, pay
         │     per RPU-hour) may be cheaper than committed idle capacity
         │

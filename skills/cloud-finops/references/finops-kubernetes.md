@@ -303,6 +303,22 @@ the entire workload. Diversify:
 For workloads that cannot tolerate any interruption, Spot is not the right
 answer. Stay On-Demand or use commitment discounts on the on-demand portion.
 
+### GPU node pools and EKS Auto Mode fee reduction
+
+GPU node pools change the cost comparison between managed options (EKS Auto
+Mode, ECS Managed Instances) and self-managed node groups driven by
+Karpenter. As of July 2026, AWS reduced EKS Auto Mode management fees for
+GPU and accelerated instance types: a 35% reduction for G-series instances
+and a 60% reduction for P-series and Trainium instances, applied
+automatically with no customer action required. The identical fee reduction
+applies to ECS Managed Instances.
+
+This meaningfully narrows the cost gap between EKS Auto Mode and
+Karpenter / self-managed node groups for GPU workloads (ML inference,
+fine-tuning, batch). Re-run the Auto Mode vs Karpenter cost comparison for
+GPU node pools against the reduced fees before defaulting to self-managed;
+see the EKS / GPU decision tree in `finops-aws.md`.
+
 ### Idle node cost
 
 Even with rightsizing and autoscaling, the cluster will have some idle

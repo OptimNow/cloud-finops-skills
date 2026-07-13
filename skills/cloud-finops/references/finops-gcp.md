@@ -293,6 +293,36 @@ maturity (Crawl or early Walk):
 Jumping straight to step 4 - the "I'll just commit to my observed average
 usage" reflex - is the single most common BigQuery commitment failure.
 
+#### Principal-based reservation assignments - native slot attribution
+
+As of July 2026, BigQuery reservation assignments support an optional
+**`principal` property** (in Preview per Google's documentation), allowing queries
+to be routed to specific reservations
+based on the calling user, service account, or third-party identity. This gives
+FinOps teams a native mechanism to attribute BigQuery slot consumption to specific
+principals/teams, directly addressing the shared-reservation attribution problem
+raised in the slot-commitment section above.
+
+Historically, slot consumption within a shared reservation could only be attributed
+through labels or project separation - both imperfect. Labels depend on consistent
+query-time tagging, and project separation forces organisational structure onto the
+billing model. Principal-based assignments add a third, cleaner attribution mechanism:
+
+- Route a given user, service account, or third-party identity to a specific
+  reservation, so their slot consumption is isolated and measurable
+- Enables **per-principal budget enforcement** within shared reservations, rather
+  than only at the reservation or project boundary
+- Improves allocation accuracy without relying solely on labels or project splits
+
+**Practical FinOps use:** where a shared reservation previously masked which team
+was driving the waste factor, principal-based assignments let you segment the
+baseline per team/service account. Combine with the waste-factor lens above to
+identify which principal is over-consuming committed slots, and to enforce
+per-principal budget guardrails inside a single shared reservation.
+
+Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments (primary),
+https://finopsweekly.com/news/gcp-updates-2026-07-02/
+
 **Frame for clients**: BigQuery commitments trade flexibility for
 predictability, and often performance for predictability. The right
 question is not "what discount can we get" but "what is the SLA the
@@ -514,6 +544,16 @@ Memorystore instances that are provisioned but unused  - whether due to deprecat
 - Decommission inactive or obsolete Memorystore instances
 - Consolidate fragmented caching layers across services or environments
 - Use automated tagging and monitoring to flag long-idle instances
+
+**Mandatory tag-binding for Bigtable instances (GA).** As of July 2026, Cloud Bigtable
+supports binding tags to instances at creation time and enforcing mandatory tag
+assignment through policies (GA). This closes a prior gap where GCP tagging governance
+relied on org policies applied post-hoc rather than enforced at creation for this
+service - enabling stronger cost-allocation governance for Bigtable workloads
+specifically. Bind allocation tags (team, cost-centre, environment) at instance
+creation and enforce them via policy so no Bigtable instance can be provisioned
+untagged. See `finops-tagging.md` for the broader tag enforcement strategy.
+Source: https://finopsweekly.com/news/gpc-updates-2026-07-10/
 
 **Excessive Shard Count In Gcp Bigtable**
 Service: GCP BigTable | Type: Inefficient Configuration

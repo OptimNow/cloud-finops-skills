@@ -268,6 +268,14 @@ version); log full request and response content only for sampled traffic or erro
 | Token-level unit economics | App instrumentation + CloudWatch | App instrumentation + Azure Monitor | App instrumentation + Cloud Monitoring |
 | AI cost visibility | Bedrock inference profiles (limited) | Cost Management AI views | AI Cost Summary Agent (preview) |
 
+As of July 2026, Anthropic ships native cost governance tooling directly (announced 2 July
+2026, independent of any model release): admin spend analytics by group and user, model
+entitlements, spend-threshold alerts, and an Admin API. Scope: **Claude Enterprise** plans
+(chat, Cowork, Claude Code seats) - it narrows the visibility and governance gaps for that
+surface but does not cover raw API platform spend, where application-layer instrumentation
+is still required. See `finops-anthropic.md` for detail
+([Anthropic announcement, 2 July 2026](https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend)).
+
 The common thread: native billing does not provide feature-level or user-level cost
 attribution for inference out of the box. Account and project separation handles
 team-level allocation. Application-layer instrumentation is required for feature-level

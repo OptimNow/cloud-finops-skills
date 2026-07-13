@@ -2403,6 +2403,94 @@ Pattern: `rg-{bu3chars}-{name}-{env}` (e.g., `rg-fin-webapp-dev`)
 
 ---
 
+## Agentic FinOps on Azure - Copilot agents and MCP servers
+
+Microsoft is extending cost and usage intelligence beyond the portal into agent
+workflows. As of July 2026, four surfaces matter for FinOps practitioners. They are
+frequently conflated in coverage, so exact names matter. This is the Azure-native
+counterpart to the MCP-based automation pattern documented in `finops-tagging.md`.
+
+### Azure Copilot observability agent (GA June 2026)
+
+Generally available since June 2026, with autonomous operations in public preview.
+The agent continuously analyses telemetry (application topology, dependencies,
+baseline behaviour), groups related alerts, begins investigations automatically, and
+recommends next steps. It is an operations surface, not a billing surface - its
+FinOps value is correlating "what changed" with deployment and configuration events.
+It does not restart resources or change configuration on its own, and prompts and
+responses are not used to train foundation models.
+
+### Azure Resource Manager MCP Server (public preview)
+
+A remote MCP server (hosted at `mcp.management.azure.com` - nothing to deploy) that
+gives AI agents access to Azure estate data and ARM deployments. Microsoft marketing
+also calls this the "Azure FinOps MCP Server" when framing cost scenarios - same
+product, two names in the same announcement. Six tools in the preview, cleanly split:
+
+| Half | Tools | FinOps relevance |
+|---|---|---|
+| Read (Azure Resource Graph) | `generate_query`, `validate_query`, `execute_query` | Tenant-wide estate queries in one call: cost-driver discovery by region/owner/workload, tag hygiene sweeps, orphaned-resource detection, rightsizing candidates |
+| Write (ARM deployments) | `create_template_deployment`, `get_arm_template_deployment_status`, `cancel_arm_template_deployment` | Governed remediation: tag patches, cleanup templates - every deploy is an auditable ARM operation with a correlation ID |
+
+**Permission model:** every operation runs in the context of the signed-in user -
+no service principal, no separate agent credential. The agent's effective permissions
+are exactly the human's, and Azure Policy assignments apply identically. Read-only
+agents need Reader plus Resource Graph Reader on the target scope; deploy-capable
+agents additionally need Contributor on the target resource groups.
+
+**Determinism caveat for recurring agents:** `generate_query` is non-deterministic -
+the same prompt can produce different KQL, different result sets, and therefore
+different remediation actions on different runs. Microsoft's own PoC catalogue for
+this server (24 agents, including a Cost Driver Finder, FinOps Rightsizer, Tag
+Hygiene Czar, and Weekly Cleanup PRs) pins literal KQL in reviewed rules files and
+uses the LLM only at dev time to draft queries. Adopt the same contract before
+putting a recurring FinOps agent on these tools. Microsoft's observed pattern is
+worth repeating verbatim: read-only agents are ~80% of the value at ~5% of the risk -
+start there, and gate any write behind an explicit user verb, a confirm step showing
+the resolved template and scope, and a freeze flag. This matches the
+policy-generation-over-direct-mutation doctrine in `finops-for-ai.md`.
+
+### Azure MCP Server pricing tools
+
+Distinct from the ARM MCP Server above: the **Azure MCP Server** (the `@azure/mcp`
+developer server) includes a read-only pricing tool that queries Azure retail rates
+by SKU, service, and region, with `Consumption`, `Reservation`, and
+`DevTestConsumption` price types and optional savings-plan pricing. Its FinOps use is
+**pre-deployment cost estimation inside the IDE**: extract resource types and SKUs
+from a Bicep/ARM template, query per resource, and sum monthly cost (hourly rate x
+730). This moves cost estimation from a post-deploy surprise to a design-time
+constraint.
+
+### FinOps hubs AI agents (FinOps Toolkit 14+)
+
+FinOps hubs (see "FinOps Toolkit and FinOps Hubs" above) connect AI agents to the
+hub's Data Explorer databases via the Azure MCP Server. Supported paths:
+
+- **GitHub Copilot Agent mode** with Microsoft's downloadable FinOps hub instruction
+  pack - engineers query FOCUS-normalised cost data in natural language (allocation,
+  anomaly detection, forecasting, Effective Savings Rate quantification), with the
+  KQL shown and approvable before execution
+- **Copilot Studio agent template** (added in Toolkit 14, April 2026) - publishes a
+  FinOps hub agent into Microsoft Teams or Microsoft 365 Copilot, aimed at finance,
+  product, and leadership audiences rather than engineers
+- **Any MCP client** (Claude, Continue, and others) - the hub connection is plain
+  MCP; Microsoft's instruction pack is written for Copilot but reusable
+
+Permission requirement: Database Viewer or greater on the hub's Data Explorer
+databases. The usual freshness caveat applies - answers are only as current as the
+last Cost Management export (typically every 24 hours), so ask the agent for the
+last refresh time before trusting its numbers.
+
+Sources (all Microsoft, as of July 2026):
+https://azure.microsoft.com/en-us/blog/from-insight-to-action-the-next-phase-of-agentic-cloud-operations/,
+https://techcommunity.microsoft.com/blog/azuregovernanceandmanagementblog/introducing-the-azure-resource-manager-mcp-server/4517521,
+https://techcommunity.microsoft.com/blog/azuregovernanceandmanagementblog/arm-mcp-server-a-catalog-of-24-pocs/4519069,
+https://learn.microsoft.com/en-us/azure/developer/azure-mcp-server/tools/azure-pricing,
+https://techcommunity.microsoft.com/blog/finopsblog/whats-new-in-finops-toolkit-14-%E2%80%93-april-2026/4519497,
+https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/configure-ai
+
+---
+
 ## Azure governance tools - policy patterns and budgets
 
 The earlier "Governance - tagging and Azure Policy as a FinOps lever" section
