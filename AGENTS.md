@@ -17,7 +17,7 @@ MCP-compatible agent.
 - **SKILL.md** - entry point for Claude Code and generic agents
 - **POWER.md** - entry point for Kiro IDE (same references, different format)
 - **AGENTS.md** - entry point for Codex CLI (this file)
-- **references/** - 28 domain-specific content files (billing mechanics, pricing,
+- **references/** - domain-specific content files (billing mechanics, pricing,
   optimisation patterns)
 - **INSTALLATION.md** - cross-tool installer covering 12 tool integrations, plus
   a model-agnostic response contract for non-Claude models
