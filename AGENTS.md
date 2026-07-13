@@ -41,11 +41,11 @@ cloud-finops-skills/
 ├── skills/cloud-finops/          <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
-│   └── references/        <- 28 reference files, all with YAML FCP frontmatter
+│   └── references/        <- reference files, all with YAML FCP frontmatter
 └── pipeline/              <- Content update pipeline (gitignored, private)
 ```
 
-For the full directory listing of the 28 reference files and the pipeline
+For the full directory listing of the reference files and the pipeline
 sub-modules, see CLAUDE.md.
 
 ---

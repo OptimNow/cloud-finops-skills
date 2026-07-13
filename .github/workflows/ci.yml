@@ -1,0 +1,47 @@
+name: CI
+
+# Lightweight read-only checks on every PR and every push to main. No write
+# permissions, no publish - that lives in auto-tag-on-plugin-bump.yml which
+# only fires on a plugin.json version bump. This job just catches drift and
+# regressions before merge.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Drift checks + MCP tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: FCP frontmatter coverage (--check)
+        run: bash scripts/fcp-coverage.sh --check
+
+      - name: llms.txt reference list in sync
+        run: bash scripts/check-llms-txt.sh
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install MCP server (with dev extras)
+        working-directory: mcp_server
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Sync references into bundled data/
+        working-directory: mcp_server
+        run: python scripts/sync_references.py
+
+      - name: MCP server tests
+        working-directory: mcp_server
+        run: python -m pytest -q

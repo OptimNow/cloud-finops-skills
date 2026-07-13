@@ -1,6 +1,6 @@
 """Cloud FinOps MCP server.
 
-Exposes the OptimNow Cloud FinOps skill (28 references + 23 named-pattern
+Exposes the OptimNow Cloud FinOps skill (reference library + named-pattern
 playbooks) as queryable tools via the Model Context Protocol.
 """
 
