@@ -264,6 +264,53 @@ Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](htt
 
 ---
 
+## Named risk pattern: enterprise connector-rollout bill shock
+
+A specific, repeatable way Enterprise spend blows past forecast - worth naming because
+the mechanics are predictable and the mitigation is entirely pre-emptive.
+
+**Mechanics.** A connector or feature reaches general availability and ships enabled by
+default (a new data connector, a broadened context default, an agentic capability).
+Multiply three factors:
+
+1. **Default long-context processing.** The connector pulls large context - documents,
+   retrieval dumps, connected-app data - into each request by default. Where the model
+   and configuration apply premium long-context rates above the 200K input threshold
+   (see "Context window pricing - per-model, not uniform" above), every request lands in
+   the premium tier; even where pricing is flat, the input volume per call jumps.
+2. **Thousands of seats.** Enterprise billing is usage-based and usage cannot be fully
+   disabled, so a default-on capability activates across the whole seat count at once,
+   not a pilot group.
+3. **Low-attention periods.** A rollout timed just before holidays or quarter-end runs
+   for days or weeks with nobody watching the console, and the usage compounds silently.
+
+**The detection gap.** None of the three factors trips a spike alert on its own, and the
+cost report is daily-grained and lags. The first unambiguous signal is the invoice - by
+which point a full period of premium-context spend across the seat base has already
+accrued.
+
+**Mitigation - all pre-emptive:**
+
+- **Stage the rollout.** Enable the connector for a pilot cohort first, measure
+  cost-per-seat and the context-length distribution, and extrapolate to the full seat
+  count before switching it on org-wide. A default-on GA flip across thousands of seats
+  is the thing to avoid.
+- **Set org-level threshold alerts before the flip, not after.** Use the native
+  threshold alerts and Admin API from the native cost governance tooling table above
+  (org-level 75% / 90% notifications, programmatic detection of rapidly changing usage)
+  so a runaway rollout surfaces within the day rather than on the invoice.
+- **Watch the leading indicators from the monitoring checklist above** - total tokens
+  across the context window and Fast mode activation - during the rollout window
+  specifically, including over holidays.
+- **Constrain the default** where the connector allows it: cap default context scope and
+  require opt-in for the largest-context modes rather than shipping them default-on.
+
+This is the Anthropic-specific instance of the general discipline in
+`finops-anomaly-management.md`: a masked, non-spiky cost increase that only usage-side,
+pre-configured detection catches in time.
+
+---
+
 ## Cost allocation
 
 ### What to allocate

@@ -281,6 +281,36 @@ attribution for inference out of the box. Account and project separation handles
 team-level allocation. Application-layer instrumentation is required for feature-level
 and per-request attribution.
 
+### Unallocated % as an AI allocation KPI
+
+Allocation quality deserves its own tracked KPI for AI spend, the same way
+`finops-allocation-showback.md` treats unallocated spend as a first-class signal for
+infrastructure. Define it tightly and track it weekly, by **repo / team / feature**,
+next to the unit-economics numbers.
+
+**Unallocated % of AI spend** = token and harness cost that cannot be tied to a repo,
+team, or feature, divided by total AI spend. The threshold discipline mirrors the
+infrastructure rule (hold it below ~10%, trend toward 5%), but the failure modes are
+AI-specific:
+
+- **API keys drift faster than resources do.** A shared key used across three features
+  attributes all of its spend to whatever label the key carries, not to the features
+  that actually consumed it. Static key-level tagging is a Crawl-stage approximation,
+  not an allocation.
+- **The person is a shared resource.** One engineer runs several concurrent agent
+  sessions across different projects on the same key or seat - a Claude Code session on
+  repo A, an agent debugging repo B, an ad-hoc script against repo C, all at once.
+  Per-key or per-seat tagging collapses the three into one owner. Attribution has to
+  happen at the **session level**: a session or trace ID carried as request metadata
+  (the Phase 1 instrumentation above) and mapped to repo/team/feature. As agent
+  concurrency per person rises, identity-level attribution degrades and unallocated %
+  climbs even when nothing else has changed.
+
+Treat a rising unallocated % as a governance signal, not a rounding error - it means new
+AI spend (a new agent surface, a wallet-funded payment, a per-query SaaS charge) is
+outrunning the instrumentation. Session-level metadata on every call is what keeps the
+number low; key-level or seat-level tagging is the fallback that lets it drift.
+
 ---
 
 ### Phase 2: Establish unit economics

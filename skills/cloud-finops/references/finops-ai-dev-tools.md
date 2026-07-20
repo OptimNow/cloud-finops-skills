@@ -427,6 +427,53 @@ becomes a cost problem when:
 
 ---
 
+## Crawl-stage unit ratio: AI spend per merged PR
+
+Before an org has session-level attribution, it still needs one number that says whether
+dev-tool spend is tracking output. The cheapest lives at Crawl:
+
+**AI dev-tool spend per merged PR** - the ratio of dev-tool spend to merged pull
+requests, per team, per month (per developer where useful). It needs only two inputs most
+orgs already have: the tool invoice (or per-developer Admin API rollup) and merged-PR
+counts from the git host. Track the ratio over time and run anomaly detection on *the
+ratio*, not the raw spend. A step change means either spend outran throughput (a
+model-routing regression, a max-mode default, a stuck agent) or throughput dropped while
+spend held - both are worth a look.
+
+**Goodhart caveat - this is an allocation signal, never a performance metric.** The moment
+"spend per merged PR" is used to rank or appraise developers, it is gamed: PRs get split
+to inflate the denominator and the number stops measuring anything. Merged PRs are a
+noisy, manipulable proxy for value (a one-line fix and a week-long refactor each count as
+one). Use the ratio to spot cost-versus-output drift at the team level and to size the
+tool budget; never to evaluate a person. See `finops-for-ai.md` for the unit-economics
+framing this approximates.
+
+---
+
+## The governance gap: subscription caps vs API and agentic burn
+
+The two billing architectures above have very different blast radii, and budgets break on
+the wrong side of the line from where governance attention usually goes:
+
+- **Subscription / seat plans are self-capping.** A Cursor seat, a Copilot seat, or a
+  Claude Code Max plan has a ceiling: once the included usage is consumed, the developer
+  hits a rate limit, not an overage cliff. The worst case is a bounded, predictable
+  monthly number. This is the safe side, and it draws most of the governance attention
+  because the invoice is legible.
+- **API-direct (BYOK) and agentic consumption is where budgets actually break.** A raw
+  API key with no proxy has no ceiling. An agent looping on that key (see the
+  [cross-cloud-agent-loop-burn](../playbooks/cross-cloud-agent-loop-burn.md) playbook) or
+  a background job left running bills per token until someone notices, and the overage
+  lands 24-48 hours later on the provider bill rather than in a vendor dashboard.
+
+Put the hard controls where the unbounded risk is. Subscription tiers need seat hygiene
+and right-sizing (bounded problems). API keys and agentic workloads need per-key or
+per-team budget caps at a proxy (LiteLLM), sustained-throughput alarms, and a kill-switch,
+because that is the side with no built-in ceiling. Spending governance effort in
+proportion to invoice legibility rather than to unbounded risk is the common mistake.
+
+---
+
 ## Diagnostic questions for a new engagement
 
 1. Which AI coding tools are in use across the organisation, and is adoption sanctioned or shadow IT?
