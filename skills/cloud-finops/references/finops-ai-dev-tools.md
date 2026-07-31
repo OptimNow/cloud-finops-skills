@@ -386,6 +386,65 @@ configure alerts before the cliff.
 
 ---
 
+## The context-load tax: MCP servers, skills, and context files
+
+Every enabled MCP server, skill, and always-on context file is loaded into the model's
+context at the **start of every session**, whether or not it is ever used. The model has to
+be told a tool exists before it can decide to call it, so the definition is injected as
+input tokens up front. A developer who enables twenty MCP servers "just in case" pays for
+twenty servers' worth of definitions on every session - most never invoked.
+
+This is not an MCP-specific problem, and framing it as one misdiagnoses the fix. It is
+context-window economics, and it applies to anything that lands in the context prefix: MCP
+tool definitions, skill instructions, project/memory files (e.g. `CLAUDE.md`), and the base
+system prompt itself. MCP is simply the most *visible* case, because the token count jumps
+the moment you enable a server.
+
+**Order of magnitude** (from a live Claude Code walkthrough, July 2026; figures approximate):
+the base system prompt alone was on the order of ~30K tokens; enabling two small MCP servers
+added a few thousand more and roughly doubled the cost of a trivial turn - with the servers
+never called. At scale the arithmetic compounds: 1,000 developers x 10 enabled servers x 10
+sessions/day is a material daily line item for capability nobody used that day.
+
+**Interaction with prompt caching.** The context prefix is cached, so within the cache window
+the marginal cost is small (cache reads are 0.1x base input; see `finops-anthropic.md` for
+the full mechanics). Two things break that: (1) the ~5-minute cache TTL - an idle gap longer
+than the window forces the whole prefix to be reprocessed at full price on the next turn (in
+the walkthrough, a cache miss after a coffee break turned a ~$0.02 turn into ~$0.12), and
+(2) enabling a new server mid-prefix invalidates the cache from that point on. Long,
+unfocused sessions make it worse: the resent context keeps growing, so every miss reprocesses
+a larger blob.
+
+### Levers
+
+- **Scope enablement per project, not globally.** Servers placed in the user-level Claude
+  Code config load into *every* session on the machine. Enable servers in the project that
+  needs them, not in the global config.
+- **Audit all three surfaces, not just MCP.** Unused skills and stale context/memory files
+  carry the same per-session tax. Review them together.
+- **Keep sessions short and single-purpose,** and complete a unit of work inside one cache
+  window rather than trickling prompts in over 20 minutes.
+- **Control for cache state when measuring.** Cache-window timing can invert a naive A/B
+  comparison - a configuration can look cheaper purely because its run stayed inside the
+  window while the baseline crossed the TTL. Compare like for like.
+
+### Visibility: session logs and OpenTelemetry
+
+Two data sources expose this without a third-party tool:
+
+- **Local session logs.** Claude Code writes per-session `.jsonl` files (organised by project
+  path) containing token counts, the available tool/MCP definitions, and the system prompt -
+  raw but forensic. The `/context` command shows the same breakdown live (system prompt vs
+  tools/MCP vs messages), and `/cost` estimates session spend.
+- **OpenTelemetry.** Claude Code emits OTel metrics - a vendor-neutral standard also supported
+  across other AI dev tools - including session counts and per-session cost. Configure via
+  environment variables and point the exporter at a collector (local, or an observability
+  backend). Governance note: prompt *text* is **off by default** for confidentiality; you get
+  token and metadata signals unless you explicitly opt in. Because OTel is tool-agnostic, one
+  pipeline can cover Claude Code alongside other agents.
+
+---
+
 ## Cross-tool spend overlap
 
 Many engineering organisations use multiple AI coding tools simultaneously - for example,
