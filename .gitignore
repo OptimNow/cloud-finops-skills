@@ -26,6 +26,7 @@ skills/cloud-finops/.claude/
 # Local working notes / plan drafts
 plan-*.md
 plan-remediation-*.md
+note-*.md
 
 # Pipeline (private until public release)
 pipeline/
