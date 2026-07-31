@@ -279,6 +279,12 @@ Better: surface unallocated spend as a discrete line item. Make it visible to
 leadership. Drive the tagging programme on the back of it. See `finops-tagging.md`
 for the enforcement work that brings unallocated spend below the 10% threshold.
 
+**AI spend needs its own unallocated-% treatment.** Token and harness cost
+attributes at the session level rather than the resource level, and one engineer
+running several concurrent agent sessions defeats static key- or seat-level
+tagging. See `finops-for-ai.md` ("Unallocated % as an AI allocation KPI") for the
+AI-specific version of this signal.
+
 ---
 
 ## Data-quality dispute process

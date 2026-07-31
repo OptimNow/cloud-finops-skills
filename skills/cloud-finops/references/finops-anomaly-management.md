@@ -207,6 +207,44 @@ go to the alert queue regardless of dollar value.
 
 ---
 
+## AI and token-workload anomalies
+
+GenAI and agentic workloads break two assumptions the rest of this file relies on:
+that cost signals are timely enough to alert on, and that a real anomaly moves the
+total. Both fail for token spend.
+
+**The billing-latency gap.** Cost and cost-allocation exports lag. Cloud Cost Explorer
+and CUR land 24-48 hours after the usage happens, and provider cost reports are
+typically daily-grained. Token *usage* telemetry, by contrast, lands in minutes. For a
+workload where a misconfigured agent can burn thousands of dollars within hours, waiting
+for the cost export is waiting too long. **Detect AI spend on usage telemetry, not
+billing data.** The usage surfaces to watch:
+
+- **AWS Bedrock** - CloudWatch runtime metrics in the `AWS/Bedrock` namespace
+  (`InputTokenCount`, `OutputTokenCount`, `Invocations`, `InvocationThrottles`), per
+  `ModelId`, at minute granularity. Application inference profiles carry cost-allocation
+  tags for per-application attribution, but their cost side is daily-grained - use it for
+  ownership, not live alerting.
+- **Anthropic** - the Usage & Cost Admin API usage endpoint
+  (`/v1/organizations/usage_report/messages`) supports 1-minute buckets with data
+  appearing within ~5 minutes; the cost endpoint is daily-only.
+- **Azure OpenAI** - Azure Monitor metrics (`ProcessedPromptTokens`, `GeneratedTokens`,
+  `TokenTransaction`) at 1-minute grain, split by `ModelDeploymentName`.
+
+**The flat-line failure mode.** The masked anomaly has a token-native cousin. A stuck or
+retrying agent - a max-iteration loop, a retry storm against a failing tool, or a
+self-validating agent that never converges - holds token throughput roughly *flat* while
+it burns. There is no spike, so the percentage and absolute-dollar thresholds this file
+recommends never fire; the spend quietly joins the baseline. The fix is the same shape as
+layered detection but on a different axis: **alarm on sustained token throughput, not on
+cost.** Fire when throughput stays above a floor for N consecutive minutes with no matching
+growth in completed units of work (conversations closed, documents processed). See the
+[cross-cloud-agent-loop-burn](../playbooks/cross-cloud-agent-loop-burn.md) playbook for the
+per-provider detection queries and the kill-switch runbook, and `finops-for-ai.md` for the
+agentic-loop cost anatomy behind it.
+
+---
+
 ## Integration with Security
 
 **Sudden spend in unexpected regions is also a Security signal.** Cryptomining,
