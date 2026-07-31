@@ -41,6 +41,7 @@ cloud-finops-skills/
 │       ├── optimnow-methodology.md         <- OptimNow reasoning lens, 4 pillars
 │       ├── finops-framework.md             <- FinOps Foundation framework reference
 │       ├── finops-for-ai.md                <- AI cost management discipline
+│       ├── finops-agentic.md                 <- Agentic FinOps (agent cost anatomy, x402/MPP)
 │       ├── finops-ai-value-management.md   <- AI Investment Council, stage gates
 │       ├── finops-genai-capacity.md        <- Provisioned vs shared capacity
 │       ├── finops-ai-self-hosted-vs-managed.md  <- Self-host vs managed inference

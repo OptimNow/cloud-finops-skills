@@ -2448,7 +2448,7 @@ putting a recurring FinOps agent on these tools. Microsoft's observed pattern is
 worth repeating verbatim: read-only agents are ~80% of the value at ~5% of the risk -
 start there, and gate any write behind an explicit user verb, a confirm step showing
 the resolved template and scope, and a freeze flag. This matches the
-policy-generation-over-direct-mutation doctrine in `finops-for-ai.md`.
+policy-generation-over-direct-mutation doctrine in `finops-agentic.md`.
 
 ### Azure MCP Server pricing tools
 

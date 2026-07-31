@@ -107,8 +107,10 @@ theses with their own primary sources; see the `Roadmap` section of `CLAUDE.md`.
 
 The skill provides accurate, framework-aligned guidance across the following domains:
 
-- **FinOps for AI** - LLM inference economics, token cost management, agentic cost
-  patterns, unit economics for AI features, ROI frameworks, and AI cost governance
+- **FinOps for AI** - LLM inference economics, token cost management, harness cost
+  surface, unit economics for AI features, ROI frameworks, and AI cost governance
+- **Agentic FinOps** - workflow vs pipeline vs true agent cost behaviour, agentic
+  cost anatomy, cost-safe agent architecture, and agent-initiated payments (x402 / MPP)
 - **AI value management** - AI Investment Council, stage gate model, incremental
   funding, practice operations, cross-functional governance for AI investments
 - **GenAI capacity planning** - provisioned vs shared capacity, traffic shape analysis,
@@ -294,6 +296,7 @@ cloud-finops-skills/
     ├── references/
     │   ├── optimnow-methodology.md             ← OptimNow reasoning philosophy
     │   ├── finops-for-ai.md                    ← AI cost management
+    │   ├── finops-agentic.md                   ← Agentic FinOps (agent cost anatomy, x402/MPP)
     │   ├── finops-ai-value-management.md       ← AI investment governance
     │   ├── finops-genai-capacity.md            ← GenAI capacity models (cross-provider)
     │   ├── finops-ai-self-hosted-vs-managed.md ← Self-hosted vs managed AI inference decision
