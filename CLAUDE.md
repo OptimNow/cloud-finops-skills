@@ -636,6 +636,9 @@ Good test patterns:
       hardcoded "N references / N playbooks" counts; use "the reference library"
       phrasing. `llms.txt` is the one list to keep current.)
 - [ ] Plugin version bumped in `.claude-plugin/plugin.json` (minor for user-visible feature)
+- [ ] `.claude-plugin/marketplace.json` `metadata.version` bumped to match
+      `plugin.json` `version` (CI-gated by `scripts/check-marketplace-version.sh`
+      via the `marketplace version in sync` workflow - the two must always match)
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
       reference file count and topic list
 - [ ] SKILL.md description stays under 1024 characters

@@ -1,0 +1,89 @@
+name: cloud-finops-mcp clean-install smoke
+
+# Reproduces a first-time user install of the cloud-finops-mcp package: build the
+# wheel + sdist, install into a pristine venv with fresh dependency resolution
+# (no lockfile, no dev extras), then launch the console script and do a minimal
+# MCP round-trip.
+#
+# Why this exists: the unit tests in ci.yml run in an environment where
+# dependencies are already resolved, so they did NOT catch the mcp SDK 2.0.0
+# breaking change that broke every fresh install (unbounded "mcp>=1.0.0" pulled
+# 2.0.0, which removed mcp.server.fastmcp, crashing the server at startup). The
+# weekly cron below is the important part: it re-runs with fresh dependency
+# resolution even when our code has not changed, so an upstream release that
+# breaks us is caught within a week instead of by a user.
+
+on:
+  push:
+    paths:
+      - 'mcp_server/**'
+      - '.github/workflows/mcp-install-smoke.yml'
+  pull_request:
+    paths:
+      - 'mcp_server/**'
+      - '.github/workflows/mcp-install-smoke.yml'
+  schedule:
+    # Mondays 06:00 UTC (~07-08:00 CET) - results are ready at the start of the
+    # week. Catches breakage from a newly published upstream dependency version.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clean-install:
+    name: clean install + start (py ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # The Python versions cloud-finops-mcp declares in its pyproject.toml
+        # classifiers (requires-python is ">=3.10"). Keep this list in step with
+        # those classifiers.
+        python: ['3.10', '3.11', '3.12']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Build wheel + sdist
+        working-directory: mcp_server
+        run: |
+          python -m pip install --upgrade pip build
+          # Builds the sdist, then builds the wheel from that sdist - so both
+          # artefacts are exercised. The hatch build hook runs sync_references.py
+          # to bundle the reference + playbook data.
+          python -m build
+          echo "Built artefacts:"
+          ls -lh dist/
+
+      - name: Install into a pristine venv (fresh resolution, no lockfile)
+        working-directory: mcp_server
+        run: |
+          set -euo pipefail
+          python -m venv /tmp/cleanenv
+          /tmp/cleanenv/bin/python -m pip install --upgrade pip
+          # Install ONLY the locally built wheel - never from PyPI, so this
+          # validates the repo's code, not the last published release. Runtime
+          # dependencies (mcp, pyyaml) resolve fresh from PyPI with no lockfile,
+          # which is exactly what a first-time user gets and what surfaces an
+          # upstream breaking release.
+          /tmp/cleanenv/bin/pip install dist/*.whl
+
+      - name: Log resolved dependency versions
+        run: |
+          echo "Resolved versions in the clean environment (watch 'mcp' here):"
+          /tmp/cleanenv/bin/pip show cloud-finops-mcp mcp pyyaml | grep -E '^(Name|Version):'
+
+      - name: Smoke test the installed console script
+        # Runs with the clean venv's interpreter so the script finds the
+        # cloud-finops-mcp console script next to it. Fails loudly (with a
+        # ::error:: annotation) if the binary crashes at startup or the MCP
+        # handshake does not complete.
+        run: /tmp/cleanenv/bin/python mcp_server/scripts/smoke_install.py
