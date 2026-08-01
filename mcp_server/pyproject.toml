@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cloud-finops-mcp"
-version = "1.22.2"
+version = "1.26.1"
 description = "MCP server exposing the OptimNow Cloud FinOps skill (reference library + named-pattern playbooks) as queryable tools."
 readme = "README.md"
 license = { text = "CC-BY-SA-4.0" }
@@ -29,8 +29,8 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-  "mcp>=1.0.0",
-  "pyyaml>=6.0",
+  "mcp>=1.28,<2",
+  "pyyaml>=6.0,<7",
 ]
 
 [project.optional-dependencies]
