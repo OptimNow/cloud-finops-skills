@@ -47,9 +47,15 @@ cloud-finops-skills/
 │       ├── finops-ai-self-hosted-vs-managed.md  <- Self-host vs managed inference
 │       ├── finops-ai-dev-tools.md          <- Cursor / Claude Code / Copilot / Windsurf / Codex
 │       ├── finops-anthropic.md             <- Anthropic billing
-│       ├── finops-aws.md                   <- AWS FinOps + commitment portfolio
+│       ├── finops-aws.md                   <- AWS FinOps core (billing data, rightsizing,
+│       │                                     SageMaker, allocation, CloudFront, S3 Files)
+│       ├── finops-aws-commitments.md       <- AWS SPs / RIs / Spot, portfolio liquidity, EDP
+│       ├── finops-aws-patterns.md          <- AWS enumerated pattern catalogue
 │       ├── finops-bedrock.md               <- AWS Bedrock
-│       ├── finops-azure.md                 <- Azure FinOps + commitment portfolio
+│       ├── finops-azure.md                 <- Azure FinOps core (cost data, rightsizing, AKS,
+│       │                                     Log Analytics, storage, networking, governance)
+│       ├── finops-azure-commitments.md     <- Azure RIs / SPs / AHB, liquidity, MACC
+│       ├── finops-azure-patterns.md        <- Azure enumerated pattern catalogue
 │       ├── finops-azure-openai.md          <- Azure OpenAI / PTUs
 │       ├── finops-gcp.md                   <- GCP FinOps
 │       ├── finops-vertexai.md              <- GCP Vertex AI
@@ -343,42 +349,6 @@ GitHub issues, which track in-flight work.
   section above and should produce a follow-up Lessons learned entry
   describing the un-freeze evidence.
 
-- **P1 - Split `finops-aws.md` and `finops-azure.md`.** Surfaced by the 2026-08-02
-  review (F15). The skill's two-level progressive disclosure works at the first level
-  (idle cost ~250 tokens; SKILL.md ~5.5K) but fails at the second: the routing table
-  maps roughly 30 AWS topics to a single 2,893-line file, so a routine Savings Plans
-  question costs ~50K tokens, most of it CloudFront, S3 Files and SageMaker material
-  irrelevant to the question. Median-file queries cost a reasonable ~22K. The
-  playbooks (~2-3K tokens each) are the model of the right granularity.
-
-  **Measured section sizes (2026-08-02), so the seams do not have to be re-derived:**
-
-  | File | Section | Lines | Share |
-  |---|---|---|---|
-  | finops-aws.md (2,893) | AWS Optimization Patterns | 1,436 | 49% |
-  | | Commitment discounts | 578 | 20% |
-  | | everything else (10 sections) | ~880 | 31% |
-  | finops-azure.md (3,211) | Commitment discounts | 609 | 19% |
-  | | Azure Optimization Patterns | 456 | 14% |
-  | | everything else (20 sections) | ~2,150 | 67% |
-
-  **Proposed split, consistent across both:** `core` / `commitments` / `patterns`.
-  AWS drops to ~880 lines of core, which fixes the reported problem outright. Azure
-  is messier and needs a consolidation pass first - it currently carries near-duplicate
-  commitment content at four separate offsets ("Commitment discounts" at line 97,
-  "Compute rightsizing" at 706 and "Compute rightsizing fundamentals" at 1,949,
-  "Database commitment decision tree and fundamentals" at 2,027, "Commitment portfolio"
-  at 2,197). That duplication is itself worth fixing and is probably a pipeline-append
-  artefact; splitting before consolidating would bake it into two files instead of one.
-
-  **Blast radius** (why this is its own PR, not a rider): each new file needs FCP
-  frontmatter and a footer, plus routing rows in SKILL.md and POWER.md, entries in
-  README, AGENTS.md, llms.txt and the CLAUDE.md structure tree (now CI-gated by
-  `scripts/check-docs-drift.sh`), the install.sh per-tool routing tables, an MCP data
-  re-sync, and a regenerated `fcp-coverage.md`. Deliberately not attempted as part of
-  the review-remediation batch - a botched split of the two most-loaded files is worse
-  than a deferred one.
-
 - **WasteLine extension to Azure and GCP.** `finops-waste-detection-playbooks.md` covers the
   eight-category waste taxonomy and references the WasteLine appliance for AWS automation;
   Azure and GCP coverage currently routes to the in-cloud pattern catalogues
@@ -536,6 +506,24 @@ These files shipped during the white-space analysis follow-up (PRs #48, #50, #51
 - `finops-kubernetes.md` (PR #54) - Cross-cluster K8s discipline (EKS/GKE/AKS)
 - `finops-waste-detection-playbooks.md` (PR #56) - Seven-category waste taxonomy + WasteLine
   (extended to eight categories in August 2026 with egress / data transfer)
+- Split of `finops-aws.md` and `finops-azure.md` (August 2026) - the second-level
+  progressive-disclosure fix from the 2026-08-02 review (F15). Each became core /
+  commitments / patterns: AWS 2,893 lines -> 899 + 604 + 1,463; Azure 3,211 -> 1,810 +
+  983 + 478. A routine AWS Savings Plans question now loads ~8.3K tokens instead of
+  ~44K (-82%); an Azure commitment question ~13.6K instead of ~43K (-69%).
+
+  Two things the pre-split analysis got wrong, recorded so the next restructure does
+  not repeat them. First, Azure's two rightsizing sections were **not** duplicated -
+  they were complementary and mis-ordered, with the fundamentals sitting ~1,200 lines
+  *after* the advanced Advisor material and a note in the later section explaining the
+  relationship. They were merged and reordered, not deduplicated. Second, the repeated
+  liquidity table **was** a real duplication but a deliberate one: the file said so
+  explicitly, justifying it because the two sections sat ~2,000 lines apart. Once both
+  landed in `finops-azure-commitments.md` that rationale disappeared, so the duplicate
+  collapsed to a cross-reference. The lesson is to read the seam before assuming drift -
+  "duplicated content" in a long file is as often deliberate redundancy or bad ordering
+  as it is pipeline damage.
+
 - YAML FCP frontmatter pass across all 22 pre-existing references (PR #53)
 - `skills/cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - 23 RAG-friendly
   named-pattern playbooks (`<scope>-<pattern>.md`, ~2-3KB each,

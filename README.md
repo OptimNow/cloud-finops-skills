@@ -301,9 +301,13 @@ cloud-finops-skills/
     │   ├── finops-genai-capacity.md            ← GenAI capacity models (cross-provider)
     │   ├── finops-ai-self-hosted-vs-managed.md ← Self-hosted vs managed AI inference decision
     │   ├── finops-anthropic.md                 ← Anthropic billing + governance
-    │   ├── finops-aws.md                       ← AWS-specific FinOps
+    │   ├── finops-aws.md                       ← AWS FinOps core
+    │   ├── finops-aws-commitments.md           ← AWS SPs / RIs / Spot, liquidity, EDP
+    │   ├── finops-aws-patterns.md              ← AWS pattern catalogue
     │   ├── finops-bedrock.md                   ← AWS Bedrock billing
-    │   ├── finops-azure.md                     ← Azure-specific FinOps
+    │   ├── finops-azure.md                     ← Azure FinOps core
+    │   ├── finops-azure-commitments.md         ← Azure RIs / SPs / AHB, liquidity, MACC
+    │   ├── finops-azure-patterns.md            ← Azure pattern catalogue
     │   ├── finops-azure-openai.md              ← Azure OpenAI Service (PTUs)
     │   ├── finops-gcp.md                       ← GCP-specific FinOps
     │   ├── finops-vertexai.md                  ← GCP Vertex AI billing
