@@ -16,16 +16,18 @@ is ~$5.67/hour ~= $4,140/month; a `p4d.24xlarge` (8 x A100 40 GB) is
 ~$32.77/hour ~= $23,920/month. Picking an instance with more GPU compute
 and memory than the workload uses is one of the highest-dollar waste
 patterns in AWS - and one of the hardest to spot, because the basic
-`GPUUtilization` CloudWatch metric (equivalent to `nvidia-smi`'s
-`GPU-Util`) reports whether the GPU did anything in the interval, not how
-much of its compute capacity was actually used (see
+GPU-utilisation metric most teams reach for (`nvidia-smi`'s `GPU-Util`,
+surfaced by the CloudWatch agent as `nvidia_smi_utilization_gpu`) reports
+whether the GPU did anything in the interval, not how much of its compute
+capacity was actually used (see
 [finops-for-ai.md](../references/finops-for-ai.md), section on GPU
 telemetry).
 
 ## Symptoms
 
-- CloudWatch `GPUUtilization` < 30% over a 14-day window
-- CloudWatch `GPUMemoryUtilization` < 40% over the same window
+- `nvidia_smi_utilization_gpu` < 30% over a 14-day window (CloudWatch agent,
+  `CWAgent` namespace - EC2 publishes no GPU metrics natively)
+- `nvidia_smi_utilization_memory` < 40% over the same window
 - The model's loaded weights fit in well under half of the GPU memory
 - Model latency p95 is far below the SLA (room to move to a smaller GPU
   without violating user-facing budgets)
@@ -37,21 +39,38 @@ telemetry).
 Two-tier signal: cheap (CloudWatch) for triage, expensive (DCGM) for the
 real decision.
 
-CloudWatch quick scan:
+CloudWatch quick scan. **Prerequisite:** EC2 publishes no GPU metrics of its
+own - `AWS/EC2` has no `GPUUtilization`. GPU telemetry on EC2 requires the
+CloudWatch agent configured with its NVIDIA GPU section, which publishes
+`nvidia_smi_*` metrics into the `CWAgent` namespace. If the command below
+returns no datapoints, the agent is not collecting GPU metrics on that
+instance; that is the first thing to fix, not evidence the GPU is idle.
 
 ```
 aws cloudwatch get-metric-statistics \
-  --namespace AWS/EC2 \
-  --metric-name GPUUtilization \
+  --namespace CWAgent \
+  --metric-name nvidia_smi_utilization_gpu \
   --dimensions Name=InstanceId,Value=<id> \
   --start-time $(date -u -d '14 days ago' +%Y-%m-%dT%H:%M:%SZ) \
   --end-time   $(date -u +%Y-%m-%dT%H:%M:%SZ) \
   --period 3600 --statistics Average,Maximum
 ```
 
-Note: `GPUUtilization` in CloudWatch is the legacy `nvidia-smi` metric and
-overestimates real compute usage. Treat any value < 30% as "investigate
-further", not "definitely oversized".
+Confirm the metric exists before trusting an empty result:
+
+```
+aws cloudwatch list-metrics --namespace CWAgent \
+  --metric-name nvidia_smi_utilization_gpu \
+  --dimensions Name=InstanceId,Value=<id>
+```
+
+Note: `nvidia_smi_utilization_gpu` is the `nvidia-smi` `GPU-Util` figure and
+overestimates real compute usage for the reason described above. Treat any
+value < 30% as "investigate further", not "definitely oversized".
+
+(On SageMaker the equivalent metric *is* native: `GPUUtilization` in the
+`/aws/sagemaker/Endpoints` namespace. That is a different playbook - see
+`aws-sagemaker-idle-endpoint.md`.)
 
 DCGM (deploy DCGM Exporter on the instance via SSM or Helm) gives the
 honest answer:
@@ -82,15 +101,20 @@ rightsize candidate.
 4. **Validate memory.** Confirm the model + activations + KV cache (for
    LLMs) fits within the target's frame buffer with 20% headroom for
    request-size variability.
-5. **Cut over** behind a weight-shifted endpoint variant (`InitialVariantWeight`
-   ramp 10% → 50% → 100%) so a regression is reversible.
+5. **Cut over incrementally** so a regression is reversible: shift a fraction
+   of the fleet (or of the load-balancer target weights) to the new instance
+   type, 10% → 50% → 100%, holding at each step long enough to see a full
+   traffic cycle. Keep the old capacity until the last step completes.
+   (If the workload is behind a SageMaker endpoint rather than raw EC2, the
+   equivalent is an `InitialVariantWeight` ramp across production variants -
+   see `aws-sagemaker-idle-endpoint.md`.)
 
 ## Anti-pattern
 
 - Rightsizing on **average** utilisation only. Models with batch jobs,
   monthly retraining, or end-of-quarter spikes will look oversized for 28
   days then break on day 29.
-- Trusting `GPUUtilization` (CloudWatch / `nvidia-smi`) without DCGM
+- Trusting `GPU-Util` (`nvidia_smi_utilization_gpu` / `nvidia-smi`) without DCGM
   cross-check. The metric is a "did the GPU do anything" boolean dressed
   up as a percentage - a workload touching 1 SM out of 132 on an H100 SXM
   (114 on the PCIe part) reports `GPU-Util: 100%`.

@@ -45,7 +45,7 @@ FROM cur2
 WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '1' month)
   AND line_item_usage_start_date <  date_trunc('month', current_date)
   AND product_servicecode = 'AmazonSageMaker'
-  AND line_item_usage_type LIKE '%SageMaker:host-%'
+  AND line_item_usage_type LIKE '%Host:ml.%'   -- e.g. USE1-Host:ml.m5.xlarge
 GROUP BY 1, 2
 HAVING SUM(line_item_usage_amount) > 600   -- > 600 hours/month = always-on
 ORDER BY cost_month DESC;
@@ -53,11 +53,24 @@ ORDER BY cost_month DESC;
 
 Then cross-check each `endpoint_arn` against CloudWatch:
 
+`Invocations` is published per production variant, so the `VariantName`
+dimension is required - querying on `EndpointName` alone returns no
+datapoints, which reads as "idle" whether or not it is. List the variants
+first:
+
+```
+aws sagemaker describe-endpoint --endpoint-name <endpoint-name> \
+  --query 'ProductionVariants[].VariantName' --output text
+```
+
+Then query each one (most endpoints have a single variant, `AllTraffic`):
+
 ```
 aws cloudwatch get-metric-statistics \
   --namespace AWS/SageMaker \
   --metric-name Invocations \
   --dimensions Name=EndpointName,Value=<endpoint-name> \
+               Name=VariantName,Value=<variant-name> \
   --start-time $(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%SZ) \
   --end-time   $(date -u +%Y-%m-%dT%H:%M:%SZ) \
   --period 86400 --statistics Sum
@@ -65,6 +78,14 @@ aws cloudwatch get-metric-statistics \
 
 A 30-day Sum of zero (or below ~50 across the whole month) is the strong
 signal: the endpoint pays the full hourly rate while serving no traffic.
+An *empty* result set is not the same thing - confirm the dimension pair
+exists before concluding anything:
+
+```
+aws cloudwatch list-metrics --namespace AWS/SageMaker \
+  --metric-name Invocations \
+  --dimensions Name=EndpointName,Value=<endpoint-name>
+```
 
 ## Fix
 
@@ -83,8 +104,11 @@ endpoint is genuinely idle or just lightly used.
    the real-time variant.
 3. **Move to serverless inference** if traffic is genuinely intermittent
    (a few requests per hour or per day) and the workload can tolerate cold
-   starts of 1-15 s. Serverless inference bills per-request rather than
-   per-hour, with no idle charge.
+   starts of 1-15 s. Serverless inference bills on compute duration per
+   request (GB-seconds of memory x duration) plus a per-request charge,
+   rather than per provisioned instance-hour - so there is no idle charge,
+   but a high-volume endpoint can still cost more than a right-sized
+   always-on one. Model the crossover before switching.
 4. **Rightsize** if the endpoint legitimately needs to stay available but
    the instance is too large. See
    [aws-gpu-instance-oversized](aws-gpu-instance-oversized.md) for the GPU

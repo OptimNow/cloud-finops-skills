@@ -10,13 +10,25 @@ confidence: likely
 
 ## Problem
 
-GKE Autopilot bills per-pod CPU / memory / ephemeral-storage requested,
-plus a flat **management fee** (~$0.10/cluster/hour = ~$72/month per
-cluster) regardless of workload activity. Even when no user workloads
-run, Autopilot keeps system-managed pods alive (control-plane logging,
-metrics agent, GMP collectors, networking). Dev / test / sandbox
-clusters left running over weekends and abandoned-after-the-PoC
-clusters accumulate this management fee silently.
+GKE charges a flat **cluster management fee** (~$0.10/cluster/hour =
+~$72/month per cluster) regardless of workload activity. Even when no user
+workloads run, Autopilot keeps system-managed pods alive (control-plane
+logging, metrics agent, GMP collectors, networking). Dev / test / sandbox
+clusters left running over weekends and abandoned-after-the-PoC clusters
+accumulate this fee silently.
+
+Two caveats before you build a business case on the management fee:
+
+- **The GKE free tier covers one zonal or Autopilot cluster per billing
+  account**, so the *first* idle cluster may cost nothing in management fee.
+  The waste is real from the second cluster onward - and organisations with
+  the pattern this playbook describes usually have many.
+- **Autopilot's workload billing depends on the compute class.** The
+  per-pod-request model applies to the general-purpose class; Autopilot also
+  supports node-based billing for some workloads (Performance and Accelerator
+  compute classes bill for the underlying node, not the pod request). Check
+  which class the workloads use before assuming zero pods means zero
+  workload cost.
 
 ## Symptoms
 
@@ -49,7 +61,7 @@ ORDER BY cost_30d DESC;
 # For each suspect cluster, count user-namespace pods
 gcloud container clusters get-credentials <cluster> --region <region> --project <project>
 kubectl get pods --all-namespaces \
-  -o json | jq '[.items[] | select(.metadata.namespace | startswith("kube-") | not) | select(.metadata.namespace != "gmp-system")] | length'
+  -o json | jq '[.items[] | select(.metadata.namespace | test("^(kube-|gke-|gmp-)") | not)] | length'
 ```
 
 ## Fix
