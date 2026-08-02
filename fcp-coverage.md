@@ -18,7 +18,7 @@ Marker legend:
 - [x] **Data Ingestion** - finops-oci.md _(secondary: finops-aws.md; finops-azure.md; finops-gcp.md)_
 - [x] **Allocation** - finops-allocation-showback.md; finops-kubernetes.md; finops-tagging.md _(secondary: finops-ai-dev-tools.md; finops-databricks.md; finops-for-ai.md; finops-onboarding-workloads.md)_
 - [~] **Reporting & Analytics** _(secondary: finops-allocation-showback.md; finops-aws.md; finops-azure.md; finops-gcp.md)_
-- [x] **Anomaly Management** - finops-anomaly-management.md _(secondary: finops-oci.md; finops-waste-detection-playbooks.md)_
+- [x] **Anomaly Management** - finops-anomaly-management.md _(secondary: finops-agentic.md; finops-oci.md; finops-waste-detection-playbooks.md)_
 
 ## Quantify Business Value
 
@@ -30,8 +30,8 @@ Marker legend:
 
 ## Optimize Usage & Cost
 
-- [x] **Architecting & Workload Placement** - finops-ai-self-hosted-vs-managed.md; finops-onboarding-workloads.md _(secondary: finops-genai-capacity.md; finops-kubernetes.md; finops-waste-detection-playbooks.md; greenops-cloud-carbon.md)_
-- [x] **Usage Optimization** - finops-ai-dev-tools.md; finops-anthropic.md; finops-bedrock.md; finops-databricks.md; finops-snowflake.md; finops-waste-detection-playbooks.md _(secondary: finops-ai-self-hosted-vs-managed.md; finops-aws.md; finops-azure-openai.md; finops-azure.md; finops-fabric.md; finops-for-ai.md; finops-gcp.md; finops-genai-capacity.md; finops-kubernetes.md; finops-oci.md; finops-vertexai.md; greenops-cloud-carbon.md)_
+- [x] **Architecting & Workload Placement** - finops-agentic.md; finops-ai-self-hosted-vs-managed.md; finops-onboarding-workloads.md _(secondary: finops-genai-capacity.md; finops-kubernetes.md; finops-waste-detection-playbooks.md; greenops-cloud-carbon.md)_
+- [x] **Usage Optimization** - finops-ai-dev-tools.md; finops-anthropic.md; finops-bedrock.md; finops-databricks.md; finops-snowflake.md; finops-waste-detection-playbooks.md _(secondary: finops-agentic.md; finops-ai-self-hosted-vs-managed.md; finops-aws.md; finops-azure-openai.md; finops-azure.md; finops-fabric.md; finops-for-ai.md; finops-gcp.md; finops-genai-capacity.md; finops-kubernetes.md; finops-oci.md; finops-vertexai.md; greenops-cloud-carbon.md)_
 - [x] **Rate Optimization** - finops-aws.md; finops-azure-openai.md; finops-azure.md; finops-fabric.md; finops-gcp.md; finops-genai-capacity.md; finops-vertexai.md _(secondary: finops-ai-self-hosted-vs-managed.md; finops-bedrock.md; finops-databricks.md; finops-snowflake.md)_
 - [x] **Licensing & SaaS** - finops-itam.md; finops-sam.md _(secondary: finops-ai-dev-tools.md)_
 - [x] **Sustainability** - greenops-cloud-carbon.md
@@ -40,7 +40,7 @@ Marker legend:
 
 - [ ] **Executive Strategy Alignment** - **GAP** (see Roadmap in CLAUDE.md for deferred capabilities)
 - [x] **FinOps Practice Operations** - finops-framework.md; optimnow-methodology.md _(secondary: finops-ai-value-management.md; finops-onboarding-workloads.md)_
-- [~] **Governance, Policy & Risk** _(secondary: finops-tagging.md)_
+- [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-tagging.md)_
 - [ ] **FinOps Education & Enablement** - **GAP** (see Roadmap in CLAUDE.md for deferred capabilities)
 - [x] **Invoicing & Chargeback** - finops-chargeback.md
 - [~] **FinOps Assessment** _(secondary: finops-framework.md)_
