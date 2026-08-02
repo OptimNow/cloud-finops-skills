@@ -189,3 +189,51 @@ def test_find_playbooks_no_match_returns_empty() -> None:
 def test_find_playbooks_filters_echo_input() -> None:
     result = tools.find_playbooks(scope="aws", waste_category="idle")
     assert result["filters"] == {"scope": "aws", "waste_category": "idle"}
+
+
+# --- empty faceted results explain themselves (F21) -------------------------
+
+
+def test_find_references_typo_returns_valid_values() -> None:
+    """A bare {"total": 0} cannot be told apart from a genuine coverage gap."""
+    result = tools.find_references(domain="Optimise Usage & Cost")  # British misspelling
+    assert result["total"] == 0
+    assert "hint" in result
+    assert "domain" in result["valid_values"]
+    assert "Optimize Usage & Cost" in result["valid_values"]["domain"]
+    assert "not present" in result["hint"]
+
+
+def test_find_playbooks_typo_returns_valid_values() -> None:
+    result = tools.find_playbooks(waste_category="orphan")  # actual value is "orphaned"
+    assert result["total"] == 0
+    assert "orphaned" in result["valid_values"]["waste_category"]
+
+
+def test_valid_but_non_overlapping_filters_say_so() -> None:
+    """Each value exists; the combination does not. That is a different message."""
+    result = tools.find_playbooks(scope="azure", service="AWS NAT Gateway")
+    assert result["total"] == 0
+    assert "no single item carries all of them" in result["hint"]
+
+
+def test_empty_result_help_is_absent_when_there_are_matches() -> None:
+    result = tools.find_playbooks(scope="aws")
+    assert result["total"] > 0
+    assert "hint" not in result
+    assert "valid_values" not in result
+
+
+def test_no_filters_returns_everything_without_help(expected_references: int) -> None:
+    result = tools.find_references()
+    assert result["total"] == expected_references
+    assert "hint" not in result
+
+
+def test_vocabulary_helpers_are_derived_from_data() -> None:
+    vocab = tools.playbook_vocabulary()
+    assert "egress" in vocab["waste_category"]
+    assert set(vocab["scope"]) <= {"aws", "azure", "gcp", "cross-cloud"}
+    ref_vocab = tools.reference_vocabulary()
+    assert set(ref_vocab["maturity"]) <= {"Crawl", "Walk", "Run"}
+    assert set(ref_vocab["phase"]) <= {"Inform", "Optimize", "Operate"}

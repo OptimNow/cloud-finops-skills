@@ -1,6 +1,7 @@
 """MCP server wiring.
 
-Registers the three v1 tools with FastMCP and runs the stdio transport.
+Registers the six tools with FastMCP and runs the stdio transport - three over
+references (list / get / find) and three over playbooks (list / get / find).
 The actual tool logic lives in :mod:`cloud_finops_mcp.tools` so it can be
 unit-tested without an MCP client.
 """
@@ -12,6 +13,7 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from . import __version__
+from . import metadata as _metadata
 from . import tools as _tools
 
 mcp = FastMCP(
@@ -89,7 +91,9 @@ def find_references(
             ``fcp_personas_collaborating``).
         maturity: Entry maturity level (``"Crawl"``, ``"Walk"``, ``"Run"``).
 
-    Returns ``{"filters": {...}, "references": [...], "total": N}``.
+    Returns ``{"filters": {...}, "references": [...], "total": N}``. A query
+    that matches nothing also returns `hint` and `valid_values`, so a typo is
+    distinguishable from a genuine gap in coverage.
     """
     return _tools.find_references(
         domain=domain,
@@ -155,9 +159,11 @@ def find_playbooks(
         confidence: ``"obvious"`` (single signal is enough),
             ``"likely"`` (two signals required), or ``"possible"``
             (needs human review). From the OptimNow three-tier confidence
-            model in ``finops-waste-detection-playbooks``.
+            model in `finops-waste-detection-playbooks`.
 
-    Returns ``{"filters": {...}, "playbooks": [...], "total": N}``.
+    Returns ``{"filters": {...}, "playbooks": [...], "total": N}``. A query
+    that matches nothing also returns `hint` and `valid_values`, so a typo is
+    distinguishable from a genuine gap in coverage.
     """
     return _tools.find_playbooks(
         scope=scope,
@@ -169,6 +175,13 @@ def find_playbooks(
 
 async def run() -> None:
     """Run the MCP server over the stdio transport."""
+    # Touch both indexes before serving. They are lru_cached and built lazily,
+    # so without this an empty content bundle stays silent until the first tool
+    # call - and then answers it with an empty list rather than an error. The
+    # index builders log at ERROR when they find nothing, which surfaces in the
+    # client's MCP server log at startup instead of never.
+    _metadata.get_index()
+    _metadata.get_playbook_index()
     # FastMCP exposes both synchronous and asynchronous run helpers; we use
     # the async one so the entry point can be called from ``asyncio.run``.
     await mcp.run_stdio_async()

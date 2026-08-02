@@ -1,5 +1,9 @@
 [build-system]
-requires = ["hatchling>=1.18", "hatch-build-scripts>=0.0.4"]
+# Upper-bounded for the same reason the runtime deps are: an unbounded
+# dependency is how the mcp 2.0 breakage reached a published wheel.
+# hatch-build-scripts is a third-party 0.0.x plugin, so any release could
+# be breaking - pin to the 0.0.x line.
+requires = ["hatchling>=1.18,<2", "hatch-build-scripts>=0.0.4,<0.1"]
 build-backend = "hatchling.build"
 
 [project]
@@ -26,6 +30,8 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [

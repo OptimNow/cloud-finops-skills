@@ -91,6 +91,98 @@ def _capability_match(ref: Reference, capability: str) -> bool:
     )
 
 
+def reference_vocabulary() -> dict[str, list[str]]:
+    """Distinct values present in the reference index, per facet.
+
+    Derived from the bundled data rather than hardcoded, so it cannot drift
+    from what the files actually declare.
+    """
+    vocab: dict[str, set[str]] = {
+        "domain": set(),
+        "capability": set(),
+        "phase": set(),
+        "persona": set(),
+        "maturity": set(),
+    }
+    for ref in get_index():
+        if ref.fcp_domain:
+            vocab["domain"].add(ref.fcp_domain)
+        if ref.fcp_capability:
+            vocab["capability"].add(ref.fcp_capability)
+        vocab["capability"].update(ref.fcp_capabilities_secondary)
+        vocab["phase"].update(ref.fcp_phases)
+        vocab["persona"].update(ref.fcp_personas_primary)
+        vocab["persona"].update(ref.fcp_personas_collaborating)
+        if ref.fcp_maturity_entry:
+            vocab["maturity"].add(ref.fcp_maturity_entry)
+    return {k: sorted(v) for k, v in vocab.items()}
+
+
+def playbook_vocabulary() -> dict[str, list[str]]:
+    """Distinct values present in the playbook index, per facet."""
+    vocab: dict[str, set[str]] = {
+        "scope": set(),
+        "service": set(),
+        "waste_category": set(),
+        "confidence": set(),
+    }
+    for pb in get_playbook_index():
+        for facet, value in (
+            ("scope", pb.scope),
+            ("service", pb.service),
+            ("waste_category", pb.waste_category),
+            ("confidence", pb.confidence),
+        ):
+            if value:
+                vocab[facet].add(value)
+    return {k: sorted(v) for k, v in vocab.items()}
+
+
+def _unmatched_filters(
+    active: dict[str, str], vocabulary: dict[str, list[str]]
+) -> list[str]:
+    """Active filter names whose value appears nowhere in the index.
+
+    A filter listed here is the reason the result set is empty - as opposed to
+    a legitimate no-overlap combination of individually-valid values.
+    """
+    unmatched = []
+    for key, value in active.items():
+        known = {v.casefold() for v in vocabulary.get(key, [])}
+        if value.casefold() not in known:
+            unmatched.append(key)
+    return unmatched
+
+
+def _empty_result_help(
+    active: dict[str, str], vocabulary: dict[str, list[str]]
+) -> dict[str, Any]:
+    """Explain a zero-match faceted query instead of returning a bare total: 0.
+
+    The name-based tools already offer difflib suggestions on a miss; the
+    faceted tools returned nothing at all, leaving the caller unable to tell a
+    typo from a genuine gap in coverage.
+    """
+    unmatched = _unmatched_filters(active, vocabulary)
+    if unmatched:
+        detail = (
+            "No match for "
+            + ", ".join(f"{k}={active[k]!r}" for k in unmatched)
+            + " - "
+            + ("that value is" if len(unmatched) == 1 else "those values are")
+            + " not present in the bundled set."
+        )
+    else:
+        detail = (
+            "Every filter value is valid on its own, but no single item carries "
+            "all of them together. Try relaxing one filter."
+        )
+    return {
+        "hint": detail,
+        "valid_values": {k: vocabulary.get(k, []) for k in active},
+    }
+
+
 def find_references(
     domain: str | None = None,
     capability: str | None = None,
@@ -102,7 +194,20 @@ def find_references(
 
     All parameters are optional and combine with AND semantics. String matches
     are case-insensitive and exact (no substring matching). Empty filters return
-    the full index.
+    the full index. A query that matches nothing returns ``hint`` and
+    ``valid_values`` alongside ``total: 0``, so a typo is distinguishable from a
+    genuine coverage gap.
+
+    Args:
+        domain: one of the four FinOps Framework domains, e.g.
+            ``"Optimize Usage & Cost"``.
+        capability: a FinOps Capability, matched against both the primary and
+            the secondary declarations, e.g. ``"Rate Optimization"``.
+        phase: ``Inform``, ``Optimize``, or ``Operate``.
+        persona: matched against both primary and collaborating personas, e.g.
+            ``"Engineering"``.
+        maturity: ``Crawl``, ``Walk``, or ``Run`` - the entry gate below which
+            the reference is premature.
     """
     filters = {
         "domain": domain,
@@ -129,11 +234,14 @@ def find_references(
             continue
         matches.append(ref)
 
-    return {
+    result: dict[str, Any] = {
         "filters": active,
         "references": [r.to_dict() for r in matches],
         "total": len(matches),
     }
+    if not matches and active:
+        result.update(_empty_result_help(active, reference_vocabulary()))
+    return result
 
 
 # --- playbook tools ---------------------------------------------------------
@@ -193,19 +301,25 @@ def find_playbooks(
     """Filter playbooks by their pattern frontmatter.
 
     All parameters are optional and combine with AND semantics. String matches
-    are case-insensitive and exact (no substring matching).
+    are case-insensitive and exact (no substring matching). A query that
+    matches nothing returns `hint` and `valid_values` alongside `total: 0`.
+
+    The double-backtick values listed below are the accepted vocabulary for
+    each facet, and are pinned against the bundled data by
+    `tests/test_conformance.py` - keep them in step when content changes.
 
     Args:
         scope: ``aws``, ``azure``, ``gcp``, or ``cross-cloud``.
         service: provider service name (e.g. ``"AWS NAT Gateway"``,
-            ``"Azure Disk Storage"``). Exact-match - use ``list_playbooks`` to
-            see the values present in the bundled set.
+            ``"Azure Managed Disks"``). Exact-match against a free-text field -
+            call ``list_playbooks`` first to see the values actually present,
+            or filter on ``scope`` instead. A miss returns the valid values.
         waste_category: ``orphaned``, ``idle``, ``overprovisioned``,
             ``commitment-mismatch``, ``schedule-blindness``, ``modernization``,
             ``ai-ml-inefficiency``, or ``egress``.
         confidence: ``obvious``, ``likely``, or ``possible`` - the OptimNow
-            three-tier confidence model from
-            ``finops-waste-detection-playbooks``.
+            three-tier confidence model defined in the
+            `finops-waste-detection-playbooks` reference.
     """
     filters = {
         "scope": scope,
@@ -231,8 +345,11 @@ def find_playbooks(
             continue
         matches.append(pb)
 
-    return {
+    result: dict[str, Any] = {
         "filters": active,
         "playbooks": [pb.to_dict() for pb in matches],
         "total": len(matches),
     }
+    if not matches and active:
+        result.update(_empty_result_help(active, playbook_vocabulary()))
+    return result
