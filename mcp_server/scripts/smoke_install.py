@@ -29,6 +29,7 @@ GitHub Actions ``::error::`` annotation) and exits 1.
 from __future__ import annotations
 
 import asyncio
+import json
 import subprocess
 import sys
 import time
@@ -37,6 +38,13 @@ from shutil import which
 
 LIVENESS_SECONDS = 5
 ROUNDTRIP_TIMEOUT = 30
+# Floor for the bundled content. The real numbers are ~29 references and ~25
+# playbooks; the floor exists to catch a wheel built with an empty or partial
+# data bundle, not to pin exact counts (which would need bumping on every
+# content PR). A wheel that ships zero content starts cleanly and answers every
+# tool call with an empty list - phases 1 and 2 cannot tell the difference.
+MIN_REFERENCES = 20
+MIN_PLAYBOOKS = 20
 EXPECTED_TOOLS = {
     "list_references",
     "get_reference",
@@ -140,6 +148,38 @@ async def _roundtrip(cmd: str) -> set[str]:
             return {t.name for t in result.tools}
 
 
+def _parse_total(payload: str, tool: str) -> int:
+    """Pull ``total`` out of a tool result, whatever shape the SDK returns."""
+    try:
+        data = json.loads(payload)
+    except json.JSONDecodeError:
+        _fail(
+            f"{tool} did not return JSON. Got:\n{payload[:500]}"
+        )
+        raise SystemExit(1)  # unreachable
+    if not isinstance(data, dict) or "total" not in data:
+        _fail(f"{tool} returned no 'total' field. Got keys: {list(data)[:10]}")
+    return int(data["total"])
+
+
+async def _content_counts(cmd: str) -> dict[str, int]:
+    from mcp import ClientSession, StdioServerParameters
+    from mcp.client.stdio import stdio_client
+
+    params = StdioServerParameters(command=cmd, args=[])
+    counts: dict[str, int] = {}
+    async with stdio_client(params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            for tool in ("list_references", "list_playbooks"):
+                result = await session.call_tool(tool, {})
+                text = "".join(
+                    block.text for block in result.content if getattr(block, "text", None)
+                )
+                counts[tool] = _parse_total(text, tool)
+    return counts
+
+
 def phase2_roundtrip(cmd: str) -> None:
     """Do a minimal MCP handshake via the official SDK stdio client."""
     print("[phase 2] MCP initialize + list_tools round-trip via the mcp SDK client")
@@ -172,13 +212,61 @@ def phase2_roundtrip(cmd: str) -> None:
     print(f"[phase 2] OK - MCP initialize + list_tools returned {len(names)} tools")
 
 
+def phase3_content(cmd: str) -> None:
+    """Assert the wheel actually carries its content bundle.
+
+    Phases 1 and 2 pass identically on a wheel whose data/ directory is empty:
+    the server starts, speaks MCP, and lists all six tools. Only calling a tool
+    and counting the results distinguishes a working package from a hollow one.
+    """
+    print("[phase 3] calling list_references / list_playbooks to verify the data bundle")
+    try:
+        counts = asyncio.run(
+            asyncio.wait_for(_content_counts(cmd), timeout=ROUNDTRIP_TIMEOUT)
+        )
+    except asyncio.TimeoutError:
+        _fail(f"Content tool calls did not complete within {ROUNDTRIP_TIMEOUT}s.")
+    except SystemExit:
+        raise
+    except BaseException as exc:  # noqa: BLE001 - any failure is a test failure
+        import traceback
+
+        _fail(
+            "Calling a content tool raised an exception:\n"
+            f"{type(exc).__name__}: {exc}\n"
+            "----- traceback -----\n" + traceback.format_exc()
+        )
+
+    problems = []
+    for tool, floor in (
+        ("list_references", MIN_REFERENCES),
+        ("list_playbooks", MIN_PLAYBOOKS),
+    ):
+        got = counts.get(tool, 0)
+        print(f"[phase 3] {tool} -> total={got} (floor {floor})")
+        if got < floor:
+            problems.append(f"{tool} returned {got}, expected at least {floor}")
+    if problems:
+        _fail(
+            "The server starts and speaks MCP but is serving an empty or partial "
+            "content bundle:\n  - "
+            + "\n  - ".join(problems)
+            + "\nThis means the wheel was built without running "
+            "scripts/sync_references.py, or the hatch-build-scripts hook did not "
+            "fire. The package is installable and starts cleanly, so nothing else "
+            "in the pipeline catches this."
+        )
+    print("[phase 3] OK - content bundle present")
+
+
 def main() -> None:
     cmd = _console_script()
     print(f"cloud-finops-mcp smoke test - interpreter:    {sys.executable}")
     print(f"cloud-finops-mcp smoke test - console script: {cmd}")
     phase1_liveness(cmd)
     phase2_roundtrip(cmd)
-    print("\nSMOKE TEST PASSED - clean install starts and speaks MCP.")
+    phase3_content(cmd)
+    print("\nSMOKE TEST PASSED - clean install starts, speaks MCP, and serves content.")
 
 
 if __name__ == "__main__":

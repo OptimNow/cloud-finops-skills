@@ -177,9 +177,18 @@ pytest
 
 ## Versioning
 
-The PyPI package version tracks the skill release tag. Tagging `v1.13` on the
-parent repo triggers both the skill release zip and a new `cloud-finops-mcp` PyPI
-publish so the bundled references match what the rest of the repo ships.
+The PyPI package version tracks the skill release. The trigger is a
+`.claude-plugin/plugin.json` version bump reaching `main`, not a hand-cut tag:
+the `auto-tag-on-plugin-bump` workflow reads the new version, creates the
+matching `vX.Y.Z` tag, and publishes both the skill release zip and a new
+`cloud-finops-mcp` wheel, so the bundled references match what the rest of the
+repo ships. Versions must be full three-part semver (`v1.27.0`); the workflow
+rejects anything else.
+
+Because a `plugin.json` bump publishes, content PRs never touch it. Version
+bumps live in dedicated release PRs that move `plugin.json`,
+`.claude-plugin/marketplace.json` `metadata.version`, and this package's
+`pyproject.toml` together. See the release-train rule in the repo's CLAUDE.md.
 
 ## License
 
