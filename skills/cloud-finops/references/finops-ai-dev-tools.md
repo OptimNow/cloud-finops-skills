@@ -174,10 +174,12 @@ with 90% of users staying under $12/day. At sustained full-time usage, expect
 $100-$200/developer/month.
 
 **Important cross-reference:** Claude Code usage on API key mode is subject to the same
-billing mechanics documented in `finops-anthropic.md` - including Fast mode (6x price
-multiplier), long-context pricing cliffs (200K input token threshold), prompt caching
-multipliers, and Batch API discounts. These are not theoretical risks. Fast mode was
-introduced in Claude Code and can silently reprice an entire session.
+billing mechanics documented in `finops-anthropic.md` - Fast mode (2x, Opus-tier only),
+prompt-caching multipliers, and Batch API discounts. Read the rates there rather than
+here; this file states the developer-tool consequences, `finops-anthropic.md` is the
+source of truth for the mechanics. Fast mode was introduced in Claude Code and doubles
+the unit price of a session on the models that support it, which makes it a governance
+question wherever developers can toggle it themselves.
 
 ### Cost tracking for Claude Code
 
@@ -206,18 +208,24 @@ API rates:
 | codex-mini-latest | $1.50 | $6.00 |
 | GPT-5 | $1.25 | $10.00 |
 
-API rates. As of March 2026, OpenAI's API pricing structure includes:
+API rates. **This file deliberately does not carry an OpenAI rate card.** A previous
+version listed GPT-4o and o1-series rates under an "as of March 2026" heading and then
+noted, in the same block, that GPT-5.5 had superseded them - a table that was known to
+be stale at the moment it was read is worse than no table, because it invites a
+forecast built on retired models.
 
-| Model | Input ($/1M tokens) | Output ($/1M tokens) |
-|---|---|---|
-| GPT-4o | $2.50 | $10.00 |
-| GPT-4o mini | $0.15 | $0.60 |
-| o1 | $15.00 | $60.00 |
-| o1-mini | $3.00 | $12.00 |
+For OpenAI capacity planning, price against https://openai.com/api/pricing/ at the time
+of the exercise. The structural points that do not rot:
 
-**Note:** OpenAI announced GPT-5.5 availability in API and Codex on 24 April 2026. Verify
-current rates for GPT-5.5 and other models against the live pricing page before capacity
-planning.
+- **The Codex-facing models and the general API models are priced separately** - a
+  Codex seat estimate built from general API rates will be wrong in both directions
+  depending on which model the seat routes to.
+- **Reasoning-model output tokens dominate.** Where a reasoning model is in play,
+  output volume, not input, drives the bill, which inverts the usual prompt-caching
+  advice that assumes input-heavy workloads.
+- **Model deprecation is the forecasting risk.** OpenAI retires and repositions models
+  faster than most FinOps refresh cycles, so a rate assumption more than a quarter old
+  should be treated as unverified regardless of how it was sourced.
 
 Sources: https://www.finout.io/blog/openai-pricing-in-2026,
 https://openai.com/index/introducing-gpt-5-5/,
@@ -255,19 +263,26 @@ billing.
 
 Overage charges apply at $0.04 per premium request beyond the monthly allocation.
 
-**Imminent change - GitHub AI Credits (1 June 2026).** GitHub is moving Copilot
-overage from a fixed-rate `$0.04 per premium request` to **usage-based billing in
-GitHub AI Credits**. After 1 June 2026, requests are priced per their underlying
-model token cost (with the provider margin baked into the credit rate) rather
-than at the flat $0.04. This is a material shift for FinOps teams running
-Copilot at scale: cost forecasts based on the historical $0.04 rate will drift
-once developers route to higher-cost models (Claude Sonnet, GPT-5 family) where
-the credit price exceeds the legacy flat rate. Recommendations: (1) capture the
-last 90 days of premium-request volume per developer and project the AI Credits
-spend at the new rates before 1 June, (2) review Copilot model-routing defaults
-and Enterprise admin controls before the cutover, (3) validate that procurement
-budgets allow for variable usage-based billing in the relevant tax / cost-centre
-structure. Source: https://docs.github.com/en/copilot/how-tos/manage-and-track-spending/prepare-for-your-move-to-usage-based-billing
+**GitHub AI Credits - transition date passed 1 June 2026.** GitHub moved Copilot
+overage from the fixed `$0.04 per premium request` rate to usage-based billing in
+GitHub AI Credits, where requests are priced against their underlying model token
+cost with the provider margin in the credit rate. **Verify the current rate card
+before quoting any per-request figure** - the $0.04 above is the legacy rate and is
+retained here only because a customer's historical invoices will show it.
+
+The FinOps consequence is a change in cost *shape*, not just rate: a flat
+per-request price made Copilot overage forecastable from request volume alone,
+while credit-based pricing makes it a function of volume **and** model mix. A team
+that shifts its routing default to a higher-cost model sees spend move with no
+change in developer behaviour or headcount.
+
+Post-transition actions: (1) reconcile the first full credit-billed month against
+the pre-transition baseline per developer, and expect the variance to be
+concentrated in whoever routes to the most expensive models; (2) check whether
+Enterprise admin model-routing controls are actually set, rather than left at
+default; (3) confirm the variable-spend line is budgeted in the right cost centre,
+since a usage-based charge often lands differently from a per-seat one.
+Source: https://docs.github.com/en/copilot/how-tos/manage-and-track-spending/prepare-for-your-move-to-usage-based-billing
 
 Enterprise total cost of ownership is $60/seat/month when including the required GitHub
 Enterprise Cloud subscription - a detail that often surprises procurement.
@@ -380,9 +395,13 @@ generation, or codebase analysis tasks.
 **LiteLLM budget caps** - set hard or soft budget limits per team or project at the proxy
 level. Prevents runaway spend from a single developer or workflow.
 
-**Context window management** - for Anthropic specifically, crossing the 200K input token
-threshold reprices the entire request at premium rates. Monitor input token counts and
-configure alerts before the cliff.
+**Context window management** - the 200K repricing cliff applied to older Claude models
+that reached 1M context via a beta header; the current generation prices flat across a
+1M window (see "Context window pricing" in `finops-anthropic.md`). On current models the
+exposure is therefore token *volume* and context exhaustion, not a rate cliff - monitor
+input tokens because long contexts cost more in absolute terms, not because a threshold
+reprices the request. Check which models the estate actually pins before designing an
+alert around a threshold.
 
 ---
 
