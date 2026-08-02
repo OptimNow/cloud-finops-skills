@@ -27,8 +27,12 @@ infrastructure. Copy the files into your agent's context and it gains FinOps exp
 - skills/cloud-finops/references/finops-ai-dev-tools.md: AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf)
 - skills/cloud-finops/references/finops-anthropic.md: Anthropic/Claude billing and governance
 - skills/cloud-finops/references/finops-aws.md: AWS FinOps (EC2, CUR, Savings Plans, cost allocation)
+- skills/cloud-finops/references/finops-aws-commitments.md: AWS Savings Plans, Reserved Instances, Spot, commitment decision tree, portfolio liquidity, EDP negotiation
+- skills/cloud-finops/references/finops-aws-patterns.md: AWS enumerated per-service optimisation pattern catalogue
 - skills/cloud-finops/references/finops-bedrock.md: AWS Bedrock billing and optimisation
 - skills/cloud-finops/references/finops-azure.md: Azure FinOps (reservations, policies, hybrid benefit)
+- skills/cloud-finops/references/finops-azure-commitments.md: Azure Reservations, Savings Plans, AHB, commitment decision trees, portfolio liquidity, phased purchasing, MACC
+- skills/cloud-finops/references/finops-azure-patterns.md: Azure enumerated per-service optimisation pattern catalogue
 - skills/cloud-finops/references/finops-azure-openai.md: Azure OpenAI Service (PTUs, spillover, costs)
 - skills/cloud-finops/references/finops-gcp.md: GCP FinOps (Compute, BigQuery, networking)
 - skills/cloud-finops/references/finops-vertexai.md: GCP Vertex AI billing and optimisation
