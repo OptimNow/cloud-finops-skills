@@ -2054,7 +2054,7 @@ Is the database workload stable and predictable (90+ days)?
         +-- Single service, single region, stable configuration
         |   -> Azure Reservation (deeper discount than Savings Plan)
         |     - Available for: SQL Database, Cosmos DB, PostgreSQL,
-        |       MySQL, MariaDB, SQL MI
+        |       MySQL, SQL MI
         |     - Exchange retires 1 Feb 2027 for these services (one final
         |       exchange for reservations bought before that date)
         |     - Pro-rated refund (up to $50K/12 months) and trade-in to a
@@ -2063,7 +2063,7 @@ Is the database workload stable and predictable (90+ days)?
         +-- Multiple database services or regions
         |   -> Savings Plan for Databases (up to 35%, March 2026)
         |     - Covers: SQL Database, PostgreSQL, MySQL, Cosmos DB,
-        |       SQL MI, MariaDB
+        |       SQL MI
         |     - Applies savings across services and regions automatically
         |     - Cannot be exchanged or refunded once purchased
         |     - CAUTION: SQL Server on Azure VMs and Azure Arc consume
@@ -2101,8 +2101,12 @@ hour, prioritising the usage that delivers the greatest discount first, across
 services and regions.
 
 **Eligible services:** Azure SQL Database, Azure Database for PostgreSQL, Azure
-Database for MySQL, Azure Cosmos DB, Azure SQL Managed Instance, Azure Database
-for MariaDB.
+Database for MySQL, Azure Cosmos DB, Azure SQL Managed Instance.
+
+Azure Database for MariaDB is **not** eligible - the service retired in September
+2025. If you still carry MariaDB workloads, they are running somewhere other than
+the managed service (VMs, containers, or a third-party host) and no database
+commitment covers them.
 
 **Important caveat:** SQL Server on Azure VMs and SQL Server enabled by Azure Arc
 also consume the plan's hourly commitment, but at normal PAYG rates (no discount).

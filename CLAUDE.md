@@ -66,9 +66,10 @@ cloud-finops-skills/
 │       ├── finops-chargeback.md            <- Chargeback + Finance/accounting prerequisites
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
-│       └── finops-waste-detection-playbooks.md  <- Seven-category waste taxonomy + WasteLine
+│       └── finops-waste-detection-playbooks.md  <- Eight-category waste taxonomy + WasteLine
 ├── skills/cloud-finops/playbooks/   <- named-pattern runbooks (`<scope>-<pattern>.md`,
-│                                ~2-3KB each, FIND/DETECT/FIX/SOURCES format) +
+│                                ~2-3KB each, Problem/Symptoms/Detection/Fix/
+│                                Anti-pattern/See also format) +
 │                                README.md index. RAG-friendly chunks routed from
 │                                SKILL.md / POWER.md "named waste pattern" rows
 ├── mcp_server/            <- `cloud-finops-mcp` PyPI package (six MCP tools,
@@ -343,11 +344,25 @@ GitHub issues, which track in-flight work.
   describing the un-freeze evidence.
 
 - **WasteLine extension to Azure and GCP.** `finops-waste-detection-playbooks.md` covers the
-  seven-category waste taxonomy and references the WasteLine appliance for AWS automation;
+  eight-category waste taxonomy and references the WasteLine appliance for AWS automation;
   Azure and GCP coverage currently routes to the in-cloud pattern catalogues
   (`finops-azure.md` 48-pattern, `finops-gcp.md` 26-pattern). When WasteLine ships Azure and
   GCP providers, update the operational tooling section to reflect the broader coverage and
   remove the "for Azure and GCP, see in-cloud catalogues" caveat.
+
+- **WasteLine egress detection rules.** Category 8 (egress / data transfer) was added to the
+  taxonomy in August 2026 as doctrine only - WasteLine implements Categories 1-7. Egress
+  waste is attributed from CUR usage types plus VPC Flow Logs rather than from resource-state
+  inspection, so it needs a different ingestion path in the appliance. Trigger: an engagement
+  where egress is a top-5 line item and manual attribution proves too slow to repeat. Until
+  then the operational-tooling section must keep saying so explicitly - the doctrine forbids
+  claiming tool coverage that does not exist.
+
+- **Playbook coverage for `commitment-mismatch`.** The waste taxonomy defines the category and
+  the MCP `find_playbooks` tool advertises it as a facet value, but no playbook carries it, so
+  the query returns empty. Either write the playbooks (RI utilisation gap, expiring commitment
+  without renewal decision, Savings Plan covering the wrong family) or accept the gap
+  knowingly. Surfaced by the 2026-08-02 repository review (F9).
 
 - **OptimNow doctrine layer.** Today the reasoning lens lives inside
   `optimnow-methodology.md` (visibility before optimisation, diagnose before prescribing,
@@ -484,10 +499,11 @@ These files shipped during the white-space analysis follow-up (PRs #48, #50, #51
 - `finops-onboarding-workloads.md` (PR #52) - Migration-time cost hygiene + M&A
 - `finops-kubernetes.md` (PR #54) - Cross-cluster K8s discipline (EKS/GKE/AKS)
 - `finops-waste-detection-playbooks.md` (PR #56) - Seven-category waste taxonomy + WasteLine
+  (extended to eight categories in August 2026 with egress / data transfer)
 - YAML FCP frontmatter pass across all 22 pre-existing references (PR #53)
 - `skills/cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - 23 RAG-friendly
-  named-pattern playbooks (`<scope>-<pattern>.md`, ~2-3KB each, FIND/DETECT/FIX/SOURCES
-  format) covering AWS (incl. SageMaker + GPU), Azure, GCP, and cross-cloud waste patterns.
+  named-pattern playbooks (`<scope>-<pattern>.md`, ~2-3KB each,
+  Problem/Symptoms/Detection/Fix/Anti-pattern/See also format) covering AWS (incl. SageMaker + GPU), Azure, GCP, and cross-cloud waste patterns.
   Routed from SKILL.md and POWER.md "named waste pattern" rows
 - `scripts/fcp-coverage.sh` + top-level `fcp-coverage.md` (PR #64) - bash matrix that
   parses FCP frontmatter from every reference and renders a 22-capability coverage table.
@@ -641,8 +657,9 @@ Good test patterns:
       `> *Cloud FinOps Playbook by [OptimNow]... CC BY-SA 4.0...*`. No
       truncation mid-sentence or mid-table.
 - [ ] If adding a new playbook, follow the format in
-      `skills/cloud-finops/playbooks/README.md` (frontmatter schema, FIND / DETECT /
-      FIX / SOURCES sections, OptimNow CC BY-SA footer), and update the named-
+      `skills/cloud-finops/playbooks/README.md` (frontmatter schema, Problem /
+      Symptoms / Detection / Fix / Anti-pattern / See also sections, OptimNow
+      CC BY-SA footer), and update the named-
       pattern parenthetical in SKILL.md, POWER.md, and the ChatGPT / grouped
       routing tables in install.sh.
       (Exact reference/playbook counts were removed from prose across the repo in

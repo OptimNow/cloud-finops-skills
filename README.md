@@ -166,10 +166,10 @@ The skill provides accurate, framework-aligned guidance across the following dom
 - **Kubernetes FinOps** - cross-cluster discipline (EKS / GKE / AKS), OpenCost / Kubecost,
   FOCUS-emitting K8s allocation, container rightsizing methodology, Karpenter, Spot
   diversification
-- **Waste detection playbooks** - OptimNow's seven-category waste taxonomy (orphaned,
+- **Waste detection playbooks** - OptimNow's eight-category waste taxonomy (orphaned,
   idle, overprovisioned, commitment mismatches, schedule blindness, modernisation,
-  AI/ML inefficiency), two-signal classification, three-tier confidence, WasteLine
-  appliance for AWS
+  AI/ML inefficiency, egress / data transfer), two-signal classification, three-tier
+  confidence, WasteLine appliance for AWS
 
 ---
 
@@ -322,7 +322,7 @@ cloud-finops-skills/
     │   ├── finops-chargeback.md                ← Chargeback maturity ladder + Finance/accounting prerequisites
     │   ├── finops-onboarding-workloads.md      ← Migration-time cost hygiene + M&A integration
     │   ├── finops-kubernetes.md                ← Kubernetes cross-cluster discipline (EKS/GKE/AKS)
-    │   └── finops-waste-detection-playbooks.md ← Seven-category waste taxonomy + WasteLine
+    │   └── finops-waste-detection-playbooks.md ← Eight-category waste taxonomy + WasteLine
     └── playbooks/                              ← RAG-friendly named-pattern runbooks (~2-4 KB each)
 ```
 

@@ -46,8 +46,8 @@ infrastructure. Copy the files into your agent's context and it gains FinOps exp
 - skills/cloud-finops/references/finops-chargeback.md: Chargeback maturity, Finance/accounting prerequisites
 - skills/cloud-finops/references/finops-onboarding-workloads.md: Migration-time cost hygiene, M&A integration
 - skills/cloud-finops/references/finops-kubernetes.md: Kubernetes FinOps (EKS / GKE / AKS) cross-cluster discipline
-- skills/cloud-finops/references/finops-waste-detection-playbooks.md: Seven-category waste taxonomy + WasteLine
-- skills/cloud-finops/playbooks/: RAG-friendly named-pattern runbooks (~2-4 KB each, FIND/DETECT/FIX/SOURCES format) covering AWS, Azure, GCP, and cross-cloud waste patterns. See `skills/cloud-finops/playbooks/README.md` for the full index.
+- skills/cloud-finops/references/finops-waste-detection-playbooks.md: Eight-category waste taxonomy + WasteLine
+- skills/cloud-finops/playbooks/: RAG-friendly named-pattern runbooks (~2-4 KB each, Problem/Symptoms/Detection/Fix/Anti-pattern/See also format) covering AWS, Azure, GCP, and cross-cloud waste patterns. See `skills/cloud-finops/playbooks/README.md` for the full index.
 
 ## Built by
 

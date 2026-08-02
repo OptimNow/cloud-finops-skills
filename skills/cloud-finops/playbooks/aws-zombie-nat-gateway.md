@@ -57,7 +57,9 @@ For real-time validation, the canonical CloudWatch metrics are
 2. Identify the route table(s) pointing at the gateway. If no private
    subnet routes to it, deletion is safe.
 3. Delete the NAT Gateway. Release the associated Elastic IP if no other
-   resource needs it (otherwise it accrues its own $3.60/month idle charge).
+   resource needs it - since February 2024 every public IPv4 address costs
+   $0.005/hr (~$3.60/month) whether it is attached to anything or not, so
+   an address left behind keeps billing.
 4. If a residual workload still needs occasional internet egress, evaluate
    whether **VPC Endpoints** can replace the NAT entirely. Two endpoint types
    with very different cost profiles:
@@ -87,7 +89,7 @@ For real-time validation, the canonical CloudWatch metrics are
   setup
 - `playbooks/aws-cross-az-egress.md` - the related cross-AZ chatterbox
   pattern
-- `references/finops-waste-detection-playbooks.md` - the seven-category
+- `references/finops-waste-detection-playbooks.md` - the eight-category
   taxonomy this pattern fits ("idle")
 
 ---
