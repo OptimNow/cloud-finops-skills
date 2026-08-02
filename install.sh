@@ -265,7 +265,7 @@ install_cursor() {
 build_cursor_rule() {
   cat <<'EOF'
 ---
-description: Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic). Use for cost questions on AWS, Azure, GCP, Anthropic, Bedrock, Vertex AI, Azure OpenAI, Databricks, Microsoft Fabric, Snowflake, OCI, AI coding tools, self-hosted vs managed AI inference, GenAI capacity planning, AI value management, GreenOps, FinOps Framework, SaaS asset management, ITAM, anomaly management, allocation and showback, chargeback, onboarding workloads, Kubernetes FinOps, waste detection.
+description: Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic). Use for cost questions on AWS, Azure, GCP, Anthropic, Bedrock, Vertex AI, Azure OpenAI, Databricks, Microsoft Fabric, Snowflake, OCI, AI coding tools, self-hosted vs managed AI inference, agentic FinOps, GenAI capacity planning, AI value management, GreenOps, FinOps Framework, SaaS asset management, ITAM, anomaly management, allocation and showback, chargeback, onboarding workloads, Kubernetes FinOps, waste detection.
 globs:
   - "**/*"
 alwaysApply: false
@@ -408,6 +408,7 @@ Use these knowledge files for the following query types:
 | GCP cost management, BigQuery export, CUDs, SUDs, Spot, Carbon Footprint | finops-gcp.md |
 | Vertex AI pricing, Provisioned Throughput, Context Caching | finops-vertexai.md |
 | AI cost management, LLM economics, agentic patterns, ROI, methodology lens | finops-for-ai.md |
+| Agentic FinOps, agent cost anatomy, cost per completed task, cost-safe agent architecture, agent-initiated payments (x402/MPP) | finops-agentic.md |
 | AI investment governance, Investment Council, stage gates | finops-ai-value-management.md |
 | GenAI capacity planning, provisioned vs shared, spillover | finops-genai-capacity.md |
 | Self-hosted vs managed AI inference, build-vs-buy LLM, vLLM, GPU rental, hidden cost surface | finops-ai-self-hosted-vs-managed.md |
@@ -427,7 +428,7 @@ Use these knowledge files for the following query types:
 | Onboarding workloads, migration-time cost hygiene, intake gate, 60-90 day forecast-then-commit rule, double-bubble cost, M&A integration | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, FOCUS-emitting K8s allocation, container rightsizing, Karpenter, Spot diversification | finops-kubernetes.md |
 | Waste detection playbooks, seven-category waste taxonomy, two-signal classification, WasteLine appliance | finops-waste-detection-playbooks.md |
-| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn) | playbook-<slug>.md (e.g. playbook-aws-zombie-nat-gateway.md) |
+| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste) | playbook-<slug>.md (e.g. playbook-aws-zombie-nat-gateway.md) |
 
 For multi-domain queries, retrieve all relevant files and synthesise. For named
 waste patterns, retrieve the matching `playbook-<slug>.md` knowledge file.
@@ -484,7 +485,7 @@ Use these knowledge files for the following query types:
 | OCI (Cost Reports, FOCUS, cost-tracking tags, Universal Credits) | oci.md |
 | FinOps Framework (4 domains 2024 + Executive Strategy Alignment 2026), tagging, SaaS management, ITAM, GreenOps, Kubernetes FinOps, waste detection playbooks | cross-cutting.md |
 | Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene + M&A) | finops-discipline.md |
-| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn) | playbooks.md |
+| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste) | playbooks.md |
 | Reasoning methodology lens (diagnose before prescribing, connect cost to value, recommend progressively) | methodology.md |
 
 For multi-domain queries, retrieve all relevant grouped files and synthesise. For
@@ -580,7 +581,8 @@ build_gemini_grouped_knowledge() {
   cat_required "$outdir/ai.md" \
     "$refs/finops-for-ai.md" "$refs/finops-anthropic.md" "$refs/finops-ai-dev-tools.md" \
     "$refs/finops-genai-capacity.md" "$refs/finops-ai-value-management.md" \
-    "$refs/finops-ai-self-hosted-vs-managed.md"
+    "$refs/finops-ai-self-hosted-vs-managed.md" \
+    "$refs/finops-agentic.md"
   cat_required "$outdir/data-platforms.md" \
     "$refs/finops-databricks.md" "$refs/finops-fabric.md" "$refs/finops-snowflake.md"
   cat_required "$outdir/oci.md" \

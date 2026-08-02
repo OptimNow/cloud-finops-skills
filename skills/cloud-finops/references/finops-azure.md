@@ -133,10 +133,14 @@ to be layered, not chosen in isolation.
    Reservation does not follow. A Savings Plan is spend-based and applies wherever it
    finds eligible usage - but the discount is ~7% shallower than a Reservation.
 
-4. **Reservations have meaningful liquidity; Savings Plans have none.** See the liquidity
-   mechanics table below for fees, caps, and operational rules. The takeaway: Microsoft's
-   current reservation-liquidity terms are significantly more generous than AWS Standard
-   RI marketplace selling, but read the fine print on the future 12% fee clause.
+4. **Reservation liquidity is shrinking; Savings Plans have none.** See the liquidity
+   mechanics table below for fees, caps, and operational rules. Hold two things together.
+   First, from 1 February 2027 reservation exchange retires for any service a savings plan
+   also covers (VMs, Dedicated Host, App Service, and the covered databases); refund and
+   trade-in to a savings plan survive. Second, for services a savings plan does not cover
+   (such as Azure VMware Solution) exchange continues. Microsoft's refund terms remain more
+   generous than AWS Standard RI marketplace selling, but read the fine print on the future
+   12% fee clause, and treat exchange as unavailable for covered services when planning.
 
 5. **Savings Plans cannot be exchanged, cancelled, or refunded** once purchased. The
    commitment runs for the full term. This makes phased purchasing and portfolio
@@ -152,11 +156,11 @@ to be layered, not chosen in isolation.
    either plan migration to newer generations or use three-year reservations if the
    workload will remain on the legacy series.
 
-**Reservation and Savings Plan liquidity mechanics (current as of April 2026):**
+**Reservation and Savings Plan liquidity mechanics (verified against Microsoft Learn, July 2026):**
 
 | Mechanic | Fee | Annual cap | Notes |
 |---|---|---|---|
-| **Reservation exchange** | None | None | Same product family only. Does not count against the refund cap. The 1 January 2024 sunset of free exchanges was extended indefinitely; reservations purchased during the grace period (which is the current state as of April 2026) retain the right to one more exchange after the grace period eventually ends. |
+| **Reservation exchange** | None | None | Same product family only. Does not count against the refund cap. **Retiring 1 February 2027 for services also covered by a savings plan** (VMs, Dedicated Host, App Service, and the covered databases). Reservations purchased before that date keep the right to one final exchange, granted per quantity. Because an exchange is processed as a cancel, refund, and repurchase, an exchange done after that date yields a non-exchangeable reservation. Reservations for services with no savings plan (such as Azure VMware Solution) keep exchange. |
 | **Reservation refund (cancellation)** | None today | $50,000 per 12-month rolling window per Billing Profile (MCA) or enrollment (EA). **The cap restores day-by-day** - 365 days after a refund, the original $50K is fully reinstated. | "Refund" and "cancellation" are the same operation in current docs. Microsoft reserves the right to introduce a 12% early-termination fee in future - verify before relying on liquidity. |
 | **Reservation trade-in to Savings Plan** | None | None | Convert RI to Savings Plan credit. No time limit. |
 | **Savings Plan cancel / exchange / refund** | N/A | N/A | Not allowed. SPs are non-refundable, non-exchangeable, non-cancellable. |
@@ -193,9 +197,10 @@ START: What Azure compute service runs the workload?
 │   │               │         (Check: older series may only support 3yr after
 │   │               │         July 1, 2026)
 │   │               │         ├── YES → Azure Reservation (up to 72%)
-│   │               │         │         Deepest discount. Can be exchanged for a
-│   │               │         │         different SKU if workload changes (subject
-│   │               │         │         to exchange policy limits).
+│   │               │         │         Deepest discount. From 1 Feb 2027 covered
+│   │               │         │         services can't be exchanged, so reserve only
+│   │               │         │         at high conviction on family, region, and term.
+│   │               │         │         Size stays flexible within the family via ISF.
 │   │               │         │
 │   │               │         └── NO → Consider 3yr reservation or migration to
 │   │               │                  newer VM series that supports 1yr terms
@@ -203,8 +208,9 @@ START: What Azure compute service runs the workload?
 │   │               └── NO / UNSURE → Savings Plan for Compute (up to 65%)
 │   │                     Covers any VM family and region. ~7% shallower
 │   │                     than Reservations but protects against family
-│   │                     or region changes. Cannot be exchanged or
-│   │                     refunded once purchased.
+│   │                     or region changes. Any doubt on the lock
+│   │                     dimensions defaults here. Cannot be exchanged
+│   │                     or refunded once purchased.
 │   │
 │   └── Special case: GPU / N-series VMs
 │       - Capacity scarcity is a primary concern (NC, ND, NV families)
@@ -280,17 +286,59 @@ START: What Azure compute service runs the workload?
 | Size | Flexible within family (instance size flexibility) | Any size |
 | Covers App Service | Premium v3 + Isolated v2 | App Service & Functions Premium plans (broader SKU set) |
 | Covers Container Instances | No | Yes |
-| Exchangeable | Yes - same product family, no fee, no cap (does not count against the refund cap) | No |
+| Exchangeable | Until 1 Feb 2027 for covered services (then one final exchange for reservations bought earlier); unaffected for non-covered services such as VMware. Same product family, no fee, no cap | No |
 | Refundable | Pro-rated, up to $50K per 12 months - no fee today; Microsoft reserves right to add 12% future fee | No |
 | Cancellable | Yes - refund and cancellation are the same operation today, no fee currently charged | No |
 | Payment options | Monthly or Upfront | Monthly or Upfront |
 | Scoping | Subscription, resource group, management group, shared | Subscription, resource group, management group, shared |
 
-**Key takeaway:** Reservations offer deeper discounts AND more liquidity (exchanges,
-refunds). Savings Plans offer broader coverage but zero liquidity once purchased. This
-inverts the common assumption that "flexibility = Savings Plans." For Azure specifically,
-Reservations are often the better choice when workloads are moderately stable, because
-you retain the ability to exchange if things change.
+**Key takeaway (updated for the 1 February 2027 exchange change):** Reservations still
+offer the deeper discount, but their flexibility edge narrows sharply. For services a
+savings plan also covers, reservation exchange retires on 1 February 2027, leaving only a
+capped refund and a one-way trade-in to a savings plan. Until that date the old logic held:
+reserve moderately stable workloads, exchange if things change. From that date, reserve a
+covered service only at high conviction across family, region, term, and workload
+continuation; instance size flexibility still handles size within the family. Default
+anything short of that to a savings plan. See "Commitment liquidity after February 2027"
+below for the operational rule.
+
+### Commitment liquidity after February 2027
+
+Context: this rule assumes the 1 February 2027 retirement of reservation exchange for
+services also covered by a savings plan, and it applies to those covered services only.
+
+The escape hatch that made reservations safe at moderate confidence, free and uncapped
+exchange, is being removed for covered services. The remaining corrections are a refund
+capped at $50,000 per 12-month rolling window and a one-way trade-in to a savings plan.
+Build the strategy around that.
+
+**Reserve only at high conviction across five lock dimensions, for the full term:**
+
+1. VM family stays put.
+2. Region stays put.
+3. Size stays inside the instance-size-flexibility band (ISF is unaffected by the change).
+4. Term length is one you can genuinely hold (1yr vs 3yr).
+5. No migration or decommission is planned in the window.
+
+If any single dimension is uncertain, default to a savings plan. Family and region are the
+hard new locks; size within the family stays flexible through ISF.
+
+**Two refinements so the rule does not backfire:**
+
+- **The default has a price, so size it.** A savings plan discounts roughly 7 points less
+  than a reservation on compute (up to 65% vs up to 72%), and more on databases (up to 35%
+  vs the reservation rate). That gap is the premium for the flexibility exchange used to
+  provide for free. On a large, genuinely stable baseline it can reach six figures a year.
+  Reserve the certain floor; do not surrender its depth out of caution.
+- **At Crawl and Walk maturity, the fallback is often more PAYG buffer, not a bigger
+  savings plan.** Azure bills daily while a savings plan is sized on an hourly floor (see
+  "Why daily data hurts Savings Plan sizing more than RI sizing"), and a savings plan has
+  zero liquidity to unwind an over-commitment. Teams that cannot yet build the
+  cost-plus-utilisation join should hedge the uncertain slice with a wider PAYG buffer,
+  plus AHB and Spot where they fit, until they can size the hourly floor with confidence.
+
+Microsoft's own framing now matches this split: reservations for predictable, stable
+workloads, savings plans for evolving or dynamic ones.
 
 ### Spot Virtual Machines
 
@@ -364,9 +412,9 @@ Layer 1: Spot (for interruptible workloads)
   ↓ removes 15-40% of compute from the commitment equation
 Layer 2: Savings Plans for Compute (broad baseline)
   ↓ covers predictable floor across VMs/App Service/Container Instances
-Layer 3: Reservations (high-stability VM workloads)
+Layer 3: Reservations (high-conviction, locked-in VM workloads)
   ↓ captures the extra ~7% discount for workloads locked to a family+region
-  ↓ retains exchange/refund liquidity if workload changes
+  ↓ liquidity for covered services is refund + trade-in only from 1 Feb 2027 (no exchange)
 Layer 4: PAYG (variable / new workloads)
 ```
 
@@ -642,12 +690,16 @@ factored, scope mismatches, or workload changes Advisor cannot know.
 
 **Step 5 - Stagger purchases.** Do not buy the full recommendation at once. Stagger
 over 60-90 days so utilisation patterns confirm or surprise before each next tranche.
-Reservation exchange liquidity (see "Reservation and Savings Plan liquidity mechanics"
-above) gives you a recovery path if Step 4 missed something; SP commitments do not.
+Staggering matters more now that exchange retires for covered services on 1 February 2027:
+the recovery path for a wrong covered reservation is a capped refund or a one-way trade-in
+to a savings plan, not a free exchange. Size each tranche so a mistake fits inside the
+$50,000 refund window.
 
-**Step 6 - Quarterly re-evaluation.** Exchange RIs that no longer fit the workload.
-Track SP utilisation against committed $/hour. Adjust the next quarter's commitments
-based on prior actuals, not on Advisor's rolling backward-looking recommendation.
+**Step 6 - Quarterly re-evaluation.** For non-covered services, exchange RIs that no
+longer fit the workload; for covered services after 1 February 2027, use refund (within
+the cap) or trade-in to a savings plan instead. Track SP utilisation against committed
+$/hour. Adjust the next quarter's commitments based on prior actuals, not on Advisor's
+rolling backward-looking recommendation.
 
 ---
 
@@ -768,9 +820,11 @@ nominal CPU% understates the demand. Either move off B-series or hold size.
 ### When rightsizing competes with commitment renewal
 
 If a Reservation is locked to a specific SKU and the workload is genuinely oversized,
-rightsize first then exchange the Reservation to the smaller SKU (Azure allows
-exchange to equal-or-greater value, but smaller SKUs are accommodated by exchanging
-to a different family). For Savings Plans (no exchange), rightsizing within covered
+instance size flexibility already covers smaller sizes within the same family, so a
+downsize inside the family needs no action. Moving outside the family previously meant
+exchanging the Reservation; for covered services that path closes on 1 February 2027, so
+rightsize before committing rather than relying on a later exchange (non-covered services
+such as VMware keep exchange). For Savings Plans (no exchange), rightsizing within covered
 spend is free - the Savings Plan still applies to the smaller VM at the same hourly
 commitment.
 
@@ -2001,8 +2055,10 @@ Is the database workload stable and predictable (90+ days)?
         |   -> Azure Reservation (deeper discount than Savings Plan)
         |     - Available for: SQL Database, Cosmos DB, PostgreSQL,
         |       MySQL, MariaDB, SQL MI
-        |     - Exchangeable for different SKU if workload changes
-        |     - Pro-rated refund available (up to $50K/12 months)
+        |     - Exchange retires 1 Feb 2027 for these services (one final
+        |       exchange for reservations bought before that date)
+        |     - Pro-rated refund (up to $50K/12 months) and trade-in to a
+        |       savings plan remain
         |
         +-- Multiple database services or regions
         |   -> Savings Plan for Databases (up to 35%, March 2026)
@@ -2146,7 +2202,7 @@ more built-in liquidity mechanisms than AWS, but each has limits.
 
 | Mechanism | How it works | Applies to | Limits |
 |---|---|---|---|
-| **Reservation exchange** | Swap a Reservation for a different SKU within the same product family | Reservations only | Same product family. **No fee, no annual cap. Exchanges do NOT count against the $50K refund cap.** |
+| **Reservation exchange** | Swap a Reservation for a different SKU within the same product family | Reservations for services **not** covered by a savings plan (e.g. VMware) | Same product family. No fee, no cap. **Retires 1 February 2027 for savings-plan-covered services** (VMs, Dedicated Host, App Service, covered databases); reservations bought before then get one final exchange per quantity. |
 | **Reservation refund (cancellation)** | Cancel a Reservation and receive a pro-rated refund | Reservations only | $50,000 rolling 12-month cap **per Billing Profile (MCA) or enrollment (EA)**. The cap restores day-by-day; 365 days after a refund, the original $50K is fully reinstated. |
 | **Reservation instance size flexibility (ISF)** | A Reservation on one VM size covers other sizes in the same family at a normalised ratio | VM Reservations | Same VM family and region only |
 | **Reservation trade-in to Savings Plan** | Convert RI to Savings Plan credit | Reservations only | No fee, no time limit |
@@ -2156,22 +2212,24 @@ This table is the same set of mechanics as the "Reservation and Savings Plan
 liquidity mechanics" table earlier in this file - kept here in the commitment-
 portfolio context for engagement readers who land in this section first.
 
-**Key insight:** Reservations are more liquid than Savings Plans on Azure. This is
-the opposite of the common assumption. Savings Plans offer usage flexibility (any
-family, any region) but zero financial liquidity (no exchange, no refund, no
-cancellation). Reservations lock to a specific SKU but allow exchanges (no fee,
-no cap), refunds (within the $50K cap), trade-in to Savings Plan (no fee, no
-limit), and instance size flexibility within the family. When choosing between
-the two, factor liquidity into the decision - not just discount depth and coverage
+**Key insight (updated for 1 February 2027):** Reservations were more liquid than Savings
+Plans on Azure, the opposite of the common assumption. That edge is narrowing. Savings
+Plans still offer usage flexibility (any family, any region) but zero financial liquidity
+(no exchange, no refund, no cancellation). Reservations still allow refunds (within the
+$50K cap), trade-in to a Savings Plan (no fee, no limit), and instance size flexibility
+within the family, but reservation exchange retires on 1 February 2027 for any service a
+savings plan also covers. For those covered services the liquidity edge shrinks to the
+refund cap; exchange survives only for non-covered services such as VMware. When choosing
+between the two, factor this into the decision, not just discount depth and coverage
 breadth.
 
-**The $50,000 refund cap (applies to refunds only, not exchanges).** Microsoft
-imposes a rolling 12-month cap of $50,000 on Reservation refunds per Billing
-Profile (MCA) or enrollment (EA). **Exchanges within the same product family do
-not count against this cap** - confirmed in current Microsoft docs. For
-organisations with large Reservation portfolios, the refund cap can still be a
-binding constraint if you need to cancel rather than exchange. The cap restores
-day-by-day; spread cancellations across the 12-month window where possible.
+**The $50,000 refund cap.** Microsoft imposes a rolling 12-month cap of $50,000 on
+Reservation refunds per Billing Profile (MCA) or enrollment (EA). Exchanges that still
+apply (non-covered services, or a final exchange on a pre-2027 covered reservation) do
+not count against this cap. Once exchange retires for covered services on 1 February 2027,
+the refund cap becomes the main reshaping lever for those reservations, so it binds harder
+on large portfolios. The cap restores day-by-day; spread cancellations across the 12-month
+window where possible.
 
 Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations
 
@@ -2186,9 +2244,9 @@ your consumption profile - not a fixed rule.
   current block is at risk
 - **Creates natural re-evaluation points:** each purchase cycle forces a review of
   utilisation, Advisor recommendations, and architecture direction
-- **Preserves refund/exchange headroom:** spreading purchases means smaller
-  individual Reservations, making it easier to stay within the $50K refund cap if
-  changes are needed
+- **Preserves refund headroom:** spreading purchases means smaller individual
+  Reservations, making it easier to stay within the $50K refund cap if changes are
+  needed (exchange headroom applies only to non-covered services after 1 Feb 2027)
 - **Aligns with MACC cadence:** phased purchasing can be timed to support MACC
   burndown trajectory, avoiding end-of-period scrambles
 - **Captures pricing improvements:** newer VM generations (v5, v6) and architecture
@@ -2217,11 +2275,12 @@ the growth rate stabilises.
 This keeps the total portfolio size similar but distributes the risk across more,
 smaller decisions.
 
-**Azure-specific consideration:** on Azure, Reservations can be exchanged mid-term,
-so organisations with moderate-frequency cadence (monthly/bi-monthly) can favour
-Reservations over Savings Plans - the exchange mechanism provides an additional
-liquidity layer on top of the staggered expiry approach. Organisations buying weekly
-may prefer Savings Plans to avoid the administrative overhead of frequent
+**Azure-specific consideration:** until 1 February 2027, reservations for covered services
+can be exchanged mid-term, giving moderate-frequency buyers (monthly/bi-monthly) an extra
+liquidity layer on top of staggered expiry. From that date exchange retires for covered
+services, so that layer disappears there and the choice rests on discount depth and
+conviction; it persists for non-covered services such as VMware. Organisations buying
+weekly may still prefer Savings Plans to avoid the administrative overhead of frequent
 Reservation management.
 
 **Phased purchasing framework (quarterly example for steady consumption):**
@@ -2234,7 +2293,8 @@ Quarter 1: Buy 20-25% of target commitment (the floor you are certain about)
 
 Quarter 2: Buy next 15-20% block
   -> Reassess workload stability and architecture plans
-  -> Review Reservation exchange opportunities on earlier blocks if workloads shifted
+  -> Reshape earlier blocks if workloads shifted (exchange for non-covered services;
+     refund or trade-in for covered services after 1 Feb 2027)
 
 Quarter 3: Buy next 15-20% block
   -> By now 50-65% of target is covered
@@ -2263,8 +2323,8 @@ each block should be.
 - **At each purchase cycle** (weekly/monthly/quarterly depending on profile): review
   Reservation and Savings Plan utilisation in Azure Cost Management. Flag any
   commitment below 80%. Decide whether to buy the next block, adjust the mix, or
-  pause. Review Reservation exchange opportunities on earlier blocks if workloads
-  have shifted.
+  pause. Reshape earlier blocks if workloads have shifted: exchange for non-covered
+  services, refund or trade-in to a savings plan for covered services after 1 Feb 2027.
 - **At each expiry:** do not auto-renew blindly. Re-evaluate the workload: has it
   grown, shrunk, migrated, or been decommissioned? Renew only what is still
   justified. Azure Advisor provides renewal recommendations - use them as input,
@@ -2279,16 +2339,17 @@ each block should be.
   more than 30%, the portfolio is insufficiently diversified.
 - Are you buying commitments in phased blocks with staggered expiry, or purchasing
   the full amount in a single transaction?
-- How much of your $50,000 Reservation refund/exchange cap have you used in the
-  last 12 months? If you are close to the cap, you have less room to reshape the
-  portfolio.
+- How much of your $50,000 Reservation refund cap have you used in the last 12 months?
+  With exchange retiring for covered services on 1 Feb 2027, this cap is the main
+  reshaping lever for those reservations, so headroom matters more.
 - Are Savings Plans covering workloads that are stable enough for Reservations
   (leaving ~7% discount on the table)?
 - Is MACC burndown tracking integrated into the same review cadence as commitment
   purchasing? If not, optimisation gains may create a MACC shortfall risk.
 - Are engineering teams planning VM family migrations (e.g. to ARM-based Dps/Eps)
   that would strand existing Reservations? If so, favour Savings Plans for those
-  workloads or plan Reservation exchanges in advance.
+  workloads, since exchange retires for covered services on 1 Feb 2027 and can no
+  longer rescue a stranded reservation.
 
 **Key metrics:**
 - **Reservation/SP Utilisation:** Target >80%. Below this, the commitment is
@@ -2298,7 +2359,8 @@ each block should be.
   well commitments are matched to real usage.
 - **Break-even period:** should be <9 months for 1-year terms, <15 months for 3-year.
 - **Commitment waste:** hours where committed capacity had no matching usage.
-- **Exchange headroom:** remaining $ available under the $50K/12-month refund cap.
+- **Refund headroom:** remaining $ available under the $50K/12-month refund cap. This
+  is the main reshaping lever for covered services once exchange retires on 1 Feb 2027.
 
 **Pre-purchase checklist:**
 - [ ] Azure Hybrid Benefit enabled on all eligible VMs and SQL instances
@@ -2448,7 +2510,7 @@ putting a recurring FinOps agent on these tools. Microsoft's observed pattern is
 worth repeating verbatim: read-only agents are ~80% of the value at ~5% of the risk -
 start there, and gate any write behind an explicit user verb, a confirm step showing
 the resolved template and scope, and a freeze flag. This matches the
-policy-generation-over-direct-mutation doctrine in `finops-for-ai.md`.
+policy-generation-over-direct-mutation doctrine in `finops-agentic.md`.
 
 ### Azure MCP Server pricing tools
 
@@ -2707,7 +2769,9 @@ As workloads evolve, Azure Reserved Instances (RIs) may no longer align with act
 
 - Evaluate whether any existing workloads could be migrated to match the reservation scope
 - For new workloads, consider provisioning on RI-covered instance types when technically viable
-- Where appropriate, exchange the reservation for a more relevant SKU
+- Where appropriate, exchange the reservation for a more relevant SKU (non-covered
+  services); for savings-plan-covered services after 1 Feb 2027, trade in to a savings
+  plan or refund within the cap instead
 
 **Oversized Hosting Plan For Azure Functions**
 Service: Azure Functions | Type: Inefficient Configuration

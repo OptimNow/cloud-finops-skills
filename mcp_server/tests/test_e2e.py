@@ -58,7 +58,7 @@ async def test_e2e_list_references(server_params: StdioServerParameters) -> None
             await session.initialize()
             result = await session.call_tool("list_references", {})
             payload = _payload(result)
-            assert payload["total"] == 28
+            assert payload["total"] == 29
 
 
 @pytest.mark.asyncio
@@ -93,7 +93,7 @@ async def test_e2e_list_playbooks(server_params: StdioServerParameters) -> None:
             await session.initialize()
             result = await session.call_tool("list_playbooks", {})
             payload = _payload(result)
-            assert payload["total"] == 23
+            assert payload["total"] == 25
 
 
 @pytest.mark.asyncio

@@ -20,6 +20,7 @@ infrastructure. Copy the files into your agent's context and it gains FinOps exp
 - INSTALLATION.md: cross-tool installer covering 12 tool integrations + model-agnostic response contract
 - skills/cloud-finops/references/optimnow-methodology.md: Reasoning philosophy (read first on every query)
 - skills/cloud-finops/references/finops-for-ai.md: AI cost management, token economics, agentic patterns
+- skills/cloud-finops/references/finops-agentic.md: Agentic FinOps - agent cost anatomy, cost-safe architecture, agent-initiated payments (x402/MPP)
 - skills/cloud-finops/references/finops-ai-value-management.md: AI investment governance, stage gates
 - skills/cloud-finops/references/finops-genai-capacity.md: Provisioned vs shared capacity, cross-provider
 - skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md: Self-hosted vs managed AI inference decisioning
