@@ -646,10 +646,15 @@ Good test patterns:
 - [ ] YAML FCP frontmatter included on the new file (see "Reference-file frontmatter")
 - [ ] Routing table updated in both SKILL.md and POWER.md
 - [ ] README directory listing and "What this skill covers" section updated
-- [ ] CLAUDE.md "Repository structure" directory listing updated
+- [ ] CLAUDE.md "Repository structure" directory listing updated (CI-gated by
+      `scripts/check-docs-drift.sh` - a reference missing from the tree, or a
+      tree entry with no file behind it, fails the `CI` workflow)
 - [ ] AGENTS.md and llms.txt updated to reflect the new reference (the llms.txt
       "Key files" list is CI-gated by `scripts/check-llms-txt.sh` - a missing or
-      stale entry fails the `CI` workflow, so this can't drift silently)
+      stale entry fails the `CI` workflow, so this can't drift silently).
+      AGENTS.md deliberately does not enumerate references - it shows a
+      truncated tree and defers to CLAUDE.md - so there is nothing to update
+      there unless the new file changes what AGENTS.md says about the repo.
 - [ ] install.sh per-tool routing updated: ChatGPT inline routing table, Gemini
       grouped knowledge, and Cursor description must mention the new domain
 - [ ] File ends with the OptimNow / CC BY-SA footer. References use
@@ -677,7 +682,9 @@ Good test patterns:
       `marketplace version in sync` workflow), `mcp_server/pyproject.toml`.
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
       reference file count and topic list (can ride the release PR)
-- [ ] SKILL.md description stays under 1024 characters
+- [ ] SKILL.md description stays under 1024 characters (CI-gated by
+      `scripts/check-skill-description.sh`, which also warns above 950 so the
+      ceiling is visible before it is hit)
 - [ ] No em dashes in any public content
 - [ ] No sensitive or internal files included
 - [ ] Content is practical and based on how billing actually works, not on documentation summaries
