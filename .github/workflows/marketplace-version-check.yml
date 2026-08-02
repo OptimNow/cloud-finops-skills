@@ -1,0 +1,40 @@
+name: marketplace version in sync
+
+# Fails if .claude-plugin/marketplace.json metadata.version drifts from
+# .claude-plugin/plugin.json version. Runs only when a version-bearing file
+# changes, so it is cheap and targeted.
+#
+# This is how metadata.version is "automated": a bot cannot commit the sync to
+# main (the "Protect main" ruleset requires a reviewed PR), so instead the guard
+# makes drift impossible - the marketplace bump must ride the same PR that bumps
+# plugin.json, or this check goes red. Same pattern as the llms.txt drift guard
+# in ci.yml.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude-plugin/plugin.json'
+      - '.claude-plugin/marketplace.json'
+      - 'scripts/check-marketplace-version.sh'
+      - '.github/workflows/marketplace-version-check.yml'
+  pull_request:
+    paths:
+      - '.claude-plugin/plugin.json'
+      - '.claude-plugin/marketplace.json'
+      - 'scripts/check-marketplace-version.sh'
+      - '.github/workflows/marketplace-version-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: plugin.json and marketplace.json versions agree
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check marketplace.json metadata.version matches plugin.json
+        run: bash scripts/check-marketplace-version.sh
