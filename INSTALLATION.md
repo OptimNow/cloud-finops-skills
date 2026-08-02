@@ -187,6 +187,16 @@ Copies to `~/.gemini/skills/cloud-finops/`. This target always installs at `$HOM
 `--user` is not needed and has no effect on it. Use `--dest <dir>` to install
 elsewhere.
 
+Gemini CLI implements the same `SKILL.md` standard as Claude Code and Codex CLI, so
+the skill installs unmodified. It discovers user skills in `~/.gemini/skills/` (with
+`~/.agents/skills/` as an alias) and reads `SKILL.md` either at the root or one
+directory deep - `~/.gemini/skills/cloud-finops/SKILL.md` is the second form. At
+session start it injects each enabled skill's name and description into the system
+prompt and adds the skill directory to the agent's allowed file paths, so the
+reference files are readable on demand. For a project-scoped install instead, use
+`--dest .gemini/skills` to write the workspace-level location.
+Source: https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/skills.md
+
 ### OpenAI Codex CLI
 
 ```bash
