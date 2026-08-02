@@ -52,13 +52,15 @@ async def test_e2e_lists_tools(server_params: StdioServerParameters) -> None:
 
 
 @pytest.mark.asyncio
-async def test_e2e_list_references(server_params: StdioServerParameters) -> None:
+async def test_e2e_list_references(
+    server_params: StdioServerParameters, expected_references: int
+) -> None:
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.call_tool("list_references", {})
             payload = _payload(result)
-            assert payload["total"] == 29
+            assert payload["total"] == expected_references
 
 
 @pytest.mark.asyncio
@@ -87,13 +89,15 @@ async def test_e2e_find_references(server_params: StdioServerParameters) -> None
 
 
 @pytest.mark.asyncio
-async def test_e2e_list_playbooks(server_params: StdioServerParameters) -> None:
+async def test_e2e_list_playbooks(
+    server_params: StdioServerParameters, expected_playbooks: int
+) -> None:
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.call_tool("list_playbooks", {})
             payload = _payload(result)
-            assert payload["total"] == 25
+            assert payload["total"] == expected_playbooks
 
 
 @pytest.mark.asyncio

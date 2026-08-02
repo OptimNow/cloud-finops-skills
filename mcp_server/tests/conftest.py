@@ -45,12 +45,17 @@ def _populate_data() -> None:
 # Authoritative reference/playbook counts read from disk at collection
 # time. Tests assert the function output matches these counts, so adding a
 # new reference or playbook does not require hand-editing count assertions
-# across multiple test files.
+# across multiple test files. The >= 20 floor keeps an empty or misplaced
+# source directory from turning every count assertion into 0 == 0.
 @pytest.fixture(scope="session")
 def expected_references() -> int:
-    return len(list(REFERENCES_SOURCE.glob("*.md")))
+    count = len(list(REFERENCES_SOURCE.glob("*.md")))
+    assert count >= 20, f"suspiciously few references in {REFERENCES_SOURCE}"
+    return count
 
 
 @pytest.fixture(scope="session")
 def expected_playbooks() -> int:
-    return len([p for p in PLAYBOOKS_SOURCE.glob("*.md") if p.name != "README.md"])
+    count = len([p for p in PLAYBOOKS_SOURCE.glob("*.md") if p.name != "README.md"])
+    assert count >= 20, f"suspiciously few playbooks in {PLAYBOOKS_SOURCE}"
+    return count
