@@ -159,7 +159,12 @@ while IFS= read -r f; do
       fi
     done <<< "$sec"
   fi
-done < <(find "$REF_DIR" -maxdepth 1 -name "*.md" -type f | sort)
+# LC_ALL=C so the ordering is byte-wise and identical everywhere. A plain
+# `sort` uses the caller's locale, which orders "finops-azure.md" and
+# "finops-azure-openai.md" differently under en_US.UTF-8 than under C - enough
+# to make `--check` fail on a developer machine (or a differently-configured CI
+# runner) against a matrix generated elsewhere.
+done < <(find "$REF_DIR" -maxdepth 1 -name "*.md" -type f | LC_ALL=C sort)
 
 # ---- Render fcp-coverage.md -----------------------------------------------
 total_caps=0
