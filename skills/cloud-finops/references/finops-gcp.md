@@ -321,7 +321,7 @@ identify which principal is over-consuming committed slots, and to enforce
 per-principal budget guardrails inside a single shared reservation.
 
 Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments (primary),
-https://finopsweekly.com/news/gcp-updates-2026-07-02/
+https://finopsweekly.com/news/gcp-updates-2026-07-02/ (secondary source - verify against Google Cloud docs)
 
 **Frame for clients**: BigQuery commitments trade flexibility for
 predictability, and often performance for predictability. The right
@@ -553,7 +553,9 @@ service - enabling stronger cost-allocation governance for Bigtable workloads
 specifically. Bind allocation tags (team, cost-centre, environment) at instance
 creation and enforce them via policy so no Bigtable instance can be provisioned
 untagged. See `finops-tagging.md` for the broader tag enforcement strategy.
-Source: https://finopsweekly.com/news/gpc-updates-2026-07-10/
+**Sourcing note:** reported by a secondary newsletter source only (the previously
+cited URL also carried a typo and may not resolve). Confirm Bigtable tag-binding GA
+status against Google Cloud documentation before designing enforcement around it.
 
 **Excessive Shard Count In Gcp Bigtable**
 Service: GCP BigTable | Type: Inefficient Configuration

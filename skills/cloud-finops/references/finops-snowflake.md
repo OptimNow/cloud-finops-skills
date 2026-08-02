@@ -112,7 +112,13 @@ the query window. Two queries with similar execution times can have very differe
 credit attributions if one ran on a busy warehouse and the other had the warehouse
 to itself.
 
-**Retention:** 365 days in `ACCOUNT_USAGE`, 14 days in `INFORMATION_SCHEMA.QUERY_ATTRIBUTION_HISTORY`.
+**Retention:** 365 days in `ACCOUNT_USAGE` (confirmed against Snowflake docs). The view
+also exists in `ORGANIZATION_USAGE` for multi-account estates, carrying most of the same
+columns - that is the one to use when attributing spend across accounts. `INFORMATION_SCHEMA`
+equivalents generally retain far less (Snowflake documents a 7-day-to-6-month range
+depending on the view); **verify the specific retention for your account before building
+a pipeline that assumes a number** rather than relying on a figure quoted second-hand.
+Source: https://docs.snowflake.com/en/sql-reference/account-usage
 
 **Practical FinOps query:** top 50 queries by credits last 30 days, joined to
 `QUERY_HISTORY` for the SQL text - this surfaces the actual heavy hitters that
@@ -306,6 +312,13 @@ Search Optimization can enable significant cost savings when selectively applied
 Service: Snowflake Query Processing | Type: Suboptimal Query Routing and Warehouse Utilization
 
 Organizations may experience unnecessary Snowflake spend due to inefficient query-to-warehouse routing, lack of dynamic warehouse scaling, or failure to consolidate workloads during low-usage periods. Third-party platforms offer solutions to address these inefficiencies: Sundeck enables highly customizable, SQL-based control over the query lifecycle through user-defined rules (Flows, Hooks, Conditions).
+
+**Vendor-risk caveat.** The named vendors below are early-stage companies, not
+incumbents - Sundeck was founded in 2022 and remains seed-stage. Naming a specific
+tool in a client recommendation carries continuity risk that a platform feature does
+not: run the usual vendor-viability check (funding stage, customer references, exit
+path for your data and rules) before recommending one into a production query path,
+and prefer native Snowflake controls where they are sufficient.
 
 - Implement customizable query lifecycle management platforms (e.g., Sundeck) if granular control is required and in-house SQL/DevOps expertise is available
 - Deploy AI-driven warehouse optimization platforms (e.g., Keebo) for organizations prioritizing ease of use and autonomous cost management
