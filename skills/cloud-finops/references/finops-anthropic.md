@@ -23,9 +23,9 @@ fcp_maturity_entry: "Walk"
 > from Finout commentary, not Anthropic primary documentation. Where exact pricing,
 > activation rules, or feature scope matter for a customer commitment, **verify against
 > Anthropic's primary docs** before quoting:
-> - https://docs.anthropic.com/en/docs/about-claude/pricing
-> - https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
-> - https://docs.anthropic.com/en/docs/claude-code/costs
+> - https://platform.claude.com/docs/en/about-claude/pricing
+> - https://platform.claude.com/docs/en/build-with-claude/prompt-caching
+> - https://code.claude.com/docs/en/costs
 
 ---
 
@@ -38,9 +38,9 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 | Variable | What it does |
 |---|---|
-| Model choice | Base token rate anchor (Opus 4.6: $5/$25 per MTok input/output) |
-| Performance tier | Standard vs Fast mode - 6× price multiplier |
-| Context length | **Per-model**: some models price flat across the context window; others (notably Claude Sonnet 4 with the 1M beta header) still apply premium long-context rates above 200K input tokens. Verify per model. |
+| Model choice | Base token rate anchor (Opus 5: $5/$25 per MTok input/output) |
+| Performance tier | Standard vs Fast mode - 2x price multiplier, and only on the models that offer it |
+| Context length | **Per-model**: the current generation prices flat across a 1M-token window with no long-context premium. Older models applied premium rates above 200K input tokens. Verify per model rather than assuming either behaviour. |
 | Data residency | US-only inference adds a 1.1× multiplier |
 | Prompt caching | Writes are priced (1.25× or 2×), reads are discounted (0.1×) |
 | Tool usage | Web search and code execution have separate meters |
@@ -52,37 +52,79 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 ## Pricing reference: Claude models
 
-### Base token pricing (as of April 2026)
+### Base token pricing (verified against Anthropic model documentation, June 2026)
 
-| Model | Input ($/MTok) | Output ($/MTok) | Notes |
-|---|---|---|---|
-| Claude Opus 4.6 | $5 | $25 | Most capable model |
-| Claude Sonnet 4.6 | $3 | $15 | Balanced performance |
-| Claude Haiku 4.5 | $1 | $5 | Fast and efficient |
+| Model | Input ($/MTok) | Output ($/MTok) | Context | Notes |
+|---|---|---|---|---|
+| Claude Fable 5 | $10 | $50 | 1M | Most capable widely released model; above Opus-tier pricing |
+| Claude Opus 5 | $5 | $25 | 1M | Current Opus. Same price as Opus 4.8 - a drop-in upgrade |
+| Claude Opus 4.8 | $5 | $25 | 1M | Previous Opus |
+| Claude Opus 4.7 | $5 | $25 | 1M | |
+| Claude Opus 4.6 | $5 | $25 | 1M | |
+| Claude Sonnet 5 | $3 | $15 | 1M | Introductory $2/$10 through 31 August 2026 |
+| Claude Sonnet 4.6 | $3 | $15 | 1M | |
+| Claude Haiku 4.5 | $1 | $5 | 200K | The only current model still on a 200K window |
+
+**Two FinOps consequences of this table.** First, the Opus tier has held $5/$25 across
+four generations, so a model upgrade inside that tier is a capability change at
+constant unit cost - there is no rate negotiation to run, and no reason to stay on an
+older Opus for price reasons. Second, Fable 5 sits at 2x Opus pricing, which makes
+"use the most capable model" a materially different decision from "use the newest
+Opus": route to Fable 5 on evidence, not by default.
+
+The introductory Sonnet 5 rate is a scheduled increase, not a discount to
+negotiate: budgets built on $2/$10 rise 50% on 1 September 2026 with no change in
+usage. Flag it now if Sonnet 5 carries meaningful volume.
 
 ### Fast mode pricing
 
-| Model | Input ($/MTok) | Output ($/MTok) | Notes |
+Fast mode runs the same model at higher output tokens per second, at premium
+pricing. It is **not a general tier** - the scope is narrow enough that it is easy
+to over-plan for:
+
+| Model | Standard | Fast mode | Premium |
 |---|---|---|---|
-| Opus 4.6 Fast | $30 | $150 | 6× premium |
-| Sonnet 4.6 Fast | $18 | $90 | 6× premium |
-| Haiku 4.5 Fast | $6 | $30 | 6× premium |
+| Claude Opus 5 | $5 / $25 | $10 / $50 | 2x |
+| Claude Opus 4.8 | $5 / $25 | Supported (verify current rate) | - |
+
+- **No Sonnet or Haiku Fast tier exists.** Fast mode is Opus-tier only.
+- **Opus 4.7 Fast mode has been removed** - requesting it returns an error.
+- **Claude API only**, including Managed Agents. Not available on Amazon Bedrock,
+  Google Cloud, or Microsoft Foundry, so a Bedrock-based estate cannot use it at all.
+- **Not compatible with the Batch API or Priority Tier.**
+- Fast mode draws on **separate rate limits** from standard Opus.
+- Switching speed mid-conversation **invalidates the prompt cache** - a Fast-mode
+  fallback path that flips `speed` on retry silently loses cache reads, which can
+  cost more than the latency it saves.
 
 ### Batch API pricing
 
-| Model | Input ($/MTok) | Output ($/MTok) | Notes |
-|---|---|---|---|
-| Opus 4.6 Batch | $2.50 | $12.50 | 50% discount |
-| Sonnet 4.6 Batch | $1.50 | $7.50 | 50% discount |
-| Haiku 4.5 Batch | $0.50 | $2.50 | 50% discount |
+50% discount on both input and output for every model. Most batches complete within
+an hour; the ceiling is 24 hours. Results are retained 29 days.
+
+| Model | Input ($/MTok) | Output ($/MTok) |
+|---|---|---|
+| Claude Opus 5 Batch | $2.50 | $12.50 |
+| Claude Sonnet 5 Batch | $1.50 | $7.50 |
+| Claude Haiku 4.5 Batch | $0.50 | $2.50 |
+
+Batch is the single largest rate lever available without a commercial negotiation.
+The gating question is never price, it is whether the workload tolerates asynchronous
+completion - which makes it a workload-classification exercise, not a procurement one.
 
 ### Modifiers
 
-- **US-only inference** (`inference_geo`): ×1.1 on all token categories
-- **5-minute cache writes**: ×1.25 on base input price
-- **1-hour cache writes**: ×2 on base input price
-- **Cache reads**: ×0.1 on base input price (90% discount)
-- **Modifiers stack** - Fast mode + US-only inference can compound significantly
+- **US-only inference** (`inference_geo`): x1.1 on all token categories
+- **5-minute cache writes**: x1.25 on base input price
+- **1-hour cache writes**: x2 on base input price
+- **Cache reads**: x0.1 on base input price (90% discount)
+- **Modifiers stack** - Fast mode plus US-only inference compounds
+
+**Cache break-even depends on the TTL, and the 1-hour TTL is not a free upgrade.**
+At the 5-minute TTL a prefix pays for itself on the second request (1.25x write +
+0.1x read = 1.35x, versus 2x uncached). At the 1-hour TTL the doubled write cost
+needs at least three reads (2x + 0.2x = 2.2x versus 3x). Choose the 1-hour TTL for
+bursty traffic with gaps longer than five minutes, not as a default.
 
 ### Tool charges
 
@@ -95,20 +137,38 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 ## Claude Managed Agents: new cost dimension
 
-> **Source quality flag.** The Managed Agents mechanics described in this section are
-> distilled primarily from Finout commentary and early community reporting, not from
-> Anthropic's primary pricing documentation. Treat the specifics (cost drivers,
-> always-on session billing, resource tiers) as **emerging assumptions** to validate
-> against official Anthropic docs before quoting in a customer engagement. Update this
-> section when Anthropic publishes settled pricing detail.
+> **Status (June 2026).** Managed Agents is a documented beta with a published API
+> surface, not the early community reporting an earlier version of this section was
+> based on. The architecture below is from Anthropic's documentation. **Per-unit
+> pricing for the runtime itself is still the part to verify** - the token cost of
+> model calls inside a session bills at ordinary rates against your organisation's
+> limits, but confirm the container/runtime charge against current docs before
+> quoting a number in an engagement.
 
 ### What Managed Agents are
 
-Claude Managed Agents provide a fully managed runtime for autonomous AI agents with:
-- Sandboxed execution environment
-- Persistent sessions across invocations
-- Managed infrastructure and scaling
-- Built-in security and isolation
+A server-managed, stateful agent surface. Anthropic runs the agent loop and hosts a
+per-session container where the agent's tools execute. The object model matters for
+cost attribution:
+
+| Object | What it is | Cost relevance |
+|---|---|---|
+| **Agent** | A persisted, versioned config (model, system prompt, tools, MCP servers, skills). Created once, reused | No direct cost; the `model` field on it sets the token rate for every session |
+| **Session** | One stateful run against an agent, in an environment | The unit to attribute cost to. Carries `usage` |
+| **Environment** | A reusable template for provisioning containers | Cloud (Anthropic-hosted) or self-hosted (your infrastructure) |
+| **Container** | Where tools execute - bash, file ops, code | The runtime cost surface, and the reason session cost is not purely token-driven |
+
+Three properties change the cost shape versus plain API calls:
+
+- **Sessions are long-lived and can run autonomously.** A scheduled deployment fires
+  sessions on a cron cadence with no human in the loop, so cost accrues without an
+  interactive trigger to notice it.
+- **Context compaction and prompt caching are built in.** Long sessions do not scale
+  cost linearly with turn count the way a naive multi-turn loop does.
+- **The self-hosted environment option moves tool execution to your own
+  infrastructure**, which shifts that portion of the cost from Anthropic's bill to
+  your cloud bill. That is an attribution change, not a saving - budget for it in
+  the right place.
 
 ### Billing model differences from standard API
 
@@ -133,26 +193,27 @@ Unlike token-based API calls, Managed Agents introduce new cost drivers:
 
 ## Fast mode: key FinOps risks
 
-> **Source quality flag.** Fast mode pricing specifics in this section (6× premium
-> multiplier, sticky routing, retroactive context repricing) are sourced primarily
-> from Finout reporting and community observation, not from Anthropic's primary
-> pricing documentation. Treat as **emerging assumptions** - the qualitative shape
-> (Fast mode is a premium-priced channel, governance matters) is reliable; specific
-> multipliers and behaviours need verification against Anthropic docs before being
-> quoted as policy in customer engagements.
+> **Corrected against primary documentation (June 2026).** An earlier version of this
+> section carried a 6x premium multiplier and per-model Fast tiers for Sonnet and
+> Haiku, sourced from Finout reporting rather than Anthropic's own docs. Both were
+> wrong: the premium is **2x**, and Fast mode is **Opus-tier only**. The claim that
+> switching speed triggers "retroactive context repricing" was also unsupported -
+> the documented behaviour is that changing `speed` **invalidates the prompt cache**,
+> which raises the cost of the next request rather than repricing earlier ones. The
+> practical governance consequence is similar; the mechanism is not, and the
+> distinction matters when explaining a bill to a customer.
 >
-> **Update (as of July 2026):** Anthropic's native cost governance release (model
-> entitlements, spend dashboard, threshold alerts) provides primary-source
-> confirmation that Anthropic now treats admin-level spend controls as first-class.
-> This partially validates the governance posture described here, though the specific
-> Fast mode multipliers and retroactive-repricing behaviour still require verification
-> against Anthropic's primary pricing docs.
+> The governance posture below stands: Anthropic's cost-governance release (model
+> entitlements, spend dashboard, threshold alerts) is primary-source confirmation
+> that admin-level spend controls are first-class.
 
 ### What Fast mode is
 
-Fast mode is a high-speed inference configuration for Claude models (up to 2.5× faster output
-tokens per second). It is not a different model. It was released in Claude Code v2.1.36
-on February 7, 2026.
+Fast mode runs the same model at up to 2.5x higher output tokens per second. It is not
+a different model, and it is not a general tier - see the pricing section above for the
+model and platform restrictions, which are narrow enough to change whether it is a
+governance concern for a given estate at all. It was released in Claude Code v2.1.36
+on 7 February 2026.
 
 ### Why it is a FinOps risk, not just a developer feature
 
@@ -168,25 +229,28 @@ on February 7, 2026.
 
 ### Context window pricing - per-model, not uniform
 
-Long-context pricing is **not uniform across the Claude line-up as of April 2026.**
-Practical state:
+Long-context pricing is **not uniform across the Claude line-up.** Practical state
+as of June 2026:
 
-- **Newer models** (Opus 4.6, Sonnet 4.6, Haiku 4.5 in their default 200K context):
-  flat-rate per-token pricing within the supported context window. No surcharge tied
-  to context length within that window.
-- **Selected models with the 1M context beta header** (notably Claude Sonnet 4): per
-  Anthropic's primary pricing docs, **premium long-context rates apply above 200K
-  input tokens**. The "1M context cliff" is still real for those configurations.
-- **Features that inflate context** (tool results, retrieval dumps) trigger the
-  premium tier where it applies, just like any other input volume above the
-  threshold.
+- **The current generation** (Fable 5, Opus 5 / 4.8 / 4.7 / 4.6, Sonnet 5, Sonnet 4.6)
+  carries a **1M-token context window at standard rates** - it is both the default and
+  the maximum, with no beta header and no long-context premium. For these models the
+  "1M context cliff" no longer exists.
+- **Haiku 4.5** remains on a 200K window. That is a capacity limit, not a pricing
+  tier: there is no premium band above it, the request simply cannot exceed it.
+- **Older models reached 1M via a beta header and did apply premium rates above 200K
+  input tokens.** Any estate still pinned to one of those is on the old cliff, and the
+  migration to a current model removes a pricing tier as well as a capability limit.
+- **Features that inflate context** (tool results, retrieval dumps) consume the window
+  like any other input. On the current generation they cost the flat rate; the
+  exposure is context-window exhaustion and token volume, not a rate cliff.
 
 **FinOps action:** before quoting that "long context is now free", check the specific
 model and beta-header combination the customer is using. The per-model picture
 matters for forecasts. The AI dev tools reference (`finops-ai-dev-tools.md`) carries
 the same warning for Anthropic-backed coding workflows.
 
-Source: https://docs.anthropic.com/en/docs/about-claude/pricing
+Source: https://platform.claude.com/docs/en/about-claude/pricing
 
 ---
 
@@ -250,7 +314,8 @@ Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](htt
 
 ### Monitoring checklist
 
-- [ ] Track total token usage across the 1M context window
+- [ ] Track total token usage against the model's context window (1M on the current
+      generation, 200K on Haiku 4.5)
 - [ ] Monitor cache reads and writes that contribute to the input token count
 - [ ] Monitor Fast mode activation per user or team
 - [ ] Treat web search and code execution as separate cost centres with their own budgets
@@ -343,8 +408,10 @@ dimensions:
 ### Forecasting
 
 A forecast based solely on base token pricing is insufficient:
-- Fast mode changes the unit price by 6×
-- Model choice (Opus vs Sonnet vs Haiku) creates a 5× price range
+- Fast mode doubles the unit price, on the Opus-tier models that support it
+- Model choice creates a 10x price range across the current lineup (Haiku 4.5 at
+  $1/$5 to Fable 5 at $10/$50) - wider than the 5x range of the previous generation,
+  because Fable 5 sits above Opus
 - Tool usage adds call-based meters that are independent of token volume
 - Managed Agents add runtime-based costs that scale differently than token usage
 - Behavioural effect: lower latency reduces friction, which increases usage volume
