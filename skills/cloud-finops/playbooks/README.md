@@ -51,6 +51,23 @@ confidence: obvious | likely | possible
 ## Detection
 <a query block (CUR / KQL / BigQuery SQL / CLI) that finds the pattern>
 
+Detection blocks are the part of a playbook a reader copy-pastes, so a query
+that cannot run is worse than no query at all - it returns empty and reads as
+"no waste found". Before merging a new or edited Detection block:
+
+- **Run it against a live account**, or state the prerequisite that stops you.
+  A query needing the CloudWatch agent, a diagnostic setting, or a specific
+  export is fine; leaving that unsaid is not.
+- **Check the metric/table/column actually exists.** Namespaces
+  (`AWS/NATGateway`, not `NATGateway/`), required dimensions (SageMaker
+  `Invocations` needs `VariantName`), and table names (Azure Resource Graph
+  has no billing table) are the recurring failure modes.
+- **Distinguish "no results" from "no data".** Where an empty result could
+  mean the telemetry is missing rather than the waste is absent, include the
+  command that tells the two apart.
+- **Do not present pseudo-code as runnable.** If a step is illustrative, label
+  it.
+
 ## Fix
 <bullet list of remediation steps, ordered safest-first>
 
@@ -102,6 +119,10 @@ drift, the recommended workflow is:
    should ideally link to the matching playbook (e.g.
    `[aws-zombie-nat-gateway](../playbooks/aws-zombie-nat-gateway.md)`)
    rather than repeat all the detail
+4. When a provider renames a metric, moves a namespace, or changes a required
+   dimension, the Detection block is the thing that breaks silently. Treat
+   provider console/API changes as a reason to re-run the affected queries,
+   not just to reword the prose
 
 The `cloud-finops/references/finops-waste-detection-playbooks.md` file is
 the canonical taxonomy and confidence rubric; playbooks instantiate it.

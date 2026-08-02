@@ -32,7 +32,7 @@ that left source disks in place. A 1 TB Premium SSD orphan accrues
 // Azure Resource Graph - find all unattached managed disks
 resources
 | where type =~ "microsoft.compute/disks"
-| where managedBy == ""
+| where isempty(managedBy)   // catches both null and empty-string
 | extend size_gb     = toint(properties.diskSizeGB)
 | extend tier        = tostring(sku.name)
 | extend created     = todatetime(properties.timeCreated)
@@ -42,22 +42,24 @@ resources
 | order by size_gb desc
 ```
 
-For attribution-grade cost per orphan disk, join to the FOCUS export or
-Cost Management billing data:
+Resource Graph carries inventory, not cost - there is no billing table to
+join against inside ARG. To get cost per orphan disk, export the orphan list
+above and join it to billing data outside Resource Graph, keying on the
+resource ID (lowercased on both sides; ARG returns mixed case and the cost
+exports do not):
 
-```kusto
-// Azure Cost Management export joined to Resource Graph orphan list
-costManagementBillingData
-| where ResourceType == "microsoft.compute/disks"
-  and CostInBillingCurrency > 0
-| summarize cost30d = sum(CostInBillingCurrency) by ResourceId
-| join kind=inner (
-    resources
-    | where type =~ "microsoft.compute/disks" and managedBy == ""
-    | project ResourceId = id, name
-  ) on ResourceId
-| order by cost30d desc
-```
+- **FOCUS export / Cost Management export** (recommended): join on
+  `ResourceId` from the export to `id` from the query above, filtering
+  `ServiceCategory == "Storage"`.
+- **Cost Management Query API**: `POST` to
+  `/providers/Microsoft.CostManagement/query` scoped to the subscription,
+  grouped by `ResourceId`, with a filter on
+  `ResourceType = "microsoft.compute/disks"`.
+
+If you only need a ranking rather than exact cost, the `size_gb` and `tier`
+columns from the inventory query are enough to sort by rough monthly spend -
+Premium SSD (`Premium_LRS`) costs several times Standard HDD (`Standard_LRS`)
+per GB, so tier dominates the ordering.
 
 ## Fix
 
@@ -65,7 +67,7 @@ costManagementBillingData
    the snapshot retains all data; deletion of a Premium SSD without a
    snapshot is irreversible).
 2. Delete disks where:
-   - `managedBy == ""` for > 30 days
+   - `isempty(managedBy)` for > 30 days
    - No matching VM in the snapshot history
    - No matching backup vault recovery point
 3. Set the **VM disk deletion option to "Delete"** at VM creation time

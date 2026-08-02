@@ -12,9 +12,11 @@ confidence: likely
 
 Agentic coding tools (Claude Code, Cursor, GitHub Copilot, Codex, and the
 open-source CLIs) bill by the token, and the whole conversation history is
-re-sent as input on every turn. Input is roughly 85% of a session's cost, so
-spend compounds with conversation length rather than with the number of tasks
-completed. The result is a cost line that grows faster than headcount or output,
+re-sent as input on every turn, so spend compounds with conversation length
+rather than with the number of tasks completed. In the sessions OptimNow has
+metered, input dominates - on the order of 85% of session cost - but the exact
+split varies with cache configuration and task shape, so measure your own
+before building a business case on it. The result is a cost line that grows faster than headcount or output,
 driven by mechanisms that never surface on a monthly dashboard: a broken cache
 prefix, quadratic context re-ingestion, self-validation loops, and every request
 defaulting to the frontier model. Unlike a cloud resource there is no instance to
@@ -57,10 +59,27 @@ npx ccusage@latest            # daily / session breakdown across detected agents
 ```
 
 ```bash
-# 2. Per-session drill-down: route an agent through a local proxy meter (tokview)
-#    to see per-tool token spend and re-sent results that multiply the bill.
-#    token-optimizer and CodeBurn run named waste detectors and price them in $.
+# 2. Per-session drill-down: route the agent through a local proxy meter to see
+#    per-tool token spend, including large tool results that get re-sent into
+#    every later turn and silently multiply the input bill.
+uv tool install token-viewer     # or: pipx install token-viewer
+tokview show --watch             # terminal 1: live dashboard
+tokview wrap claude              # terminal 2: run the agent through the proxy
 ```
+
+```bash
+# 3. Named waste detectors, priced in dollars. CodeBurn reads the session files
+#    the agents already write and scans for low cache-hit ratios, unused MCP
+#    servers, and bloated context files, with copy-paste fixes.
+npx codeburn                     # interactive dashboard by task / model / tool
+npx codeburn optimize            # waste scan with estimated token and $ savings
+```
+
+All three read local session data - no API keys leave the machine, which is
+usually what unblocks the security review. Tool homepages:
+[ccusage](https://github.com/ccusage/ccusage),
+[tokview](https://github.com/chopratejas/tokview),
+[CodeBurn](https://github.com/getagentseal/codeburn).
 
 Two independent signals raise confidence from possible to likely: for example a
 low cache-read ratio AND tokens-per-task above the team's P90. A single signal on
@@ -71,11 +90,12 @@ its own (no budget cap, say) is worth fixing but is not proof of active waste.
 Safest-first. Measure before you optimise, and validate any token-saving tool on
 your own workload before a fleet rollout.
 
-1. **Meter first.** Deploy a log-reading meter (ccusage, tokview, or CodeBurn)
+1. **Meter first.** Deploy a log-reading meter (ccusage, CodeBurn) or a
+   local proxy meter (tokview)
    across every agent so you have tokens, cache-hit ratio, and cost per session
    per developer. Everything below is guesswork without this baseline.
 2. **Fix the cache before anything else.** Cache-read is roughly 90% cheaper than
-   fresh input, and input is roughly 85% of session cost, so the cached prefix is
+   fresh input, and input dominates session cost, so the cached prefix is
    the single biggest lever. Turn on prompt caching, keep the system prompt and
    static context stable, and avoid mid-session model switches that throw the warm
    cache away.
@@ -97,15 +117,18 @@ your own workload before a fleet rollout.
 ## Anti-pattern
 
 - Rolling out compression or token-saving plugins fleet-wide on vendor claims
-  without an A/B test. Measured results range from roughly 8% savings to roughly
-  13% more tokens; the deciding factor is whether the plugin preserves the cached
-  prefix on your workload.
+  without an A/B test. Published and self-measured results span both directions -
+  from single-digit percentage savings to a net token *increase* - and the
+  deciding factor is whether the plugin preserves the cached prefix on your
+  workload. Run the A/B before the rollout, not after.
 - Optimising the per-token rate card (swapping to a cheaper model) while ignoring
   cache-read discounts and context re-ingestion, which dominate the bill. Evaluate
   cost per completed task, not price per million tokens.
-- Reacting to a viral headline figure as if it were typical. A widely-cited
-  five-figure coding-agent bill was driven by quadratic context re-ingestion, not
-  runaway usage: diagnose the mechanism in your own logs before acting.
+- Reacting to a viral headline figure as if it were typical. The large
+  coding-agent bills that circulate are usually driven by a specific mechanism
+  (quadratic context re-ingestion, a broken cache prefix, an unbounded agent
+  loop) rather than by ordinary heavy usage: diagnose the mechanism in your own
+  logs before acting on someone else's number.
 - Banning agents outright to control spend. That pushes the workload onto personal
   accounts (shadow AI) and destroys attribution. Prefer per-key budgets and
   routing over prohibition.

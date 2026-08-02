@@ -47,8 +47,8 @@ ORDER BY cost_month DESC;
 ```
 
 For real-time validation, the canonical CloudWatch metrics are
-`NATGateway/BytesOutToSource` and `NATGateway/BytesOutToDestination` at
-1-minute granularity.
+`BytesOutToSource` and `BytesOutToDestination` in the `AWS/NATGateway`
+namespace, dimensioned by `NatGatewayId`, at 1-minute granularity.
 
 ## Fix
 
@@ -80,8 +80,9 @@ For real-time validation, the canonical CloudWatch metrics are
   webhooks fail silently and only surface in operational alerts hours
   later.
 - Replacing a per-AZ NAT Gateway with a single cross-AZ NAT to "save
-  money" - cross-AZ data transfer ($0.01-0.02/GB each direction) often
-  outweighs the saved NAT hours, AND introduces a single-AZ failure mode.
+  money" - cross-AZ data transfer ($0.01/GB each direction, so $0.02/GB
+  round-trip) often outweighs the saved NAT hours, AND introduces a
+  single-AZ failure mode.
 
 ## See also
 

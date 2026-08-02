@@ -19,7 +19,8 @@ DB lingered, "we'll use it eventually" databases provisioned years ago.
 
 ## Symptoms
 
-- `connection_successful` count < 10 / day over 14 days
+- `connection_successful` total < 100 over 14 days (the threshold the
+  detection query below uses - roughly 7/day)
 - CPU < 5% p95 over 30 days
 - DTU / vCore consumption < 5% sustained
 - The database name encodes a project / app that no longer exists in
@@ -36,8 +37,20 @@ resources
   and name != "master"
 | extend tier = tostring(sku.tier)
 | extend size = tostring(sku.name)
-| project subscriptionId, resourceGroup, server = strcat(split(id, "/")[8]), name, tier, size
+| project subscriptionId, resourceGroup, server = tostring(split(id, "/")[8]), name, tier, size
 | order by tier desc
+```
+
+**Prerequisite:** the `AzureMetrics` table only has rows for databases whose
+diagnostic settings route metrics to the Log Analytics workspace you are
+querying. A database with no diagnostic setting produces no rows, which looks
+identical to a database with no connections. Confirm coverage first:
+
+```kusto
+// Which SQL databases are actually reporting into this workspace?
+AzureMetrics
+| where ResourceProvider == "MICROSOFT.SQL" and TimeGenerated > ago(14d)
+| distinct Resource
 ```
 
 ```kusto
@@ -57,8 +70,10 @@ AzureMetrics
 1. **Confirm the DB is genuinely idle** - some monthly batch jobs have
    long inter-run gaps. Cross-check with `dm_db_resource_stats` and the
    application's job scheduler.
-2. **Backup before delete** (Azure SQL automatic backup retention is 7-
-   35 days; a long-term backup snapshot is cheap insurance).
+2. **Backup before delete** (Azure SQL point-in-time restore retention is
+   configurable from 1 to 35 days and defaults to 7; a long-term retention
+   backup is cheap insurance). Note that PITR backups are deleted with the
+   database - only an LTR backup survives the drop.
 3. **Move long-tail dev databases to Basic tier or Serverless** - Basic
    is ~$5/month per DB, Serverless auto-pauses after inactivity (Gen5
    1-vCore can drop to ~$15/month for idle workloads).
