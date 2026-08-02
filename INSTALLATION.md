@@ -7,7 +7,8 @@ the conversion for every supported tool. Per-tool blocks below are copy-pasteabl
 ## Prerequisites
 
 - `git` (for clone / fetch - only required if running the installer remotely)
-- `bash` 4+ (macOS / Linux / WSL)
+- `bash` (macOS / Linux / WSL). The script targets bash 3.2, the macOS default,
+  so no Homebrew bash upgrade is needed.
 - For the Claude Projects zip: `python3` or `zip`
 
 ---
@@ -24,7 +25,7 @@ curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/ins
 # Other useful flags
 ./install.sh --list              # list supported tools
 ./install.sh --dry-run           # print what would happen
-./install.sh --user              # install at $HOME paths (Claude Code, Gemini CLI)
+./install.sh --user              # install at $HOME paths (Claude Code)
 ./install.sh --dest <dir>        # override target directory
 ```
 
@@ -111,7 +112,7 @@ Builds two artefacts in `dist/chatgpt/`:
 - `instructions.md` - target ≤ 8000 chars; the routing logic, reasoning sequence, and
   response contract that go into the GPT's Instructions field. The installer warns if
   the file exceeds the limit.
-- `knowledge/*.md` - **50 files** in the default per-reference build:
+- `knowledge/*.md` - one file per reference plus one per playbook in the default build:
   - the reference files (one per domain; `optimnow-methodology.md` is **merged into
     `finops-for-ai.md`**)
   - the playbook files prefixed `playbook-<slug>.md` so they sort together in the
@@ -171,10 +172,12 @@ self-host path above is the supported install.
 ### Gemini CLI
 
 ```bash
-./install.sh --tool gemini-cli --user
+./install.sh --tool gemini-cli
 ```
 
-Copies to `~/.gemini/skills/cloud-finops/`.
+Copies to `~/.gemini/skills/cloud-finops/`. This target always installs at `$HOME`;
+`--user` is not needed and has no effect on it. Use `--dest <dir>` to install
+elsewhere.
 
 ### OpenAI Codex CLI
 
@@ -263,7 +266,7 @@ allocation methodology, or any cross-pattern reasoning.
 
 | Client | File | Snippet |
 |---|---|---|
-| Claude Code | `.mcp.json` (project) or `~/.claude/mcp.json` (user) | JSON below |
+| Claude Code | `.mcp.json` (project), or `claude mcp add --scope user` (user) | JSON below / command below |
 | Cursor | `~/.cursor/mcp.json` | JSON below |
 | Codex CLI | `~/.codex/config.toml` | TOML below |
 | Windsurf | `~/.windsurf/mcp.json` | JSON below |
@@ -286,6 +289,13 @@ allocation methodology, or any cross-pattern reasoning.
 ```toml
 [mcp_servers.cloud-finops]
 command = "cloud-finops-mcp"
+```
+
+**Claude Code user scope.** There is no `~/.claude/mcp.json` - Claude Code does not
+read that path. Register the server once for every project with:
+
+```bash
+claude mcp add --scope user cloud-finops -- cloud-finops-mcp
 ```
 
 Restart your client. Verify in Claude Code with `/mcp`, in Codex CLI with
@@ -432,11 +442,11 @@ already covers the major FinOps query types.
 the limit. If it does, manually trim the routing table to only the providers you care
 about, or upload the trimmed routing as a knowledge file and keep instructions minimal.
 
-**ChatGPT rejects the knowledge upload (file count):** the default build produces 50
-knowledge files (references + playbooks; methodology merged into
-`finops-for-ai.md`). If ChatGPT enforces a lower cap, re-run with the grouped flag:
+**ChatGPT rejects the knowledge upload (file count):** the default build produces one
+knowledge file per reference and per playbook (methodology merged into
+`finops-for-ai.md`), which can exceed ChatGPT's cap. Re-run with the grouped flag:
 `./install.sh --tool chatgpt --grouped`. The grouped build packs the same content into
-10 thematic files in `dist/chatgpt/` and emits a matching routing contract.
+a handful of thematic files in `dist/chatgpt/` and emits a matching routing contract.
 
 **Token budget exceeded on system-prompt injection:** load only the domain references
 relevant to your query. For most use cases, `SKILL.md` + 1-2 references is enough.
