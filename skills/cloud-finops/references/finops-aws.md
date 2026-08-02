@@ -184,7 +184,11 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
    accounts, this is a relevant governance and optimisation detail: reserved
    capacity is now more likely to be consumed by ASG-launched instances without
    manual placement configuration, which affects how you track capacity
-   utilisation. Source: https://finopsweekly.com/news/aws-updates-2026-07-02/
+   utilisation. **Sourcing note:** this behaviour is reported by a secondary
+   newsletter source and has not been confirmed against AWS documentation. Verify
+   against the EC2 Auto Scaling docs before relying on it in a commitment-coverage
+   model - if ASGs do not in fact prioritise reservations, idle-reservation risk is
+   higher than this section implies.
 
 4. **Convertible RIs provide mid-term liquidity.** EC2 Instance Savings Plans offer
    similar flexibility at equal or better discount depth, but they are locked for
@@ -2226,12 +2230,14 @@ Is the database workload stable and predictable (90+ days of consistent usage)?
         │
         ├── Redshift
         │   → Reserved Nodes for stable provisioned clusters
-        │     - As of July 2026, 1-year Redshift RIs support All Upfront
-        │       and Partial Upfront payment options alongside the existing
-        │       No Upfront term, adding commitment flexibility. All Upfront
-        │       yields the deepest discount; Partial Upfront balances
-        │       discount depth against capital outlay.
-        │       Source: https://finopsweekly.com/news/aws-updates-2026-07-02/
+        │     - All three payment options (No Upfront, Partial Upfront,
+        │       All Upfront) have long been available on RA3 and earlier
+        │       node types. The June 2026 change added Partial and All
+        │       Upfront to **RG instance** reservations specifically - it
+        │       is not a general expansion of 1-year Redshift RI terms.
+        │       All Upfront yields the deepest discount (~42% on 1-year),
+        │       Partial ~41%, No Upfront ~20%.
+        │       Source: https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-redshift-ri-upfront-pricing-rg-instances/
         │   → For variable workloads: Redshift Serverless (no RI, pay
         │     per RPU-hour) may be cheaper than committed idle capacity
         │

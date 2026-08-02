@@ -617,6 +617,22 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
 - Only `name` and `description` are required in the YAML frontmatter
 - Do not add a `license` field to the frontmatter (it renders as visible text in Claude.ai)
 
+**Sourcing**
+- **Mechanics claims cite provider documentation, not newsletters.** Anything that
+  states how billing actually works - eligibility, payment options, retirement dates,
+  retention windows, rate multipliers - must link to the provider's own docs. A
+  secondary source (newsletter, vendor blog, community post) is acceptable only as a
+  *lead*, and the claim must then either be confirmed primarily or carry an explicit
+  sourcing note saying it is unconfirmed. The 2026-08 review found a Redshift RI claim
+  that a newsletter had scoped wrongly (the change applied to RG instances, not to
+  1-year RIs generally) - that class of error is what this rule prevents.
+- **Cite papers by title, not by bare identifier.** An `arXiv:NNNN.NNNNN` with no title
+  cannot be sanity-checked by a reader and looks indistinguishable from a hallucinated
+  citation. Include author, title, and link.
+- **Name a vendor only with a viability caveat** if it is early-stage. Recommending a
+  seed-stage tool into a client's production path is a continuity risk the reference
+  should flag, not bury.
+
 **License**
 - All content is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - Credit OptimNow as the original author

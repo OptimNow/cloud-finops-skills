@@ -49,12 +49,18 @@ as "agents":
 
 - **Refinement is the sink.** ~60% of an agentic task's cost sits in checking,
   repairing, and re-verifying - not in generating the first answer (59.4%
-  review/refinement share, 53.9% average input-token share; arXiv:2601.14470,
-  analysis of 20 production agentic *coding* workflows - the mechanism generalises,
-  exact ratios vary by workload).
+  review/refinement share, 53.9% average input-token share). Source: Salim et al.,
+  *Tokenomics: Quantifying Where Tokens Are Used in Agentic Software Engineering*,
+  [arXiv:2601.14470](https://arxiv.org/abs/2601.14470) - measured on the ChatDev
+  framework across design, coding, completion, review, testing and documentation
+  stages. The mechanism generalises; exact ratios vary by workload.
 - **Agentic tasks consume ~1,000x the tokens** of comparable single-turn or chat
-  interactions (arXiv:2604.22750; consistent with Anthropic's multi-agent research
-  system write-up). Long-lived context is an operating asset and a dominant cost.
+  interactions, with input rather than output tokens driving the cost. Source:
+  *How Do AI Agents Spend Your Money? Analyzing and Predicting Token Consumption in
+  Agentic Coding Tasks*, [arXiv:2604.22750](https://arxiv.org/abs/2604.22750) -
+  eight frontier models on SWE-bench Verified; consistent with Anthropic's
+  multi-agent research system write-up. Long-lived context is an operating asset
+  and a dominant cost.
 - **Multi-model by default:** ~3.5 different models per agent run on average, often
   across providers (Pay-i-reported). Single-provider cost views structurally
   under-count agent cost - attribution must be per task, across providers.
