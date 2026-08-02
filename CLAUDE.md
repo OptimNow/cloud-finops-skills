@@ -534,9 +534,22 @@ Follow these five steps whenever you add a new domain:
    - Add the file to the "Directory structure" listing
    - Add usage examples if applicable
 
-5. **Bump the plugin version**
-   - `.claude-plugin/plugin.json` minor version (e.g. 1.19.0 to 1.20.0) for user-visible feature changes
-   - `.claude-plugin/marketplace.json` description (update the reference file count and topic list)
+5. **Do NOT bump versions in the content PR (release-train rule, 2026-08)**
+   - Content PRs never touch `.claude-plugin/plugin.json`,
+     `.claude-plugin/marketplace.json` versions, or `mcp_server/pyproject.toml`.
+     Every `plugin.json` bump that reaches main triggers one tag + GitHub
+     Release + PyPI publish, so per-PR bumps mean one publish per content PR
+     and version-number collisions between parallel branches (the
+     1.27/1.28/1.29/1.30 collision resolved by combined release PR #110).
+   - Releasing is a separate, deliberate act: a small dedicated release PR
+     bumps all three together - `plugin.json` version (minor for user-visible
+     features), `marketplace.json` `metadata.version` (must match plugin.json;
+     CI-gated by `scripts/check-marketplace-version.sh`), and
+     `mcp_server/pyproject.toml` version. Update the marketplace plugin
+     description topic list in the same release PR if new domains shipped.
+     The version number is decided at release time, never pre-assigned on
+     content branches. Natural release moment: after the monthly content
+     batch, or whenever accumulated merged content should ship.
 
 ---
 
@@ -636,12 +649,17 @@ Good test patterns:
       2026-07 precisely so they no longer need hand-bumping - do not reintroduce
       hardcoded "N references / N playbooks" counts; use "the reference library"
       phrasing. `llms.txt` is the one list to keep current.)
-- [ ] Plugin version bumped in `.claude-plugin/plugin.json` (minor for user-visible feature)
-- [ ] `.claude-plugin/marketplace.json` `metadata.version` bumped to match
-      `plugin.json` `version` (CI-gated by `scripts/check-marketplace-version.sh`
-      via the `marketplace version in sync` workflow - the two must always match)
+- [ ] **Content PR: no version bump.** `.claude-plugin/plugin.json`,
+      `.claude-plugin/marketplace.json` `metadata.version`, and
+      `mcp_server/pyproject.toml` are untouched (release-train rule - see step 5
+      of "How to add a new reference file"). A `plugin.json` bump reaching main
+      publishes to PyPI, so bumps live only in dedicated release PRs.
+- [ ] **Release PR only: bump all three versions together** - `plugin.json`
+      (minor for user-visible features), `marketplace.json` `metadata.version`
+      (must match; CI-gated by `scripts/check-marketplace-version.sh` via the
+      `marketplace version in sync` workflow), `mcp_server/pyproject.toml`.
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
-      reference file count and topic list
+      reference file count and topic list (can ride the release PR)
 - [ ] SKILL.md description stays under 1024 characters
 - [ ] No em dashes in any public content
 - [ ] No sensitive or internal files included

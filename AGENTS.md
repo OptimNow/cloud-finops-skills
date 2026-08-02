@@ -95,8 +95,10 @@ Quick rules:
   behaviour). Product/framework names keep their official spelling.
 - All reference files carry YAML FCP frontmatter mapping the file to the FinOps
   Framework Capability it serves
-- Bump the plugin version (`.claude-plugin/plugin.json`, minor digit) for
-  user-visible feature changes
+- Do NOT bump versions in content PRs. Version bumps (`.claude-plugin/plugin.json`
+  + `marketplace.json` `metadata.version` + `mcp_server/pyproject.toml`, all
+  together) happen only in a dedicated release PR, because every `plugin.json`
+  bump reaching main triggers a PyPI publish. See CLAUDE.md "release-train rule".
 
 ---
 
