@@ -297,7 +297,14 @@ A working methodology dispute process:
 4. **Decision log**: every methodology dispute that closes either with a
    change or a "no change" decision is logged with the rationale. Future
    disputes citing the same issue get pointed at the log and closed
-5. **Annual methodology refresh**: the cumulative effect of methodology
+5. **Dispute-throughput metrics**: track dispute count, resolution time
+   against the triage SLA, and the top disputed cost classes at each
+   quarterly review. At chargeback maturity these are audit-relevant -
+   Internal Audit and the Controller expect evidence that disputes clear
+   within SLA, not merely that they are counted. Rising resolution time is
+   an early signal that the review forum is under-resourced, visible before
+   a backlog shows up in the count.
+6. **Annual methodology refresh**: the cumulative effect of methodology
    decisions over the year feeds into the annual methodology review (see
    cadence table above)
 
