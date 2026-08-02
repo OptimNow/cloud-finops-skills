@@ -26,6 +26,8 @@ curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/ins
 ./install.sh --list              # list supported tools
 ./install.sh --dry-run           # print what would happen
 ./install.sh --user              # install at $HOME paths (Claude Code)
+./install.sh --inline            # cursor/windsurf/codex/aider: embed the whole
+                                 # library instead of a routing file (~1MB)
 ./install.sh --dest <dir>        # override target directory
 ```
 
@@ -88,9 +90,13 @@ installer locally.
 ./install.sh --tool cursor
 ```
 
-Writes `<project>/.cursor/rules/cloud-finops.mdc` (single rule with the full skill body
-+ Cursor frontmatter). Cursor auto-loads `.cursor/rules/`. Trigger by asking a FinOps
-question in chat.
+Writes `<project>/.cursor/rules/cloud-finops.mdc` - the SKILL.md router plus an index
+of every reference and playbook, with Cursor frontmatter. Cursor auto-loads
+`.cursor/rules/`. Trigger by asking a FinOps question in chat.
+
+The rule does **not** embed the reference bodies. Pair it with the
+[MCP server](#mcp-server-cross-tool) so Cursor can fetch them on demand, or keep a
+local checkout of the skill. See [Routing file vs `--inline`](#routing-file-vs---inline).
 
 ### Windsurf
 
@@ -99,7 +105,9 @@ question in chat.
 ```
 
 Writes `<project>/.windsurf/rules/cloud-finops.md` with Windsurf rule frontmatter
-(`trigger: model_decision`).
+(`trigger: model_decision`). Like the Cursor rule this is a routing file, not the
+full library - Windsurf enforces a per-rule character limit far below the size of
+the reference set. See [Routing file vs `--inline`](#routing-file-vs---inline).
 
 ### ChatGPT (Custom GPT)
 
@@ -185,11 +193,13 @@ elsewhere.
 ./install.sh --tool codex
 ```
 
-Writes `<project>/AGENTS.md` (or `AGENTS-cloud-finops.md` if `AGENTS.md` already exists,
-to avoid clobbering). Codex CLI reads `AGENTS.md` as project-level context.
+Writes `<project>/AGENTS.md` (or `AGENTS-cloud-finops.md` if a foreign `AGENTS.md`
+already exists, to avoid clobbering - a re-run recognises its own output and
+overwrites in place). Codex CLI reads `AGENTS.md` as project-level context.
 
-For richer retrieval (per-reference fetch + faceted query), pair this with the MCP
-server below.
+This is a routing file. For the reference bodies, pair it with the MCP server below -
+that is the intended pairing, not an optional extra. See
+[Routing file vs `--inline`](#routing-file-vs---inline).
 
 ### Aider
 
@@ -197,9 +207,9 @@ server below.
 ./install.sh --tool aider
 ```
 
-Writes `<project>/CONVENTIONS.md` (or `CONVENTIONS-cloud-finops.md` if one exists).
-Aider auto-reads `CONVENTIONS.md`. Default coverage is the four general references
-(AWS, Azure, GCP, AI). Add specific references at runtime with:
+Writes `<project>/CONVENTIONS.md` (or `CONVENTIONS-cloud-finops.md` if a foreign one
+exists). Aider auto-reads `CONVENTIONS.md`. This is a routing file; add specific
+references at runtime with:
 
 ```bash
 aider --read skills/cloud-finops/references/finops-bedrock.md ...
@@ -223,6 +233,34 @@ the way Claude / Cursor do. Use as a lightweight context hint, not a full skill 
 
 Copies the skill to `<project>/.kiro/powers/cloud-finops/`. Kiro uses `POWER.md` as the
 entry point.
+
+### Routing file vs `--inline`
+
+The four single-file targets - Cursor, Windsurf, Codex CLI, Aider - emit a **routing
+file** by default: the SKILL.md router, an index of every reference and playbook with
+its description and facets, and instructions for fetching a body on demand. That is
+about 27 KB (~7K tokens).
+
+They used to inline the entire reference library. As the library grew that reached
+roughly 1 MB (~250K tokens) per artefact, which overflows or dominates the context
+window of every tool that loads it, and sits far above Windsurf's documented per-rule
+character limit. Nothing measured the artefacts, so the regression was invisible -
+the installer reported success either way. `scripts/check-artefact-size.sh` now runs
+in CI to keep it that way.
+
+**The routing file assumes the model can reach the bodies.** Pair it with the MCP
+server below, or keep a local checkout of the skill - the generated file explains both
+paths and tells the model to say so rather than answer from memory if neither is
+available.
+
+If you want the old behaviour - no MCP server, no checkout, everything embedded:
+
+```bash
+./install.sh --tool cursor --inline
+```
+
+Expect the size trade-off that comes with it. The installer prints a warning
+describing what you got in either mode.
 
 ### MCP server (cross-tool)
 

@@ -13,6 +13,11 @@
 #   ./install.sh --grouped             ChatGPT only: produce a grouped build that bundles
 #                                      the same content by domain into a handful of files
 #                                      instead of one file per reference. Easier to upload.
+#   ./install.sh --inline              Single-file targets (cursor, windsurf, codex,
+#                                      aider): inline the entire reference library
+#                                      instead of emitting a routing file. Produces
+#                                      a ~1MB artefact - only useful without the MCP
+#                                      server and without a local checkout.
 #   ./install.sh --dest <dir>          Override the project / target directory
 #   ./install.sh --help                Show this help
 #
@@ -71,6 +76,7 @@ DRY_RUN=""
 USER_LEVEL=""
 DEST_OVERRIDE=""
 GROUPED=""
+INLINE=""
 
 cleanup() { [[ -n "$TMPDIR" ]] && rm -rf "$TMPDIR" 2>/dev/null || true; }
 trap cleanup EXIT
@@ -144,6 +150,98 @@ write_concat_body() {
       echo "---"
       echo
     done
+  fi
+}
+
+# Routing body: SKILL.md (the router) + a one-line index of every reference and
+# playbook + instructions for fetching a body on demand.
+#
+# This is the default for the single-file targets (cursor, windsurf, codex,
+# aider). The alternative - inlining the whole library, which write_concat_body
+# does - produces a ~1MB artefact (~250K tokens) that overflows or dominates
+# any context window, and Windsurf's per-rule character limit is orders of
+# magnitude below it. The library was a fraction of its current size when that
+# approach was chosen. `--inline` restores it for anyone who wants it.
+#
+# The routing contract only works if the model can actually reach the bodies,
+# so the header states both retrieval paths explicitly.
+write_routing_body() {
+  strip_frontmatter "$SRC_DIR/skills/cloud-finops/SKILL.md"
+  cat <<'EOF'
+
+---
+
+## Retrieving a reference or playbook
+
+The routing tables above name files that are **not inlined in this artefact**.
+Fetch a body one of two ways:
+
+1. **cloud-finops MCP server** (recommended). `pip install cloud-finops-mcp`,
+   then wire it into this tool's MCP config. Tools:
+   - `get_reference(name)` / `list_references()` / `find_references(domain=, capability=, phase=, persona=, maturity=)`
+   - `get_playbook(name)` / `list_playbooks()` / `find_playbooks(scope=, service=, waste_category=, confidence=)`
+2. **Local checkout.** If this project has the skill installed on disk, read
+   `skills/cloud-finops/references/<name>.md` or
+   `skills/cloud-finops/playbooks/<slug>.md` directly.
+
+If neither is available, say so rather than answering from memory - the whole
+point of this skill is that billing mechanics come from the reference files,
+not from model recall.
+
+---
+
+## Reference index
+
+EOF
+  local ref desc name
+  for ref in "$SRC_DIR/skills/cloud-finops/references"/*.md; do
+    name=$(basename "$ref" .md)
+    desc=$(awk '/^>/{sub(/^> ?/,""); print; exit}' "$ref" | head -c 220)
+    echo "- \`$name\` - $desc"
+  done
+  if [[ -d "$SRC_DIR/skills/cloud-finops/playbooks" ]]; then
+    cat <<'EOF'
+
+## Playbook index
+
+Named-pattern runbooks. Format: slug - scope / waste category / confidence.
+
+EOF
+    local pb slug scope cat conf
+    for pb in "$SRC_DIR/skills/cloud-finops/playbooks"/*.md; do
+      [[ "$(basename "$pb")" == "README.md" ]] && continue
+      slug=$(basename "$pb" .md)
+      scope=$(awk -F': *' '/^scope:/{print $2; exit}' "$pb")
+      cat=$(awk -F': *' '/^waste_category:/{print $2; exit}' "$pb")
+      conf=$(awk -F': *' '/^confidence:/{print $2; exit}' "$pb")
+      echo "- \`$slug\` - ${scope:-?} / ${cat:-?} / ${conf:-?}"
+    done
+  fi
+  echo
+}
+
+# Emit either the routing body (default) or the full inlined library
+# (--inline). Single-file targets call this rather than either builder.
+write_body() {
+  if [[ -n "$INLINE" ]]; then
+    write_concat_body
+  else
+    write_routing_body
+  fi
+}
+
+# Explain to the user which shape they just got and how the model reaches the
+# reference bodies from it.
+routing_hint() {
+  [[ -n "$DRY_RUN" ]] && return 0
+  if [[ -n "$INLINE" ]]; then
+    dim "  --inline: the full reference library is embedded (~1MB). Expect this to"
+    dim "  dominate or overflow the tool's context window."
+  else
+    dim "  This is a routing file: SKILL.md plus an index, not the full library."
+    dim "  Install the MCP server so the model can fetch bodies on demand:"
+    dim "    pip install cloud-finops-mcp   (then: ./install.sh --tool mcp for config)"
+    dim "  Or keep a local checkout - the routing file explains both paths."
   fi
 }
 
@@ -290,6 +388,7 @@ install_cursor() {
   do_write "$target" build_cursor_rule
   ok "Cursor: rule written -> $target"
   dim "  Cursor auto-loads .cursor/rules/. Trigger by asking a FinOps question in chat."
+  routing_hint
 }
 
 build_cursor_rule() {
@@ -302,13 +401,14 @@ alwaysApply: false
 ---
 
 EOF
-  write_concat_body
+  write_body
 }
 
 install_windsurf() {
   local target="${DEST_OVERRIDE:-$PWD}/.windsurf/rules/cloud-finops.md"
   do_write "$target" build_windsurf_rule
   ok "Windsurf: rule written -> $target"
+  routing_hint
 }
 
 build_windsurf_rule() {
@@ -319,7 +419,7 @@ description: Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend
 ---
 
 EOF
-  write_concat_body
+  write_body
 }
 
 install_chatgpt() {
@@ -681,7 +781,7 @@ install_codex() {
   ok "Codex CLI: agent context written -> $target"
   dim "  Codex reads AGENTS.md from project root. If AGENTS-cloud-finops.md was used,"
   dim "  manually merge into your existing AGENTS.md (or rename when ready)."
-  dim "  The cloud-finops MCP server is the cleaner cross-agent path - see --tool mcp."
+  routing_hint
 }
 
 build_codex_agents_md() {
@@ -694,7 +794,7 @@ This file injects Cloud FinOps expertise into your Codex CLI session. Source:
 https://github.com/OptimNow/cloud-finops-skills
 
 EOF
-  write_concat_body
+  write_body
 }
 
 install_aider() {
@@ -707,8 +807,9 @@ install_aider() {
   fi
   do_write "$target" build_aider_conventions
   ok "Aider: conventions written -> $target"
-  dim "  Aider auto-reads CONVENTIONS.md. For more references, add via --read flags:"
+  dim "  Aider auto-reads CONVENTIONS.md. Pull individual references at runtime:"
   dim "    aider --read skills/cloud-finops/references/finops-bedrock.md ..."
+  routing_hint
 }
 
 build_aider_conventions() {
@@ -720,23 +821,12 @@ EOF
   cat <<'EOF'
 
 When asked about cloud cost, AI cost, SaaS cost, commitment strategy, rightsizing,
-tagging, or FinOps practice questions, apply the guidance below. Default coverage
-is the four most general areas (AWS, Azure, GCP, AI). For richer coverage on
-Bedrock, Vertex AI, Databricks, Microsoft Fabric, Snowflake, OCI, etc., add the
-specific references via `aider --read skills/cloud-finops/references/<file>.md`.
+tagging, or FinOps practice questions, apply the guidance below. Pull the specific
+reference you need with `aider --read skills/cloud-finops/references/<file>.md`,
+or wire up the cloud-finops MCP server and fetch on demand.
 
 EOF
-  strip_frontmatter "$SRC_DIR/skills/cloud-finops/SKILL.md"
-  for ref in finops-aws.md finops-azure.md finops-gcp.md finops-for-ai.md; do
-    if [[ -f "$SRC_DIR/skills/cloud-finops/references/$ref" ]]; then
-      echo
-      echo "---"
-      echo
-      echo "## Reference: $ref"
-      echo
-      cat "$SRC_DIR/skills/cloud-finops/references/$ref"
-    fi
-  done
+  write_body
 }
 
 install_copilot() {
@@ -869,6 +959,7 @@ main() {
       --dry-run)  DRY_RUN=1; shift ;;
       --user)     USER_LEVEL=1; shift ;;
       --grouped)  GROUPED=1; shift ;;
+      --inline)   INLINE=1; shift ;;
       --dest)     DEST_OVERRIDE="${2:?--dest requires a value}"; shift 2 ;;
       --dir)      DEST_OVERRIDE="${2:?--dir requires a value}"; shift 2 ;;  # legacy alias
       --list)     list_tools; exit 0 ;;
