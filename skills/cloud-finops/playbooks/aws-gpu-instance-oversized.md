@@ -92,8 +92,8 @@ rightsize candidate.
   days then break on day 29.
 - Trusting `GPUUtilization` (CloudWatch / `nvidia-smi`) without DCGM
   cross-check. The metric is a "did the GPU do anything" boolean dressed
-  up as a percentage - a workload touching 1 SM out of 108 on an H100
-  reports `GPU-Util: 100%`.
+  up as a percentage - a workload touching 1 SM out of 132 on an H100 SXM
+  (114 on the PCIe part) reports `GPU-Util: 100%`.
 - Picking a smaller instance whose frame buffer is too small for the
   model. Always size on memory first, compute second.
 - Forgetting that lower-tier GPUs may need a different software stack

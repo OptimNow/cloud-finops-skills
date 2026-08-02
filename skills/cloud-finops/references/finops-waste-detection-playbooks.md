@@ -20,7 +20,8 @@ fcp_maturity_entry: "Crawl"
 >
 > Operationally, OptimNow runs the **WasteLine** appliance - a private,
 > read-only AWS waste-assessment tool with 49 detection rules across the
-> seven categories below. WasteLine automates the detection-and-classification
+> resource-state categories below. WasteLine automates the
+> detection-and-classification
 > work; this file is the doctrine the appliance encodes. For Azure and GCP,
 > use the in-cloud catalogues (`finops-azure.md` 48-pattern catalogue,
 > `finops-gcp.md` 26-pattern catalogue) until WasteLine extends to those
@@ -28,9 +29,9 @@ fcp_maturity_entry: "Crawl"
 
 ---
 
-## The seven waste categories
+## The eight waste categories
 
-Every cloud waste pattern fits into one of seven categories. Understanding the
+Every cloud waste pattern fits into one of eight categories. Understanding the
 category drives the detection method, the classification confidence, and the
 fix-safety posture.
 
@@ -43,12 +44,15 @@ fix-safety posture.
 | **Schedule blindness** | Workload runs 24/7 with a clear business-hours pattern | Variable; 60-70% savings on dev / test environments | Usually likely; depends on workload sensitivity |
 | **Modernization opportunities** | Workload runs on older-generation instances or pre-Graviton x86_64 when ARM equivalents exist | 10-40% per workload, low risk | Usually possible; revalidation required |
 | **AI / ML inefficiency** | SageMaker endpoints idle, Bedrock provisioned throughput underutilised, training jobs on-demand instead of Spot | High per-workload, growing rapidly | Usually likely; product team has the context |
+| **Egress / data transfer** | Traffic is billed for crossing a boundary (AZ, region, VPC, internet) that the architecture did not need to cross | High and compounding at scale; frequently a top-5 line item | Usually possible; needs traffic attribution before anyone will act |
 
 These categories are not equal in priority. **Orphaned and idle** are where
 most engagements should start - low-risk wins build the credibility for
 harder commitment and modernization work later. **Commitment mismatches and
 modernization** should land after at least one quarter of orphaned/idle
-hunting has produced realised savings.
+hunting has produced realised savings. **Egress** is last: it is the only
+category whose fix is usually an architecture change rather than a
+configuration change, so it needs the credibility the other seven earn.
 
 ---
 
@@ -124,7 +128,7 @@ Typical sources:
 |---|---|---|
 | Unattached EBS volumes (or equivalents) | `Attachment State = available`, `LastAttached > 14 days` | Inventory across regions; cross-reference with snapshot history |
 | Orphaned EBS snapshots | Source volume ID does not exist; AMI reference does not exist | Snapshot age + parent-volume status query |
-| Unassociated Elastic IPs | EIP allocated, no association to running resource | Direct inventory; high $ per resource ($3.65/month each) |
+| Unassociated Elastic IPs | EIP allocated, no association to running resource | Direct inventory; ~$3.60/month each (all public IPv4 has been charged since February 2024, attached or not - see Category 8) |
 | Empty S3 buckets without lifecycle | Object count = 0, no lifecycle policy, age > 90 days | List buckets, filter by metadata - never enumerate objects |
 | Security groups with no attached interfaces | No ENI references, no ALB/NLB reference, no Lambda VPC config reference | Reverse-lookup query |
 | AMIs with no running instances | AMI ID not referenced by any instance, launch template, or ASG | Cross-reference inventory |
@@ -543,13 +547,104 @@ provider-specific AI billing, see `finops-bedrock.md`,
 
 ---
 
+## Category 8: Egress / data transfer
+
+### Pattern shape
+
+Every provider bills traffic for crossing a boundary: between Availability
+Zones, between regions, out of the VPC, or out to the internet. The waste is
+not the traffic itself - it is traffic crossing a boundary the architecture
+never needed it to cross. A service mesh that gossips across AZs, a Kafka
+cluster replicating across AZs at full throughput, a workload reaching S3
+over a NAT Gateway instead of a VPC Endpoint: each is paying a per-GB toll
+for a boundary crossing that a routing or placement decision could remove.
+
+This category is structurally different from the other seven. The others are
+about a resource that is wrong (absent workload, wrong size, wrong
+commitment). Here the resources are all correct and it is the **path between
+them** that costs money. That has three consequences:
+
+- **Attribution is the hard part, not detection.** The bill tells you cross-AZ
+  transfer cost $40K last month; it does not tell you which two services are
+  talking. Flow logs plus workload mapping are the prerequisite.
+- **The fix is usually architectural.** Topology-aware routing, co-location,
+  in-AZ read replicas, VPC Endpoints - these are engineering changes with
+  design trade-offs, not settings to toggle.
+- **It hides inside other services' line items.** Cross-AZ traffic bills
+  against EC2, not against a "networking" service, so it is invisible in a
+  service-level cost breakdown. Only usage-type-level analysis surfaces it.
+
+Egress is also the category most likely to be misdiagnosed as an availability
+problem. A team that "fixes" cross-AZ cost by collapsing to a single AZ has
+traded a recurring bill for an outage risk - see the anti-patterns below.
+
+### Common patterns
+
+| Pattern | Signal | Detection approach |
+|---|---|---|
+| Cross-AZ chatter ([aws-cross-az-egress](../playbooks/aws-cross-az-egress.md)) | `DataTransfer-Regional-Bytes` in the top 5 usage types for an account | CUR usage-type breakdown, then VPC Flow Logs for source / destination attribution |
+| NAT Gateway used for AWS-service traffic | High NAT processing charges alongside heavy S3 / DynamoDB / ECR usage in the same VPC | NAT Gateway `BytesOutToDestination` vs VPC Endpoint inventory |
+| Zombie NAT Gateway ([aws-zombie-nat-gateway](../playbooks/aws-zombie-nat-gateway.md)) | NAT Gateway with near-zero processed bytes but full hourly charge | CloudWatch NAT Gateway metrics + route table inspection |
+| Public IPv4 footprint | Charge for every public IPv4 address since February 2024, attached or not | EIP and ENI inventory vs actual internet-facing requirement |
+| Inter-region replication beyond requirement | Cross-region transfer for data whose RPO does not justify continuous replication | Transfer cost by region pair vs stated DR requirement |
+| Internet egress that belongs behind a CDN | High direct-to-internet transfer for cacheable content | Transfer cost by service vs CDN hit rate |
+| Cross-VPC / peering chatter | Peering or Transit Gateway processing charges between VPCs that could share a subnet | TGW / peering metrics + workload placement map |
+
+Azure and GCP carry the same shape with different names and different
+boundary pricing - see the networking-cost sections of `finops-azure.md`
+and `finops-gcp.md`. GCP in particular prices some inter-zone traffic
+differently from AWS, so do not port an AWS threshold across providers.
+
+### Fix sequence
+
+1. **Attribute before proposing.** Get from "cross-AZ costs $X" to "services
+   A and B account for 70% of it". Without this, every recommendation is a
+   guess and engineering will treat it as one.
+2. **Take the free wins first.** VPC Endpoints for AWS-service traffic and
+   releasing unneeded public IPv4 addresses are configuration changes with
+   no architectural trade-off. Do these before proposing anything that
+   touches placement.
+3. **Then topology-aware routing.** Kubernetes Topology Aware Hints, Istio
+   locality routing, target-group stickiness. Low risk, meaningful effect on
+   chatty service pairs.
+4. **Then placement changes.** Co-locating chatty pairs and adding in-AZ read
+   replicas trade availability posture or instance cost against transfer
+   cost. These need the workload owner in the room, with the trade-off named
+   explicitly.
+5. **Re-measure after each step.** Egress fixes interact - a VPC Endpoint can
+   remove traffic that made a service pair look chatty, invalidating the case
+   for moving it.
+
+### Anti-patterns
+
+- **Collapsing to a single AZ to eliminate cross-AZ cost.** The first AZ
+  outage costs more than years of transfer charges. This is the defining
+  failure mode of the category.
+- **Proposing egress fixes without attribution.** "Reduce your cross-AZ
+  traffic" is not a recommendation, it is a restatement of the bill.
+- **Treating egress as a hygiene task.** Unlike orphaned resources, there is
+  rarely a clearly-wrong resource to delete. Egress work needs engineering
+  time budgeted, not a cleanup ticket.
+- **Porting thresholds across providers.** Per-GB boundary pricing differs
+  by provider and by boundary type; an AWS cross-AZ rule of thumb does not
+  transfer to Azure or GCP.
+
+---
+
 ## Operational tooling
 
 OptimNow's WasteLine appliance is the operational tool for this
-discipline on AWS. It implements the seven categories above as 49
+discipline on AWS. It implements Categories 1-7 above as 49
 deterministic detection rules, with read-only AWS access, classification
 confidence per finding, executive reporting, and proposal-only remediation
 artifacts (CLI scripts, Terraform snippets, OpenOps workflows).
+
+**Category 8 (egress) is doctrine, not tooling.** WasteLine does not ship
+egress detection rules. Egress waste is attributed from flow logs and
+usage-type analysis rather than from resource-state inspection, which is a
+different data pipeline to the one the appliance runs. Treat egress findings
+as manual analysis for now - CUR usage-type breakdown first, VPC Flow Logs
+for attribution second.
 
 What WasteLine adds beyond a manual hunt:
 
@@ -579,7 +674,7 @@ WasteLine extension to Azure and GCP is on the roadmap.
 
 ### Crawl - manual hunt
 
-- Quarterly hunt across the seven categories using native AWS tooling
+- Quarterly hunt across the eight categories using native AWS tooling
   (Cost Explorer, Compute Optimizer, Trusted Advisor) plus per-cloud
   Azure / GCP equivalents
 - Manual two-signal classification with spreadsheet tracking
@@ -639,7 +734,7 @@ WasteLine extension to Azure and GCP is on the roadmap.
 - `finops-aws.md` - AWS-specific commitment, EC2, RDS, EDP guidance
   (the Category 4 details)
 - `finops-azure.md` - Azure 48-pattern catalogue (Azure-side equivalents
-  to the seven categories above)
+  to the categories above)
 - `finops-gcp.md` - GCP 26-pattern catalogue (GCP-side equivalents)
 - `finops-tagging.md` - tag enforcement is the prerequisite for
   owner-driven decommission workflows

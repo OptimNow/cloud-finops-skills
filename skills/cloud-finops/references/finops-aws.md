@@ -152,7 +152,7 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 | Instrument | Discount depth | Flexibility | Commitment type | Term | Covers |
 |---|---|---|---|---|---|
 | EC2 Standard RI | Up to 72% | Lowest - locked to instance type, region, OS, tenancy | Capacity reservation + rate | 1yr or 3yr | EC2 only |
-| EC2 Convertible RI | Up to 66% | Medium - can change instance family, OS, tenancy | Rate only (no capacity) | 3yr only | EC2 only |
+| EC2 Convertible RI | Up to 66% | Medium - can change instance family, OS, tenancy | Rate only (no capacity) | 1yr or 3yr | EC2 only |
 | EC2 Instance Savings Plan | Up to 72% | Medium - locked to instance family and region | Spend-based ($/hr) | 1yr or 3yr | EC2 only |
 | Compute Savings Plan | Up to 66% | Highest - any instance family, region, OS | Spend-based ($/hr) | 1yr or 3yr | EC2, Fargate, Lambda |
 | SageMaker AI Savings Plan | Up to 64% | Flexible across SageMaker AI usage | Spend-based ($/hr) | 1yr or 3yr | SageMaker AI (training, inference, notebooks) |
@@ -191,7 +191,9 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
    the full term - no modifications allowed once purchased. Convertible RIs can be
    exchanged mid-term for a different configuration (instance family, OS, tenancy),
    which means you can reshape the commitment as workloads evolve without waiting
-   for expiry. This mid-term exchange capability is one of three commitment
+   for expiry. They sell in both 1-year and 3-year terms, so mid-term exchange is
+   available at either horizon - a 1-year Convertible is the most liquid RI shape
+   on offer. This mid-term exchange capability is one of three commitment
    liquidity mechanisms (see "Commitment portfolio liquidity" below). Note:
    Convertible RIs cannot be sold on the RI Marketplace - only Standard RIs can -
    so the liquidity trade-off is mid-term exchange flexibility vs secondary market
@@ -974,7 +976,7 @@ These actions typically deliver savings within 30 days with low risk.
 | Action | Typical savings | Risk | Effort |
 |---|---|---|---|
 | Delete unattached EBS volumes | 100% of volume cost | None | Low |
-| Release unassociated Elastic IPs | $3.65/IP/month | None | Low |
+| Release unneeded Elastic IPs | ~$3.60/IP/month | None | Low |
 | Delete unused snapshots (>90 days old) | Variable | Low (verify no restore needed) | Low |
 | Schedule dev/test EC2 stop outside business hours | 60–70% of instance cost | Low | Low |
 | Move S3 infrequently accessed data to Infrequent Access | 40% storage cost | Low | Low |
@@ -2696,10 +2698,11 @@ VPC Interface Endpoints are commonly deployed to meet network security or compli
 **Unassociated Elastic Ip Address**
 Service: AWS EIP | Type: Unused Resource
 
-Elastic IPs are often provisioned but forgotten  - left unassociated, or still attached to EC2 instances that have been stopped. In either case, AWS treats the EIP as idle and applies an hourly charge.
+Elastic IPs are often provisioned but forgotten - left unassociated, or still attached to EC2 instances that have been stopped. Since 1 February 2024 AWS charges $0.005/hr (~$3.60/month) for **every** public IPv4 address, attached or not, so an unassociated EIP is not a special "idle" penalty - it is the ordinary IPv4 charge buying you nothing. The saving from releasing one is the full address cost, and the same charge applies to in-use addresses, which makes IPv4 footprint reduction (IPv6, shared NAT egress, private endpoints) a distinct optimisation lever rather than a hygiene task.
 
 - Release any EIPs that are no longer required
 - Automate audits to identify unassociated or inactive EIPs on a recurring basis
+- Count public IPv4 addresses in use, not just orphaned ones - at scale the attached-address charge is usually the larger line
 - Update IaC templates or provisioning workflows to clean up networking assets during teardown
 
 ---

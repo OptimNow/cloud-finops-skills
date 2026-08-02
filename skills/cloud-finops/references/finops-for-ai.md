@@ -174,8 +174,8 @@ The single biggest mistake in GPU FinOps is trusting `nvidia-smi`'s
 and as the default in many monitoring stacks). The metric reports whether
 the GPU did **anything** during the sampling interval, not how much of its
 compute capacity was used. A workload occupying 1 streaming multiprocessor
-(SM) out of 108 on an H100 reports `GPU-Util: 100%`. Rightsizing decisions
-based on that signal are systematically wrong.
+(SM) out of 132 on an H100 SXM reports `GPU-Util: 100%`. Rightsizing
+decisions based on that signal are systematically wrong.
 
 A GPU can appear busy while being significantly underused. The real
 signals come from NVIDIA DCGM (Data Center GPU Manager) profiling metrics,
