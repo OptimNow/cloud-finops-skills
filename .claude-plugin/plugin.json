@@ -1,6 +1,6 @@
 {
   "name": "cloud-finops",
-  "version": "1.27.0",
+  "version": "1.28.0",
   "description": "Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic).",
   "author": {
     "name": "OptimNow",
