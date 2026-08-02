@@ -767,6 +767,9 @@ install_gemini_cli() {
   fi
   do_copy_dir "$SRC_DIR/skills/cloud-finops" "$target"
   ok "Gemini CLI: skill copied -> $target"
+  dim "  Gemini CLI implements the SKILL.md standard - it discovers user skills in"
+  dim "  ~/.gemini/skills/ and reads SKILL.md one directory deep, which is this layout."
+  dim "  For a project-scoped install instead: --dest .gemini/skills"
 }
 
 install_codex() {
