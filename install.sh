@@ -552,7 +552,7 @@ Use these knowledge files for the following query types:
 | Microsoft Fabric (F-SKUs, CU smoothing, pause/resume, governance trap) | finops-fabric.md |
 | Snowflake (QUERY_ATTRIBUTION_HISTORY, Budgets, Cortex, resource monitors) | finops-snowflake.md |
 | OCI (Cost Reports, FOCUS, cost-tracking tags, Universal Credits) | finops-oci.md |
-| FinOps Framework (4 domains 2024 + Executive Strategy Alignment 2026) | finops-framework.md |
+| FinOps Framework 2026 (4 domains, 22 capabilities) | finops-framework.md |
 | Tagging strategy, naming conventions, IaC enforcement | finops-tagging.md |
 | SaaS management, licence optimisation, shadow IT | finops-sam.md |
 | ITAM, BYOL, marketplace governance | finops-itam.md |
@@ -618,7 +618,7 @@ Use these knowledge files for the following query types:
 | AI cost management, LLM economics, agentic patterns, ROI, Anthropic billing, AI coding tools (Cursor / Copilot / Claude Code / Codex / Windsurf), GenAI capacity, AI Investment Council, self-hosted vs managed inference | ai.md |
 | Databricks (DBCU, allocation, Photon), Microsoft Fabric (F-SKUs, CU smoothing), Snowflake (QUERY_ATTRIBUTION_HISTORY, Cortex) | data-platforms.md |
 | OCI (Cost Reports, FOCUS, cost-tracking tags, Universal Credits) | oci.md |
-| FinOps Framework (4 domains 2024 + Executive Strategy Alignment 2026), tagging, SaaS management, ITAM, GreenOps, Kubernetes FinOps, waste detection playbooks | cross-cutting.md |
+| FinOps Framework 2026 (4 domains, 22 capabilities), tagging, SaaS management, ITAM, GreenOps, Kubernetes FinOps, waste detection playbooks | cross-cutting.md |
 | Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene + M&A) | finops-discipline.md |
 | Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste) | playbooks.md |
 | Reasoning methodology lens (diagnose before prescribing, connect cost to value, recommend progressively) | methodology.md |

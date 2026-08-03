@@ -416,8 +416,10 @@ system_prompt = load_cloud_finops_skill("./cloud-finops")
 
 For token efficiency, load only the references relevant to your use case. For most
 single-domain queries, one reference file plus `optimnow-methodology.md` is sufficient.
-The playbooks layer is small (~3 KB each) so loading the full set is usually cheap;
-drop it only if your token budget is very tight.
+Playbooks average ~5 KB each and the full set is ~120 KB (roughly 30K tokens), so do
+not load them all by default: load the one playbook matching the named pattern, or
+filter by frontmatter facet (scope, service, waste_category) first. Loading the full
+set only makes sense for a deliberate whole-taxonomy review.
 
 ### Recommended response contract
 
