@@ -355,6 +355,10 @@ size should match your consumption profile - not a fixed rule.
 - **Captures pricing improvements:** newer instance families and Graviton adoption
   can be reflected in subsequent blocks
 
+<!-- Deliberate mirror: this cadence/block-size table also appears in
+finops-azure-commitments.md. Each commitments file is loaded standalone
+(one provider per query), so the duplication is intentional - do not
+deduplicate into a shared file. -->
 **Cadence and block size by consumption profile:**
 
 The purchasing cadence should follow consumption volatility. The more variable the
