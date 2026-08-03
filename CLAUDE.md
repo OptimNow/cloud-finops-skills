@@ -563,7 +563,9 @@ Follow these five steps whenever you add a new domain:
 
 2. **Add a routing entry in SKILL.md**
    - Add a row to the "Domain routing" table with the query topic and file path
-   - Add a row to the "Reference files" table with the filename, description, and approximate line count
+   - (The old "Reference files" descriptive table was removed in the 2026-08
+     token-efficiency pass - the routing table is now the single catalogue.
+     Do not reintroduce a second per-file table.)
 
 3. **Add a routing entry in POWER.md**
    - Add a row to the "Domain routing" table (same format as SKILL.md)
@@ -705,8 +707,12 @@ Good test patterns:
       `skills/cloud-finops/playbooks/README.md` (frontmatter schema, Problem /
       Symptoms / Detection / Fix / Anti-pattern / See also sections, OptimNow
       CC BY-SA footer), and update the named-
-      pattern parenthetical in SKILL.md, POWER.md, and the ChatGPT / grouped
-      routing tables in install.sh.
+      pattern parenthetical in the ChatGPT / grouped routing tables in
+      install.sh. SKILL.md and POWER.md carry representative examples only
+      (since the 2026-08 token-efficiency pass) and defer to
+      `playbooks/README.md` for the full list - only extend their examples
+      if the new pattern is a distinct new family (new provider or new
+      waste category), not for every added playbook.
       (Exact reference/playbook counts were removed from prose across the repo in
       2026-07 precisely so they no longer need hand-bumping - do not reintroduce
       hardcoded "N references / N playbooks" counts; use "the reference library"

@@ -217,15 +217,17 @@ When activated, follow the reasoning sequence below for every response.
 
 ## How to use this power
 
-This power covers cloud, AI, SaaS, and adjacent technology spend domains. Use
-`references/optimnow-methodology.md` as a reasoning lens (diagnose before prescribing,
-connect cost to value, recommend progressively); then load the domain reference(s)
-matching the query.
+This power covers cloud, AI, SaaS, and adjacent technology spend domains. Apply the
+OptimNow lens to every answer: diagnose before prescribing, connect cost to value,
+recommend progressively. Then load the domain reference(s) matching the query. Load
+`references/optimnow-methodology.md` in full only for strategy, engagement-design, or
+methodology questions - not for routine billing-mechanics queries.
 
 ### Domain routing
 
 | Query topic | Load reference |
 |---|---|
+| OptimNow methodology, engagement approach, four pillars, FinOps strategy design, practice positioning | `references/optimnow-methodology.md` |
 | AI costs, LLM inference, token economics, agentic cost patterns, AI ROI, AI cost allocation, GPU cost attribution, GPU telemetry, DCGM metrics, "GPU utilization is misleading", tensor core activity, GPU memory bandwidth, RAG harness costs | `references/finops-for-ai.md` |
 | Agentic FinOps, true agents vs pipelines vs workflows, agentic cost anatomy, cost per completed task, cost-safe agent architecture, agent-initiated payments, x402, MPP, agent wallets | `references/finops-agentic.md` |
 | AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations | `references/finops-ai-value-management.md` |
@@ -258,12 +260,12 @@ matching the query.
 | Onboarding workloads, migration-time cost hygiene, intake gate, mandatory tags at go-live, 60-90 day forecast-then-commit rule, double-bubble cost (parallel-run source and target), migration cost estimate vs actuals, network-cost trap (data-centre to cloud), M&A integration patterns, FOCUS-during-migration, architecture review integration, post-migration FinOps owner | `references/finops-onboarding-workloads.md` |
 | Kubernetes FinOps, K8s cost allocation, OpenCost, Kubecost, GKE Cost Allocation, EKS Split Cost Allocation, AKS Cost Analysis, FOCUS-emitting K8s allocation, container rightsizing (VPA, p95/p99 with safety margins), node-level autoscaling (Karpenter, Cluster Autoscaler), Pod Disruption Budgets, Spot diversification, idle node cost, node efficiency KPI | `references/finops-kubernetes.md` |
 | Waste detection playbooks, orphaned resources, idle resources, overprovisioned resources, commitment mismatches, schedule blindness, modernization opportunities, AI/ML inefficiency, egress / data transfer waste, cross-AZ egress cost, two-signal classification, classification confidence (obvious / likely / possible), realised vs potential savings, WasteLine appliance, OptimNow waste taxonomy | `references/finops-waste-detection-playbooks.md` |
-| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste) | `playbooks/<slug>.md` (see `playbooks/README.md` for the full list) |
+| Named waste pattern (e.g. zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, orphan Azure disks, Log Analytics ingestion sprawl, idle GKE Autopilot, idle SageMaker endpoint, oversized GPU instance, agent-loop flat-line burn) | `playbooks/<slug>.md` (see `playbooks/README.md` for the full pattern list) |
 | Multi-domain query | Load all relevant references, synthesise |
 
 ### Reasoning sequence (apply to every response)
 
-1. **Apply the methodology lens** (`references/optimnow-methodology.md`) - diagnose before prescribing, connect cost to value, recommend progressively
+1. **Apply the OptimNow lens** - diagnose before prescribing, connect cost to value, recommend progressively (load `references/optimnow-methodology.md` in full only for strategy or engagement questions)
 2. **Load** the domain reference(s) matching the query
 3. **Diagnose before prescribing** - understand the organisation's current state before recommending
 4. **Connect cost to value** - every recommendation should link spend to a business outcome
@@ -287,23 +289,10 @@ These six principles from the FinOps Foundation (2026 framework) underpin every 
 
 ## The three phases (Inform → Optimize → Operate)
 
-FinOps is an iterative cycle, not a linear progression. Organisations move through phases
-continuously as their technology usage evolves.
-
-**Inform** - establish visibility and allocation
-- Cost data is accessible and attributed to owners
-- Shared costs are allocated with defined methods
-- Anomaly detection is active
-
-**Optimize** - improve rates and usage efficiency
-- Commitment discounts (RIs, Savings Plans, CUDs) are actively managed
-- Rightsizing and waste elimination are running continuously
-- Unit economics are tracked
-
-**Operate** - operationalise through governance and automation
-- FinOps is embedded in engineering and finance workflows
-- Policies are enforced through automation, not manual review
-- Accountability is distributed, not centralised
+FinOps is an iterative cycle, not a linear progression: Inform (visibility, allocation,
+anomaly detection), Optimize (commitment discounts, rightsizing, unit economics),
+Operate (governance and automation embedded in engineering and finance workflows).
+See `references/finops-framework.md` for the full phase model.
 
 ---
 
