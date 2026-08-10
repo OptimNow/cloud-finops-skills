@@ -100,17 +100,27 @@ cloud-finops-skills/
 
 ## Content update pipeline
 
-The `pipeline/` folder contains a **monthly** content scanner (1st of each month
-at 9:00 AM CET via Windows Task Scheduler) that detects FinOps-relevant changes
-across ~30 sources and proposes updates to the reference files. It is gitignored
-and not part of the public distribution.
+The `pipeline/` folder contains a **fortnightly** content scanner (1st and 15th
+of each month at 9:00 AM CET via Windows Task Scheduler) that detects
+FinOps-relevant changes across ~30 sources and proposes updates to the reference
+files. It is gitignored and not part of the public distribution.
 
 **Cadence note (2026-05-15).** The pipeline was originally twice-monthly (1st
 and 15th). After the 2026-05-15 incident-and-recovery session (see Lessons
 learned below) it became clear each run requires 2-4 hours of focused human
-review for a typical 12-item batch. The 15th-of-month task is now disabled
-in Task Scheduler (preserved for re-enable if a mid-month refresh is needed).
-A monthly cadence trades some freshness for sustainable operating effort.
+review for a typical 12-item batch. The 15th-of-month task was disabled
+in Task Scheduler and the cadence dropped to monthly, trading some freshness
+for sustainable operating effort.
+
+**Cadence update (2026-08-10).** Restored to twice-monthly: the fortnightly
+rhythm matches the scan's 15-day lookback window, closing the coverage blind
+spots a monthly gap creates. The 1st-of-month runs additionally carry a
+rotating **AI-pricing re-verification pass** (one domain cluster per month,
+full surface quarterly) - the scan detects news from sources, but it cannot
+detect silent staleness in figures already sitting in the reference files,
+which is how the June 2025 AWS GPU price cuts went uncorrected for 14 months
+(fixed in PR #129). Procedure and rotation table in
+`pipeline/MONTHLY_WORKFLOW.md`.
 
 The pipeline is human-in-the-loop: nothing is changed automatically. Every
 proposed update goes through preview, approve/reject, and a guard-railed
