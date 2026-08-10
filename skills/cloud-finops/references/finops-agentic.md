@@ -68,6 +68,14 @@ as "agents":
   capability has been falling (~6.67%/month compounding, Pay-i-reported), yet cost
   per completed task rises in most production workloads because task ambition grows
   faster than prices fall. Falling rate cards are not a savings forecast.
+- **Search/retrieval-boundary APIs** - for agents doing live web search or scraping,
+  vendors (Exa, Tavily, Firecrawl, Parallel, Valyu) meter the fetch separately from
+  model tokens - per credit, per page, or per scoped extraction - instead of the
+  agent paying full input-token rates to ingest raw page text. Compare that
+  vendor cost against the token cost of stuffing full pages into context; the
+  cheaper path depends on page size and how much of the page the task actually
+  needs. This is a fast-moving, mostly early-stage vendor category - check
+  viability before wiring one into a production path.
 
 **Three architectural pillars for cost-safe agents:**
 
