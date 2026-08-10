@@ -35,11 +35,12 @@ through a unified API.
 | Output tokens | Tokens generated in the response |
 | Model choice | Each model has its own per-token rate |
 | Capacity model | On-demand (PAYG) vs Provisioned Throughput |
-| Cross-region inference | Routes to alternate regions for availability; may affect cost |
+| Cross-region inference | Routes to alternate regions for availability; may affect cost. For Claude 4.5+ models, regional endpoints carry a 10% premium over global endpoints |
 | Batch inference | Asynchronous processing at discounted rates |
 
-**Key cost driver:** output tokens are approximately 3× more computationally expensive
-than input tokens. Workloads with high output ratios (agentic tasks, long-form generation)
+**Key cost driver:** output tokens are billed at roughly 4-5x the input rate on
+current Bedrock models (4x on Amazon Nova, 5x on Claude - e.g. Claude Sonnet $3/$15
+per MTok). Workloads with high output ratios (agentic tasks, long-form generation)
 carry disproportionately higher costs.
 
 ---
@@ -83,9 +84,13 @@ on token rates. Use for:
 
 ### How it works
 
-On AWS Bedrock, provisioned throughput is purchased as **model-specific units** for a
-fixed term (1 month or 6 months). Each unit provides a defined number of model units
-(MUs) - a measure of throughput capacity for that specific model.
+On AWS Bedrock, provisioned throughput is purchased as **model-specific units**, either
+with **no commitment** (billed hourly, deletable at any time) or for a fixed term
+(1 month or 6 months, with deeper hourly discounts for the longer term). Each purchase
+provides a defined number of model units (MUs) - a measure of throughput capacity for
+that specific model. The no-commitment option changes the risk profile below: model
+lock and utilisation risk apply to the term commitments, not to hourly provisioned
+capacity spun up for a burst.
 
 ### Key characteristics
 
@@ -94,8 +99,8 @@ fixed term (1 month or 6 months). Each unit provides a defined number of model u
   or purchase additional capacity.
 - **No spillover built in:** if provisioned capacity is exhausted, requests return HTTP 429
   unless you build custom failover logic to route overflow to on-demand.
-- **Capacity guarantee:** unlike Azure PTUs, a Bedrock provisioned throughput purchase
-  does guarantee availability of that model capacity.
+- **Capacity guarantee:** a Bedrock provisioned throughput purchase guarantees a
+  specific throughput level (input plus output tokens per minute) for that model.
 
 ### When provisioned throughput makes sense on Bedrock
 
@@ -103,7 +108,7 @@ fixed term (1 month or 6 months). Each unit provides a defined number of model u
 |---|---|
 | Consistent 24/7 workload, stable model choice | Strong candidate for provisioned |
 | Latency-sensitive, user-facing application | Justified for TTFT/OTPS improvement |
-| Data privacy requirement | Provisioned endpoints exclude data from training |
+| Data privacy requirement | Not a provisioned differentiator - Bedrock does not expose prompts or completions to model providers on any capacity mode |
 | Bursty or unpredictable traffic | On-demand or hybrid with manual failover logic |
 | Workload likely to switch models within 6 months | Avoid - model lock is a real risk |
 
@@ -159,8 +164,9 @@ propagates tags applied to that principal into the Cost and Usage Report and Cos
 
 **How it shows up in CUR 2.0:**
 
-- New column `line_item_iam_principal` containing the ARN of the caller (IAM user, role,
-  or assumed-role session)
+- A caller-identity column containing the ARN of the caller (IAM user, role, or
+  assumed-role session) - verify the exact column name in your export, as AWS
+  documentation describes the mechanism without naming the column
 - Tags applied to the IAM principal appear with an `iamPrincipal/` prefix  -
   e.g. `iamPrincipal/team`, `iamPrincipal/cost-centre`, `iamPrincipal/environment`
 - In Cost Explorer, these tags become available as a grouping and filter dimension
@@ -184,12 +190,13 @@ propagates tags applied to that principal into the Cost and Usage Report and Cos
   chargeback still needs to be built on top of the CUR
 
 **Coverage caveat:** some Bedrock features do not execute under the calling IAM role.
-**Guardrails** usage, notably, appears in CUR without the `line_item_iam_principal`
-value - only resource tags carry the attribution. IAM Principal Cost Allocation
-therefore does not eliminate the tagging requirement: teams still need tag discipline
-for guardrails and similar non-principal line items. Also note that CUR 2.0 exports
-can now be edited in place to add the IAM principal column - no need to recreate the
-export.
+**Guardrails** usage, notably, may appear in CUR without the caller-identity value -
+only resource tags carry the attribution (unconfirmed in AWS documentation; validate
+in your own CUR before relying on it). IAM Principal Cost Allocation therefore does
+not eliminate the tagging requirement: teams still need tag discipline for guardrails
+and similar non-principal line items. Note that a CUR 2.0 export created **before**
+enabling IAM principal attribution must be **recreated** - existing exports do not
+retroactively include identity data.
 
 **When to use it vs. account separation:**
 
@@ -246,16 +253,16 @@ Sources: https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-applicat
 #### Bedrock Projects (organisational primitive, not a billing primitive)
 
 Bedrock **Projects** group agents, knowledge bases, prompt flows, and other resources
-under a named container with shared IAM and resource policies. Projects are an
-**organisational** primitive - they tidy up the AWS console and enforce access
-boundaries - but they do **not** introduce a new billing dimension by themselves.
-Cost attribution still flows through IAM principals, resource tags, and Application
-Inference Profiles.
+under a named container with shared IAM and resource policies. Since this section was
+first written, Projects have grown into a **billing attribution primitive** as well:
+tags assigned to a Bedrock Project are now listed as a first-class cost-attribution
+method in CUR, and AWS recommends Projects for application-level attribution on the
+newer Bedrock APIs. Cost attribution therefore flows through four channels: IAM
+principals, resource tags, Application Inference Profiles, and Project tags.
 
-Useful FinOps angle: when a team adopts Projects, take the opportunity to standardise
-the project name as a tag value across IAM roles and Application Inference Profiles
-under that project. The project name becomes a clean cost-allocation key in CUR 2.0
-without requiring a separate naming convention.
+Useful FinOps angle: when a team adopts Projects, standardise the project name as a
+tag value across IAM roles and Application Inference Profiles under that project, so
+the project tag in CUR and the principal/profile tags reconcile cleanly.
 
 ### SageMaker training job allocation
 
@@ -359,7 +366,8 @@ high-volume. Contrast with fine-tuning (static-knowledge injection) and RAG
 - **Mixture-of-experts models** (DeepSeek, Qwen) activate sub-models per query -
   often cheaper and faster per token, and viable on smaller hardware.
 - **Plan/execute splitting**: e.g. Claude Code "Opus Plan" mode uses Opus to plan and
-  Sonnet to execute; AWS-reported ~10-15% cheaper than Opus-only. The general pattern
+  Sonnet to execute, cutting cost versus Opus-only (no primary-source savings figure
+  is published; benchmark on your own workload). The general pattern
   (expensive model for decomposition, cheap model for execution) applies to any
   agentic architecture (see task decomposition in `finops-for-ai.md`).
 
@@ -395,9 +403,11 @@ cadence:
 
 **FinOps math:** the 1-hour write costs ~2x base, but a single cache write that
 serves 100 reads at 0.1x base saves roughly 90% on those input tokens. Break-even
-is reached after ~10 cache hits (5-min TTL) or ~20 cache hits (1-hour TTL). For
-agentic workflows that loop on the same context dozens of times, the savings are
-material - often the difference between economic and uneconomic at scale.
+versus not caching comes fast: **1 cache hit** at the 5-minute TTL (1.25x write +
+0.1x read = 1.35x, versus 2x uncached) and **2 cache hits** at the 1-hour TTL
+(2x + 0.2x = 2.2x, versus 3x uncached). For agentic workflows that loop on the
+same context dozens of times, the savings are material - often the difference
+between economic and uneconomic at scale.
 
 **Where caching matters most:**
 - Long system prompts (>1k tokens) reused across many requests

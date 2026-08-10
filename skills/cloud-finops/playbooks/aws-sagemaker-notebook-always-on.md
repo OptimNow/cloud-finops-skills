@@ -67,8 +67,9 @@ actually running anything in there".
 
 1. **Stop** the notebook (do not delete) once confirmed idle:
    `aws sagemaker stop-notebook-instance --notebook-instance-name <name>`.
-   Stopping releases the instance charge but preserves the attached EBS
-   volume (~$0.10/GB/month) and the notebook contents.
+   Stopping releases the instance charge but preserves the attached ML
+   storage volume (~$0.14/GB/month - SageMaker notebook storage bills above
+   the plain EC2 EBS gp2 rate) and the notebook contents.
 2. **Attach an auto-shutdown LCC** so the instance never ends up always-on
    again. AWS publishes a reference script that runs every 5 minutes,
    detects kernel idle time, and stops the instance after N hours of

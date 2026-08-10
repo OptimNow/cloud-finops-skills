@@ -57,7 +57,7 @@ benchmark on per-token cost without weighing operational reality.
 
 | Vendor | Pricing dimension | Optimisation levers |
 |---|---|---|
-| Anthropic API | Input/output tokens, separate caches, separate batch | Prompt caching (1h TTL, 90% off), Batch API (50% off), model selection (Haiku/Sonnet/Opus), Fast mode for compute-allocated tiers |
+| Anthropic API | Input/output tokens, separate caches, separate batch | Prompt caching (1h TTL, 90% off reads), Batch API (50% off), model selection (Haiku/Sonnet/Opus). Note: Fast mode is a speed *premium* (2x, Opus-tier only, research preview), not a cost lever |
 | OpenAI API | Input/output tokens, cached tokens, batch, fine-tuned variants | Cached tokens (auto), Batch API (50% off), model selection, fine-tuning vs prompting tradeoff |
 | AWS Bedrock | Input/output tokens, provisioned throughput (model units), batch | On-demand vs PT, Application Inference Profiles for cost allocation, prompt caching, batch inference |
 | Azure OpenAI | Input/output tokens, PTU reservations, batch | PTU reservations with locality constraint, AOAI spillover, regional placement, fine-tuning costs |

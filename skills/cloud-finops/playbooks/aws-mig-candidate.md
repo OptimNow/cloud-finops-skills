@@ -16,7 +16,7 @@ memory. On AWS, MIG is available on `p4d` / `p4de` (A100 40 GB / 80 GB)
 and `p5` / `p5e` / `p5en` (H100 / H200). A workload that uses well under
 1/7 of an A100 or H100 - measured by both compute fraction and memory -
 is paying for a whole GPU when it could share the hardware via MIG. With
-`p4d.24xlarge` at ~$33/hour (8 x A100) and `p5.48xlarge` at ~$98/hour (8 x
+`p4d.24xlarge` at ~$22/hour (8 x A100) and `p5.48xlarge` at ~$55/hour (8 x
 H100), running multiple light workloads on a MIG-partitioned single
 server can recover 4-7x of the GPU bill compared to one GPU per workload.
 

@@ -33,7 +33,10 @@ The default model. You pay per token consumed, drawing from a shared provider po
 
 - No upfront commitment
 - No performance guarantees - latency can spike during peak demand
-- No data privacy guarantees (data may be used for model training)
+- Same data-use terms as provisioned on the major hyperscalers: Azure, AWS Bedrock,
+  and Google all exclude customer prompts/completions from foundation-model training
+  on shared capacity too. The shared-tier trade-off is performance isolation, not
+  training exposure
 - Suitable for: early adoption, variable/unpredictable workloads, non-latency-sensitive use cases
 
 ### Provisioned capacity (reserved)
@@ -42,10 +45,11 @@ You purchase a fixed block of throughput for a defined term (monthly or annual).
 for that capacity 24/7 regardless of actual utilization.
 
 - Dedicated throughput - predictable latency
-- Typically includes data privacy guarantees (no training on your data)
+- Workload isolation (training exclusion is not the differentiator - the hyperscalers
+  apply it to shared capacity as well)
 - Comes with higher uptime SLAs
-- Suitable for: consistent high-volume workloads, latency-sensitive applications, production
-  workloads with privacy requirements
+- Suitable for: consistent high-volume workloads, latency-sensitive applications,
+  production workloads needing performance isolation
 
 ---
 
@@ -73,8 +77,8 @@ depends on your coverage target and actual utilization, not just the per-token r
 You have reserved capacity assigned to a model, but your workload does not use it.
 
 - Example: 100% reservation, 15% peak utilization → paying for 85% idle capacity
-- Amplified when running workloads with high output token ratios (output tokens are ~3×
-  more computationally expensive than input tokens)
+- Amplified when running workloads with high output token ratios (output tokens are
+  billed at 4-8x the input rate on current models)
 - Most common form of GenAI capacity waste
 
 ### Unallocated capacity (Azure-specific)
@@ -139,10 +143,17 @@ per million tokens at 100% utilization.
 **The result may be higher than pay-as-you-go**, even at full utilization. In that case,
 provisioned capacity is a performance and SLA purchase, not a cost-saving one.
 
-| Model | Standard input | Provisioned input | Delta at 100% utilization |
+| Model | Standard input | Provisioned input (derived) | Delta at 100% utilization |
 |---|---|---|---|
-| GPT-5 | $1.25/MTok | $2.08/MTok | +67% |
-| GPT-4.1 | $2.00/MTok | $2.55/MTok | +27% |
+| GPT-5 | $1.25/MTok | ~$2.08/MTok | +67% |
+| GPT-4.1 | $2.00/MTok | ~$2.55/MTok | +27% |
+
+*Sourcing note:* the provisioned $/MTok figures are **derived estimates** from a
+FinOps Foundation working-group analysis, not Microsoft-published rates - Microsoft
+prices PTUs only in $/PTU/hour, and the conversion depends on throughput assumptions
+and on which price point (hourly vs 1-month vs 1-year reservation) is used. Treat
+the deltas as illustrative of the pattern, and rebuild the math from current
+$/PTU/hour rates for any client decision.
 
 **Implication:** always compute your break-even utilization rate before purchasing.
 For some models, provisioned capacity never generates token-cost savings - it is purely
@@ -169,19 +180,22 @@ a performance and SLA product.
 | Model switching on renewal | Must re-purchase | Can upgrade within publisher family | Reassign PTUs dynamically |
 | Capacity guarantee | Yes - reservation = capacity | Yes | No - reservation ≠ guaranteed model availability |
 | Waste type | Idle allocated capacity | Idle allocated capacity | Idle allocated + unallocated capacity |
-| Spillover | Build yourself | Build yourself | Built-in |
+| Spillover | Build yourself | Default PAYG spillover (header-controlled) | Available, opt-in configuration |
 | Best for | Stable workloads, known model, cost predictability | GCP-native shops, Gemini ecosystem | Flexibility-first, frequent model updates |
 
 ---
 
 ## Data privacy and traffic segmentation
 
-Provisioned capacity typically guarantees that your data is not used to train future models.
-Shared capacity does not offer this guarantee.
+On the major hyperscalers, training exclusion applies to shared and provisioned
+capacity alike - do not buy provisioned capacity to obtain it. What provisioned
+capacity does add is workload isolation and, in some regulated contexts, a cleaner
+compliance narrative.
 
-**Traffic affinitization strategy:** route requests containing PII or confidential data
-to provisioned endpoints; route non-sensitive traffic to shared capacity. This reduces
-the required reservation size (and cost) while maintaining data privacy for sensitive workloads.
+**Traffic affinitization strategy:** where isolation (not training exclusion) is the
+requirement, route requests containing PII or confidential data to provisioned
+endpoints and non-sensitive traffic to shared capacity. This reduces the required
+reservation size (and cost) while keeping sensitive workloads on isolated capacity.
 
 ---
 
