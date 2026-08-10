@@ -63,10 +63,10 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 | Claude Opus 4.6 | $5 | $25 | 1M | |
 | Claude Sonnet 5 | $3 | $15 | 1M | Introductory $2/$10 through 31 August 2026 |
 | Claude Sonnet 4.6 | $3 | $15 | 1M | |
-| Claude Haiku 4.5 | $1 | $5 | 200K | The only current model still on a 200K window |
+| Claude Haiku 4.5 | $1 | $5 | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (the still-active Opus 4.5 and Sonnet 4.5 are likewise 200K) |
 
 **Two FinOps consequences of this table.** First, the Opus tier has held $5/$25 across
-four generations, so a model upgrade inside that tier is a capability change at
+five generations (4.5 through 5), so a model upgrade inside that tier is a capability change at
 constant unit cost - there is no rate negotiation to run, and no reason to stay on an
 older Opus for price reasons. Second, Fable 5 sits at 2x Opus pricing, which makes
 "use the most capable model" a materially different decision from "use the newest
@@ -79,16 +79,21 @@ usage. Flag it now if Sonnet 5 carries meaningful volume.
 ### Fast mode pricing
 
 Fast mode runs the same model at higher output tokens per second, at premium
-pricing. It is **not a general tier** - the scope is narrow enough that it is easy
-to over-plan for:
+pricing. It is in **research preview** and it is **not a general tier** - the scope
+is narrow enough that it is easy to over-plan for:
 
 | Model | Standard | Fast mode | Premium |
 |---|---|---|---|
 | Claude Opus 5 | $5 / $25 | $10 / $50 | 2x |
-| Claude Opus 4.8 | $5 / $25 | Supported (verify current rate) | - |
+| Claude Opus 4.8 | $5 / $25 | $10 / $50 | 2x |
 
 - **No Sonnet or Haiku Fast tier exists.** Fast mode is Opus-tier only.
-- **Opus 4.7 Fast mode has been removed** - requesting it returns an error.
+- **Opus 4.7 Fast mode has been removed** - requesting it returns an error. On
+  **Opus 4.6** the failure mode is quieter: requests with `speed: "fast"` run at
+  standard speed and bill at standard rates, so a misconfigured client pays
+  nothing extra but silently loses the latency it thinks it bought.
+- Fast mode pricing applies **across the full context window**, including
+  requests over 200K input tokens - there is no separate long-context tier on top.
 - **Claude API only**, including Managed Agents. Not available on Amazon Bedrock,
   Google Cloud, or Microsoft Foundry, so a Bedrock-based estate cannot use it at all.
 - **Not compatible with the Batch API or Priority Tier.**
@@ -105,7 +110,7 @@ an hour; the ceiling is 24 hours. Results are retained 29 days.
 | Model | Input ($/MTok) | Output ($/MTok) |
 |---|---|---|
 | Claude Opus 5 Batch | $2.50 | $12.50 |
-| Claude Sonnet 5 Batch | $1.50 | $7.50 |
+| Claude Sonnet 5 Batch | $1.50 | $7.50 ($1 / $5 introductory through 31 August 2026) |
 | Claude Haiku 4.5 Batch | $0.50 | $2.50 |
 
 Batch is the single largest rate lever available without a commercial negotiation.
@@ -114,7 +119,9 @@ completion - which makes it a workload-classification exercise, not a procuremen
 
 ### Modifiers
 
-- **US-only inference** (`inference_geo`): x1.1 on all token categories
+- **US-only inference** (`inference_geo`): x1.1 on all token categories.
+  Claude 4.6 and later models only - earlier models return a 400 error if the
+  parameter is set
 - **5-minute cache writes**: x1.25 on base input price
 - **1-hour cache writes**: x2 on base input price
 - **Cache reads**: x0.1 on base input price (90% discount)
@@ -123,27 +130,25 @@ completion - which makes it a workload-classification exercise, not a procuremen
 **Cache break-even depends on the TTL, and the 1-hour TTL is not a free upgrade.**
 At the 5-minute TTL a prefix pays for itself on the second request (1.25x write +
 0.1x read = 1.35x, versus 2x uncached). At the 1-hour TTL the doubled write cost
-needs at least three reads (2x + 0.2x = 2.2x versus 3x). Choose the 1-hour TTL for
-bursty traffic with gaps longer than five minutes, not as a default.
+needs at least two reads (2x + 0.2x = 2.2x versus 3x uncached). Choose the 1-hour
+TTL for bursty traffic with gaps longer than five minutes, not as a default.
 
 ### Tool charges
 
 | Tool | Pricing |
 |---|---|
 | Web search | $10 per 1,000 searches + standard input token costs for search results |
-| Code execution | 1,550 free hours/month per org, then $0.05/hour/container (minimum billed execution time applies) |
+| Code execution | 1,550 free hours/month per org, then $0.05/hour/container (5-minute minimum billed execution time). **Free** when the request also includes web search or web fetch (tool versions `20260209` or later) |
 
 ---
 
 ## Claude Managed Agents: new cost dimension
 
-> **Status (June 2026).** Managed Agents is a documented beta with a published API
-> surface, not the early community reporting an earlier version of this section was
-> based on. The architecture below is from Anthropic's documentation. **Per-unit
-> pricing for the runtime itself is still the part to verify** - the token cost of
-> model calls inside a session bills at ordinary rates against your organisation's
-> limits, but confirm the container/runtime charge against current docs before
-> quoting a number in an engagement.
+> **Status (verified August 2026).** Managed Agents is a documented beta with a
+> published API surface and, since this section was last revised, **published
+> pricing**: tokens at standard model rates plus session runtime at **$0.08 per
+> session-hour**. The architecture and billing model below are from Anthropic's
+> documentation.
 
 ### What Managed Agents are
 
@@ -172,21 +177,33 @@ Three properties change the cost shape versus plain API calls:
 
 ### Billing model differences from standard API
 
-Unlike token-based API calls, Managed Agents introduce new cost drivers:
+> **Corrected against primary documentation (August 2026).** An earlier version of
+> this section listed speculative cost drivers - session-persistence storage,
+> CPU/memory resource tiers, data-transfer charges, and idle-time costs - sourced
+> from pre-pricing community reporting. Anthropic's published billing model has
+> exactly **two dimensions**, and the docs contradict the idle-cost claim directly.
 
-| Cost driver | Description |
-|---|---|
-| Runtime hours | Compute time for agent execution environment |
-| Session persistence | Storage and state management costs |
-| Resource allocation | CPU/memory tiers for agent containers |
-| Invocation frequency | Number of agent activations |
-| Data transfer | Input/output between agent and external systems |
+| Dimension | Rate | Metering |
+|---|---|---|
+| Tokens | Standard model rates (see pricing table above) | All tokens consumed by the session. Prompt-caching multipliers apply identically; Fast mode premium applies if the agent's `model.speed` is `"fast"`; the 1.1x US-residency multiplier applies if `model.inference_geo` is `"us"` |
+| Session runtime | $0.08 per session-hour | Metered to the millisecond, and **only while the session status is `running`**. Time spent `idle`, `rescheduling`, or `terminated` is not billed |
+
+Two exclusions matter for cost modelling:
+
+- **The Batch API discount does not apply** - sessions are stateful and interactive;
+  there is no batch mode.
+- **Not available on partner-operated cloud platforms** (Bedrock, Google Cloud).
+  On Claude Platform on AWS, session charges convert to CCUs at the standard rate.
+- Session runtime **replaces** the code-execution container-hour billing - you are
+  not billed container hours on top of it.
 
 ### FinOps implications
 
-- **Different cost unit**: Shifts from per-token to per-runtime-hour pricing
-- **Always-on costs**: Persistent sessions may incur costs even when idle
-- **Resource tiering**: Different agent sizes/capabilities at different price points
+- **Two meters, not one**: token spend still dominates for most workloads (a
+  one-hour Opus 5 session consuming 50K in / 15K out is ~$0.63 of tokens and $0.08
+  of runtime), but long-running low-token agents invert that ratio
+- **Idle time is free** - there is no always-on charge for a session waiting on
+  input, so keeping sessions open is an attribution question, not a cost one
 - **Harder attribution**: Agent costs spread across multiple invocations vs discrete API calls
 
 ---
@@ -221,8 +238,11 @@ on 7 February 2026.
   They are billed at the Fast mode rate from token one, even if plan usage remains.
 - **Sticky across sessions**: Once enabled in Claude Code, Fast mode persists unless
   explicitly disabled. This makes it an unintentional overage driver.
-- **Retroactive context repricing**: Switching to Fast mode mid-session reprices the
-  entire conversation context at full Fast mode uncached input token rates.
+- **Cache loss on speed switch**: Changing `speed` mid-session invalidates the
+  prompt cache, so the next request re-reads the whole conversation context at
+  full Fast mode uncached input rates. The effect on the bill resembles a
+  retroactive repricing, but the mechanism is a lost cache, not a recharge of
+  earlier requests.
 - **Not available via cloud provider routes**: Fast mode is explicitly unavailable on
   Amazon Bedrock, Google Vertex AI, and Microsoft Azure Foundry. This fragments spend
   away from consolidated cloud agreements toward direct Anthropic invoices.

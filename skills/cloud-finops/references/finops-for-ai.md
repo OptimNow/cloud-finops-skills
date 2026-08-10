@@ -404,19 +404,29 @@ whether failure is environment-changing, per use case, before funding.
 Treat model selection like instance rightsizing. Defaulting to the largest or latest model
 for every feature is the AI equivalent of running all workloads on ml.p4d.24xlarge.
 
-| Model tier | Use case | Cost ratio example |
-|---|---|---|
-| Small / fast (e.g. Claude Haiku, GPT-4o mini) | Classification, routing, simple Q&A | 1× |
-| Mid-tier (e.g. Claude Sonnet, GPT-4o) | Complex reasoning, code generation | 12× |
-| Large (e.g. Claude Opus, GPT-4) | Research, nuanced judgment | 60× |
+Anthropic's rate card (verified August 2026) shows the tier spread on the Claude side:
 
-As of March 2026, OpenAI's pricing structure demonstrates the cost impact of model selection:
+| Model tier | Use case | Cost ratio | Anthropic example (per 1M tokens) |
+|---|---|---|---|
+| Small / fast (Claude Haiku 4.5) | Classification, routing, simple Q&A | 1x | $1 input / $5 output |
+| Mid-tier (Claude Sonnet) | Complex reasoning, code generation | 3x | $3 input / $15 output |
+| Large (Claude Opus 5) | Research, nuanced judgment | 5x | $5 input / $25 output |
+| Frontier (Claude Fable 5) | Hardest reasoning, high-stakes work | 10x | $10 input / $50 output |
+
+OpenAI's pricing structure (rates verified August 2026, models one generation back)
+shows a much wider spread:
 
 | Model tier | Use case | Cost ratio example | OpenAI example (per 1M tokens) |
 |---|---|---|---|
 | Small / fast (e.g. GPT-4o mini) | Classification, routing, simple Q&A | 1x | $0.15 input / $0.60 output |
 | Mid-tier (e.g. GPT-4o) | Complex reasoning, code generation | 17x | $2.50 input / $10.00 output |
 | Large (e.g. o1) | Research, nuanced judgment | 100x | $15.00 input / $60.00 output |
+
+The spread is vendor-specific and compresses across generations: the Claude 3-era
+small-to-large ratio was roughly 60x, the current one is 5-10x, while OpenAI's
+mini-to-reasoning spread remains near 100x. Check the live rate card before building
+routing economics on a remembered ratio - the payoff from tiered routing depends
+directly on it.
 
 Implement tiered routing: classify query complexity first (cheap), then route to the
 appropriate model. Simple queries to small models, complex queries to large models.

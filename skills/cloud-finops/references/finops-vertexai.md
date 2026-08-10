@@ -39,41 +39,33 @@ provides access to Google's own models (Gemini family) and selected third-party 
 | Batch prediction | Asynchronous inference at discounted rates |
 | Region | Some models are available only in specific regions |
 
-**Key cost driver:** output tokens are approximately 3× more computationally expensive
-than input tokens. High output-ratio workloads (agentic tasks, long-form generation)
-carry disproportionately higher costs.
+**Key cost driver:** output tokens are billed at 4-8x the input rate on current
+Gemini SKUs (Gemini 2.0 Flash $0.15/$0.60 per MTok = 4x; Gemini 2.5 Pro $1.25/$10 =
+8x). High output-ratio workloads (agentic tasks, long-form generation) carry
+disproportionately higher costs.
 
 ---
 
 ## Model pricing reference
 
-### On-demand pricing structure - tokens AND characters
+### On-demand pricing structure
 
-Vertex AI on-demand pricing is per-million tokens for newer Gemini SKUs. **However,
-some Gemini APIs and earlier model versions still bill per 1,000 characters (input
-and output)** rather than per token. This is a real difference from AWS / OpenAI /
-Anthropic, which all bill per token.
-
-**Practical implications:**
-- Capacity-planning math from Anthropic or OpenAI engagements does not transpose
-  cleanly: 1,000 characters is roughly 250 tokens for English (ratio varies per
-  language - East Asian scripts can be 1:1 character-to-token, English is ~4:1).
-- Verify the unit on Vertex's pricing page per model before quoting. Two Gemini
-  variants on the same product family can use different units depending on model
-  version and surface (Vertex Studio, Vertex API, Gemini API).
-- For multilingual workloads, the character-based pricing is sometimes cheaper
-  than the token-based equivalent (the per-character rate can favour languages
-  that tokenise unfavourably under English-trained tokenisers).
+Vertex AI on-demand pricing for Gemini generative models is per-million tokens
+(verified August 2026). **Historical note:** Gemini 1.0/1.5-era surfaces billed some
+SKUs per 1,000 characters rather than per token; those surfaces are retired and no
+character-billed Gemini SKU remains on the current pricing page. If you encounter
+character-based line items in an old billing export, that is the era they date from -
+do not carry character-math into current capacity planning.
 
 Source: https://cloud.google.com/vertex-ai/generative-ai/pricing
 
-No minimum spend, no upfront commitment, regardless of unit.
+No minimum spend, no upfront commitment.
 
 | Model family | Relative cost tier | Notes |
 |---|---|---|
-| Gemini Flash (1.5, 2.0) | Low | High throughput, cost-optimised |
-| Gemini Pro (1.5, 2.0) | Mid | Balanced capability and cost |
-| Gemini Ultra / Advanced | High | Complex reasoning, multimodal |
+| Gemini Flash-Lite | Low | Cheapest tier, high-volume simple tasks |
+| Gemini Flash | Low-Mid | High throughput, cost-optimised (e.g. 2.0 Flash $0.15/$0.60 per MTok) |
+| Gemini Pro | High | Complex reasoning, multimodal (e.g. 2.5 Pro $1.25/$10 per MTok) |
 | Anthropic Claude Haiku | Low | Available via Vertex Model Garden |
 | Anthropic Claude Sonnet | Mid | Available via Vertex Model Garden |
 | Anthropic Claude Opus | High | Available via Vertex Model Garden |
@@ -104,11 +96,17 @@ and can switch between models within that publisher's portfolio.
 
 ### Key characteristics
 
-- **Publisher-locked, model-flexible:** you can switch from Gemini 2.0 Pro to Gemini 2.0 Flash
-  within the same reservation, but cannot switch from a Google model to an Anthropic model.
-- **Capacity floor, not ceiling:** you cannot reduce reserved capacity mid-term, even if
-  a newer model becomes more efficient. Efficiency gains reduce your effective cost per
-  output, but the reservation commitment remains at the original size.
+- **Publisher-locked, model-flexible:** you can switch between Gemini models within
+  the same reservation (a GSU is standard across Google models that support
+  Provisioned Throughput), but not from a Google model to an Anthropic model.
+  *Sourcing note:* the intra-publisher switch rule comes from a FinOps Foundation
+  working-group paper, not Google primary docs - confirm against the current
+  Provisioned Throughput purchase docs before quoting in an engagement.
+- **Capacity floor, not ceiling:** terms run 1 week to 1 year and unused throughput
+  does not carry over; treat reserved capacity as non-reducible mid-term (an explicit
+  no-downsize rule is not stated in Google primary docs - verify before committing).
+  Efficiency gains reduce your effective cost per output, but the reservation
+  commitment remains at the original size.
 - **Default spillover to pay-as-you-go.** As of current Google docs, supported Gemini
   Provisioned Throughput overages are billed as pay-as-you-go by default. Request
   headers control whether traffic is routed to dedicated capacity, shared/on-demand,
@@ -135,7 +133,7 @@ and can switch between models within that publisher's portfolio.
 |---|---|
 | Consistent 24/7 workload, Gemini-native stack | Strong candidate |
 | Latency-sensitive, user-facing application | Justified for TTFT/OTPS improvement |
-| Data privacy requirement | Provisioned endpoints exclude data from training |
+| Data privacy requirement | Not a provisioned differentiator - verify data-use terms, which apply per service, not per capacity mode |
 | Likely to upgrade Gemini versions mid-term | GCP reservation accommodates this |
 | Workload requiring cross-publisher flexibility | Azure PTU model better suited |
 | Bursty or unpredictable traffic | On-demand or hybrid with manual failover |
@@ -146,7 +144,9 @@ and can switch between models within that publisher's portfolio.
 - [ ] Load-test to validate vendor TPM estimate against actual input/output token mix
 - [ ] Calculate break-even utilization (provisioned unit cost ÷ on-demand equivalent)
 - [ ] Verify reserved publisher matches the model families your workloads will use
-- [ ] Build failover logic to on-demand for overflow traffic (spillover is not built in)
+- [ ] Decide the overflow policy explicitly: default spillover bills overage as PAYG;
+      use the `X-Vertex-AI-LLM-Request-Type` header (`dedicated` / `shared`) where
+      you need hard routing instead of silent variable cost
 - [ ] Set utilization alerts - target >80% to justify the reservation
 - [ ] Assess whether new model efficiency gains offset the fixed capacity floor
 
@@ -163,9 +163,10 @@ For Vertex AI:
 - Use `sku.description` to differentiate model inference, batch prediction, and
   provisioned throughput charges
 
-**AI Cost Summary Agent (Preview):** As of May 2026, GCP launched the AI Cost Summary
-Agent in preview, providing dedicated AI spend analysis across Gemini API and Vertex AI
-services through a Billing Overview widget. This native tool addresses the AI cost
+**AI Cost Summary Agent:** GCP's AI Cost Summary Agent provides dedicated AI spend
+analysis across Gemini API and Vertex AI services through a Billing Overview widget
+(check current preview/GA status in the Cloud Billing docs before relying on it in
+an engagement). This native tool addresses the AI cost
 visibility gap, offering spend attribution and insights specifically for AI workloads.
 
 **Limitation:** native billing does not provide token-level granularity per request.
@@ -219,31 +220,36 @@ contract, cost per generated email) for margin modelling as usage scales.
 ### Model right-sizing
 
 - Define a quality benchmark for your specific task
-- Test Gemini Flash vs Gemini Pro vs Gemini Ultra against that benchmark
+- Test Gemini Flash-Lite vs Gemini Flash vs Gemini Pro against that benchmark
 - Use the lowest-cost model that meets your quality threshold
 - For third-party models (Claude, Llama), apply the same benchmark process
 
 ### Prompt optimisation
 
 - Audit system prompt length - verbose instructions inflate every API call
-- Implement **Vertex AI Context Caching** where supported (Gemini Pro, Flash 1.5+) - see below
+- Implement **Vertex AI Context Caching** where supported (current Gemini Flash and Pro models) - see below
 - Truncate or summarize conversation history for multi-turn applications
 - Avoid sending redundant context in RAG pipelines
 
 ### Vertex AI Context Caching - direct lever for long-context workloads
 
-Vertex AI supports **explicit context caching** for selected Gemini models (Gemini
-Pro, Flash 1.5 and later). Equivalent in spirit to Anthropic / Bedrock prompt
-caching - cache a stable context once, reuse it across many requests at a steeply
-discounted input-token rate.
+Vertex AI supports **explicit context caching** for selected Gemini models.
+Equivalent in spirit to Anthropic / Bedrock prompt caching - cache a stable context
+once, reuse it across many requests at a steeply discounted input-token rate - but
+the pricing shape differs (verified August 2026):
 
 **Mechanics:**
-- Cache write: priced per cached token (or character) at a small premium over the
-  base input rate.
-- Cache hit (read): priced at a meaningfully lower rate than full input.
-- TTL: configurable cache lifetime (typically minutes to hours, model-dependent).
-- Minimum context size: caching is only beneficial above a token / character
-  threshold the model documents - small contexts do not break even.
+- Cache write: charged at **standard input-token rates** - unlike Anthropic and
+  Bedrock, there is no write premium.
+- Cache **storage**: explicit caches additionally bill per hour the cache is held,
+  roughly $1.00-$4.50 per 1M cached tokens per hour depending on model. This is
+  the cost component to watch - a large cache held for hours can outweigh the read
+  savings if traffic is thin.
+- Cache hit (read): 90% off the standard input rate on 2.5-generation and later
+  models (75% on 2.0-era models).
+- TTL: configurable cache lifetime.
+- Minimum context size: 2,048 tokens to create a cache - small contexts do not
+  qualify.
 
 **Where it matters:**
 - RAG pipelines with stable retrieved context across many user queries.

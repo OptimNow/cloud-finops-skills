@@ -90,10 +90,11 @@ to enumerate live instances and tag-check ownership.
 
 ## Anti-pattern
 
-- Comparing only **hourly rates**. A `p5.48xlarge` ($98/hour) looks vastly
-  more expensive than a `p3.16xlarge` ($24.48/hour) - but on the right
-  workload the H100 can deliver 5-10x the throughput, making the
-  cost-per-inference half. The decision must be cost per unit of work.
+- Comparing only **hourly rates**. A `p5.48xlarge` (~$55/hour after the June
+  2025 AWS GPU price cuts) looks far more expensive than a `p3.16xlarge`
+  ($24.48/hour) - but on the right workload the H100 delivers 5-10x the
+  throughput, cutting cost-per-inference to a fraction. The decision must be
+  cost per unit of work.
 - Assuming framework compatibility. PyTorch ≤ 1.10 has no native H100
   support; some custom CUDA kernels need rewrites. Always run a
   representative inference / training step on the new hardware before

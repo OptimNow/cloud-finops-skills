@@ -42,8 +42,9 @@ are handled through Azure.
 | Fine-tuning | Training token charges + hosting charges for fine-tuned deployments |
 | Image / audio | Billed in units (images per resolution, audio per second) - separate from tokens |
 
-**Key cost driver:** output tokens are approximately 3× more computationally expensive
-than input tokens. High output-ratio workloads carry disproportionately higher costs.
+**Key cost driver:** output tokens are billed at 4-8x the input rate on current
+Azure OpenAI models (GPT-4.1 $2/$8 per MTok = 4x; GPT-5 $1.25/$10 = 8x). High
+output-ratio workloads carry disproportionately higher costs.
 
 ### Deployment Locality
 
@@ -54,7 +55,7 @@ performance, compliance posture, and cost.
 |---|---|---|
 | **Global** | Traffic routed across regions for best availability and throughput | Lowest |
 | **Data Zone (US or EU)** | Processing within all regions of a chosen zone (e.g., all EU regions) | Slightly higher |
-| **Regional** | Processing and storage within a single Azure region (e.g., Germany, Australia) | Comparable to Data Zone |
+| **Regional** | Processing and storage within a single Azure region (e.g., Germany, Australia) | Comparable to Data Zone for standard token rates; provisioned (PTU) hourly rates run materially higher - verify per model |
 
 **Key trade-offs:**
 - Global deployment offers the best performance and lowest cost but provides no data
@@ -103,8 +104,9 @@ keep separate:
    the price comparison most often quoted; for some models, hourly PTU at 100%
    utilisation is more expensive than the equivalent PAYG token spend, which is why
    provisioned capacity at this price point is mainly a performance and SLA purchase.
-3. **PTU + Reservation** - committing to PTU capacity for 1 month, 1 year, or 3 years
-   via an Azure reservation produces meaningful discounts off the hourly PTU rate.
+3. **PTU + Reservation** - committing to PTU capacity for **1 month or 1 year**
+   via an Azure reservation produces meaningful discounts off the hourly PTU rate
+   (no 3-year PTU reservation exists, unlike classic Azure compute reservations).
    Microsoft's current docs frame reservations as "considerable discounts" on
    provisioned throughput, with many consistent workloads finding reserved PTU a
    better value than hourly PTU or PAYG.
@@ -151,8 +153,11 @@ requiring more PTUs.
   and reassign its PTUs to the new model - no new reservation required
 - **Decoupled reservation and deployment:** a PTU reservation does not guarantee that
   model capacity will be available for your chosen model
-- **Built-in spillover:** overflow traffic automatically routes to standard (PAYG) tier
-  instead of returning HTTP 429
+- **Spillover available, but opt-in:** overflow traffic can route to a standard
+  (PAYG) deployment instead of returning HTTP 429 - it must be configured
+  (`spilloverDeploymentName` on the deployment, or the `x-ms-spillover-deployment`
+  request header) and requires a matching standard deployment of the same
+  model/version in the same resource
 - **Two waste types:** idle allocated capacity (PTUs assigned but underutilized) and
   unallocated capacity (PTUs reserved but not assigned to any deployment)
 
@@ -169,10 +174,9 @@ for during the wait.
 |---|---|
 | Consistent 24/7 workload, latency-sensitive | Strong candidate |
 | Frequent model updates expected | PTU flexibility is the key advantage here |
-| Data privacy / PII requirement | Provisioned endpoints exclude data from training |
-| Bursty traffic with spillover tolerance | Acceptable - spillover is built in |
-| Cost reduction as primary goal (GPT-5) | Caution - provisioned may be more expensive |
-| Cost reduction as primary goal (GPT-4.1) | Viable at high utilization (+27% at 100%) |
+| Data privacy / PII requirement | Not a PTU differentiator - Azure excludes prompts/completions from foundation-model training on **all** deployment types, standard included. The PTU privacy argument is isolation and predictable latency, not training exclusion |
+| Bursty traffic with spillover tolerance | Acceptable - spillover is available once configured |
+| Cost reduction as primary goal | Caution - run the break-even against the reservation-discounted rate for your model and utilisation curve. Microsoft prices PTUs in $/PTU/hour only; any $/MTok "provisioned premium" figure you encounter is a derived estimate, not a published rate |
 
 ### PTU governance checklist
 
@@ -189,11 +193,15 @@ for during the wait.
 
 ## Spillover mechanics
 
-Azure is currently the only hyperscaler with built-in spillover for GenAI capacity.
+Azure offers native spillover for GenAI capacity - as does GCP Vertex AI, where
+Provisioned Throughput overage spills to pay-as-you-go **by default**. Azure's
+spillover is opt-in: it must be configured per deployment.
 
-When provisioned capacity is fully utilized, overflow requests automatically route to
-the standard PAYG tier. No HTTP 429 errors are returned unless both provisioned and
-PAYG capacity are exhausted.
+Once configured, when provisioned capacity is fully utilised, overflow requests route
+to the designated standard PAYG deployment. Spillover triggers not only on capacity
+exhaustion (429) but also on long-context requests (400) and server errors (500/503).
+No HTTP 429 errors are returned to callers unless both provisioned and PAYG capacity
+are exhausted.
 
 ### Spillover cost implications
 
@@ -321,8 +329,11 @@ highest ROI for the effort.
 
 ### Prompt caching
 
-Azure OpenAI supports prompt caching (cached input tokens billed at ~75% discount).
-Effective for:
+Azure OpenAI supports prompt caching. The cached-input discount is **model-dependent**,
+not a flat rate: roughly 90% on GPT-5 ($0.125 cached vs $1.25 standard input), 75% on
+GPT-4.1, ~50% on GPT-4o, and up to 100% on Provisioned deployments. Newer model
+generations may also charge for cache **writes** - check the per-model pricing page
+rather than assuming reads-only billing. Effective for:
 - Long, repeated system prompts
 - RAG pipelines with consistent prefixes
 - Multi-turn conversations with stable context

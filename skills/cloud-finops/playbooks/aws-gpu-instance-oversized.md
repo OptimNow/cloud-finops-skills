@@ -13,7 +13,7 @@ confidence: likely
 GPU instances are the most expensive on-demand SKUs in EC2. A `g5.xlarge`
 (A10G, 24 GB) is ~$1.00/hour ~= $730/month; a `g5.12xlarge` (4 x A10G)
 is ~$5.67/hour ~= $4,140/month; a `p4d.24xlarge` (8 x A100 40 GB) is
-~$32.77/hour ~= $23,920/month. Picking an instance with more GPU compute
+~$21.96/hour ~= $16,030/month. Picking an instance with more GPU compute
 and memory than the workload uses is one of the highest-dollar waste
 patterns in AWS - and one of the hardest to spot, because the basic
 GPU-utilisation metric most teams reach for (`nvidia-smi`'s `GPU-Util`,
