@@ -349,7 +349,9 @@ severity and audience need.
 ## Cross-references
 
 - `optimnow-methodology.md` - the maturity-aware framing this file builds on
-- `finops-aws.md` - AWS Cost Anomaly Detection in the broader AWS context
+- `finops-aws.md` - AWS Cost Anomaly Detection in the broader AWS context; also the
+  cost-preventive SCP subsection (detection is reactive - denying expensive IAM
+  actions at the organisation level is the preventive complement)
 - `finops-azure.md` - Azure Cost Management in the broader Azure context
 - `finops-gcp.md` - BigQuery billing export, the substrate for custom GCP anomaly
   detection

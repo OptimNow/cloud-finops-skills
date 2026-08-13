@@ -393,6 +393,93 @@ SCPs in AWS Organizations can prevent resource creation without required tags.
 overridden by account-level IAM policies - a misconfigured SCP can block legitimate
 operations across all accounts in the OU.
 
+### Cost-preventive SCPs: blocking expensive and long-term-effect IAM actions
+
+Budget alerts and anomaly detection are reactive - they fire after spend has started.
+A complementary preventive control is to deny, at the organisation level, the small set
+of IAM actions that create large recurring charges or binding commitments with a single
+API call. Both layers are needed: detection catches gradual drift and unknown workloads;
+prevention removes the one-call disasters entirely.
+
+The high-risk actions fall into three categories (magnitudes below are indicative only -
+verify current pricing before relying on them):
+
+**1. Financial commitments.** One API call creates a binding spend obligation - often
+one to three years - that no delete operation can undo. Examples:
+`savingsplans:CreateSavingsPlan`, `ec2:PurchaseReservedInstancesOffering`,
+`route53domains:RegisterDomain`, `aws-marketplace:Subscribe`,
+`shield:CreateSubscription`. The FinOps risk is commitment liability: a Savings Plan
+purchased from a sandbox account is a multi-year payment obligation, not a resource
+you can terminate.
+
+**2. High fixed-cost resources billed from creation.** These charge a substantial flat
+rate from the moment they exist, regardless of usage - indicatively hundreds of dollars
+per month per resource, and tens of thousands per month at full scale for provisioned
+model throughput. Examples: `acm-pca:CreateCertificateAuthority`,
+`bedrock:CreateProvisionedModelThroughput`, `ses:PutDeliverabilityDashboardOption`,
+`kendra:CreateIndex`. The FinOps risk is recurring spend with no usage signal: an idle
+private CA or an unused Kendra index shows zero activity in usage dashboards while
+billing at full rate.
+
+**3. Irreversible long-term locks.** Once applied, these cannot be removed - not even
+by AWS Support. Examples: `glacier:CompleteVaultLock`,
+`backup:PutBackupVaultLockConfiguration`. The FinOps risk is irreversibility: a
+compliance-mode vault lock applied by mistake commits you to paying for that storage
+for the full retention period.
+
+**Example SCP - deny high-cost actions with an exemption for approved teams:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "DenyCostCommittingActions",
+    "Effect": "Deny",
+    "Action": [
+      "savingsplans:CreateSavingsPlan",
+      "ec2:PurchaseReservedInstancesOffering",
+      "route53domains:RegisterDomain",
+      "aws-marketplace:Subscribe",
+      "acm-pca:CreateCertificateAuthority",
+      "bedrock:CreateProvisionedModelThroughput",
+      "kendra:CreateIndex",
+      "glacier:CompleteVaultLock",
+      "backup:PutBackupVaultLockConfiguration"
+    ],
+    "Resource": "*",
+    "Condition": {
+      "StringNotEquals": {
+        "aws:PrincipalTag/CostGuardrailExempt": "true"
+      },
+      "ArnNotLike": {
+        "aws:PrincipalArn": "arn:aws:iam::*:role/finops/*"
+      }
+    }
+  }]
+}
+```
+
+The two condition operators are ANDed, so the deny applies only to principals that
+carry neither exemption - a principal tagged `CostGuardrailExempt=true` or assuming a
+role under the `/finops/` path passes through.
+
+**Segmentation - do not apply one policy everywhere:**
+- **Sandbox and dev OUs:** apply the full deny list. Nobody experimenting in a sandbox
+  has a legitimate need to purchase a Reserved Instance or lock a backup vault.
+- **Production OUs:** restrict commitment-purchase actions to a dedicated FinOps or
+  procurement role rather than denying outright. Denying
+  `savingsplans:CreateSavingsPlan` across the whole organisation blocks legitimate
+  commitment management - the exemption principal is not optional, it is the mechanism
+  that keeps the commitment pipeline working.
+- Fixed-cost resource creation (private CA, provisioned throughput, Kendra) can stay
+  denied in production too, behind a request workflow, since these are deliberate
+  architectural decisions rather than day-to-day operations.
+
+**Living source:** the canonical community list of expensive and long-term-effect IAM
+actions is Ian Mckay's gist
+([List of expensive / long-term effect AWS IAM actions](https://gist.github.com/iann0036/b473bbb3097c5f4c656ed3d07b4d2222)).
+It is community-maintained and evolves as AWS ships new services - re-check it before
+implementing, and treat it as a starting point, not an exhaustive catalogue.
+
 ### AWS Budgets
 
 Configure at minimum:
