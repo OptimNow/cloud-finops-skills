@@ -394,7 +394,38 @@
     }
   });
 
-  post({ jsonrpc: "2.0", id: 1, method: "ui/initialize", params: { appCapabilities: {} } });
+  // Links must not navigate the iframe itself: the host sandbox has
+  // allow-scripts/allow-same-origin but not allow-popups, so a plain
+  // target="_blank" is silently swallowed. Route clicks through the host's
+  // ui/open-link request instead. The href is kept as-is so a host that
+  // does not implement ui/open-link degrades to today's behaviour rather
+  // than to a dead element.
+  var linkRequestId = 100;
+  document.addEventListener("click", function (event) {
+    var anchor = event.target && event.target.closest && event.target.closest("a[href]");
+    if (!anchor) return;
+    var href = anchor.getAttribute("href");
+    if (!href || href === "#") return;
+    event.preventDefault();
+    post({
+      jsonrpc: "2.0",
+      id: ++linkRequestId,
+      method: "ui/open-link",
+      params: { url: href }
+    });
+  });
+
+  post({
+    jsonrpc: "2.0",
+    id: 1,
+    method: "ui/initialize",
+    params: {
+      protocolVersion: "2026-01-26",
+      clientInfo: { name: "cloud-finops-playbook-viewer", version: "1" },
+      capabilities: {},
+      appCapabilities: {}
+    }
+  });
 })();
 </script>
 </body>

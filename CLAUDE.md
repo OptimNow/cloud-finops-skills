@@ -270,6 +270,71 @@ The pipeline now sits in a sustainable operating shape. Future work is
 about *simplification* (reducing the manual review surface), not adding
 more automation.
 
+### MCP Apps rendering in Claude is allowlisted, not earned by conformance (2026-08-16)
+
+The `ui://cloud-finops/playbook-viewer` MCP App shipped in PR #133 had never
+been opened in a real host - only against a test harness that simulates the
+`postMessage` handshake. The 2026-08-16 session finally validated it, and the
+result reorders the whole "publish a remote MCP server" plan.
+
+**What the validation established.** Running MCPJam Inspector against the
+local stdio server (no hosting, no public endpoint, about an hour of work):
+
+- The viewer **works**. It renders in MCPJam's ChatGPT host emulation:
+  frontmatter parsed into badges, the six sections laid out with their
+  colour coding, the footer line present. The prototype is a validated
+  component, not a hypothesis.
+- Two conformance defects were found by auditing the HTML against
+  `modelcontextprotocol/ext-apps` `specification/2026-01-26/apps.mdx`
+  *before* the first live run, and fixed in PR #135: an incomplete
+  `ui/initialize` handshake (missing `protocolVersion` / `clientInfo` /
+  `capabilities`; the spec's reference call passes `protocolVersion:
+  "2026-01-26"`), and `target="_blank"` links, which the host sandbox
+  swallows because it grants `allow-scripts` and `allow-same-origin` but
+  not `allow-popups` - clicks now go through the host's `ui/open-link`.
+- MCPJam's accepted resource mime types, from its own error message:
+  `text/html;profile=mcp-app` (the spec value, which is what the server
+  declares), `text/html+skybridge`, `text/html`. A deliberate experiment
+  substituting the older `text/html+mcp` disproved the mime-type
+  hypothesis cleanly and is *not* retained.
+
+**The finding that changes the plan.** The same server renders as plain
+text in Claude - in MCPJam's Claude emulation, and in real Claude Desktop
+against the local stdio server. The cause is not conformance. Anthropic's
+[Use interactive connectors in Claude](https://support.claude.com/en/articles/13454812-use-interactive-connectors-in-claude)
+names the connectors that may render UI (Amplitude, Asana, Box, Canva,
+Clay, Figma, Hex, Slack) and states that a self-built interactive
+connector "must meet additional design, security, and testing
+requirements", pointing at the Connectors Directory submission and review
+process. `anthropics/claude-ai-mcp#471` reports exactly this failure for a
+spec-correct custom remote connector on Claude Web and was closed as *not
+planned* - consistent with intended behaviour rather than a bug.
+
+**So SEP-1865 conformance is an eligibility condition, not an entry
+ticket.** A custom connector, remote or local, gets the text fallback no
+matter how correct it is. The path to rendering in Claude is: conformant
+server, then publicly reachable remote deployment, then Connectors
+Directory submission, then Anthropic review - the last two outside the
+maintainer's control and on an unpublished timeline.
+
+**Consequences.**
+
+- A remote deployment (Alpic) is **necessary but nowhere near sufficient**
+  for interactive rendering. It must therefore be justified on
+  distribution grounds alone: letting a non-technical user paste a URL
+  into claude.ai instead of installing a PyPI package. That is the
+  decision taken on 2026-08-16, with the interactive viewer explicitly
+  *not* counted as a benefit.
+- Do not treat the "Interactive" badge in the Connectors Directory as
+  reachable by shipping correct code.
+- The transferable discipline: **validate a host-dependent feature in a
+  real host before planning the infrastructure that depends on it.** An
+  hour in MCPJam, costing nothing and requiring no deployment, produced a
+  finding that would otherwise have surfaced at the end of a multi-day
+  hosting project. The prototype had sat unvalidated since PR #133
+  precisely because the only test in place asserted the resource existed,
+  never that it rendered.
+
 ---
 
 ## Roadmap
