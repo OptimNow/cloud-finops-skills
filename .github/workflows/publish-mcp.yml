@@ -120,7 +120,16 @@ jobs:
           name: pypi-dist
           path: dist/
 
+      # Pinned at v1.14.2, not v1.14.0. hatchling (pinned `>=1.18,<2`, so it
+      # floats within the major) now emits `Metadata-Version: 2.5`, and the
+      # twine bundled in v1.14.0 rejects it outright:
+      #   InvalidDistribution: '2.5' is not a valid metadata version
+      # That broke the 1.28.1 publish on 2026-08-16 after the tag, the GitHub
+      # Release and the wheel build had all succeeded. v1.14.2 ships twine 7,
+      # which accepts metadata 2.5. Both this workflow and its counterpart must
+      # move together - they are duplicated on purpose (see the comment above
+      # the build job) and a fix applied to only one leaves the other broken.
       - name: Publish via trusted publishing
-        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # v1.14.0
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
         with:
           packages-dir: dist/
