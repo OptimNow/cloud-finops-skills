@@ -34,8 +34,57 @@ permissions:
   id-token: write  # required for PyPI trusted publishing (OIDC)
 
 jobs:
+  # Normalise and validate the dispatch input before anything tries to use it.
+  #
+  # Git refs are case sensitive. A dispatch with `V1.28.1` instead of
+  # `v1.28.1` used to reach actions/checkout unchanged, which then spent three
+  # minutes retrying a fetch for a ref that does not exist and gave up with
+  # "The process '/usr/bin/git' failed with exit code 1" - a message that names
+  # neither the tag nor the reason. It also broke the version derivation below,
+  # since `${TAG#v}` does not strip a capital V, so a run that survived
+  # checkout would have pinned the package to version "V1.28.1".
+  #
+  # Failing here instead costs seconds and says which tag was not found.
+  resolve-tag:
+    name: Resolve and validate the tag
+    runs-on: ubuntu-latest
+    outputs:
+      ref: ${{ steps.resolve.outputs.ref }}
+    steps:
+      - name: Resolve tag
+        id: resolve
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          FALLBACK_REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${INPUT_TAG}" ]]; then
+            # push:tags path - github.ref is already refs/tags/<tag>.
+            echo "ref=${FALLBACK_REF}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          tag="${INPUT_TAG}"
+          tag="${tag#V}"          # tolerate a capitalised prefix
+          tag="${tag#v}"
+          tag="v${tag}"           # and a missing one
+          if [[ "$tag" != "${INPUT_TAG}" ]]; then
+            echo "::notice::normalised tag input '${INPUT_TAG}' to '${tag}'"
+          fi
+
+          # Public repo, so an unauthenticated ls-remote is enough and avoids
+          # a full checkout just to answer "does this tag exist".
+          if ! git ls-remote --exit-code --tags \
+               "https://github.com/${GITHUB_REPOSITORY}" "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "::error::tag ${tag} does not exist in ${GITHUB_REPOSITORY}. Check the Releases page for the exact tag name; refs are case sensitive."
+            exit 1
+          fi
+          echo "Resolved to ${tag}"
+          echo "ref=${tag}" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build wheel + sdist
+    needs: resolve-tag
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -43,10 +92,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
         with:
-          # push:tags -> github.ref is refs/tags/<tag>; default checkout grabs
-          # the tagged commit. workflow_dispatch -> use the explicit tag input
-          # so manual recovery can target any historical tag.
-          ref: ${{ inputs.tag || github.ref }}
+          # Always the resolved ref from the job above: refs/tags/<tag> on a
+          # push, the normalised and existence-checked tag on a dispatch.
+          ref: ${{ needs.resolve-tag.outputs.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
@@ -56,11 +104,12 @@ jobs:
       - name: Resolve version from tag
         id: version
         env:
-          INPUT_TAG: ${{ inputs.tag }}
+          RESOLVED_REF: ${{ needs.resolve-tag.outputs.ref }}
         run: |
-          # workflow_dispatch -> use the explicit tag input.
-          # push:tags -> GITHUB_REF_NAME is the tag.
-          TAG="${INPUT_TAG:-${GITHUB_REF_NAME}}"
+          # One source of truth for both triggers. Strips a refs/tags/ prefix
+          # on the push path and is a bare tag already on the dispatch path,
+          # so the capitalisation bug cannot reappear here either.
+          TAG="${RESOLVED_REF##*/}"
           VERSION="${TAG#v}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "Building cloud-finops-mcp ${VERSION} from tag ${TAG}"
