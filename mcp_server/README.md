@@ -132,6 +132,33 @@ command = "cloud-finops-mcp"
 The server speaks MCP over stdio. Point any compatible client at `cloud-finops-mcp`
 (or `python -m cloud_finops_mcp`).
 
+## Streamable HTTP (hosted deployments)
+
+stdio is the default and is what every local client above spawns. For a hosted
+deployment, the same six tools are served over streamable HTTP:
+
+```bash
+cloud-finops-mcp --transport http
+```
+
+- Route is `/mcp` (the SDK default, and what hosting platforms probe).
+- Binds `0.0.0.0`; port comes from `$PORT`, falling back to `8000`. `--host` and
+  `--port` override both.
+- Runs **stateless**: a new transport and session per request, no server-side
+  session affinity. The server is a read-only retrieval surface with no
+  per-user state, so this costs nothing and is what allows horizontal or
+  serverless scaling.
+- No extra dependency. `uvicorn` and `starlette` already ship as hard
+  dependencies of `mcp`, so there is no `[http]` extra to install.
+
+Nothing about the tools changes between transports. `tests/test_e2e_http.py`
+mirrors the stdio suite over HTTP so the two cannot silently diverge.
+
+Note that a self-hosted MCP server added to Claude as a custom connector will
+**not** render the bundled MCP Apps viewer, however conformant it is: Claude
+gates interactive rendering to connectors accepted into its Connectors
+Directory. See the `Lessons learned` entry in the repo's CLAUDE.md.
+
 ## Example tool calls
 
 Agent prompt: *"Use the cloud-finops MCP to find references for the Optimize phase
