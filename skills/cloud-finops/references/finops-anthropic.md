@@ -311,6 +311,14 @@ governance, but Finout's analysis suggests it is not yet a complete solution -
 notably around granular allocation and cross-workload attribution, and it does
 not cover raw API platform spend.
 
+**Additional native signal (as of August 2026):** Claude Code now surfaces gateway
+spend limit warnings proactively - displaying the spending cap, reset time, and
+operator message directly in usage warnings, rather than failing silently or only
+after the cap is hit. This gives teams enforcing per-user or per-team budget caps
+an additional native cost-governance signal alongside the July 2026 Enterprise
+admin tooling, reducing surprise overage incidents. See the "Cost tracking for
+Claude Code" section in `finops-ai-dev-tools.md` for detail.
+
 Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend) (primary),
 [Anthropic keeps signaling where AI cost governance needs to go](https://www.finout.io/blog/anthropic-keeps-signaling-where-ai-cost-governance-needs-to-go.-its-not-all-the-way-there-yet) (Finout commentary).
 

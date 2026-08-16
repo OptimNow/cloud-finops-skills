@@ -265,13 +265,33 @@ node failures.
 Karpenter's `consolidationPolicy: WhenUnderutilized` is powerful but chatty.
 Aggressive `consolidateAfter` settings cause pod churn that affects SLOs.
 
+Karpenter triggers node replacement through three disruption mechanisms:
+
+- **Consolidation** - replaces or removes underutilised nodes to pack pods
+  onto fewer or cheaper nodes (`consolidationPolicy: WhenUnderutilized`).
+- **Drift** - detects when a node's actual configuration no longer matches
+  its NodePool / NodeClass spec (e.g. an AMI, instance-type list, or label
+  change) and replaces the drifted node to bring it into alignment. Drift
+  is how spec edits roll out to existing nodes rather than only new ones.
+- **Expiration** - forces node replacement after `expireAfter` for patching
+  cadence.
+
 Recommended starting points:
 
 - `consolidateAfter: 30s` for dev / staging clusters
 - `consolidateAfter: 5m` for prod clusters
-- `disruptionBudget` configured to limit simultaneous node drains
+- `disruptionBudget` configured to limit simultaneous node drains across all
+  disruption mechanisms (consolidation, drift, and expiration)
 - `expireAfter: 720h` (30 days) to force a rolling refresh of nodes for
   patching cadence
+
+For workload-level control, use the `karpenter.sh/do-not-disrupt: "true"`
+annotation on pods that must not be involuntarily moved (e.g. long-running
+batch jobs or stateful workloads mid-operation). This overrides
+consolidation and drift for the node running that pod, at the cost of some
+consolidation savings - apply it narrowly, not cluster-wide. As of March
+2026, disruption budgets and do-not-disrupt are the two primary controls for
+governing how aggressively Karpenter replaces nodes.
 
 Tune up or down based on the observed pod-disruption rate vs the savings
 delivered.

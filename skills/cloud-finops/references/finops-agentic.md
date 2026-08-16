@@ -93,6 +93,10 @@ context windows that balloon to hundreds of thousands of tokens. Effective archi
 use short-term memory for recent exchanges and long-term memory for persistent preferences
 and organisational context, with explicit token budgets for each layer.
 
+As of August 2026, Bedrock AgentCore memory, policy, and a new managed harness are
+available in AWS GovCloud (US-West), extending these pillars to regulated and government
+cloud environments for cost-governance planning. Source: AWS What's New - Bedrock.
+
 **3. Policy-generation over direct mutation**
 The safest agentic architecture for FinOps generates governance policies for human review
 rather than executing infrastructure changes directly. An agent that identifies idle
@@ -100,6 +104,17 @@ resources and drafts a Cloud Custodian policy or OpenOps rule for review is prod
 An agent that stops instances autonomously is not - regardless of how sophisticated its
 reasoning is. Governance, not technology capability, is the real constraint on autonomous
 FinOps agents.
+
+AgentCore's policy capability now supports natural-language-to-Cedar tool-access controls,
+consistent with the policy-generation-over-direct-mutation pillar above.
+
+**New cost surface - the managed harness.** AgentCore's managed harness is a declarative
+agent runtime that removes orchestration code. It bundles compute, environment, and
+observability into API calls, creating a new billing surface to track alongside AgentCore
+Payments. Give it its own cost-attribution treatment - similar to the Managed Agents
+session-runtime billing documented in finops-anthropic.md - so bundled runtime cost is
+not silently folded into token spend. As of August 2026, this is available in AWS GovCloud
+(US-West). Source: AWS What's New - Bedrock.
 
 ## Agents as cost actors: agent-initiated payments (x402 / MPP)
 

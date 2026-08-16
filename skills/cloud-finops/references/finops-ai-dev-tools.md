@@ -197,6 +197,15 @@ question wherever developers can toggle it themselves.
   LiteLLM auto-detects Claude Code via User-Agent header
 - **Anthropic Console** - basic usage and billing data at the organisation level
 
+**Native gateway spend-limit warnings (as of August 2026).** Claude Code now surfaces
+gateway spend limits proactively in its usage warnings - showing the spending cap, the
+reset time, and the operator message - rather than only failing silently or after the
+fact. For teams enforcing per-user or per-team budget caps this improves cost-governance
+visibility and reduces surprise overage incidents. The practical effect is that ClaudeXray
+and LiteLLM are no longer needed *purely* for budget-cap visibility; they remain valuable
+for metadata injection, cross-tool aggregation, and analytics, but the cap-and-reset
+signal is now available natively.
+
 ---
 
 ## OpenAI Codex

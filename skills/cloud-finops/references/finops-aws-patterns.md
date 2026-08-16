@@ -947,6 +947,16 @@ Many legacy workloads still run on older Elasticsearch versions  - particularly 
 - Be aware that upgrading from Elasticsearch 7.x may require reindexing or application compatibility changes
 - Where possible, consolidate or delete unused domains to eliminate unnecessary charges
 
+**Outdated OpenSearch Or Elasticsearch Domain Incurring Extended Support Charges**
+Service: AWS OpenSearch | Type: Outdated Resource
+
+When an OpenSearch or Elasticsearch domain remains on a version past its standard support window, AWS applies an Extended Support surcharge to continue supplying security patches. This is a direct, quantifiable cost-forecasting item analogous to the EKS Extended Support pattern, and the surcharge rate is scheduled to increase materially. As of August 2026, AWS is extending Extended Support patch coverage for legacy Elasticsearch (1.5-7.8) and OpenSearch (1.0-1.2, 2.3-2.9) versions by 12 months to November 2027 - but from November 2026 the Extended Support surcharge rises to equal 100% of instance pricing (an effective 2x compute cost) for domains still on those old versions. AWS has also published Standard/Extended Support timelines for additional versions (ES 6.8/7.9/7.10, OpenSearch 1.3, 2.11-2.19), with support windows ranging 1-3 years. AWS revises these windows periodically, so verify current support dates before budgeting.
+
+- Identify OpenSearch/Elasticsearch domains running versions past their standard support window (legacy ES 1.5-7.8, OpenSearch 1.0-1.2 and 2.3-2.9)
+- Prioritise upgrades ahead of the November 2026 surcharge doubling to 100% of instance price, and note the November 2027 cutoff for continued Extended Support coverage
+- Test upgrade compatibility in lower environments before applying in production, and decommission unused domains to eliminate unnecessary charges
+<<REPLACE>>
+
 **Outdated Opensearch Version Triggering Extended Support Charges**
 Service: AWS OpenSearch | Type: Inefficient Configuration
 

@@ -52,6 +52,15 @@ face when managing AI workloads on GCP.
 - Native tooling for AI spend attribution without third-party tools
 - Integrated into the Cloud Billing console for unified cost management
 
+**Originating products filter and Gemini Enterprise preset report.** As of August 2026,
+Cloud Billing added an **"Originating products"** filter/group-by dimension in Billing
+Reports, plus a **Gemini Enterprise preset report**. Together these give more precise
+native attribution of AI-related consumption (including Gemini Enterprise usage)
+directly in Billing Reports, further reducing reliance on third-party tooling for AI
+spend attribution. Use the "Originating products" group-by to segment AI-related
+consumption across services, and the Gemini Enterprise preset as a ready-made starting
+point for Gemini Enterprise cost visibility.
+
 For detailed AI cost optimisation strategies, see `finops-vertexai.md` and
 `finops-for-ai.md`.
 
@@ -182,6 +191,12 @@ billing-account-level coverage looks healthy in aggregate while individual
 project-level utilisation is poor. Day-1 audit on any GCP commitment engagement:
 verify whether CUD Sharing is enabled. Source:
 https://cloud.google.com/billing/docs/how-to/cud-analysis
+
+**Flexible GPU commitments across services.** As of August 2026, flexible GPU
+commitments can now apply across services (not just within a single service),
+broadening Flex CUD coverage for GPU-accelerated workloads such as AI/ML training and
+inference. This lets teams commit to GPU spend once and have the discount apply across
+qualifying services, improving commitment durability for evolving AI architectures.
 
 Sources: https://cloud.google.com/compute/docs/instances/committed-use-discounts-overview, https://cloud.google.com/compute/docs/instances/signing-up-flexible-committed-use-discounts
 
