@@ -128,6 +128,47 @@ async def test_e2e_find_playbooks(server_params: StdioServerParameters) -> None:
                 assert pb["waste_category"] == "idle"
 
 
+@pytest.mark.asyncio
+async def test_e2e_playbook_viewer_ui_resource(
+    server_params: StdioServerParameters,
+) -> None:
+    """MCP Apps (SEP-1865) prototype: the UI resource is listed and readable."""
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            resources = await session.list_resources()
+            uris = {str(r.uri) for r in resources.resources}
+            assert "ui://cloud-finops/playbook-viewer" in uris
+
+            viewer = next(
+                r for r in resources.resources if str(r.uri) == "ui://cloud-finops/playbook-viewer"
+            )
+            assert viewer.mimeType == "text/html;profile=mcp-app"
+
+            read_result = await session.read_resource(viewer.uri)
+            html = next(c.text for c in read_result.contents if hasattr(c, "text"))
+            assert "<!DOCTYPE html>" in html
+            assert "ui/initialize" in html
+            assert "ui/notifications/tool-result" in html
+
+
+@pytest.mark.asyncio
+async def test_e2e_get_playbook_tool_links_ui_resource(
+    server_params: StdioServerParameters,
+) -> None:
+    """``get_playbook``'s ``_meta.ui.resourceUri`` points at the UI resource."""
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            result = await session.list_tools()
+            get_playbook_tool = next(t for t in result.tools if t.name == "get_playbook")
+            assert get_playbook_tool.meta is not None
+            assert (
+                get_playbook_tool.meta["ui"]["resourceUri"]
+                == "ui://cloud-finops/playbook-viewer"
+            )
+
+
 def _payload(result) -> dict:
     """Extract and JSON-decode the structured tool result."""
     if getattr(result, "structuredContent", None):

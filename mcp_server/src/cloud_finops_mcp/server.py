@@ -8,6 +8,7 @@ unit-tested without an MCP client.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -15,6 +16,15 @@ from mcp.server.fastmcp import FastMCP
 from . import __version__
 from . import metadata as _metadata
 from . import tools as _tools
+
+# MCP Apps (SEP-1865, extension id io.modelcontextprotocol/ui) resource: a
+# self-contained HTML view that renders get_playbook()'s markdown as
+# structured sections instead of raw text. Prototype for the 2026-07-28 spec
+# - see ui/playbook_viewer.html for the iframe<->host wiring.
+PLAYBOOK_VIEWER_URI = "ui://cloud-finops/playbook-viewer"
+_PLAYBOOK_VIEWER_HTML = (
+    Path(__file__).resolve().parent / "ui" / "playbook_viewer.html"
+).read_text(encoding="utf-8")
 
 mcp = FastMCP(
     "cloud-finops",
@@ -118,7 +128,7 @@ def list_playbooks() -> dict[str, Any]:
     return _tools.list_playbooks()
 
 
-@mcp.tool()
+@mcp.tool(meta={"ui": {"resourceUri": PLAYBOOK_VIEWER_URI}})
 def get_playbook(name: str) -> dict[str, Any]:
     """Fetch the full markdown content of one playbook by slug.
 
@@ -130,8 +140,27 @@ def get_playbook(name: str) -> dict[str, Any]:
     Returns ``{"name": ..., "title": ..., "content": "...", "lines": N}``.
     On miss, returns ``{"error": ..., "suggestions": [...]}`` with up to
     three string-distance matches so the caller can self-correct.
+
+    A host with MCP Apps (SEP-1865) support may render this result via the
+    linked ``ui://cloud-finops/playbook-viewer`` resource instead of showing
+    the raw markdown.
     """
     return _tools.get_playbook(name)
+
+
+@mcp.resource(
+    PLAYBOOK_VIEWER_URI,
+    name="Playbook viewer",
+    mime_type="text/html;profile=mcp-app",
+)
+def playbook_viewer_ui() -> str:
+    """MCP Apps UI resource linked from ``get_playbook``.
+
+    Self-contained HTML/JS that renders the tool result's markdown as
+    labelled sections (Problem / Symptoms / Detection / Fix / Anti-pattern /
+    See also) inside the sandboxed iframe the host provides.
+    """
+    return _PLAYBOOK_VIEWER_HTML
 
 
 @mcp.tool()
