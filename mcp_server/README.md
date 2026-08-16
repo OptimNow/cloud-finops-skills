@@ -1,5 +1,7 @@
 # cloud-finops-mcp
 
+<!-- mcp-name: io.github.OptimNow/cloud-finops -->
+
 MCP server exposing the [OptimNow Cloud FinOps skill](https://github.com/OptimNow/cloud-finops-skills)
 (reference library + named-pattern playbooks) as queryable tools for any
 MCP-aware client (Claude Code, Cursor, Codex CLI, Windsurf, Aider, Cline, etc.).
