@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.OptimNow/cloud-finops",
+  "title": "Cloud FinOps",
+  "description": "Queryable Cloud FinOps reference library and named-pattern waste playbooks by OptimNow.",
+  "repository": {
+    "url": "https://github.com/OptimNow/cloud-finops-skills",
+    "source": "github"
+  },
+  "version": "1.28.1",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "cloud-finops-mcp",
+      "version": "1.28.1",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
