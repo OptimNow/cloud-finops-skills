@@ -150,6 +150,15 @@ async def test_e2e_playbook_viewer_ui_resource(
             assert "<!DOCTYPE html>" in html
             assert "ui/initialize" in html
             assert "ui/notifications/tool-result" in html
+            # The handshake must carry a protocolVersion: a host that
+            # validates McpUiInitializeRequest rejects a bare
+            # {"appCapabilities": {}} and the view never receives a result.
+            assert '"2026-01-26"' in html
+            assert "clientInfo" in html
+            # Links go through the host. The sandbox grants allow-scripts and
+            # allow-same-origin but not allow-popups, so target="_blank"
+            # navigation is silently swallowed.
+            assert "ui/open-link" in html
 
 
 @pytest.mark.asyncio
