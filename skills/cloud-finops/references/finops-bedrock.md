@@ -161,6 +161,9 @@ path by recording the caller's IAM principal ARN on every billed line item.
 
 When enabled, AWS records the calling IAM principal ARN for each Bedrock API call and
 propagates tags applied to that principal into the Cost and Usage Report and Cost Explorer.
+As of August 2026, this coverage extends to the **bedrock-mantle** endpoint in addition
+to the original **bedrock-runtime** support, closing a per-application/team attribution
+gap for inference costs routed through that endpoint.
 
 **How it shows up in CUR 2.0:**
 
@@ -177,6 +180,10 @@ propagates tags applied to that principal into the Cost and Usage Report and Cos
 2. Activate those tag keys in Billing > Cost Allocation Tags (up to 24h propagation)
 3. Enable "Include caller identity (IAM principal) allocation data" in CUR 2.0 Data Exports
 
+As of August 2026, this activation covers inference calls on both the **bedrock-runtime**
+and **bedrock-mantle** endpoints - no additional setup step is needed to pick up
+bedrock-mantle traffic once caller-identity allocation is enabled.
+
 **Structural consequences to plan for:**
 
 - **CUR size grows significantly.** Row count multiplies roughly by the number of distinct
@@ -190,9 +197,11 @@ propagates tags applied to that principal into the Cost and Usage Report and Cos
   chargeback still needs to be built on top of the CUR
 
 **Coverage caveat:** some Bedrock features do not execute under the calling IAM role.
-**Guardrails** usage, notably, may appear in CUR without the caller-identity value -
-only resource tags carry the attribution (unconfirmed in AWS documentation; validate
-in your own CUR before relying on it). IAM Principal Cost Allocation therefore does
+As of August 2026 the bedrock-runtime and bedrock-mantle inference endpoints are both
+covered, which narrows the list of Bedrock surfaces lacking a principal-based
+attribution path. **Guardrails** usage, notably, may still appear in CUR without the
+caller-identity value - only resource tags carry the attribution (unconfirmed in AWS
+documentation; validate in your own CUR before relying on it). IAM Principal Cost Allocation therefore does
 not eliminate the tagging requirement: teams still need tag discipline for guardrails
 and similar non-principal line items. Note that a CUR 2.0 export created **before**
 enabling IAM principal attribution must be **recreated** - existing exports do not
@@ -456,6 +465,27 @@ Candidates: document enrichment, bulk classification, evaluation pipelines, repo
 - [ ] Post-optimisation observability: after each change (model swap, routing,
       caching), verify impact in invocation logs and token metrics - optimisations
       regress silently
+
+---
+
+## AgentCore in GovCloud - regulated-workload cost governance
+
+As of August 2026, AWS Bedrock AgentCore capabilities - **memory** (short and long-term),
+**policy** (natural-language-to-Cedar tool-access controls), and a **managed harness**
+(declarative agent runtime with no orchestration code) - are available in **AWS GovCloud
+(US-West)**. This extends the "policy-generation over direct mutation" and "memory with
+cost controls" architectural pillars (see `finops-agentic.md`) to regulated and
+government cloud environments.
+
+FinOps implications for GovCloud planning:
+
+- The **managed harness** is a new cost surface: compute, environment, and observability
+  are bundled into API calls. Treat it with its own cost attribution approach, similar to
+  the Managed Agents session-runtime billing documented in `finops-anthropic.md`.
+- Apply the same memory cost controls and policy-generation governance patterns already
+  documented for commercial regions to GovCloud (US-West) workloads.
+- Verify GovCloud-specific pricing separately - GovCloud rates commonly differ from
+  commercial-region rates.
 
 ---
 

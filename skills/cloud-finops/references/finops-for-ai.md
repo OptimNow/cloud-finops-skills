@@ -266,7 +266,7 @@ version); log full request and response content only for sampled traffic or erro
 | Training job attribution | SageMaker tags -> CUR | AzureML resource group + tags -> Cost Management | Vertex AI project labels -> BigQuery |
 | Inference attribution | Tags on provisioned throughput + app instrumentation | Separate AOAI accounts + tags + app instrumentation | Project labels + API call labels + Cloud Monitoring |
 | Token-level unit economics | App instrumentation + CloudWatch | App instrumentation + Azure Monitor | App instrumentation + Cloud Monitoring |
-| AI cost visibility | Bedrock inference profiles (limited) | Cost Management AI views | AI Cost Summary Agent (preview) |
+| AI cost visibility | Bedrock inference profiles (limited) | Cost Management AI views | AI Cost Summary Agent (preview) + Cloud Billing "Originating products" filter/group-by and Gemini Enterprise preset report |
 
 As of July 2026, Anthropic ships native cost governance tooling directly (announced 2 July
 2026, independent of any model release): admin spend analytics by group and user, model

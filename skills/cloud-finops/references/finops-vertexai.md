@@ -169,6 +169,14 @@ analysis across Gemini API and Vertex AI services through a Billing Overview wid
 an engagement). This native tool addresses the AI cost
 visibility gap, offering spend attribution and insights specifically for AI workloads.
 
+**Originating products attribution (Cloud Billing):** as of August 2026, Cloud Billing
+adds an "Originating products" filter/group-by dimension plus a Gemini Enterprise preset
+report, giving more precise native attribution of AI-related consumption directly in
+Billing Reports. For Vertex AI and Gemini spend, use this dimension to attribute
+AI-related consumption (including Gemini Enterprise usage) without relying solely on
+third-party tooling. Combine it with the BigQuery export approach above for detailed,
+SKU-level analysis. Source: https://cloud.google.com/billing/docs
+
 **Limitation:** native billing does not provide token-level granularity per request.
 For unit economics, combine billing data with application-level metrics from
 Cloud Monitoring or your own instrumentation.

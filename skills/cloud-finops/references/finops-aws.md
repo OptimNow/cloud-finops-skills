@@ -130,6 +130,28 @@ right tool for detailed attribution and custom tooling.
 - **Cost anomaly detection** - ML-based anomaly alerts (set up before you need them)
 - **Cost categories** - virtual tags for billing-layer cost allocation
 
+### AWS Managed Dashboards (zero-setup native visibility)
+
+As of August 2026, AWS Billing and Cost Management offers a set of curated
+Managed Dashboards that come pre-populated with your account data at no
+additional cost and require no setup. There are five dashboards: Cost Overview,
+Trends, Compute, Database, and Reservations and Savings Plans.
+
+**Why this matters for FinOps:**
+- A fast-start visibility baseline for organisations beginning or standardising
+  their FinOps practice - a zero-setup native alternative or complement to
+  custom CUR / Data Exports-based dashboards. Particularly useful at Crawl
+  maturity, before a team has invested in Athena or a warehouse pipeline.
+- Dashboards are read-only, but any dashboard can be duplicated into an editable
+  custom copy for customisation.
+- Exportable via PDF and CSV for sharing with Finance and stakeholders.
+
+Managed Dashboards do not replace CUR / Data Exports for detailed attribution
+and custom tooling - they are the quick-win visibility layer, not the granular
+data foundation.
+
+Source: https://aws.amazon.com/about-aws/whats-new/2026/08/aws-billing-and-cost-management-managed-dashboards/
+
 ### AWS Cost Anomaly Detection
 
 Set up before an incident occurs. AWS Cost Anomaly Detection uses ML to identify
@@ -490,6 +512,26 @@ Configure at minimum:
 **Recommended alert recipients:** Both the FinOps practitioner and the engineering team
 lead for the relevant account. FinOps-only alerts create a bottleneck; engineering-only
 alerts lack financial context.
+
+### Extended Support version audits (recurring action item)
+
+Several AWS services charge an Extended Support surcharge for domains, clusters, or
+instances left on end-of-standard-support versions. This is the "outdated resource
+incurring extended support charges" pattern - see `finops-aws-patterns.md` for the
+enumerated entries (EKS clusters, OpenSearch/Elasticsearch domains).
+
+Make version audits a recurring FinOps action item:
+- Audit Amazon OpenSearch Service domains for legacy Elasticsearch (1.5-7.8) and
+  OpenSearch (1.0-1.2, 2.3-2.9) versions still incurring Extended Support charges.
+- As of August 2026, AWS extended Extended Support patch coverage for these legacy
+  versions by 12 months to November 2027, but from November 2026 the Extended Support
+  surcharge rises to equal 100% of instance pricing (a 2x effective compute cost for
+  domains still on old versions). Newer versions (ES 6.8/7.9/7.10, OpenSearch 1.3,
+  2.11-2.19) have their own Standard/Extended Support windows ranging 1-3 years.
+- AWS revises these support windows periodically - always check the current support
+  dates before budgeting rather than relying on a cached table.
+
+Source: https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-opensearch-service-additional-upgrade-runway-support-dates
 
 ---
 
