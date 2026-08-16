@@ -1,9 +1,10 @@
 """MCP server wiring.
 
-Registers the six tools with FastMCP and runs the stdio transport - three over
-references (list / get / find) and three over playbooks (list / get / find).
-The actual tool logic lives in :mod:`cloud_finops_mcp.tools` so it can be
-unit-tested without an MCP client.
+Registers the six tools with FastMCP - three over references (list / get /
+find) and three over playbooks (list / get / find) - and exposes two ways to
+serve them: stdio (the default, what every local MCP client spawns) and
+streamable HTTP (for a hosted deployment). The actual tool logic lives in
+:mod:`cloud_finops_mcp.tools` so it can be unit-tested without an MCP client.
 """
 
 from __future__ import annotations
@@ -16,6 +17,12 @@ from mcp.server.fastmcp import FastMCP
 from . import __version__
 from . import metadata as _metadata
 from . import tools as _tools
+
+# Streamable HTTP defaults. Bind all interfaces because the only reason to run
+# this transport is to be reachable from outside the process. The port is a
+# fallback: `__main__` prefers $PORT, which is how hosting platforms assign one.
+DEFAULT_HTTP_HOST = "0.0.0.0"  # noqa: S104 - see docstring on run_http
+DEFAULT_HTTP_PORT = 8000
 
 # MCP Apps (SEP-1865, extension id io.modelcontextprotocol/ui) resource: a
 # self-contained HTML view that renders get_playbook()'s markdown as
@@ -202,18 +209,65 @@ def find_playbooks(
     )
 
 
-async def run() -> None:
-    """Run the MCP server over the stdio transport."""
-    # Touch both indexes before serving. They are lru_cached and built lazily,
-    # so without this an empty content bundle stays silent until the first tool
-    # call - and then answers it with an empty list rather than an error. The
-    # index builders log at ERROR when they find nothing, which surfaces in the
-    # client's MCP server log at startup instead of never.
+def _warm_indexes() -> None:
+    """Build both content indexes before serving.
+
+    They are lru_cached and built lazily, so without this an empty content
+    bundle stays silent until the first tool call - and then answers it with an
+    empty list rather than an error. The index builders log at ERROR when they
+    find nothing, which surfaces in the client's MCP server log at startup
+    instead of never.
+    """
     _metadata.get_index()
     _metadata.get_playbook_index()
+
+
+async def run() -> None:
+    """Run the MCP server over the stdio transport."""
+    _warm_indexes()
     # FastMCP exposes both synchronous and asynchronous run helpers; we use
     # the async one so the entry point can be called from ``asyncio.run``.
     await mcp.run_stdio_async()
 
 
-__all__ = ["mcp", "run", "__version__"]
+async def run_http(host: str = DEFAULT_HTTP_HOST, port: int = DEFAULT_HTTP_PORT) -> None:
+    """Run the MCP server over the streamable HTTP transport.
+
+    Args:
+        host: interface to bind. Defaults to ``0.0.0.0`` because the only
+            reason to run this transport is to be reachable from outside the
+            process, typically from a platform's ingress.
+        port: TCP port to bind.
+
+    In the 1.x Python SDK, ``host``/``port``/``stateless_http`` are **constructor**
+    keywords on ``FastMCP`` and ``run_streamable_http_async()`` takes no
+    arguments - it reads ``self.settings``. The module-level ``mcp`` instance
+    has to be built at import time because every ``@mcp.tool()`` decorator
+    binds to it, so the settings are assigned here instead. The session manager
+    is constructed lazily on first use, after this function has run, so it
+    picks the values up.
+
+    ``stateless_http`` is deliberate: a new transport and session per request,
+    no server-side session affinity. This server is a pure read-only retrieval
+    surface with no per-user state, so it costs nothing and it is what lets the
+    deployment scale horizontally or run on a serverless platform.
+
+    The route is FastMCP's default ``/mcp``, which is also what hosting
+    platforms expect to find - do not move it without checking the target
+    platform's health check.
+    """
+    _warm_indexes()
+    mcp.settings.host = host
+    mcp.settings.port = port
+    mcp.settings.stateless_http = True
+    await mcp.run_streamable_http_async()
+
+
+__all__ = [
+    "mcp",
+    "run",
+    "run_http",
+    "DEFAULT_HTTP_HOST",
+    "DEFAULT_HTTP_PORT",
+    "__version__",
+]
