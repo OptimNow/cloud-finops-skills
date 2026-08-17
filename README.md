@@ -413,6 +413,12 @@ updates are published.
 
 ## Contributing
 
+**Before you start**, if your change touches anything that names another OptimNow tool -
+an MCP tool name, an endpoint URL, a provenance field - check
+[`DEPENDENCIES.md`](./DEPENDENCIES.md). It maps the five repositories in this family and
+tells you which ones a change ripples into. Most cross-repo breakage here is documentation
+drift that no CI check catches.
+
 **Process and credit.** Open an issue first for anything larger than a typo or
 single fact correction, so we can scope before you write. Pull requests should
 keep the existing structure of the file you are touching, follow the conventions
