@@ -17,5 +17,11 @@
         "type": "stdio"
       }
     }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://cloud-finops-skills-590a051d.alpic.live/mcp"
+    }
   ]
 }
