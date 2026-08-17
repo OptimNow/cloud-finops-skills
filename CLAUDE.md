@@ -37,7 +37,8 @@ cloud-finops-skills/
 ├── DEPENDENCIES.md        <- Cross-repo dependency map for the five OptimNow repos,
 │                             plus the "if I change X, what else needs review" table
 ├── install.sh             <- One-liner installer script
-├── server.json            <- MCP Registry manifest
+├── server.json            <- MCP Registry manifest (carries the version TWICE)
+├── alpic.json             <- Alpic build contract for the hosted MCP deployment
 ├── .claude-plugin/        <- plugin.json + marketplace.json (versions bump together)
 ├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
 │                             publish-mcp, mcp-install-smoke, release
@@ -369,6 +370,63 @@ maintainer's control and on an unpublished timeline.
   hosting project. The prototype had sat unvalidated since PR #133
   precisely because the only test in place asserted the resource existed,
   never that it rendered.
+
+### A packaged artefact cannot own volatile data (2026-08-17)
+
+Shipped across twelve PRs (#141 to #153, released as 1.30.0). The change is small to
+describe and it removes a whole class of defect.
+
+**The defect.** Price figures sat in the reference files. Those files ship frozen inside
+a PyPI package, a Claude Code plugin, an Alpic deployment and a dozen tool integrations,
+and nothing in that chain corrects a number after it is written. The June 2025 AWS GPU
+price cuts stayed wrong for 14 months. The pipeline could not catch it either: the scan
+detects news from sources, it cannot detect silent staleness in a figure already sitting
+in a file.
+
+**The fix.** Split mechanics from figures. Ratios, multipliers, commitment term structure
+and the shape of a break-even calculation are durable, and they are what a practitioner
+actually reasons with - so they stay. Absolute prices route to a live source (OptimToken),
+and where a worked example genuinely needs a number, it carries an inline as-of date.
+After the purge, `grep -E '\$[0-9.]+\s*(/|per )\s*(1M|MTok)'` over `references/` returns
+nothing.
+
+Two things this bought beyond correctness: the answer now carries its own date and source,
+which is what makes it usable in a client deliverable; and the pipeline's rotating
+AI-pricing re-verification pass shrank from a hunt across every reference to a date check
+on a short list.
+
+**The alternative that was rejected**, because it will be proposed again: adding
+OptimToken to the pipeline sources so the applier refreshes figures on a cron. That puts
+an LLM back in the write loop on 1,500-line files - the April-May 2026 truncation failure
+mode - to solve a synchronisation problem the API already solves in real time. The hub is
+queried, never copied.
+
+**The generalisation, which is the part worth keeping.** Duplicated computation is this
+family's recurring failure, now observed twice independently: OptimToken drifted between
+its website and its MCP, and the ROI calculator drifted between its web app and its MCP
+far enough to return a 7-point different ROI for the same preset. One person cannot keep
+two implementations of the same computation in sync without automation. **Route, do not
+copy** - and that is why live pricing tools inside `cloud-finops-mcp` were declined even
+though the idea sounds tidier (see the Roadmap entry).
+
+**Verification discipline paid off three times in one day.** Each of these was invisible
+from reading the source and only appeared by calling the thing:
+
+- The pricing hub's three MCP tools failed in Claude Code on a JSON Schema dialect
+  mismatch. They worked in MCPJam, so the defect was host-specific and no test caught it.
+- `compare-compute-pricing` was silently serving a dated snapshot instead of live data.
+  It was detectable only because the server had been asked to report `provenance`.
+- The hosted MCP endpoint is session-based despite `stateless_http = True` in the code,
+  because Alpic's ingress front-ends it. A health check written from the source alone
+  would have shipped broken.
+
+The rule generalises the 2026-08-16 MCP Apps lesson: **do not document, route to, or
+monitor a remote surface you have not called.**
+
+**Small but sharp.** `git grep "Cloud FinOps Skill"` reported 40 files, which made the
+rename look expensive. 36 of them were the CC BY-SA attribution footer, which must not
+change - it is the string third-party reusers carry. The real surface was 8 occurrences
+in 5 files. Count the *kind* of hit before estimating effort from a grep total.
 
 ---
 
