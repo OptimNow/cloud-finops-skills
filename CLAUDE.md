@@ -768,10 +768,14 @@ Follow these five steps whenever you add a new domain:
      and version-number collisions between parallel branches (the
      1.27/1.28/1.29/1.30 collision resolved by combined release PR #110).
    - Releasing is a separate, deliberate act: a small dedicated release PR
-     bumps all three together - `plugin.json` version (minor for user-visible
+     bumps all four together - `plugin.json` version (minor for user-visible
      features), `marketplace.json` `metadata.version` (must match plugin.json;
-     CI-gated by `scripts/check-marketplace-version.sh`), and
-     `mcp_server/pyproject.toml` version. Update the marketplace plugin
+     CI-gated by `scripts/check-marketplace-version.sh`),
+     `mcp_server/pyproject.toml` version, and **`server.json`, which carries the
+     version twice** - the top-level `version` and `packages[0].version`, the
+     PyPI package version the MCP Registry advertises. Nothing gates that fourth
+     file, so it is the one that drifts; it was missing from this checklist until
+     the 1.30.0 release. Update the marketplace plugin
      description topic list in the same release PR if new domains shipped.
      The version number is decided at release time, never pre-assigned on
      content branches. Natural release moment: after the monthly content
@@ -954,10 +958,12 @@ Two standing rules that follow from the map:
       `mcp_server/pyproject.toml` are untouched (release-train rule - see step 5
       of "How to add a new reference file"). A `plugin.json` bump reaching main
       publishes to PyPI, so bumps live only in dedicated release PRs.
-- [ ] **Release PR only: bump all three versions together** - `plugin.json`
+- [ ] **Release PR only: bump all four versions together** - `plugin.json`
       (minor for user-visible features), `marketplace.json` `metadata.version`
       (must match; CI-gated by `scripts/check-marketplace-version.sh` via the
-      `marketplace version in sync` workflow), `mcp_server/pyproject.toml`.
+      `marketplace version in sync` workflow), `mcp_server/pyproject.toml`, and
+      `server.json` (two fields: top-level `version` and `packages[0].version`).
+      Only the marketplace one is CI-gated, so check the other three by hand.
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
       topic list (can ride the release PR). It carries no reference count by design -
       see the no-hardcoded-counts rule above.
