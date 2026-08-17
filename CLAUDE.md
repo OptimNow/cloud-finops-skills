@@ -733,6 +733,17 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
 - **Name a vendor only with a viability caveat** if it is early-stage. Recommending a
   seed-stage tool into a client's production path is a continuity risk the reference
   should flag, not bury.
+- **Write mechanics, not price figures.** A reference file is the wrong container for
+  a volatile number: it ships frozen inside a PyPI package and a dozen tool
+  integrations, so an absolute price goes stale there within weeks and nothing in the
+  distribution chain corrects it (the June 2025 AWS GPU price cuts sat uncorrected for
+  14 months for exactly this reason). Ratios and mechanics are durable and belong here:
+  the batch discount, the cache-read multiplier, commitment term structure, the shape of
+  a break-even calculation. Absolute $/1M-token and $/hour figures belong in the AI
+  Pricing Hub (<https://optimtoken.optimnow.io>), which is queried live. Where a worked
+  example genuinely needs a number to be legible, keep one, mark it illustrative, and
+  date it inline. The reader-facing version of this rule is the "Price figures" section
+  in SKILL.md and POWER.md.
 
 **License**
 - All content is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)

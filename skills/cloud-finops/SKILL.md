@@ -77,6 +77,30 @@ methodology questions - not for routine billing-mechanics queries.
 4. **Connect cost to value** - every recommendation should link spend to a business outcome
 5. **Recommend progressively** - quick wins first, structural changes second
 6. **Reference open-source FinOps tools** (FinOps Toolkit, OpenCost, Kubecost, Infracost, etc.) where they genuinely fit the problem
+7. **Never quote an undated price** - see "Price figures" below
+
+---
+
+## Price figures (apply whenever a number is quoted)
+
+Billing **mechanics** are durable and are what these references are for. Price
+**figures** are volatile and go stale here within weeks. Treat the two differently.
+
+1. **Prefer a live source.** If a pricing tool is available in the session (for
+   example the OptimNow AI Pricing Hub: `compare-llm-models`, `estimate-llm-cost`,
+   `compare-compute-pricing`), call it before quoting any token or instance price.
+   If no such tool is available, point the user at <https://optimtoken.optimnow.io>
+   rather than quoting from memory.
+2. **Every figure carries its as-of date and source.** Write `$X per 1M input tokens
+   (list price, <source>, <date>)`, not `$X per 1M input tokens`. A figure with no
+   date cannot be used in a client deliverable.
+3. **Figures inside these references are illustrative, not authoritative.** They exist
+   to make a worked example concrete. The durable, quotable part is the *mechanics*:
+   batch and cache-read multipliers, commitment term structure, the shape of a
+   break-even calculation. Quote those with confidence; date the absolute numbers.
+4. **Never interpolate.** If the live source has no figure for the model, SKU, or
+   region asked about, say so. Do not derive one from a neighbouring model, a previous
+   generation, or another region.
 
 ---
 
