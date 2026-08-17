@@ -34,6 +34,8 @@ cloud-finops-skills/
 ├── INSTALLATION.md        <- Setup instructions (12 tool integrations) + response contract
 ├── LICENSE.md             <- CC BY-SA 4.0
 ├── llms.txt               <- Machine-readable "Key files" list (CI-gated)
+├── DEPENDENCIES.md        <- Cross-repo dependency map for the five OptimNow repos,
+│                             plus the "if I change X, what else needs review" table
 ├── install.sh             <- One-liner installer script
 ├── server.json            <- MCP Registry manifest
 ├── .claude-plugin/        <- plugin.json + marketplace.json (versions bump together)

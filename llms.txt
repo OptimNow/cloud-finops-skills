@@ -18,6 +18,7 @@ infrastructure. Copy the files into your agent's context and it gains FinOps exp
 - skills/cloud-finops/SKILL.md: Entry point and domain router for Claude Code and generic agents
 - skills/cloud-finops/POWER.md: Entry point for Kiro IDE
 - INSTALLATION.md: cross-tool installer covering 12 tool integrations + model-agnostic response contract
+- DEPENDENCIES.md: cross-repo dependency map for the five OptimNow repos, and which repos a change ripples into
 - skills/cloud-finops/references/optimnow-methodology.md: Reasoning philosophy (read first on every query)
 - skills/cloud-finops/references/finops-for-ai.md: AI cost management, token economics, agentic patterns
 - skills/cloud-finops/references/finops-agentic.md: Agentic FinOps - agent cost anatomy, cost-safe architecture, agent-initiated payments (x402/MPP)
