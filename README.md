@@ -26,6 +26,24 @@
 
 Full options, troubleshooting, and the model-agnostic API loader: see [INSTALLATION.md](./INSTALLATION.md).
 
+### Live prices come from OptimToken, not from this repo
+
+This skill carries billing **mechanics**, which stay true for years. It deliberately does
+not carry current price **figures**, which go stale inside a packaged skill within weeks.
+
+Those live in **[OptimToken](https://optimtoken.optimnow.io)** - LLM token rates for 250+
+models and compute instance rates across seven clouds, each figure carrying its own as-of
+date. The website works on its own with no setup. Adding its MCP connector lets the model
+fetch a rate mid-answer instead of telling you to go and look it up:
+
+| | |
+|---|---|
+| <img src="https://img.shields.io/badge/-OptimToken%20web-7C3AED?logoColor=white" alt="OptimToken web" height="22"/> | [optimtoken.optimnow.io](https://optimtoken.optimnow.io) - compare model and instance prices in the browser |
+| <img src="https://img.shields.io/badge/-OptimToken%20MCP-7C3AED?logoColor=white" alt="OptimToken MCP" height="22"/> | Hosted, nothing to install. Point your client at `https://ai-pricing-hub-mcp-9604f763.alpic.live/` - config snippets in [INSTALLATION.md](./INSTALLATION.md#companion-connector-optimnow-ai-pricing-hub-optional) |
+
+Pair it with the skill and a pricing question gets answered with a dated figure and its
+source, rather than from a number the model remembers.
+
 ---
 
 ## What is a Skill, and why does it matter
@@ -376,11 +394,16 @@ other MCP-aware client. See [mcp_server/](./mcp_server/README.md) and the
 
 ## This skill is actively maintained
 
-This is a living repository. Reference files are refreshed monthly (around the
-1st of each month), driven by an automated scan of 29 data sources - cloud provider
+This is a living repository. Reference files are refreshed twice a month (around the
+1st and the 15th), driven by an automated scan of around 30 data sources - cloud provider
 pricing pages, release notes, billing changelogs, and FinOps community publications.
 Changes are reviewed before being applied, so the content reflects verified updates
 rather than raw feed output.
+
+Price figures are the exception, and deliberately so: they are not maintained here at
+all. They come from [OptimToken](https://optimtoken.optimnow.io) at query time, which is
+why a rate quoted through this skill carries a date rather than depending on when the
+reference file was last touched.
 
 AI cost management is moving particularly fast - new model releases, capacity options, and
 billing mechanics appear every few weeks. Watch or star this repo to be notified when
@@ -490,10 +513,14 @@ spend to measurable business value. Based in France with European reach.
 - GitHub: [github.com/OptimNow](https://github.com/OptimNow)
 
 **Open-source tools built by OptimNow:**
-- [AI Cost Readiness Assessment](https://aicostsfinops.optimnow.io)
-- [AI ROI Calculator](https://optimnow.io)
-- [MCP for Tagging](https://github.com/OptimNow/finops-mcp)
-- [FinOps Maturity Assessment](https://optimnow.io)
+
+| Tool | What it does |
+|---|---|
+| [OptimToken](https://optimtoken.optimnow.io) | Compare what 250+ models cost per request, with caching and batch factored in, plus compute instance rates across seven clouds. Also available as an MCP connector - this skill routes price questions here |
+| [AI ROI Calculator](https://airoicalculator.optimnow.io) | Whether an AI project pays for itself: three-layer cost model, payback, break-even, sensitivity. Also an [MCP server](https://github.com/OptimNow/ai-roi-calculator-mcp) |
+| [AI Cost Readiness Assessment](https://aicostsfinops.optimnow.io) | Where your organisation stands on AI cost management |
+| [MCP for Tagging](https://github.com/OptimNow/finops-mcp) | Tag governance automation |
+| [FinOps Maturity Assessment](https://optimnow.io) | Crawl / Walk / Run positioning |
 
 ---
 
