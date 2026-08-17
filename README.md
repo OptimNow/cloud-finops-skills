@@ -92,6 +92,13 @@ and follow the installation steps, you can add FinOps expertise to any compatibl
 - **Connect cost to business value.** Every recommendation answers the CFO test:
   what business outcome does this protect or unlock. Cost reduction without a value
   lens is a leak.
+- **Mechanics live here, price figures do not.** Billing mechanics are durable and are
+  what the reference files carry. Absolute prices are volatile, and a figure frozen in a
+  markdown file goes stale within weeks with nothing in the distribution chain to correct
+  it. So the skill routes current-price questions to a live source - the
+  [OptimNow AI Pricing Hub](https://optimtoken.optimnow.io), which serves LLM token rates
+  and compute instance rates across seven providers, each with its own as-of date - and
+  states the date and source on any figure it does quote.
 - **FinOps is an operating discipline, not a culture.** The discipline lives in
   allocation, anomaly management, commitment management, rightsizing, and
   governance, all of which produce measurable outputs. "Culture of FinOps" framing

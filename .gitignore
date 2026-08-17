@@ -37,6 +37,10 @@ skills/cloud-finops/references/.backups/
 # Distribution archive
 cloud-finops.zip
 
+# Installer build output (./install.sh --tool chatgpt|gemini|claude-projects
+# writes here; a chatgpt build alone is ~57 untracked files)
+dist/
+
 # Python build artefacts (mcp_server/)
 __pycache__/
 *.py[cod]
