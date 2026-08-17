@@ -168,7 +168,8 @@ twice. When managed poorly, it creates compliance exposure and hidden costs.
 **Azure Hybrid Benefit (AHB):** Windows Server and SQL Server licences with active Software
 Assurance can be applied to Azure VMs, reducing compute costs by up to 40-80%. Requires
 ITAM to confirm SA coverage and FinOps to track which VMs have AHB applied vs which are
-paying full price. See `finops-azure.md` for AHB-specific optimisation patterns.
+paying full price. See `finops-azure-commitments.md` for AHB-specific optimisation
+patterns.
 
 **AWS Licence Manager:** Tracks licence usage across EC2 instances. Requires ITAM to define
 licence rules and FinOps to monitor consumption against those rules.

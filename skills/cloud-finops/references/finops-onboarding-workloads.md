@@ -197,8 +197,8 @@ Specific patterns to watch for:
 
 - **Cross-zone chatter.** Microservices designed for on-premises latency
   often span availability zones in cloud, generating cross-AZ data transfer
-  charges that did not exist on-premises (see `finops-aws.md` 48-pattern
-  catalogue, `finops-azure.md` patterns)
+  charges that did not exist on-premises (see the pattern catalogues in
+  `finops-aws-patterns.md` and `finops-azure-patterns.md`)
 - **Database replication.** Synchronous replication across zones for HA
   was free on-premises (private network); in cloud it is per-GB
 - **Storage egress.** A team's S3 reads from a service in another region
@@ -405,10 +405,11 @@ it post-migration costs a quarter of engineering time.
   configured; the intake gate enforces this
 - `finops-tagging.md` - the prerequisite for the tag-related intake gate
   items
-- `finops-aws.md` - AWS-specific commitment timing for post-migration
-  workloads (the 60-90 day rule applies)
-- `finops-azure.md` - Azure-specific commitment timing; the EA-to-MCA
-  transition is a related onboarding scenario
+- `finops-aws-commitments.md` - AWS-specific commitment timing for
+  post-migration workloads (the 60-90 day rule applies)
+- `finops-azure-commitments.md` - Azure-specific commitment timing
+- `finops-azure.md` - the EA-to-MCA transition, a related onboarding
+  scenario
 - `finops-gcp.md` - GCP-specific commitment timing
 - `finops-fabric.md` - the Pro/PPU-to-Fabric migration governance trap is
   a precedent migration scenario where forecasting before commitment

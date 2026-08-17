@@ -100,8 +100,9 @@ The right shape depends on whether the models share a container.
 
 ## See also
 
-- `references/finops-aws.md` - SageMaker AI Savings Plan, deployment
-  pattern selection, MME vs Inference Components decision
+- `references/finops-aws.md` - SageMaker deployment pattern selection,
+  MME vs Inference Components decision
+- `references/finops-aws-commitments.md` - SageMaker AI Savings Plan
 - `playbooks/aws-sagemaker-idle-endpoint.md` - the deletion-first option
   when an endpoint receives literally zero traffic
 - `references/finops-waste-detection-playbooks.md` - Category 7 (AI/ML

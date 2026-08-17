@@ -132,8 +132,8 @@ did not audit the active-dataset list first.
   Microsoft Fabric reserved capacity page before quoting.
 - Scope and exchange rules: similar to Azure VM Reservations but capacity-
   specific. Exchanges allowed within the F-SKU family with the standard Azure
-  reservation mechanics (see `finops-azure.md` for exchange / refund / cap
-  details, which apply identically here).
+  reservation mechanics (see `finops-azure-commitments.md` for exchange /
+  refund / cap details, which apply identically here).
 - **No 3-year option as of April 2026.** Fabric Reserved Capacity is 1-year only.
 - **Sequencing:** only commit after cleanup and capacity sizing have stabilised.
   Reserving before cleanup locks the wrong F-SKU into a 1-year contract - the

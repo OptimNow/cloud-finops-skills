@@ -107,7 +107,7 @@ ORDER BY cost_30d DESC;
 
 ## See also
 
-- `references/finops-aws.md` - EC2 patterns including non-prod
+- `references/finops-aws-patterns.md` - EC2 patterns including non-prod
   scheduling
 - `references/finops-azure.md` - Azure VM rightsizing and scheduling
 - `references/finops-gcp.md` - Compute Engine scheduling patterns

@@ -23,9 +23,8 @@ fcp_maturity_entry: "Crawl"
 > resource-state categories below. WasteLine automates the
 > detection-and-classification
 > work; this file is the doctrine the appliance encodes. For Azure and GCP,
-> use the in-cloud catalogues (`finops-azure.md` 48-pattern catalogue,
-> `finops-gcp.md` 26-pattern catalogue) until WasteLine extends to those
-> providers.
+> use the in-cloud catalogues (`finops-azure-patterns.md`, `finops-gcp.md`)
+> until WasteLine extends to those providers.
 
 ---
 
@@ -664,9 +663,9 @@ What WasteLine adds beyond a manual hunt:
   IDs, and tags are stripped at the MCP boundary
 
 For Azure and GCP waste detection, the cloud-specific catalogues in
-`finops-azure.md` (48-pattern catalogue) and `finops-gcp.md` (26-pattern
-catalogue) cover the same waste taxonomy applied to those providers.
-WasteLine extension to Azure and GCP is on the roadmap.
+`finops-azure-patterns.md` and `finops-gcp.md` cover the same waste taxonomy
+applied to those providers. WasteLine extension to Azure and GCP is on the
+roadmap.
 
 ---
 
@@ -731,11 +730,13 @@ WasteLine extension to Azure and GCP is on the roadmap.
 
 ## Cross-references
 
-- `finops-aws.md` - AWS-specific commitment, EC2, RDS, EDP guidance
-  (the Category 4 details)
-- `finops-azure.md` - Azure 48-pattern catalogue (Azure-side equivalents
-  to the categories above)
-- `finops-gcp.md` - GCP 26-pattern catalogue (GCP-side equivalents)
+- `finops-aws-commitments.md` - AWS commitment and EDP guidance (the
+  Category 4 details)
+- `finops-aws.md` - AWS EC2 and RDS cost mechanics
+- `finops-aws-patterns.md` - the enumerated AWS pattern catalogue
+- `finops-azure-patterns.md` - Azure pattern catalogue (Azure-side
+  equivalents to the categories above)
+- `finops-gcp.md` - GCP pattern catalogue (GCP-side equivalents)
 - `finops-tagging.md` - tag enforcement is the prerequisite for
   owner-driven decommission workflows
 - `finops-allocation-showback.md` - waste hunting reads from the same

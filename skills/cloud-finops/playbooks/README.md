@@ -20,7 +20,7 @@ by an analyst building a mental model of a domain.
 Playbooks are the opposite: each one is scoped to **one named pattern**, and
 exists so an LLM doing retrieval over knowledge chunks can answer a specific
 question ("what is a zombie NAT gateway and how do I detect one?") without
-loading the entire 2,600-line `finops-aws.md`.
+loading a full provider reference such as `finops-aws.md`.
 
 The two layers cover the same patterns from different angles:
 - **Reference file** = narrative context, cross-pattern reasoning, billing
@@ -130,5 +130,7 @@ the canonical taxonomy and confidence rubric; playbooks instantiate it.
 ## Status
 
 This directory is seeded with a curated subset of high-frequency patterns.
-Full extraction of the 48 AWS / 48 Azure / 26 GCP patterns from the
-reference files is tracked in the Roadmap section of `CLAUDE.md`.
+The full per-provider catalogues live in `references/finops-aws-patterns.md`,
+`references/finops-azure-patterns.md`, and `references/finops-gcp.md`;
+extracting more of them into playbooks is tracked in the Roadmap section of
+`CLAUDE.md`.

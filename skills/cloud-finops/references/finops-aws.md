@@ -11,10 +11,13 @@ fcp_maturity_entry: "Walk"
 
 # FinOps on AWS
 
-> AWS-specific guidance covering cost management tools, commitment discounts, compute
-> rightsizing, cost allocation, and governance. Covers CUR, Cost Explorer, Compute
-> Optimizer, Trusted Advisor, Savings Plans, Reserved Instances, Enterprise Discount
-> Program (EDP) negotiation, RDS cost management strategy, and AWS-native FinOps patterns.
+> AWS-specific guidance covering cost management tools, compute rightsizing, SageMaker
+> operational FinOps, cost allocation, and governance. Covers CUR and Data Exports,
+> Cost Explorer, Compute Optimizer, Trusted Advisor, EC2 and GPU rightsizing,
+> CloudFront flat-rate plans, S3 Files, and multi-org billing.
+>
+> Commitments (Savings Plans, RIs, Spot, EDP) and the enumerated per-service pattern
+> catalogue live in their own files - see the routing table below.
 
 ---
 

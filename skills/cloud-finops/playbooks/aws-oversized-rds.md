@@ -87,8 +87,11 @@ aws cloudwatch get-metric-statistics \
 
 ## See also
 
-- `references/finops-aws.md` - RDS commitment strategy, Database Savings
-  Plans, Aurora vs RDS economics
+- `references/finops-aws-commitments.md` - Database Savings Plans and the
+  commitment decision tree
+- `references/finops-aws-patterns.md` - RDS commitment strategy and the
+  enumerated RDS inefficiency patterns
+- `references/finops-aws.md` - Aurora vs RDS economics
 - `playbooks/aws-snapshot-sprawl.md` - related RDS snapshot sprawl
 
 ---
