@@ -50,6 +50,9 @@ __pycache__/
 mcp_server/build/
 mcp_server/dist/
 mcp_server/.venv/
+# alpic.json's installCommand creates a venv at the repo root, and so does any
+# local rehearsal of it
+.venv/
 
 # LinkedIn post drafts
 linkedin-post-*.md

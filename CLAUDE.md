@@ -459,6 +459,65 @@ GitHub issues, which track in-flight work.
   section above and should produce a follow-up Lessons learned entry
   describing the un-freeze evidence.
 
+- **Host `cloud-finops-mcp` on Alpic.** The decision to deploy remotely was taken on
+  2026-08-16 on distribution grounds alone (let a non-technical user paste a URL into
+  claude.ai instead of installing a PyPI package), explicitly *not* on interactive
+  rendering - see the MCP Apps lesson above for why that is allowlisted rather than
+  earned. `alpic.json` and the build contract landed with this entry; what remains is
+  the account-side work: connect the repo in the Alpic UI, set the root directory to the
+  repo root, deploy, then add the resulting URL to README.md and INSTALLATION.md next to
+  the `pip install` path.
+
+  Four things about this repo that a deployment has to respect, all verified locally
+  before the config was written:
+
+  1. **Build from the repo root, never from `mcp_server/` in isolation.** The bundled
+     `data/*.md` are gitignored, so a fresh clone has none. They are produced at build
+     time by the `hatch-build-scripts` hook running `scripts/sync_references.py`, which
+     resolves the repo root from `__file__` and reads `skills/cloud-finops/`. Point the
+     build at `mcp_server/` alone and it will happily build a server with an empty
+     catalogue - a silent failure, not a build error.
+  2. **The start command must name the transport explicitly.** Alpic detects Python
+     transport by looking for `mcp.run()` / `mcp.http_app()` with an explicit transport
+     argument. This server routes through argparse in `__main__.py` and defaults to
+     stdio, so auto-detection would get it wrong. Hence `--transport http` in
+     `startCommand` rather than relying on detection.
+  3. `$PORT` and `0.0.0.0` are already handled in `__main__._env_port()` and
+     `run_http()`, and `stateless_http = True` is set deliberately so there is no
+     session affinity to preserve across instances.
+  4. The route is FastMCP's default `/mcp`. Do not move it.
+
+  Verified 2026-08-17 on a clean tree: `uv build --wheel` runs the sync hook and produces
+  a wheel carrying 33 references + 25 playbooks + the viewer HTML; `python -m
+  cloud_finops_mcp --transport http` binds and answers `initialize` and `tools/list` over
+  streamable HTTP.
+
+- **Live pricing tools inside `cloud-finops-mcp`: will not do (decided 2026-08-17).**
+  The idea was to add `get_llm_price` / `get_compute_price` to this server, fetching the
+  OptimToken API, so a user installs one server instead of two. Rejected, and the record
+  matters because the idea is superficially attractive and will come back.
+
+  The benefit turned out to be nearly nil. Both servers are *hosted*: the user pastes a
+  URL, they do not install anything. "One install instead of two" collapses into "one URL
+  instead of two", which is not a friction worth engineering for.
+
+  The cost is duplication of a computation, and this organisation has already paid it
+  twice. The pricing hub drifted between its website and its MCP (the MCP held a static
+  snapshot while the site resolved AWS live). The AI ROI Calculator drifted between its
+  web app and its MCP far enough to return a 7-point different ROI for the same preset,
+  and now carries a generated-and-CI-checked sync to stop it happening again. A third
+  implementation of price retrieval invites the third occurrence.
+
+  There is also a failure-domain argument. On 2026-08-17 `compare-compute-pricing` was
+  serving degraded tier-2 data while the LLM tools were fine; because pricing lives in
+  its own service, that fault stayed inside pricing answers. Folded into this server, the
+  same fault would sit inside knowledge retrieval.
+
+  **The architecture to keep instead:** separate hosted MCP servers, each owning one
+  domain, all reading OptimToken as the single price source, with the skill routing
+  between them. Revisit only if that composition proves to be real friction for users -
+  not because one endpoint feels tidier than two.
+
 - **WasteLine extension to Azure and GCP.** `finops-waste-detection-playbooks.md` covers the
   eight-category waste taxonomy and references the WasteLine appliance for AWS automation;
   Azure and GCP coverage currently routes to the in-cloud pattern catalogues
