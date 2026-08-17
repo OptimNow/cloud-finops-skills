@@ -38,7 +38,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 | Variable | What it does |
 |---|---|
-| Model choice | Base token rate anchor (Opus 5: $5/$25 per MTok input/output) |
+| Model choice | Base token rate anchor (see "Rate structure: Claude models" below) |
 | Performance tier | Standard vs Fast mode - 2x price multiplier, and only on the models that offer it |
 | Context length | **Per-model**: the current generation prices flat across a 1M-token window with no long-context premium. Older models applied premium rates above 200K input tokens. Verify per model rather than assuming either behaviour. |
 | Data residency | US-only inference adds a 1.1× multiplier |
@@ -50,9 +50,14 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 ---
 
-## Pricing reference: Claude models
+## Rate structure: Claude models
 
-### Base token pricing (verified against Anthropic model documentation, June 2026)
+> *Illustrative rates, list price, as of June 2026 (Anthropic model documentation).
+> Prices move and this file does not. For a current figure, call a live pricing tool or
+> check <https://optimtoken.optimnow.io>. What is durable below is the tier structure and
+> the multipliers, not the absolute numbers.*
+
+### Base token pricing
 
 | Model | Input ($/MTok) | Output ($/MTok) | Context | Notes |
 |---|---|---|---|---|

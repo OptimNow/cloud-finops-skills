@@ -1235,6 +1235,12 @@ Networking is the most commonly underestimated cost line on multi-region or
 hub-spoke architectures. The egress and peering charges are small per GB but
 compound to material amounts on busy workloads.
 
+> *Every rate in this section is an approximate list rate for a common region, as of
+> August 2026, and varies by region. They are here to show the relative weight of each
+> charge - the per-GB peering charge landing on both sides, the NAT Gateway hourly floor -
+> which is the part that stays true. Pull current rates from the Azure Retail Prices API
+> before putting a number in a client model.*
+
 ### Egress pricing tiers
 
 Outbound to internet, per-GB pricing decreases by volume:

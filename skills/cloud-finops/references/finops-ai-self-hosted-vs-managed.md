@@ -38,9 +38,12 @@ or cost arbitrage reasons that managed APIs cannot meet.
 
 Three drivers make this conversation more common in 2026:
 
-1. **Frontier model pricing has stabilised** (Sonnet 4 around $3/M input, $15/M output;
-   GPT-5 in similar territory). Clients with predictable workloads can now build credible
-   TCO models comparing managed APIs to renting their own GPUs.
+1. **Frontier model pricing has stabilised.** Mid-tier rates have held roughly flat across
+   several model generations on both the Claude and GPT sides, so a rate assumed today is
+   unlikely to be invalidated mid-project. Clients with predictable workloads can now build
+   credible TCO models comparing managed APIs to renting their own GPUs. Pull the current
+   rates from a live source (<https://optimtoken.optimnow.io>) when you build the model -
+   stability is not the same as permanence.
 2. **Open-weight models have closed the quality gap** for many use cases. Qwen3.6, Llama 4,
    GLM-5.1, Gemma 4 deliver production-grade quality across reasoning, coding, multimodal.
    Self-hosting a capable model is a real option, not a research experiment.
@@ -245,9 +248,11 @@ billed to the same FinOps budget as remediation.
 
 These are the failure modes seen repeatedly in 2024-2026:
 
-- **TCO calculator without operational tax.** Comparing $0.50/M tokens self-hosted to $3/M
-  managed, omitting the FTE cost, oncall burden, migration overhead, retuning cycles. The
-  TCO model is wrong by a factor of 2-5x.
+- **TCO calculator without operational tax.** Putting the self-hosted per-token rate next
+  to the managed per-token rate and stopping there, omitting the FTE cost, oncall burden,
+  migration overhead, retuning cycles. The headline gap is usually several-fold in favour
+  of self-hosting, which is exactly why it survives scrutiny for so long. The TCO model is
+  wrong by a factor of 2-5x.
 - **"We will figure it out" sizing.** Provisioning A100s without 90 days of usage data,
   ending up at 15-25% utilisation. The per-token math collapses immediately.
 - **No fallback plan.** Single-pod self-hosted in one region, no redundancy. First

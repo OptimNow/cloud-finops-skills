@@ -30,9 +30,15 @@ differ.
 cloud-finops-skills/
 ├── CLAUDE.md              <- You are here
 ├── README.md              <- Public-facing documentation
+├── AGENTS.md              <- Agent-facing repo brief (truncated tree, defers to CLAUDE.md)
 ├── INSTALLATION.md        <- Setup instructions (12 tool integrations) + response contract
 ├── LICENSE.md             <- CC BY-SA 4.0
+├── llms.txt               <- Machine-readable "Key files" list (CI-gated)
 ├── install.sh             <- One-liner installer script
+├── server.json            <- MCP Registry manifest
+├── .claude-plugin/        <- plugin.json + marketplace.json (versions bump together)
+├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
+│                             publish-mcp, mcp-install-smoke, release
 ├── assets/                <- Screenshots for installation guide
 ├── skills/cloud-finops/          <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
@@ -79,21 +85,32 @@ cloud-finops-skills/
 │                                README.md index. RAG-friendly chunks routed from
 │                                SKILL.md / POWER.md "named waste pattern" rows
 ├── mcp_server/            <- `cloud-finops-mcp` PyPI package (six MCP tools,
-│                             faceted retrieval over references + playbooks)
+│                             faceted retrieval over references + playbooks;
+│                             stdio + streamable-HTTP transports; MCP Apps
+│                             `ui://cloud-finops/playbook-viewer` resource)
 ├── scripts/               <- `fcp-coverage.sh` (parses FCP frontmatter, emits
-│                             `fcp-coverage.md` matrix)
+│                             `fcp-coverage.md` matrix) plus five CI guards run by
+│                             the `CI` workflow: check-artefact-size,
+│                             check-docs-drift, check-llms-txt,
+│                             check-marketplace-version, check-skill-description
 ├── fcp-coverage.md        <- Generated FCP capability coverage matrix (22 caps)
 ├── .gitattributes         <- Force LF on *.sh for Windows checkouts
 └── pipeline/              <- Content update pipeline (gitignored, private)
-    ├── run_scan.py        <- Weekly scan entry point
-    ├── run_apply.py       <- Review and apply entry point
+    ├── run_scan.py        <- Fortnightly scan entry point
+    ├── run_apply.py.FROZEN <- Review and apply entry point, frozen since the
+    │                          May 2026 truncation incident (see Roadmap P1)
+    ├── run_report.py      <- Per-run report rendering
+    ├── smoke_test.py      <- Real-API smoke test, run before any batch
     ├── config.yaml        <- Pipeline configuration
-    ├── sources.yaml       <- 29 content sources (RSS, pricing pages, blogs)
+    ├── sources.yaml       <- ~30 content sources (RSS, pricing pages, blogs)
+    ├── MONTHLY_WORKFLOW.md <- Operating doctrine for a batch (maintainer-local)
+    ├── pipeline-audit-2026-05.md / pipeline-harden-plan.md  <- Phase-1 forensics
     ├── scanner/           <- Fetcher + Sonnet-based classifier
     ├── proposer/          <- CHANGES.md report generator
     ├── applier/           <- Opus-based diff generator and file editor
     ├── alerter/           <- Gmail draft builder
-    └── state/             <- Runtime state (scan results, history)
+    ├── tests/             <- Unit tests over the guard rails
+    └── state/             <- Runtime state (scan results, history, runs/)
 ```
 
 ---
@@ -121,6 +138,17 @@ detect silent staleness in figures already sitting in the reference files,
 which is how the June 2025 AWS GPU price cuts went uncorrected for 14 months
 (fixed in PR #129). Procedure and rotation table in
 `pipeline/MONTHLY_WORKFLOW.md`.
+
+**Scope reduction (2026-08-17).** The re-verification pass exists because absolute
+figures sat in the reference files with nothing to correct them. The dated-price
+rule (PR #141) and the figure purge (PR #142) remove most of that surface: LLM
+token rates are now expressed as ratios and multipliers routed to the AI Pricing
+Hub, and the figures that remain (SaaS seat prices, storage and egress rates,
+which the hub does not serve) carry an inline as-of date. The rotation still
+matters for those, but the pass is now a check on a short dated list rather than
+a hunt across every reference. When updating the rotation table, verify the
+*dates* on the remaining banners rather than re-pricing tables that no longer
+carry absolute rates.
 
 The pipeline is human-in-the-loop: nothing is changed automatically. Every
 proposed update goes through preview, approve/reject, and a guard-railed
@@ -240,7 +268,9 @@ achievable for files >1500 lines without manual intervention.
 
 What the session established:
 - **Cadence dropped to monthly** (was twice-monthly). Each run takes 2-4
-  hours of focused review; twice-monthly was unsustainable.
+  hours of focused review; twice-monthly was unsustainable. *Superseded on
+  2026-08-10 - the cadence went back to twice-monthly. See the Content update
+  pipeline section above for the current schedule.*
 - **Architecture: FIND/REPLACE plain-text edits**, not whole-file rewrites
   and not JSON tool-use hunks. Whole-file rewrites hit Opus's 32K output
   token ceiling on big files and silently truncated. Tool-use hunks failed
@@ -260,11 +290,14 @@ What the session established:
   - Preview-mode guard rails - `_validate_content` runs against the
     proposed content before showing it as a diff, so unsafe proposals
     print "REJECTED by guard rail" instead of a 1000-line broken diff.
-- **Big files are at the edge of the auto-edit envelope.** `finops-aws.md`
-  (2657 lines) and `finops-azure.md` (~3000 lines) routinely produce
-  guard-rail rejections or anchor failures for non-additive changes.
-  Structural changes to these files need manual integration. Additive
-  edits (new subsection, new note) work fine.
+- **Big files are at the edge of the auto-edit envelope.** At the time this
+  meant `finops-aws.md` (2,657 lines) and `finops-azure.md` (~3,000 lines),
+  which routinely produced guard-rail rejections or anchor failures for
+  non-additive changes. The August 2026 split (see Closed gaps) removed both
+  from that band; the largest files are now `finops-azure.md` (~1,800 lines)
+  and `finops-aws-patterns.md` (~1,470). Treat roughly 1,500 lines as the
+  threshold above which structural changes need manual integration. Additive
+  edits (new subsection, new note) work fine at any size.
 
 The pipeline now sits in a sustainable operating shape. Future work is
 about *simplification* (reducing the manual review surface), not adding
@@ -379,10 +412,12 @@ GitHub issues, which track in-flight work.
      validates fetch results (HTTP status, content-type, minimum payload
      length) so a 200-with-empty-body cannot become a "this source has no
      news" classification; `proposer/` validates that proposed CHANGES.md is
-     well-formed before write; the `Anthropic` API calls in
-     `applier/file_updater.py` switch to the structured output (tool-use)
-     pattern so the model returns a JSON object with explicit fields rather
-     than free-form markdown that the Python code parses with regex. Every
+     well-formed before write. **The third target originally listed here -
+     switching `applier/file_updater.py` to the structured-output (tool-use)
+     pattern - is withdrawn.** It was attempted and rolled back on 2026-05-15
+     when Opus regressed to legacy XML format under `tool_choice`; the shipped
+     architecture is plain-text FIND/REPLACE blocks with a regex parser (see
+     the 2026-05-15 lessons above). Do not resurrect it. Every
      module produces a per-run structured report (one JSON file per run,
      archived under `pipeline/state/runs/<timestamp>/`) so post-hoc audit
      does not depend on stdout scrolling. Add ratchets: secrets handling
@@ -427,7 +462,7 @@ GitHub issues, which track in-flight work.
 - **WasteLine extension to Azure and GCP.** `finops-waste-detection-playbooks.md` covers the
   eight-category waste taxonomy and references the WasteLine appliance for AWS automation;
   Azure and GCP coverage currently routes to the in-cloud pattern catalogues
-  (`finops-azure.md` 48-pattern, `finops-gcp.md` 26-pattern). When WasteLine ships Azure and
+  (`finops-azure-patterns.md`, `finops-gcp.md`). When WasteLine ships Azure and
   GCP providers, update the operational tooling section to reflect the broader coverage and
   remove the "for Azure and GCP, see in-cloud catalogues" caveat.
 
@@ -600,7 +635,7 @@ These files shipped during the white-space analysis follow-up (PRs #48, #50, #51
   as it is pipeline damage.
 
 - YAML FCP frontmatter pass across all 22 pre-existing references (PR #53)
-- `skills/cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - 23 RAG-friendly
+- `skills/cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - RAG-friendly
   named-pattern playbooks (`<scope>-<pattern>.md`, ~2-3KB each,
   Problem/Symptoms/Detection/Fix/Anti-pattern/See also format) covering AWS (incl. SageMaker + GPU), Azure, GCP, and cross-cloud waste patterns.
   Routed from SKILL.md and POWER.md "named waste pattern" rows
@@ -618,7 +653,8 @@ is how well they follow the structure and avoid hallucinating billing rules.
 - **Claude** (Code, .ai, API) - reads SKILL.md natively, no extra configuration needed
 - **Kiro IDE** - reads POWER.md natively
 - **GPT, Gemini, other models** - inject the reference files as context and add the
-  response contract from INSTALLATION.md (Option 6) to the system prompt
+  response contract from INSTALLATION.md ("API integration (system-prompt injection)" ->
+  "Recommended response contract") to the system prompt
 
 The response contract ensures consistent output structure (Context, Recommendation,
 Metrics, Business impact) and prevents models from inventing pricing figures or
@@ -813,7 +849,8 @@ Good test patterns:
       (must match; CI-gated by `scripts/check-marketplace-version.sh` via the
       `marketplace version in sync` workflow), `mcp_server/pyproject.toml`.
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
-      reference file count and topic list (can ride the release PR)
+      topic list (can ride the release PR). It carries no reference count by design -
+      see the no-hardcoded-counts rule above.
 - [ ] SKILL.md description stays under 1024 characters (CI-gated by
       `scripts/check-skill-description.sh`, which also warns above 950 so the
       ceiling is visible before it is hit)

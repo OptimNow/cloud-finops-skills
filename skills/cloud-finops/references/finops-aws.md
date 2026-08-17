@@ -256,10 +256,14 @@ their own operational discipline.
 SageMaker real-time endpoints and notebook instances are billed at the
 underlying instance hourly rate **as long as they are provisioned**,
 whether traffic flows through them or not. This differs from
-consumption-based services like Lambda or Bedrock on-demand. A small
-endpoint at `ml.m5.xlarge` costs ~$170/month if left running; a GPU
-endpoint at `ml.g4dn.xlarge` is ~$540/month; a `p4d.24xlarge` endpoint
-is ~$27,500/month. Forgotten POC endpoints, never-decommissioned A/B
+consumption-based services like Lambda or Bedrock on-demand. What makes this
+expensive is the spread: idling a small `ml.m5.xlarge` endpoint costs low
+hundreds of dollars a month, a `ml.g4dn.xlarge` GPU endpoint a few times that,
+and a `p4d.24xlarge` endpoint is in the tens of thousands - roughly two orders
+of magnitude between the cheapest and the most expensive thing you can forget
+to switch off (indicative, August 2026; pull current rates from the AWS
+pricing API or <https://optimtoken.optimnow.io> before quoting a number).
+Forgotten POC endpoints, never-decommissioned A/B
 variants, and notebook instances left `InService` over a weekend are the
 two highest-density waste patterns in any account running SageMaker.
 
@@ -635,6 +639,11 @@ bundle CDN, WAF, Route 53, CloudWatch Logs ingest, ACM, CloudFront Functions and
 S3 storage credits into a single monthly price, removing the bill variance that
 made CloudFront costs hard to forecast.
 
+> *Plan prices and allowances below are list values as of August 2026. The durable content
+> in this section is the shape of the trade-off - what each tier locks behind it, where the
+> request ceiling bites before the bandwidth one, what the plan does not include - not the
+> specific dollar amounts. Verify against the CloudFront pricing page before quoting.*
+
 ### Tier summary
 
 | Plan | Monthly cost | Data transfer out | Requests | S3 credit | WAF rules | Cache behaviours |
@@ -830,7 +839,8 @@ original S3 bucket as durable backing store.
 
 ### Pricing mechanics
 
-Two cost dimensions on top of the underlying S3 bucket:
+Two cost dimensions on top of the underlying S3 bucket (us-east-1 list rates as of
+August 2026 - verify against the AWS pricing page before using them in a model):
 
 | Dimension | Rate |
 |---|---|

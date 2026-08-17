@@ -143,12 +143,12 @@ per million tokens at 100% utilization.
 **The result may be higher than pay-as-you-go**, even at full utilization. In that case,
 provisioned capacity is a performance and SLA purchase, not a cost-saving one.
 
-| Model | Standard input | Provisioned input (derived) | Delta at 100% utilization |
-|---|---|---|---|
-| GPT-5 | $1.25/MTok | ~$2.08/MTok | +67% |
-| GPT-4.1 | $2.00/MTok | ~$2.55/MTok | +27% |
+| Model | Provisioned vs standard input, at 100% utilization |
+|---|---|
+| GPT-5 | +67% |
+| GPT-4.1 | +27% |
 
-*Sourcing note:* the provisioned $/MTok figures are **derived estimates** from a
+*Sourcing note:* these deltas are **derived estimates** (observed August 2026) from a
 FinOps Foundation working-group analysis, not Microsoft-published rates - Microsoft
 prices PTUs only in $/PTU/hour, and the conversion depends on throughput assumptions
 and on which price point (hourly vs 1-month vs 1-year reservation) is used. Treat

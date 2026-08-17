@@ -404,29 +404,28 @@ whether failure is environment-changing, per use case, before funding.
 Treat model selection like instance rightsizing. Defaulting to the largest or latest model
 for every feature is the AI equivalent of running all workloads on ml.p4d.24xlarge.
 
-Anthropic's rate card (verified August 2026) shows the tier spread on the Claude side:
+What drives the routing decision is the **spread between tiers**, not the absolute rate.
+The spread is the durable, transferable number; the rate card behind it changes every
+few months. Tier structure as observed August 2026:
 
-| Model tier | Use case | Cost ratio | Anthropic example (per 1M tokens) |
-|---|---|---|---|
-| Small / fast (Claude Haiku 4.5) | Classification, routing, simple Q&A | 1x | $1 input / $5 output |
-| Mid-tier (Claude Sonnet) | Complex reasoning, code generation | 3x | $3 input / $15 output |
-| Large (Claude Opus 5) | Research, nuanced judgment | 5x | $5 input / $25 output |
-| Frontier (Claude Fable 5) | Hardest reasoning, high-stakes work | 10x | $10 input / $50 output |
-
-OpenAI's pricing structure (rates verified August 2026, models one generation back)
-shows a much wider spread:
-
-| Model tier | Use case | Cost ratio example | OpenAI example (per 1M tokens) |
-|---|---|---|---|
-| Small / fast (e.g. GPT-4o mini) | Classification, routing, simple Q&A | 1x | $0.15 input / $0.60 output |
-| Mid-tier (e.g. GPT-4o) | Complex reasoning, code generation | 17x | $2.50 input / $10.00 output |
-| Large (e.g. o1) | Research, nuanced judgment | 100x | $15.00 input / $60.00 output |
+| Model tier | Use case | Cost ratio vs small tier (Claude) |
+|---|---|---|
+| Small / fast (Haiku class) | Classification, routing, simple Q&A | 1x |
+| Mid-tier (Sonnet class) | Complex reasoning, code generation | 3x |
+| Large (Opus class) | Research, nuanced judgment | 5x |
+| Frontier (Fable class) | Hardest reasoning, high-stakes work | 10x |
 
 The spread is vendor-specific and compresses across generations: the Claude 3-era
 small-to-large ratio was roughly 60x, the current one is 5-10x, while OpenAI's
-mini-to-reasoning spread remains near 100x. Check the live rate card before building
-routing economics on a remembered ratio - the payoff from tiered routing depends
-directly on it.
+mini-to-reasoning spread remains near 100x. A vendor whose spread is 100x rewards
+tiered routing far more than one at 5x, and that alone can decide whether the routing
+harness is worth building.
+
+**Pull the live rate card before building routing economics on a remembered ratio.**
+Call a pricing tool if one is available, or check <https://optimtoken.optimnow.io>. The
+payoff from tiered routing depends directly on the current spread. For the Claude
+per-model rate structure, see `finops-anthropic.md` - and treat the figures there as
+illustrative, not as a quotable rate card.
 
 Implement tiered routing: classify query complexity first (cheap), then route to the
 appropriate model. Simple queries to small models, complex queries to large models.

@@ -40,9 +40,10 @@ provides access to Google's own models (Gemini family) and selected third-party 
 | Region | Some models are available only in specific regions |
 
 **Key cost driver:** output tokens are billed at 4-8x the input rate on current
-Gemini SKUs (Gemini 2.0 Flash $0.15/$0.60 per MTok = 4x; Gemini 2.5 Pro $1.25/$10 =
-8x). High output-ratio workloads (agentic tasks, long-form generation) carry
-disproportionately higher costs.
+Gemini SKUs (Flash at 4x, Pro at 8x, as of August 2026). High output-ratio workloads
+(agentic tasks, long-form generation) carry disproportionately higher costs, and the
+multiplier is the number to size against - it has been more stable than the rates
+themselves.
 
 ---
 
@@ -64,8 +65,8 @@ No minimum spend, no upfront commitment.
 | Model family | Relative cost tier | Notes |
 |---|---|---|
 | Gemini Flash-Lite | Low | Cheapest tier, high-volume simple tasks |
-| Gemini Flash | Low-Mid | High throughput, cost-optimised (e.g. 2.0 Flash $0.15/$0.60 per MTok) |
-| Gemini Pro | High | Complex reasoning, multimodal (e.g. 2.5 Pro $1.25/$10 per MTok) |
+| Gemini Flash | Low-Mid | High throughput, cost-optimised |
+| Gemini Pro | High | Complex reasoning, multimodal; roughly an order of magnitude above Flash on input |
 | Anthropic Claude Haiku | Low | Available via Vertex Model Garden |
 | Anthropic Claude Sonnet | Mid | Available via Vertex Model Garden |
 | Anthropic Claude Opus | High | Available via Vertex Model Garden |
@@ -250,9 +251,10 @@ the pricing shape differs (verified August 2026):
 - Cache write: charged at **standard input-token rates** - unlike Anthropic and
   Bedrock, there is no write premium.
 - Cache **storage**: explicit caches additionally bill per hour the cache is held,
-  roughly $1.00-$4.50 per 1M cached tokens per hour depending on model. This is
-  the cost component to watch - a large cache held for hours can outweigh the read
-  savings if traffic is thin.
+  at a per-1M-cached-tokens-per-hour rate that varies several-fold across models
+  (roughly $1.00-$4.50 as of August 2026 - verify current rates before modelling).
+  This is the cost component to watch, and the one most often missed: a large cache
+  held for hours can outweigh the read savings if traffic is thin.
 - Cache hit (read): 90% off the standard input rate on 2.5-generation and later
   models (75% on 2.0-era models).
 - TTL: configurable cache lifetime.

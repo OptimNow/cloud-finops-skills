@@ -43,8 +43,9 @@ are handled through Azure.
 | Image / audio | Billed in units (images per resolution, audio per second) - separate from tokens |
 
 **Key cost driver:** output tokens are billed at 4-8x the input rate on current
-Azure OpenAI models (GPT-4.1 $2/$8 per MTok = 4x; GPT-5 $1.25/$10 = 8x). High
-output-ratio workloads carry disproportionately higher costs.
+Azure OpenAI models (GPT-4.1 at 4x, GPT-5 at 8x, as of August 2026). High
+output-ratio workloads carry disproportionately higher costs, and the multiplier
+matters more than the headline input rate when you size a workload.
 
 ### Deployment Locality
 
@@ -87,12 +88,16 @@ Standard pricing is per-million tokens, billed per API call. No upfront commitme
 | o3-mini | Mid | Reasoning model, cost-optimised |
 | o3 | High | Full reasoning model |
 
-Representative pricing (verify against current Azure pricing documentation):
+The rate *structure* is what to plan against - the multipliers below have been stable
+while the absolute rates have not (structure as of August 2026):
 
-| Model | Standard input | Cached input | Standard output |
-|---|---|---|---|
-| GPT-5 | $1.25/MTok | $0.125/MTok | $10.00/MTok |
-| GPT-4.1 | $2.00/MTok | $0.50/MTok | $8.00/MTok |
+| Model | Cached input vs standard input | Output vs standard input |
+|---|---|---|
+| GPT-5 | 0.1x (90% discount) | 8x |
+| GPT-4.1 | 0.25x (75% discount) | 4x |
+
+For the current absolute rates, use the Azure pricing documentation or a live pricing
+tool (<https://optimtoken.optimnow.io>) rather than a figure remembered from this file.
 
 ### Provisioned vs standard pricing - hourly PTU vs reservation-discounted PTU
 
@@ -330,7 +335,7 @@ highest ROI for the effort.
 ### Prompt caching
 
 Azure OpenAI supports prompt caching. The cached-input discount is **model-dependent**,
-not a flat rate: roughly 90% on GPT-5 ($0.125 cached vs $1.25 standard input), 75% on
+not a flat rate: roughly 90% on GPT-5, 75% on
 GPT-4.1, ~50% on GPT-4o, and up to 100% on Provisioned deployments. Newer model
 generations may also charge for cache **writes** - check the per-model pricing page
 rather than assuming reads-only billing. Effective for:
