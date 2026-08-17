@@ -363,6 +363,62 @@ Source: https://github.com/OptimNow/cloud-finops-skills/tree/main/mcp_server
 
 ---
 
+### Companion connector: OptimNow AI Pricing Hub (optional)
+
+This skill deliberately does not carry current price figures. Billing mechanics are
+durable and belong in the reference files; absolute prices are volatile and go stale
+inside a packaged skill within weeks. See "Price figures" in `SKILL.md` for the rule.
+
+The AI Pricing Hub is where those figures live: <https://optimtoken.optimnow.io>. The
+website is usable on its own and needs no setup. Adding its MCP connector lets the model
+fetch a figure mid-answer instead of telling the user to go and look it up.
+
+**It is a remote server, so there is nothing to install.** Point your client at the
+endpoint:
+
+```
+https://ai-pricing-hub-mcp-9604f763.alpic.live/
+```
+
+Claude Desktop / Claude Code (`claude_desktop_config.json` or `.mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "ai-pricing-hub": {
+      "command": "npx",
+      "args": ["mcp-remote", "https://ai-pricing-hub-mcp-9604f763.alpic.live/"]
+    }
+  }
+}
+```
+
+On Windows, wrap the command: `"command": "cmd"`, `"args": ["/c", "npx", "mcp-remote", "<url>"]`.
+
+**Three tools (all read-only):**
+
+- `compare-llm-models(provider?, category?, openness?, capability?, maxInputPrice?, maxOutputPrice?, minElo?, useCasePreset?, volumePreset?, limit?)` - model comparison by price, quality (ELO), and efficiency, with list and cache/batch-optimised cost
+- `estimate-llm-cost(modelName?, useCasePreset?, monthlyVolume?, customInputTokens?, customOutputTokens?)` - per-request and monthly cost for a model against a use-case token profile
+- `compare-compute-pricing(provider?, category?, processor?, useCase?, minVCPUs?, maxVCPUs?, minMemory?, maxMemory?, sortBy?, limit?)` - instance pricing across AWS, Azure, GCP, DigitalOcean, OCI, OVH, and Alibaba, including spot, Savings Plan, and reserved rates
+
+**Read the provenance block before quoting anything it returns.** Every response carries
+one, and it is the thing that makes the dated-price rule workable:
+
+| Field | Why it matters |
+|---|---|
+| `provenance.tier` | `1` = fetched live from optimtoken.optimnow.io. `2` = served from a committed static snapshot because the upstream was unreachable |
+| `provenance.dataAsOf` / `upstreamTimestamp` | The as-of date to put next to the figure |
+| `provenance.notice` | Present on tier 2, and states plainly that the pricing is stale, how old the snapshot is, and which filters were *not* applied |
+
+A tier-2 response is still usable - it is a dated snapshot, not a guess - but it must be
+quoted as one. Do not present a tier-2 figure as a current price, and note that on tier 2
+the compute catalogue is a subset of the live one and carries no region dimension, so a
+region filter silently does not apply and a narrow query can come back empty.
+
+Source: https://github.com/OptimNow/ai-pricing-hub-mcp
+
+---
+
 ## Updating
 
 ```bash
@@ -483,6 +539,10 @@ PRICE FIGURES
   structure) with confidence. Date every absolute number.
 - Never interpolate a missing price from a neighbouring model, a previous generation,
   or another region. If the figure is not available, say so.
+- If the pricing tool returns a "provenance" block, read it first. tier 1 = fetched
+  live; tier 2 = a dated static snapshot served because the upstream was unreachable.
+  Quote a tier-2 figure as a dated snapshot, never as a current price, and treat an
+  empty tier-2 result as possibly degraded data rather than as "no match".
 
 OUTPUT FORMAT
 Use headers:
