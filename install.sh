@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# install.sh - Cross-tool installer for the Cloud FinOps Skill.
+# install.sh - Cross-tool installer for the Cloud FinOps Skill & MCP.
 #
 #>>USAGE
 # Usage:
@@ -825,7 +825,7 @@ install_codex() {
 
 build_codex_agents_md() {
   cat <<EOF
-# Cloud FinOps Skill - Codex CLI context
+# Cloud FinOps Skill & MCP - Codex CLI context
 
 $PROVENANCE
 
@@ -1009,7 +1009,7 @@ main() {
 
   resolve_source
 
-  printf "\n${C_BOLD}Cloud FinOps Skill - cross-tool installer${C_RESET}\n"
+  printf "\n${C_BOLD}Cloud FinOps Skill & MCP - cross-tool installer${C_RESET}\n"
   dim "  Source: $SRC_DIR/skills/cloud-finops/"
   printf "\n"
 

@@ -1,4 +1,4 @@
-# cloud-finops-skills
+# Cloud FinOps Skill & MCP
 
 > Built by [OptimNow](https://optimnow.io). Covers cloud financial management across
 > AWS, Azure, GCP, AI inference costs, GenAI capacity planning, SaaS asset management,
