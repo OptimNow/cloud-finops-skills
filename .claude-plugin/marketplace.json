@@ -5,7 +5,7 @@
     "url": "https://optimnow.io"
   },
   "metadata": {
-    "description": "Cloud Financial Management references and tooling by OptimNow.",
+    "description": "Cloud FinOps Skill & MCP by OptimNow: reference library, named-pattern playbooks, and a queryable MCP server.",
     "version": "1.29.0"
   },
   "plugins": [

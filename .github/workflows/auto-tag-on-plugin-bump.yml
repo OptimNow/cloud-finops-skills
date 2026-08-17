@@ -184,7 +184,7 @@ jobs:
           files: ${{ steps.build_zip.outputs.zip_name }}
           generate_release_notes: true
           body: |
-            ## Cloud FinOps Skill ${{ steps.read_version.outputs.tag }}
+            ## Cloud FinOps Skill & MCP ${{ steps.read_version.outputs.tag }}
 
             The attached `cloud-finops-${{ steps.read_version.outputs.tag }}.zip` is the skill bundle for upload into Claude Desktop / claude.ai (Settings -> Skills -> Upload).
 

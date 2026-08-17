@@ -1,4 +1,4 @@
-# Cloud FinOps Skill - by OptimNow
+# Cloud FinOps Skill & MCP - by OptimNow
 
 > Expert Cloud FinOps knowledge for AI agents. Model-agnostic: works with Claude, GPT, Gemini, or any LLM.
 
