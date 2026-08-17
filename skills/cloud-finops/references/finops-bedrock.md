@@ -39,9 +39,9 @@ through a unified API.
 | Batch inference | Asynchronous processing at discounted rates |
 
 **Key cost driver:** output tokens are billed at roughly 4-5x the input rate on
-current Bedrock models (4x on Amazon Nova, 5x on Claude - e.g. Claude Sonnet $3/$15
-per MTok). Workloads with high output ratios (agentic tasks, long-form generation)
-carry disproportionately higher costs.
+current Bedrock models (4x on Amazon Nova, 5x on Claude, as of August 2026).
+Workloads with high output ratios (agentic tasks, long-form generation) carry
+disproportionately higher costs. Size against the multiplier, not the input rate.
 
 ---
 

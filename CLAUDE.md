@@ -122,6 +122,17 @@ which is how the June 2025 AWS GPU price cuts went uncorrected for 14 months
 (fixed in PR #129). Procedure and rotation table in
 `pipeline/MONTHLY_WORKFLOW.md`.
 
+**Scope reduction (2026-08-17).** The re-verification pass exists because absolute
+figures sat in the reference files with nothing to correct them. The dated-price
+rule (PR #141) and the figure purge (PR #142) remove most of that surface: LLM
+token rates are now expressed as ratios and multipliers routed to the AI Pricing
+Hub, and the figures that remain (SaaS seat prices, storage and egress rates,
+which the hub does not serve) carry an inline as-of date. The rotation still
+matters for those, but the pass is now a check on a short dated list rather than
+a hunt across every reference. When updating the rotation table, verify the
+*dates* on the remaining banners rather than re-pricing tables that no longer
+carry absolute rates.
+
 The pipeline is human-in-the-loop: nothing is changed automatically. Every
 proposed update goes through preview, approve/reject, and a guard-railed
 execute pass before touching any reference file.

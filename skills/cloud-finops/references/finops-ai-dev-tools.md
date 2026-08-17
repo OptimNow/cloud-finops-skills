@@ -85,6 +85,9 @@ in detail provides a template for evaluating any seat + usage tool.
 
 Cursor has two cost layers: a fixed subscription and variable usage-based token charges.
 
+*Seat prices below are list price as of August 2026. This category reprices its tiers
+several times a year - check the vendor's pricing page before quoting a figure.*
+
 | Plan | Seat cost | Included usage | Overage billing |
 |---|---|---|---|
 | Hobby (free) | $0 | Limited requests and completions | Not available |
@@ -109,7 +112,8 @@ variable. The range is wide:
   the routing mix rather than a fixed figure
 - **First-party models** (Composer, Grok variants): included in the plan's "Cursor
   Models" pool with no separately published per-token rate
-- **Premium models** (e.g. the Claude Opus family): $5.00/MTok input, $25.00/MTok output
+- **Premium models** (e.g. the Claude Opus family): billed through at the provider's
+  published per-token rate, so the cost follows the model's own rate card
 
 A 10-50x gap exists between the cheapest and most expensive models available in Cursor.
 Even small shifts in model distribution across a team show up on the invoice fast.
@@ -156,6 +160,8 @@ Claude Code is a terminal-based coding agent built by Anthropic. It has two acce
 each with a different billing model.
 
 ### Subscription access
+
+*List price as of August 2026 - verify on the vendor's pricing page before quoting.*
 
 | Plan | Cost | What you get |
 |---|---|---|
@@ -264,6 +270,8 @@ billing.
 
 ### GitHub Copilot
 
+*List price as of August 2026 - verify on the vendor's pricing page before quoting.*
+
 | Plan | Seat cost | Notes |
 |---|---|---|
 | Free | $0 | Limited completions |
@@ -273,7 +281,8 @@ billing.
 | Business | $19/seat/month | Admin controls, audit logs, IP indemnity |
 | Enterprise | $39/seat/month | Requires GH Enterprise Cloud ($21/seat/month extra); ~3,900 credits/user |
 
-Overage charges apply at $0.04 per premium request beyond the monthly allocation.
+Overage beyond the monthly allocation used to be charged at a flat $0.04 per premium
+request. That rate is retired - see the transition note below before quoting it.
 
 **GitHub AI Credits - transition date passed 1 June 2026.** GitHub moved Copilot
 overage from the fixed `$0.04 per premium request` rate to usage-based billing in
@@ -307,6 +316,8 @@ Windsurf overhauled its pricing in March 2026, retiring the credit system in fav
 daily/weekly usage quotas, and rebranded to **Devin Desktop** in June 2026 (windsurf.com
 now redirects to devin.ai - expect the vendor name change to surface in invoices and
 SaaS-management inventories).
+
+*List price as of August 2026 - verify on the vendor's pricing page before quoting.*
 
 | Plan | Cost | Usage model | Notes |
 |---|---|---|---|
@@ -397,9 +408,10 @@ less per request.
 
 ### For BYOK tools (Claude Code, Codex)
 
-**Model selection** - Sonnet 4.6 at $3/$15 per MTok vs Opus 4.6 at $5/$25 for Claude Code.
-codex-mini at $1.50/$6 vs GPT-5 at $1.25/$10 for Codex. Choose the model that matches the
-task complexity. Default to the more efficient model and escalate only when needed.
+**Model selection** - the mid tier runs at roughly 0.6x the large tier on the Claude side,
+and the gap between a mini and a frontier model on the OpenAI side is wider still. Choose
+the model that matches the task complexity, default to the more efficient one, and escalate
+only when needed. Pull the current rates before quantifying the saving.
 
 **Prompt caching** (Anthropic) - cache reads cost 0.1x the base input price. Cache writes
 cost 1.25x (5-minute TTL) or 2x (1-hour TTL). For repetitive workflows with stable system
@@ -511,12 +523,18 @@ becomes a cost problem when:
 
 ---
 
-## Pricing comparison (verified August 2026)
+## Pricing comparison
+
+> *Seat prices are list price as of August 2026. They are the most frequently repriced
+> figures in this file - treat the table as a shape comparison (who charges for what),
+> not as a quotable rate card, and verify against each vendor's pricing page. For the
+> per-token rates behind the BYOK rows, use a live source such as
+> <https://optimtoken.optimnow.io>.*
 
 | Tool | Type | Seat cost | Token / usage model | Enterprise option | Proxy-compatible |
 |---|---|---|---|---|---|
 | **Cursor** | Seat + usage | $20 (Pro) / $40 (Teams Standard) / $120 (Teams Premium) | Usage pool per plan + per-token overage at model rates | Yes (custom) | No (vendor-mediated) |
-| **Claude Code** | BYOK or subscription | $20 (Pro) / $100 (Max 5x) / $200 (Max 20x) | API key: $1-$25/MTok depending on model | Via Anthropic Enterprise | Yes (API key mode) |
+| **Claude Code** | BYOK or subscription | $20 (Pro) / $100 (Max 5x) / $200 (Max 20x) | API key: per-token at current Claude-model rates (see `finops-anthropic.md` for the rate structure) | Via Anthropic Enterprise | Yes (API key mode) |
 | **OpenAI Codex** | BYOK or subscription | $20 (ChatGPT Plus) and up | API key: per-token at current Codex-model rates (see OpenAI pricing page) | Via OpenAI Enterprise | Yes (API key mode) |
 | **GitHub Copilot** | Seat + usage | $10 (Pro) / $100 (Max) / $19 (Business) / $39 (Enterprise) | AI-credit overage priced on underlying model cost (legacy $0.04/request retired June 2026) | Yes ($60/seat total with GH Enterprise Cloud) | No (vendor-mediated) |
 | **Windsurf (Devin Desktop)** | Seat + usage | $20 (Pro) / $200 (Max) / $40 (Teams) | Daily/weekly quota + API-priced overage (credits retired March 2026) | Yes (custom) | No (vendor-mediated) |
