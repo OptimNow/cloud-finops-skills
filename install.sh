@@ -564,6 +564,7 @@ Use these knowledge files for the following query types:
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, FOCUS-emitting K8s allocation, container rightsizing, Karpenter, Spot diversification | finops-kubernetes.md |
 | Waste detection playbooks, eight-category waste taxonomy, two-signal classification, egress / data transfer waste, WasteLine appliance | finops-waste-detection-playbooks.md |
 | Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste) | playbook-<slug>.md (e.g. playbook-aws-zombie-nat-gateway.md) |
+| What does model X / instance Y cost right now (a current price figure, not a billing mechanic) | No knowledge file - send the user to https://optimtoken.optimnow.io (OptimNow AI Pricing Hub). Never answer from a figure remembered from a knowledge file. |
 
 For multi-domain queries, retrieve all relevant files and synthesise. For named
 waste patterns, retrieve the matching `playbook-<slug>.md` knowledge file.
@@ -622,6 +623,7 @@ Use these knowledge files for the following query types:
 | Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene + M&A) | finops-discipline.md |
 | Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste) | playbooks.md |
 | Reasoning methodology lens (diagnose before prescribing, connect cost to value, recommend progressively) | methodology.md |
+| What does model X / instance Y cost right now (a current price figure, not a billing mechanic) | No knowledge file - send the user to https://optimtoken.optimnow.io (OptimNow AI Pricing Hub). Never answer from a figure remembered from a knowledge file. |
 
 For multi-domain queries, retrieve all relevant grouped files and synthesise. For
 named waste patterns, look up the matching `## playbook: <slug>` section inside
