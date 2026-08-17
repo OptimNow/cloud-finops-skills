@@ -461,14 +461,26 @@ GitHub issues, which track in-flight work.
   section above and should produce a follow-up Lessons learned entry
   describing the un-freeze evidence.
 
-- **Host `cloud-finops-mcp` on Alpic.** The decision to deploy remotely was taken on
-  2026-08-16 on distribution grounds alone (let a non-technical user paste a URL into
-  claude.ai instead of installing a PyPI package), explicitly *not* on interactive
-  rendering - see the MCP Apps lesson above for why that is allowlisted rather than
-  earned. `alpic.json` and the build contract landed with this entry; what remains is
-  the account-side work: connect the repo in the Alpic UI, set the root directory to the
-  repo root, deploy, then add the resulting URL to README.md and INSTALLATION.md next to
-  the `pip install` path.
+- **Host `cloud-finops-mcp` on Alpic - DONE (2026-08-17).** Live at
+  <https://cloud-finops-skills-590a051d.alpic.live/mcp>, published in README.md,
+  INSTALLATION.md and the `remotes` block of `server.json`. The decision to deploy
+  remotely was taken on 2026-08-16 on distribution grounds alone (let a non-technical
+  user paste a URL into claude.ai instead of installing a PyPI package), explicitly
+  *not* on interactive rendering - see the MCP Apps lesson above for why that is
+  allowlisted rather than earned.
+
+  **Verified against the deployed endpoint**, not just against a build log:
+  `initialize` returns `serverInfo {"name":"cloud-finops","version":"1.29.0"}` and
+  `tools/call list_references` returns `"total":33`. The reference count is the check
+  that matters - see constraint 1 below for why a deployment can come up healthy with
+  an empty catalogue.
+
+  One behavioural difference from the local run, worth knowing before writing a health
+  check: **the hosted endpoint is session-based.** A bare `tools/call` returns HTTP 400
+  even though `stateless_http = True` is set in the code; Alpic's ingress front-ends the
+  server with its own session layer. You must `initialize` first and pass the returned
+  `mcp-session-id` header on subsequent calls. Real MCP clients do this automatically;
+  a hand-rolled `curl` one-liner does not.
 
   Four things about this repo that a deployment has to respect, all verified locally
   before the config was written:
@@ -865,6 +877,43 @@ Good test patterns:
 
 ---
 
+## Cross-repo dependencies (check before every PR)
+
+Full map, including the other four repos and their own blast radius:
+[`DEPENDENCIES.md`](DEPENDENCIES.md). The short version for working *in this repo*:
+
+**Nothing downstream depends on this repo.** No other repository imports it, builds
+against it, or calls it. That makes it the safest of the five to change, and it means a
+content PR here needs no cross-repo coordination at all.
+
+**The dependencies run inward, and they are documentation.** This repo quotes other
+repos' facts in prose: MCP tool names and signatures, endpoint URLs, and the
+`provenance` field names the dated-price rule tells the model to read. Nothing verifies
+any of them. When an upstream repo changes its surface, this repo does not find out -
+the text simply becomes wrong, and the first symptom is an agent following an
+instruction that no longer matches reality.
+
+So the check is one-directional. Before merging, if the PR touches any of these:
+
+| If the PR touches | Verify against | Where it lives here |
+|---|---|---|
+| An MCP tool name, parameter, or output field of the pricing hub | `ai-pricing-hub-mcp` | INSTALLATION.md companion section; SKILL.md / POWER.md "Price figures" |
+| The `provenance` contract (tier semantics, `dataAsOf`, the stale notice) | `ai-pricing-hub-mcp` | "Price figures" rule 5, in SKILL.md, POWER.md and the INSTALLATION.md response contract |
+| An MCP tool name or parameter of the ROI calculator | `ai-roi-calculator-mcp` | INSTALLATION.md companion section |
+| A value method, an input's meaning, or a documented trap | `ai-roi-calculator` METHODOLOGY.md | `references/finops-ai-value-management.md` |
+| Any `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, server.json |
+
+Two standing rules that follow from the map:
+
+- **Never copy a formula or a rate into this repo.** Route to the tool that owns it.
+  Duplicated computation is the recurring failure mode across this family: OptimToken
+  drifted between its site and its MCP, and the ROI calculator drifted between its web
+  app and its MCP far enough to return a 7-point different ROI for the same preset.
+- **Price figures are not maintained here at all.** See the Content rules "Write
+  mechanics, not price figures" entry.
+
+---
+
 ## Pull request checklist
 
 - [ ] New reference file follows the `finops-{domain}.md` naming convention
@@ -915,6 +964,10 @@ Good test patterns:
 - [ ] SKILL.md description stays under 1024 characters (CI-gated by
       `scripts/check-skill-description.sh`, which also warns above 950 so the
       ceiling is visible before it is hit)
+- [ ] **Cross-repo impact checked.** If the PR quotes another OptimNow repo's tool
+      names, parameters, endpoint URLs, `provenance` fields, or ROI methodology, it was
+      verified against that repo. See "Cross-repo dependencies" above and
+      [`DEPENDENCIES.md`](DEPENDENCIES.md). Nothing in CI catches this class of drift
 - [ ] No em dashes in any public content
 - [ ] No sensitive or internal files included
 - [ ] Content is practical and based on how billing actually works, not on documentation summaries

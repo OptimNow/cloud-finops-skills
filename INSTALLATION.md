@@ -278,10 +278,31 @@ describing what you got in either mode.
 ./install.sh --tool mcp
 ```
 
+The MCP server exposes the references and named-pattern playbooks as queryable tools -
+useful for agents that need search-style retrieval rather than full-context injection.
+There are two ways to reach it.
+
+#### Hosted (nothing to install)
+
+```bash
+claude mcp add --transport http cloud-finops https://cloud-finops-skills-590a051d.alpic.live/mcp
+```
+
+For Claude.ai / Claude Desktop, **Settings -> Connectors -> Add custom connector** and
+paste the same URL. Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry
+pointing at it.
+
+This is the same code as the package below, deployed on Alpic and tracking `main`. Prefer
+it unless you need the server to run offline or pinned to a version.
+
+#### Local package
+
+```bash
+./install.sh --tool mcp
+```
+
 The `mcp` target prints install hint + per-client config snippets. It does not run
-`pip` for you. The MCP server is a separate Python package (`cloud-finops-mcp`) that
-exposes the references and named-pattern playbooks as queryable tools - useful
-for agents that need search-style retrieval rather than full-context injection.
+`pip` for you.
 
 **Install the server:**
 
