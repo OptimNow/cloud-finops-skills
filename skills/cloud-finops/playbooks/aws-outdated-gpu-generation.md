@@ -84,7 +84,7 @@ to enumerate live instances and tag-check ownership.
    instance is covered by a Compute Savings Plan or an EC2 Instance
    Savings Plan, migrating to a different family can strand the
    commitment. Plan the move alongside commitment refresh (see
-   `references/finops-aws.md` commitment portfolio section).
+   `references/finops-aws-commitments.md` commitment portfolio section).
 5. **Cut over** during a maintenance window, with a snapshot of the
    previous workload's performance benchmarks for rollback comparison.
 
@@ -113,8 +113,9 @@ to enumerate live instances and tag-check ownership.
   generation
 - `playbooks/aws-mig-candidate.md` - if the workload needs A100/H100
   features but only a slice
-- `references/finops-aws.md` - AWS commitment portfolio (impact of
-  RI/SP on modernisation timing), AWS GPU family map
+- `references/finops-aws-commitments.md` - AWS commitment portfolio (impact
+  of RI/SP on modernisation timing)
+- `references/finops-aws.md` - AWS GPU instance families and rightsizing
 - `references/finops-waste-detection-playbooks.md` - Category 7 (AI/ML
   inefficiency) and the "modernization" waste category
 

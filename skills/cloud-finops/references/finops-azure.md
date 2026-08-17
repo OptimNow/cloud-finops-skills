@@ -11,13 +11,16 @@ fcp_maturity_entry: "Walk"
 
 # FinOps on Azure
 
-> Azure-specific guidance covering cost management tools, commitment discounts, compute
-> rightsizing, database and storage optimisation, cost allocation, and governance.
-> Covers Cost Management exports, FOCUS exports, Azure Advisor, Reservations, Savings
-> Plans, Azure Hybrid Benefit, Azure Policy and tagging governance, AKS optimisation,
-> database optimisation (Azure SQL, Postgres/MySQL Flexible, Cosmos DB), Log Analytics
-> cost control, backup and snapshot management, storage tiering and lifecycle, and
-> networking cost.
+> Azure-specific guidance covering cost management tools, compute rightsizing, database
+> and storage optimisation, cost allocation, and governance. Covers Cost Management
+> exports, FOCUS exports, the Retail Prices API, Azure Advisor calibration, Azure Policy
+> and tagging governance, AKS optimisation, database optimisation (Azure SQL,
+> Postgres/MySQL Flexible, Cosmos DB), Log Analytics cost control, backup and snapshot
+> management, storage tiering and lifecycle, networking cost, and the EA-to-MCA
+> transition.
+>
+> Commitments (Reservations, Savings Plans, AHB, Spot, MACC) and the enumerated
+> per-service pattern catalogue live in their own files - see the routing table below.
 >
 > Distilled from OptimNow Azure FinOps engagement experience and primary Microsoft
 > sources (Azure Pricing pages, Cost Management documentation, FinOps Toolkit).

@@ -107,8 +107,9 @@ eligible OCI consumption draws down against that commitment.
   consumption stability before committing for three years.
 
 The Universal Credits / FinOps interaction mirrors the MACC framing in
-`finops-azure.md` - read that section for the full optimisation-paradox and
-operational-cadence guidance, then apply OCI-specific coverage rules.
+`finops-azure-commitments.md` - read that section for the full
+optimisation-paradox and operational-cadence guidance, then apply
+OCI-specific coverage rules.
 
 ---
 

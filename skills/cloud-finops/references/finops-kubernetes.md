@@ -20,9 +20,10 @@ fcp_maturity_entry: "Walk"
 > This file is the cross-cluster discipline (EKS, GKE, AKS). Provider-specific
 > node mechanics live in the per-cloud files: AKS in
 > `finops-azure.md` (Node Auto Provisioning, Azure Linux 2 retirement, MIG /
-> MPS / DRA for GPU partitioning), EKS in `finops-aws.md` (commitment options
-> for node groups including Karpenter integration), GKE in `finops-gcp.md`
-> (Spot VMs, Autopilot vs Standard).
+> MPS / DRA for GPU partitioning), EKS in `finops-aws.md` (node mechanics and
+> the Auto Mode vs Karpenter comparison) and `finops-aws-commitments.md`
+> (commitment options for node groups), GKE in `finops-gcp.md` (Spot VMs,
+> Autopilot vs Standard).
 
 ---
 
@@ -456,8 +457,8 @@ own. It belongs to the Platform team's budget, not the application teams'.
 - `finops-allocation-showback.md` - the upstream allocation methodology;
   K8s allocation is one source feeding the broader allocation pipeline
 - `finops-tagging.md` - tag (label) hygiene is the prerequisite
-- `finops-aws.md` - EKS-specific commitment options; Karpenter integration
-  with EC2 Savings Plans and Compute Savings Plans
+- `finops-aws-commitments.md` - EKS-specific commitment options; Karpenter
+  integration with EC2 Savings Plans and Compute Savings Plans
 - `finops-azure.md` - AKS-specific deep cuts (Node Auto Provisioning,
   Azure Linux 2 retirement, MIG / MPS / DRA for GPU partitioning)
 - `finops-gcp.md` - GKE-specific options (Spot VMs, Autopilot vs Standard,
