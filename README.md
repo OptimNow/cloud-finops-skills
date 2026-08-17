@@ -375,20 +375,47 @@ Claude Desktop / claude.ai users who prefer downloading over building locally.
 
 ### MCP server (cross-tool, search-style retrieval)
 
-For agents that want tool-style retrieval rather than full-context injection, the
-skill is also published as an MCP server (`cloud-finops-mcp` on PyPI):
+For agents that want tool-style retrieval rather than full-context injection, the skill
+is also an MCP server. Hosted, or as a PyPI package:
+
+```bash
+claude mcp add --transport http cloud-finops https://cloud-finops-skills-590a051d.alpic.live/mcp
+```
 
 ```bash
 pip install cloud-finops-mcp
 ./install.sh --tool mcp     # prints config snippets for every MCP-aware client
 ```
 
-Six tools across two surfaces. **References** (long-form provider/discipline files):
-`list_references`, `get_reference`, `find_references` (faceted by FinOps
-Capability/Phase). **Playbooks** (small named-pattern runbooks): `list_playbooks`,
-`get_playbook`, `find_playbooks` (faceted by scope / service / waste category /
-confidence). Wires into Claude Code, Cursor, Codex CLI, Windsurf, Cline, and any
-other MCP-aware client. See [mcp_server/](./mcp_server/README.md) and the
+Six read-only tools across two surfaces. The split is deliberate: the two content types
+have different shapes, and different questions attached to them.
+
+**References** - the long-form provider and discipline files. Reach for these for billing
+mechanics, commitment strategy, allocation methodology, or any reasoning that spans
+patterns.
+
+| Tool | What it answers |
+|---|---|
+| `list_references()` | What is in the library? Every reference with its FinOps Framework metadata |
+| `get_reference(name)` | Give me the full text of one |
+| `find_references(domain?, capability?, phase?, persona?, maturity?)` | Which references serve Rate Optimization, at Walk maturity, written for Engineering? |
+
+**Playbooks** - small named-pattern runbooks, one waste pattern each. Reach for these for
+"how do I detect and fix this specific thing".
+
+| Tool | What it answers |
+|---|---|
+| `list_playbooks()` | Which named patterns exist? |
+| `get_playbook(name)` | The runbook: symptoms, detection query, fix, anti-pattern |
+| `find_playbooks(scope?, service?, waste_category?, confidence?)` | Which AWS playbooks cover orphaned resources at obvious confidence? |
+
+The faceted queries are the reason this is a server and not just a folder of markdown.
+Every file carries YAML frontmatter mapping it to a FinOps Framework Capability, phase,
+persona and maturity gate, and a client that only fetches files cannot filter on any of
+it.
+
+Wires into Claude Code, Cursor, Codex CLI, Windsurf, Cline, and any other MCP-aware
+client. See [mcp_server/](./mcp_server/README.md) and the
 [INSTALLATION.md MCP section](./INSTALLATION.md#mcp-server-cross-tool).
 
 ---
