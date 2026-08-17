@@ -197,6 +197,17 @@ keywords:
   - mpp
   - agent wallets
   - cost per completed task
+  - ai roi
+  - ai business case
+  - value quantification
+  - cost displacement
+  - revenue uplift
+  - retention uplift
+  - premium monetisation
+  - realisation rate
+  - sensitivity analysis
+  - payback period
+  - break-even volume
   - current price
   - live pricing
   - token pricing
@@ -236,7 +247,7 @@ methodology questions - not for routine billing-mechanics queries.
 | OptimNow methodology, engagement approach, four pillars, FinOps strategy design, practice positioning | `references/optimnow-methodology.md` |
 | AI costs, LLM inference, token economics, agentic cost patterns, AI ROI, AI cost allocation, GPU cost attribution, GPU telemetry, DCGM metrics, "GPU utilization is misleading", tensor core activity, GPU memory bandwidth, RAG harness costs | `references/finops-for-ai.md` |
 | Agentic FinOps, true agents vs pipelines vs workflows, agentic cost anatomy, cost per completed task, cost-safe agent architecture, agent-initiated payments, x402, MPP, agent wallets | `references/finops-agentic.md` |
-| AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations | `references/finops-ai-value-management.md` |
+| AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations, AI business case, quantifying AI business value, cost displacement vs revenue uplift vs retention vs premium monetisation, realisation rate, ROI sensitivity analysis, payback, break-even volume | `references/finops-ai-value-management.md` |
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | Self-hosted vs managed AI inference, build vs buy LLM, vLLM, SGLang, llama.cpp, GPU rental, RunPod, CoreWeave, Lambda, hidden cost surface, ML-Ops maturity rubric, hybrid routing (LiteLLM, Portkey) | `references/finops-ai-self-hosted-vs-managed.md` |
 | AWS billing data, CUR, Data Exports for FOCUS 1.2, Cost Explorer, EC2/compute rightsizing, SageMaker operational FinOps, cost allocation, governance, CloudFront flat-rate plans, S3 Files, multi-org billing | `references/finops-aws.md` |

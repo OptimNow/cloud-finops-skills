@@ -2,7 +2,7 @@
 name: finops-ai-value-management
 fcp_domain: "Quantify Business Value"
 fcp_capability: "Planning & Estimating"
-fcp_capabilities_secondary: ["Forecasting", "FinOps Practice Operations"]
+fcp_capabilities_secondary: ["Forecasting", "FinOps Practice Operations", "Unit Economics"]
 fcp_phases: ["Inform", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Leadership"]
 fcp_personas_collaborating: ["Engineering", "Product", "Finance"]
@@ -329,6 +329,101 @@ intentional, attributed, and tied to outcomes the organisation has agreed to pur
 
 ---
 
+## Quantifying the value side of the business case
+
+Everything above governs *whether* to fund an AI investment. This section is about the
+number you put on the value side when you do, because that is where AI business cases
+fail. The cost side is arithmetic over token rates and harness components. The value side
+is usually a productivity claim someone estimated in a meeting, and it does not survive a
+finance review.
+
+### Pick the method from the economic mechanism, not from the use case
+
+There are four ways an AI feature actually produces money, and the right method follows
+from which one is at work. Choosing by use-case label instead of by mechanism is the most
+common structural error.
+
+| Method | The mechanism | Typical use cases |
+|---|---|---|
+| **Cost displacement** | Work a human used to do is now done without them | Support deflection, document processing, data entry |
+| **Revenue uplift** | Conversion or basket size moves | Recommendations, personalised marketing, dynamic pricing |
+| **Retention uplift** | Customers who would have churned do not | Churn prevention, proactive customer success |
+| **Premium monetisation** | Customers pay more for an AI-bearing tier | AI subscription tiers, freemium upgrades, paid add-ons |
+
+A feature can plausibly touch two of these. Model the one you can measure, and name the
+other as unquantified upside rather than folding a guess into the headline figure.
+
+### The four traps, one per method
+
+Each method has a characteristic way of being overstated. In practice these account for
+most of the gap between a business case and its realised outcome.
+
+- **Cost displacement, gross of residual review.** A deflection rate is not a saving.
+  Some proportion of AI output still needs a human to check it, and that review has a
+  cost per unit. The saving is the displaced human cost *net of* residual review cost.
+  Quoting the deflection rate alone overstates the case, and the error grows as review
+  rates rise on harder work.
+- **Revenue uplift, absolute versus relative.** A conversion rate moving from 3.0% to
+  3.2% is an absolute uplift of 0.2 percentage points, not a relative uplift of 6.67%.
+  The formulas take percentage points. Entering the relative figure inflates the value by
+  a factor of tens. This is the single most expensive input error in the category.
+  Churn reduction carries the same trap.
+- **Retention uplift, period mismatch.** Customer value is normally held annually and the
+  business case runs monthly. The annual value has to be brought to the period of the
+  calculation, and a retained customer's value accrues over their remaining life, not in
+  the month they were saved.
+- **Premium monetisation, gross of existing COGS.** Only the margin above what you were
+  already paying to serve that subscriber counts. Charging the full subscription price
+  into the value column counts infrastructure you were paying for anyway.
+
+### Realisation rate is not a quality metric
+
+Realisation rate answers "did the model produce usable output at all?" - it captures
+timeouts, errors, and empty responses. It is orthogonal to quality. An AI call can be
+counted as realised and still need human editing before use, which is what the review
+rate measures, and still fail to resolve the request, which is what the deflection rate
+measures.
+
+Collapsing these into one "accuracy" number is a frequent modelling error and it usually
+double-counts the discount: the same shortfall gets applied twice, once as realisation
+and once as review, making the case look worse than it is. Keep the three dimensions
+separate and state which one each input refers to.
+
+### Report the sensitivity, not just the point estimate
+
+A single ROI figure invites a debate about whether it is right. A sensitivity ranking
+moves the conversation to what would have to be true, which is the conversation worth
+having with a CFO.
+
+Vary four things independently and rank them by impact: volume, realisation rate, cost,
+and the value driver. The output that matters is not the optimistic and pessimistic
+bounds, it is **which variable breaks the case first**. That names the assumption to go
+and validate before committing, and it usually is not the one the room was arguing about.
+
+Two structural points to carry into the readout:
+
+- Volume dominates in cost-displacement cases, because both cost and value scale with it.
+  A case that only works at three times current volume is a forecast, not a business case.
+- Where a case is sensitive above all to the value driver, the honest reading is that it
+  rests on an unvalidated business assumption rather than on an AI capability. Stage-gate
+  it on measuring that assumption, not on building more.
+
+### Where the arithmetic lives
+
+The formulas, worked examples, and the assumptions-and-limitations section behind all of
+the above are maintained in the OptimNow
+[AI ROI Calculator](https://airoicalculator.optimnow.io) and specified in full in its
+[METHODOLOGY.md](https://github.com/OptimNow/ai-roi-calculator/blob/main/METHODOLOGY.md).
+They are deliberately not restated here: they are generated into the calculator's MCP
+server by a synchronised build with drift detection, and a copy in this file would sit
+outside that machinery and diverge.
+
+To compute a case rather than reason about one, use the calculator or its MCP connector
+(see INSTALLATION.md). Model prices feeding it come from the same live source this skill
+routes to, so the cost side carries its own as-of date.
+
+---
+
 ## See also
 
 - `finops-genai-capacity.md` - Capacity model decisions (provisioned vs shared) across providers
@@ -336,6 +431,8 @@ intentional, attributed, and tied to outcomes the organisation has agreed to pur
 - `finops-azure-openai.md` - Azure OpenAI PTU model and cost allocation
 - `finops-bedrock.md` - AWS Bedrock billing and cost attribution
 - `finops-vertexai.md` - GCP Vertex AI billing and cost allocation
+- `finops-for-ai.md` - the harness cost surface, which is the cost side of the same
+  business case (the components around the model call routinely outweigh the model call)
 
 ---
 

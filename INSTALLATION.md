@@ -419,6 +419,45 @@ Source: https://github.com/OptimNow/ai-pricing-hub-mcp
 
 ---
 
+### Companion connector: AI ROI Calculator (optional)
+
+The skill covers how to *govern* an AI investment - the Investment Council, stage gates,
+incremental funding - and, in `finops-ai-value-management.md`, how to choose and defend a
+value method. It does not compute the business case. This connector does.
+
+Hosted, nothing to install:
+
+```bash
+claude mcp add --transport http ai-roi-calculator https://ai-roi-calculator-mc-e9dd36e7.alpic.live/mcp
+```
+
+For Claude.ai / Claude Desktop, **Settings -> Connectors -> Add custom connector** and
+paste the same URL. Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry
+pointing at it.
+
+**Four tools (all read-only, no credentials):**
+
+- `calculate-roi-v4` - full ROI, payback, break-even volume, net benefit, cost breakdown
+- `lookup-model-price` - list, batch and prompt-cache prices for a model
+- `load-preset` - sensible defaults for one of 11 use-case scenarios
+- `sensitivity-analysis` - impact ranking of volume, realisation rate, cost and value at plus or minus 20%
+
+Its prices come from the same OptimToken catalogue as the pricing hub above, with the same
+tier-1 / tier-2 provenance discipline, so a figure quoted through either connector carries
+its as-of date.
+
+**Why this is a separate server and not more tools on `cloud-finops-mcp`.** The formulas
+are generated from the [AI ROI Calculator](https://github.com/OptimNow/ai-roi-calculator)
+and synchronised into the server by a build step, with CI drift detection and a
+golden-scenario suite. The web app and the server once returned a 7-point different ROI for
+the same preset, which is what that machinery now prevents. A third copy of the same
+arithmetic living in this repo would sit outside it. The full mathematical specification is
+in [METHODOLOGY.md](https://github.com/OptimNow/ai-roi-calculator/blob/main/METHODOLOGY.md).
+
+Source: https://github.com/OptimNow/ai-roi-calculator-mcp
+
+---
+
 ## Updating
 
 ```bash
