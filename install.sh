@@ -496,8 +496,14 @@ install_chatgpt() {
 
   ok "ChatGPT: instructions ($size chars) -> $instructions_path"
   ok "ChatGPT: $file_count knowledge files -> $knowledge_dir/"
+  # Warn before the ceiling, not only after it. Every routing-table row added to
+  # build_inline_instructions grows this file, and the build lands close enough to
+  # 8000 that a single new row can breach it. Same early-warning shape as
+  # scripts/check-skill-description.sh.
   if [[ $size -gt 8000 ]]; then
     warn "Instructions exceed ChatGPT's ~8000 char limit ($size chars). Manual trim needed."
+  elif [[ $size -gt 7400 ]]; then
+    warn "Instructions are $size of ~8000 chars. Little headroom - tighten a routing row before adding another."
   fi
   if [[ $file_count -gt 20 ]]; then
     warn "ChatGPT historically capped Custom GPT Knowledge at 20 files. Current build is $file_count files."
@@ -544,7 +550,7 @@ Use these knowledge files for the following query types:
 | Vertex AI pricing, Provisioned Throughput, Context Caching | finops-vertexai.md |
 | AI cost management, LLM economics, agentic patterns, ROI, methodology lens | finops-for-ai.md |
 | Agentic FinOps, agent cost anatomy, cost per completed task, cost-safe agent architecture, agent-initiated payments (x402/MPP) | finops-agentic.md |
-| AI investment governance, Investment Council, stage gates | finops-ai-value-management.md |
+| AI investment governance, Investment Council, stage gates, AI business case, value quantification methods, ROI sensitivity | finops-ai-value-management.md |
 | GenAI capacity planning, provisioned vs shared, spillover | finops-genai-capacity.md |
 | Self-hosted vs managed AI inference, build-vs-buy LLM, vLLM, GPU rental, hidden cost surface | finops-ai-self-hosted-vs-managed.md |
 | AI coding tools (Cursor, Copilot, Claude Code, Codex, Windsurf, Gemini Code Assist) | finops-ai-dev-tools.md |
