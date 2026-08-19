@@ -33,7 +33,6 @@ material it does not need:
 | A specific named waste pattern with a runnable detection query | `playbooks/aws-*.md` |
 
 ## AWS cost data foundation
-<!-- src:37b46c22605776cb -->
 
 ### Cost and Usage Report (CUR)
 
@@ -560,7 +559,6 @@ These actions typically deliver savings within 30 days with low risk.
 ---
 
 ## Database cost optimisation
-<!-- src:holori-database-optimization -->
 
 Database services often represent 20-40% of cloud spend, yet many organisations treat them as black boxes from a cost perspective. This section covers the AWS surface. For the equivalent treatments elsewhere, see "Database optimisation patterns" in `finops-azure.md` and "Databases Optimization Patterns" in `finops-gcp.md`.
 

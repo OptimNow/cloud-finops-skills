@@ -30,7 +30,6 @@ through efficiency gains - tying FinOps directly to strategic AI enablement.
 ---
 
 ## Why AI cost signals behave differently
-<!-- ref:37b46c22605776cb -->
 
 Traditional FinOps assumes a rhythm: usage happens first, costs are reported later,
 decisions follow. AI disrupts this sequence. With LLMs and agentic systems, cost is
@@ -94,7 +93,6 @@ within hours.
 > design and ~2 hours of implementation. The barrier is lower than most teams expect.
 
 ### The full AI cost surface
-<!-- ref:ai-cost-allocation-harness -->
 
 The model API invoice is the most visible AI cost. It is rarely the complete picture.
 

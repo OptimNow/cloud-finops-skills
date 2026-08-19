@@ -501,7 +501,6 @@ over 3 years is substantially higher than over 1 year.
   more than 30%, the portfolio is insufficiently diversified.
 
 ### Enterprise Discount Program (EDP)
-<!-- src:optimnow-edp-guide -->
 
 The AWS Enterprise Discount Program (EDP) - also referred to as a Private Pricing
 Agreement (PPA) - is a contractual commitment where an organisation pledges a
