@@ -836,6 +836,14 @@ window where possible.
 
 Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations
 
+**Size the first tranche at the keel commitment** - the usage level that has never
+left the water across the trailing 12 months. Below the keel, committing needs no
+forecast: that spend is already sunk. Every point of coverage above it is a bet on a
+forecast, and belongs in the phased blocks below. Re-measure the keel quarterly; it
+moves when workloads are decommissioned or migrated, not when traffic fluctuates,
+and a falling keel is an early liquidity warning - on Azure doubly so after
+1 February 2027, when the refund cap becomes the main reshaping lever.
+
 ### Phased purchasing
 
 Never buy the full commitment in a single transaction. Purchase in blocks to create
@@ -893,7 +901,7 @@ Reservation management.
 **Phased purchasing framework (quarterly example for steady consumption):**
 
 ```
-Quarter 1: Buy 20-25% of target commitment (the floor you are certain about)
+Quarter 1: Buy 20-25% of target commitment (the keel commitment - the floor you are certain about)
   -> Monitor utilisation for 30 days via Azure Advisor and Cost Management
   -> If utilisation >80%: proceed to next block
   -> If utilisation <80%: investigate before buying more

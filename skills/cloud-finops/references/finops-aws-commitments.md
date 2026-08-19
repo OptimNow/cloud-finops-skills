@@ -337,6 +337,13 @@ with no recourse. Organisations that build a diversified portfolio with staggere
 expiry dates always have a portion of their commitment approaching renewal, creating
 a natural rebalancing rhythm.
 
+**Size the first tranche at the keel commitment** - the usage level that has never
+left the water across the trailing 12 months. Below the keel, committing needs no
+forecast: that spend is already sunk. Every point of coverage above it is a bet on a
+forecast, and belongs in the phased blocks below. Re-measure the keel quarterly; it
+moves when workloads are decommissioned or migrated, not when traffic fluctuates,
+and a falling keel is an early liquidity warning.
+
 ### Phased purchasing
 
 Never buy the full commitment in a single transaction. Purchase in blocks to create
@@ -385,7 +392,7 @@ smaller decisions.
 **Phased purchasing framework (quarterly example for steady consumption):**
 
 ```
-Quarter 1: Buy 20-25% of target commitment (the floor you are certain about)
+Quarter 1: Buy 20-25% of target commitment (the keel commitment - the floor you are certain about)
   → Monitor utilisation for 30 days
   → If utilisation >80%: proceed to next block
   → If utilisation <80%: investigate before buying more

@@ -30,11 +30,18 @@ asleep.
   Cloud Monitoring
 - Tagged `env=dev` / `env=test` / `env=qa` instances have the same
   utilisation profile as production
+- Sunday and Tuesday hourly usage curves overlap (the flat-Sunday
+  signature)
 - The non-prod / prod cost ratio is > 1:3 (mature orgs are typically
   1:5 to 1:10 because non-prod is auto-stopped)
 - No team-owned automation visible in the IaC repo for stop / start
 
 ## Detection
+
+Confirm with the flat-Sunday signature before scheduling anything: a
+genuinely weekday-only workload shows a visible weekend trough, while a
+curve that is flat across Sunday and Tuesday does not. Then quantify the
+spend at stake:
 
 **AWS** - CUR over 30 days, instance-hours by environment tag:
 

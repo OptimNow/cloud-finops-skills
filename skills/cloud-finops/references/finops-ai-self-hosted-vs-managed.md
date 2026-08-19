@@ -93,7 +93,10 @@ To this you add:
 ## The hidden cost surface of self-hosting
 
 This is the part TCO calculators omit. It is also where most self-hosting projects bleed
-their savings.
+their savings. In five-layer terms (the Tokenomics Foundation stack referenced in
+`finops-for-ai.md`), self-hosting means taking ownership of L2, L3 and L4 - capacity,
+inference stack, model and quantisation - while a managed API leaves you only L5,
+routing and governance. Everything below is the operational bill for those three layers.
 
 ### Operational costs
 

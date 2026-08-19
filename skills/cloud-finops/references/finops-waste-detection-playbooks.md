@@ -401,6 +401,11 @@ work during business hours. Dev, test, and staging environments are the
 classic case. Some production workloads (batch processing, weekly
 reporting jobs) also fit.
 
+The quickest confirmation is the flat-Sunday signature: pull the
+resource's hourly usage curve for a Sunday and a Tuesday, and if the two
+are indistinguishable, nobody is switching this workload off - schedules,
+not sizing, are the fix.
+
 ### Common patterns
 
 | Pattern | Signal | Detection approach |

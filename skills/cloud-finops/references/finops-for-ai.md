@@ -57,6 +57,21 @@ Cost allocation must happen *before* the cost is created, not after the bill arr
 Organisations that wait for monthly invoices to understand AI spend are already operating
 with a structural disadvantage that compounds with every new model deployment.
 
+**Where token cost is actually determined.** Token cost is not one number but the
+output of decisions stacked across the serving path. The Tokenomics Foundation - a
+Linux Foundation project launched in 2026 to standardise AI cost management, with
+token cost telemetry in the FOCUS specification on its roadmap - decomposes it as a
+five-layer stack in *The Five-Layer Tokenomics Stack*
+(<https://www.tokeneconomics.com/projects/the-five-layer-tokenomics-stack/the-five-layer-tokenomics-stack-paper/>,
+stack concept credited to Ambud Sharma, Pinterest): L1 silicon (chip generation),
+L2 capacity (hardware selection, placement, utilisation), L3 inference stack
+(serving engine, caching, batching), L4 model and quantisation, L5 routing and
+governance (budgets, agent caps). The framing is diagnostic: a unit-cost problem
+blamed on the model (L4) often lives in utilisation (L2) or batching (L3), and the
+only layer most API consumers control is L5 - which is where this file's routing
+and governance guidance operates. The foundation is young; treat its specifications
+as roadmap until published.
+
 ---
 
 ## The four-phase AI FinOps implementation
