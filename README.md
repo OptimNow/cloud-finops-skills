@@ -418,6 +418,11 @@ Every file carries YAML frontmatter mapping it to a FinOps Framework Capability,
 persona and maturity gate, and a client that only fetches files cannot filter on any of
 it.
 
+The server serves mechanics, not current prices: any figure inside a reference body is
+illustrative and dated inline. Current prices come from the
+[AI Pricing Hub](https://optimtoken.optimnow.io) at query time - the same rule the
+skill states under "Price figures" in SKILL.md.
+
 Wires into Claude Code, Cursor, Codex CLI, Windsurf, Cline, and any other MCP-aware
 client. See [mcp_server/](./mcp_server/README.md) and the
 [INSTALLATION.md MCP section](./INSTALLATION.md#mcp-server-cross-tool).

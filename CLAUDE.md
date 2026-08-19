@@ -706,6 +706,17 @@ Two standing rules that follow from the map:
       PyPI publish and waits for the version to be visible on PyPI, because the
       registry validates the package before accepting the entry. Verify it landed
       at <https://registry.modelcontextprotocol.io/v0/servers?search=finops>.
+- [ ] **Release PR only: redeploy the hosted MCP (Alpic) after the tag, then verify
+      by calling it.** The Alpic deployment does not reliably pick up releases on its
+      own - the 2026-08-19 audit found it serving 1.29.0 content (pre price-purge)
+      while PyPI was already at 1.31.0. After the PyPI publish, trigger a redeploy on
+      Alpic, then call the hosted endpoint
+      (`https://cloud-finops-skills-590a051d.alpic.live/mcp`) and confirm it serves
+      the released content: the server's startup log names the bundle stamp
+      (`data/content_version.txt`, version + sync date, written by
+      `sync_references.py` since 1.32), or compare a `list_references` line count
+      against the tag. Do not tick this from the source alone - the audit found the
+      staleness only by calling the surface.
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
       topic list (can ride the release PR). It carries no reference count by design -
       see the no-hardcoded-counts rule above.

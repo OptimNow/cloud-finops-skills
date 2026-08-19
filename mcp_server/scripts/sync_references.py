@@ -17,17 +17,21 @@ not a runbook the agent should retrieve.
 
 from __future__ import annotations
 
+import json
 import shutil
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCES_SRC = REPO_ROOT / "skills" / "cloud-finops" / "references"
 PLAYBOOKS_SRC = REPO_ROOT / "skills" / "cloud-finops" / "playbooks"
+PLUGIN_JSON = REPO_ROOT / ".claude-plugin" / "plugin.json"
 
 DATA_ROOT = Path(__file__).resolve().parents[1] / "src" / "cloud_finops_mcp" / "data"
 REFERENCES_DEST = DATA_ROOT
 PLAYBOOKS_DEST = DATA_ROOT / "playbooks"
+STAMP_FILE = DATA_ROOT / "content_version.txt"
 
 
 def _sync(label: str, src_dir: Path, dest_dir: Path, *, skip: set[str]) -> int:
@@ -90,6 +94,45 @@ def _sync(label: str, src_dir: Path, dest_dir: Path, *, skip: set[str]) -> int:
     return copied
 
 
+def _content_version() -> str:
+    """The released version the content belongs to, from plugin.json.
+
+    plugin.json is the canonical version holder (the release train bumps it
+    and everything else follows). It is absent when building from an sdist,
+    where the repo is not around - the caller falls back to the stamp that
+    travelled with the pre-bundled data.
+    """
+    try:
+        return str(json.loads(PLUGIN_JSON.read_text(encoding="utf-8"))["version"])
+    except (OSError, KeyError, ValueError):
+        return "unknown"
+
+
+def _write_stamp(refs: int, playbooks: int) -> None:
+    """Record what was synced, so a running server can say what it serves.
+
+    The server logs this file at startup (see ``server._warm_indexes``). It
+    exists because a stale bundle is otherwise invisible from the outside:
+    the 2026-08-19 audit had to fingerprint deployments by per-file line
+    counts to discover they were serving content two releases old.
+    """
+    version = _content_version()
+    if version == "unknown" and STAMP_FILE.exists():
+        # sdist rebuild: no repo, no plugin.json - keep the stamp written at
+        # original build time rather than overwriting it with "unknown".
+        print(f"[sync_references] keeping existing stamp at {STAMP_FILE}")
+        return
+    synced_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    STAMP_FILE.write_text(
+        f"version: {version}\n"
+        f"synced_at: {synced_at}\n"
+        f"references: {refs}\n"
+        f"playbooks: {max(playbooks, 0)}\n",
+        encoding="utf-8",
+    )
+    print(f"[sync_references] wrote {STAMP_FILE} (version {version}, synced {synced_at})")
+
+
 def main() -> int:
     refs = _sync("references", REFERENCES_SRC, REFERENCES_DEST, skip=set())
     playbooks = _sync(
@@ -101,6 +144,7 @@ def main() -> int:
         # present but empty. Both would ship a server with no catalogue, so
         # the build fails here rather than at first query.
         return 1
+    _write_stamp(refs, playbooks)
     if playbooks < 0:
         # Playbooks are optional - older skill versions may not have shipped
         # them. Warn but do not fail the build.

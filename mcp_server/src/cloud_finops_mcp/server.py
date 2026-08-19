@@ -9,6 +9,7 @@ streamable HTTP (for a hosted deployment). The actual tool logic lives in
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,8 @@ from mcp.server.fastmcp import FastMCP
 from . import __version__
 from . import metadata as _metadata
 from . import tools as _tools
+
+logger = logging.getLogger(__name__)
 
 # Streamable HTTP defaults. Bind all interfaces because the only reason to run
 # this transport is to be reachable from outside the process. The port is a
@@ -48,7 +51,12 @@ mcp = FastMCP(
         "Use a playbook for 'how do I detect/fix this specific pattern' "
         "(zombie NAT, snapshot sprawl, idle ELB, etc.). Use a reference for "
         "billing mechanics, commitment strategy, allocation methodology, "
-        "or any cross-pattern reasoning."
+        "or any cross-pattern reasoning. "
+        "References carry billing mechanics, not current prices: any figure "
+        "inside is illustrative and dated inline. For a current price, use a "
+        "live pricing tool if one is available in the session, otherwise "
+        "route the user to https://optimtoken.optimnow.io (OptimNow AI "
+        "Pricing Hub) - never quote an undated figure from a reference body."
     ),
 )
 
@@ -210,16 +218,31 @@ def find_playbooks(
 
 
 def _warm_indexes() -> None:
-    """Build both content indexes before serving.
+    """Build both content indexes before serving, and say what they hold.
 
     They are lru_cached and built lazily, so without this an empty content
     bundle stays silent until the first tool call - and then answers it with an
     empty list rather than an error. The index builders log at ERROR when they
     find nothing, which surfaces in the client's MCP server log at startup
     instead of never.
+
+    The startup line also names the content version from the bundle stamp
+    (``data/content_version.txt``). A stale deployment or editable install is
+    otherwise invisible from the outside - the 2026-08-19 audit had to
+    fingerprint deployments by per-file line counts to discover they were
+    serving content two releases old.
     """
-    _metadata.get_index()
-    _metadata.get_playbook_index()
+    refs = _metadata.get_index()
+    playbooks = _metadata.get_playbook_index()
+    stamp = _metadata.content_version_summary()
+    logger.info(
+        "Serving %d references and %d playbooks (%s).",
+        len(refs),
+        len(playbooks),
+        stamp
+        or "no content_version.txt stamp - bundle synced by a pre-1.32 build "
+        "or an editable install; run scripts/sync_references.py to refresh",
+    )
 
 
 async def run() -> None:

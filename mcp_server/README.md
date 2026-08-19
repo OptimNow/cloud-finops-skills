@@ -58,6 +58,13 @@ and exact (no substring matching).
 - A **reference** answers anything broader: billing mechanics, commitment strategy,
   allocation methodology, persona-specific framings, or cross-pattern reasoning.
 
+Neither surface serves current prices. References carry billing *mechanics* -
+multipliers, commitment term structure, the shape of a break-even calculation - and
+any absolute figure inside them is illustrative and dated inline. For a current
+price, use a live pricing tool such as the
+[OptimNow AI Pricing Hub](https://optimtoken.optimnow.io) rather than a figure
+remembered from a reference body.
+
 ## Install
 
 ```bash
