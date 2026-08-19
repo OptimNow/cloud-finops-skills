@@ -53,18 +53,20 @@ REFERENCE_BROWSER_URI = "ui://cloud-finops/reference-browser"
 
 _UI_DIR = Path(__file__).resolve().parent / "ui"
 _UI_MARKERS = (
-    ("<!--BRIDGE-->", "_bridge.js"),
-    ("<!--PLAYBOOK_RENDER-->", "_playbook_render.js"),
+    ("<!--THEME_CSS-->", "_theme.css", "style"),
+    ("<!--BRIDGE-->", "_bridge.js", "script"),
+    ("<!--PLAYBOOK_RENDER-->", "_playbook_render.js", "script"),
+    ("<!--WIDGET_COMMON-->", "_widget_common.js", "script"),
 )
 
 
 def _load_ui(filename: str) -> str:
-    """Read a widget HTML file and inline the shared JS helpers it declares."""
+    """Read a widget HTML file and inline the shared JS/CSS it declares."""
     html = (_UI_DIR / filename).read_text(encoding="utf-8")
-    for marker, script_name in _UI_MARKERS:
+    for marker, asset_name, tag in _UI_MARKERS:
         if marker in html:
-            script = (_UI_DIR / script_name).read_text(encoding="utf-8")
-            html = html.replace(marker, "<script>\n" + script + "\n</script>")
+            asset = (_UI_DIR / asset_name).read_text(encoding="utf-8")
+            html = html.replace(marker, f"<{tag}>\n{asset}\n</{tag}>")
     return html
 
 

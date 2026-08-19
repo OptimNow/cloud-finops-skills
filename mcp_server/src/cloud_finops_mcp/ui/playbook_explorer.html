@@ -3,79 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <title>Playbook explorer</title>
+<!--THEME_CSS-->
 <style>
-  :root {
-    color-scheme: light dark;
-    --accent: #ACE849;            /* OptimNow chartreuse */
-    --accent-fg: #2a3510;         /* readable text on/next to the accent */
-    --fg: #1a1d23;
-    --fg-muted: #5b6370;
-    --bg: #ffffff;
-    --card-bg: #f7f8fa;
-    --border: #e2e5ea;
-    --code-bg: #eef0f3;
-    --danger: #b91c1c;
-    --badge-bg: #eef1ff;
-    --badge-fg: #3730a3;
-    --scope-aws: #b45309;
-    --scope-azure: #1d4ed8;
-    --scope-gcp: #15803d;
-    --scope-cross: #6d28d9;
-    --accent-problem: #6b7280;
-    --accent-symptoms: #b45309;
-    --accent-detection: #1d4ed8;
-    --accent-fix: #15803d;
-    --accent-antipattern: #b91c1c;
-    --accent-seealso: #6b7280;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --accent-fg: #d8f5a2;
-      --fg: #e7e9ec;
-      --fg-muted: #9aa2ad;
-      --bg: #15171c;
-      --card-bg: #1b1e24;
-      --border: #2a2e37;
-      --code-bg: #10141a;
-      --danger: #f87171;
-      --badge-bg: #232a4d;
-      --badge-fg: #b7c0ff;
-      --scope-aws: #f59e0b;
-      --scope-azure: #60a5fa;
-      --scope-gcp: #4ade80;
-      --scope-cross: #a78bfa;
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    background: var(--bg); color: var(--fg);
-    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 14px; line-height: 1.5;
-  }
   #root { padding: 14px 16px 24px; max-width: 900px; margin: 0 auto; }
 
-  /* --- states ---------------------------------------------------------- */
-  .state { color: var(--fg-muted); padding: 24px 4px; text-align: center; }
-  .spinner {
-    width: 22px; height: 22px; margin: 0 auto 10px;
-    border: 2px solid var(--border); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .error {
-    color: var(--danger); background: var(--card-bg);
-    border: 1px solid var(--border); border-radius: 8px;
-    padding: 12px 14px; white-space: pre-wrap; font-size: 12.5px;
-  }
-  .empty {
-    color: var(--fg-muted); background: var(--card-bg);
-    border: 1px dashed var(--border); border-radius: 8px;
-    padding: 18px 14px; text-align: center; font-size: 13px;
-  }
-  .empty code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
-
-  /* --- toolbar ---------------------------------------------------------- */
   .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
   .toolbar h1 { font-size: 16px; font-weight: 650; margin: 0 auto 0 0; }
   .tabs { display: inline-flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
@@ -86,24 +17,8 @@
   .tabs button[aria-selected="true"] {
     background: var(--accent); color: var(--accent-fg); font-weight: 650;
   }
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
-  .filters select {
-    background: var(--card-bg); color: var(--fg);
-    border: 1px solid var(--border); border-radius: 6px;
-    padding: 4px 8px; font-size: 12.5px;
-  }
-  .filters .count { color: var(--fg-muted); font-size: 12px; margin-left: auto; }
-  .filters .reset {
-    background: none; border: 1px solid var(--border); border-radius: 6px;
-    color: var(--fg-muted); font-size: 12px; padding: 3px 9px; cursor: pointer;
-  }
-  .server-filters { font-size: 12px; color: var(--fg-muted); margin: -6px 0 10px; }
-  .server-filters .chip {
-    display: inline-block; background: var(--badge-bg); color: var(--badge-fg);
-    border-radius: 999px; padding: 1px 8px; margin-left: 4px; font-weight: 600;
-  }
+  .tabs button:disabled { opacity: .45; cursor: default; }
 
-  /* --- card grid --------------------------------------------------------- */
   .grid {
     display: grid; gap: 10px;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -126,10 +41,6 @@
   .scope-badge[data-scope="azure"] { color: var(--scope-azure); }
   .scope-badge[data-scope="gcp"] { color: var(--scope-gcp); }
   .scope-badge[data-scope="cross-cloud"] { color: var(--scope-cross); }
-  .chip {
-    font-size: 11px; background: var(--badge-bg); color: var(--badge-fg);
-    padding: 1px 8px; border-radius: 999px; font-weight: 600;
-  }
   .service { color: var(--fg-muted); font-size: 11.5px; }
   .confidence { display: inline-flex; gap: 3px; align-items: center; margin-left: auto; }
   .confidence i {
@@ -139,7 +50,6 @@
   .confidence i.on { background: var(--accent); }
   .confidence .label { font-size: 10.5px; color: var(--fg-muted); margin-left: 3px; }
 
-  /* --- coverage matrix ---------------------------------------------------- */
   .matrix-wrap { overflow-x: auto; }
   table.matrix { border-collapse: separate; border-spacing: 4px; width: 100%; }
   .matrix th {
@@ -160,67 +70,7 @@
   }
   .matrix-note { color: var(--fg-muted); font-size: 11.5px; margin-top: 8px; }
 
-  /* --- inline playbook panel ----------------------------------------------- */
   #playbook-panel { max-width: 780px; margin: 0 auto; }
-  .panel-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .panel-bar button {
-    background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
-    color: var(--fg); font-size: 12.5px; padding: 4px 10px; cursor: pointer;
-  }
-  .panel-bar button:hover { border-color: var(--accent); }
-  .panel-loading { color: var(--fg-muted); font-size: 12.5px; }
-  .header h1 { font-size: 19px; margin: 0 0 8px; font-weight: 650; }
-  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-  .badge {
-    display: inline-block; padding: 2px 9px; border-radius: 999px;
-    background: var(--badge-bg); color: var(--badge-fg);
-    font-size: 11.5px; font-weight: 600; letter-spacing: .01em; text-transform: uppercase;
-  }
-  .section {
-    background: var(--card-bg); border: 1px solid var(--border);
-    border-left: 4px solid var(--accent-problem); border-radius: 8px;
-    padding: 12px 14px; margin-bottom: 10px;
-  }
-  .section[data-kind="symptoms"] { border-left-color: var(--accent-symptoms); }
-  .section[data-kind="detection"] { border-left-color: var(--accent-detection); }
-  .section[data-kind="fix"] { border-left-color: var(--accent-fix); }
-  .section[data-kind="anti-pattern"] { border-left-color: var(--accent-antipattern); }
-  .section[data-kind="see-also"] { border-left-color: var(--accent-seealso); }
-  .section h2 {
-    font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em;
-    margin: 0 0 8px; color: var(--fg-muted);
-  }
-  .section p { margin: 0 0 8px; }
-  .section ul, .section ol { margin: 0 0 8px; padding-left: 20px; }
-  .section li { margin-bottom: 3px; }
-  .section pre {
-    position: relative; background: var(--code-bg); border: 1px solid var(--border);
-    border-radius: 6px; padding: 10px 12px; overflow-x: auto;
-    font-size: 12.5px; margin: 0 0 8px;
-  }
-  .section code { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
-  .section :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
-  .copy-btn {
-    position: absolute; top: 6px; right: 6px;
-    background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
-    color: var(--fg-muted); font-size: 10.5px; padding: 2px 8px; cursor: pointer;
-  }
-  .copy-btn:hover { border-color: var(--accent); color: var(--fg); }
-  ul.checklist { list-style: none; padding-left: 4px; }
-  ul.checklist li { margin-bottom: 6px; }
-  ul.checklist label { display: flex; gap: 8px; align-items: baseline; cursor: pointer; }
-  ul.checklist input[type="checkbox"] { accent-color: var(--accent); }
-  ul.checklist input:checked + span { color: var(--fg-muted); text-decoration: line-through; }
-  .pb-link {
-    background: none; border: none; padding: 0; cursor: pointer; font: inherit;
-  }
-  .pb-link code {
-    background: var(--code-bg); padding: 1px 5px; border-radius: 4px;
-    font-size: 12px; text-decoration: underline; text-decoration-color: var(--accent);
-    text-underline-offset: 2px; color: inherit;
-  }
-  .footer-note { color: var(--fg-muted); font-size: 11.5px; margin-top: 14px; text-align: center; }
-  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -268,15 +118,19 @@
     <div id="panel-content"></div>
   </div>
 
-  <div class="footer-note">Cloud FinOps Playbooks by OptimNow &middot; rendered via MCP Apps (SEP-1865)</div>
+  <div class="brand-note"><a href="https://optimnow.io">OptimNow</a></div>
 </div>
 
 <!--BRIDGE-->
 <!--PLAYBOOK_RENDER-->
+<!--WIDGET_COMMON-->
 <script>
 (function () {
   "use strict";
   var R = window.PlaybookRender;
+  var W = window.WidgetCommon;
+  var $ = W.$, show = W.show, hide = W.hide;
+
   var SCOPE_ORDER = ["aws", "azure", "gcp", "cross-cloud"];
   var CONFIDENCE_ORDER = ["obvious", "likely", "possible"];
   var CONFIDENCE_DOTS = { obvious: 3, likely: 2, possible: 1 };
@@ -285,10 +139,6 @@
   var serverFilters = {};  // filters the agent passed to find_playbooks
   var local = { scope: "", waste_category: "", confidence: "" };
   var view = "cards";
-
-  function $(id) { return document.getElementById(id); }
-  function show(el) { el.classList.remove("hidden"); }
-  function hide(el) { el.classList.add("hidden"); }
 
   function showError(message) {
     hide($("state-loading"));
@@ -477,18 +327,18 @@
   /* --- inline playbook panel (get_playbook via the host bridge) --------- */
 
   function openPlaybook(name) {
+    var token = W.nextToken();
     hide($("app"));
     show($("playbook-panel"));
     hide($("panel-error"));
     show($("panel-loading"));
     $("panel-content").innerHTML = "";
     window.McpBridge.callTool("get_playbook", { name: name }).then(function (payload) {
+      if (!W.isCurrent(token)) return; // superseded by a newer interaction
       hide($("panel-loading"));
       if (payload.error) {
         var el = $("panel-error");
-        el.textContent = payload.error +
-          (payload.suggestions && payload.suggestions.length
-            ? "\nDid you mean: " + payload.suggestions.join(", ") + "?" : "");
+        el.textContent = R.errorText(payload);
         show(el);
         return;
       }
@@ -497,6 +347,7 @@
       R.enhanceCodeBlocks(content);
       R.enhanceSeeAlso(content, openPlaybook);
     }).catch(function (err) {
+      if (!W.isCurrent(token)) return;
       hide($("panel-loading"));
       var el = $("panel-error");
       el.textContent = String(err && err.message || err);
@@ -505,6 +356,7 @@
   }
 
   $("panel-back").addEventListener("click", function () {
+    W.nextToken(); // invalidate any in-flight panel load
     hide($("playbook-panel"));
     show($("app"));
   });
@@ -529,21 +381,18 @@
     hide($("playbook-panel"));
 
     var sf = $("server-filters");
-    var keys = Object.keys(serverFilters);
-    if (keys.length) {
-      sf.innerHTML = "Filtered by the agent:" + keys.map(function (k) {
-        return '<span class="chip">' + R.escapeHtml(k) + "=" + R.escapeHtml(String(serverFilters[k])) + "</span>";
-      }).join("");
-      show(sf);
-    } else {
-      hide(sf);
-    }
+    var chips = W.chipsHtml(serverFilters);
+    if (chips) { sf.innerHTML = chips; show(sf); } else { hide(sf); }
+
+    fillSelect("f-scope", "scope", "scope: all");
+    fillSelect("f-category", "waste_category", "category: all");
+    fillSelect("f-confidence", "confidence", "confidence: all");
 
     if (!all.length) {
-      // Tool-level empty result: surface the server's own explanation.
-      fillSelect("f-scope", "scope", "scope: all");
-      fillSelect("f-category", "waste_category", "category: all");
-      fillSelect("f-confidence", "confidence", "confidence: all");
+      // Tool-level empty result: surface the server's own explanation and
+      // keep the matrix tab out of reach - a matrix over zero playbooks is
+      // an empty table with a misleading note.
+      $("tab-matrix").disabled = true;
       var empty = $("state-empty");
       empty.innerHTML = "The tool returned no playbooks for these filters." +
         (payload.hint ? "<br>" + R.escapeHtml(payload.hint) : "") +
@@ -555,9 +404,7 @@
       return;
     }
 
-    fillSelect("f-scope", "scope", "scope: all");
-    fillSelect("f-category", "waste_category", "category: all");
-    fillSelect("f-confidence", "confidence", "confidence: all");
+    $("tab-matrix").disabled = false;
     setView(view);
   }
 

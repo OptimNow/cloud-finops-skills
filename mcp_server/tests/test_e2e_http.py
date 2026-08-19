@@ -14,6 +14,7 @@ import os
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from collections.abc import Iterator
 from pathlib import Path
@@ -71,15 +72,27 @@ def http_server_url() -> Iterator[str]:
     # override a deliberate command line.
     env["PORT"] = str(port + 1)
 
+    # stderr goes to a spooled temp file, NOT a pipe: the server logs more
+    # than the ~4KB Windows pipe buffer over a module run (uvicorn access
+    # logs + the startup content stamp), and an undrained pipe blocks the
+    # server mid-write - the module then deadlocks at whichever test the
+    # buffer happens to fill on. Found on 2026-08-19 after three hung runs.
+    # The file keeps the output available for the startup-failure message.
+    stderr_sink = tempfile.TemporaryFile()
     proc = subprocess.Popen(
         [sys.executable, "-m", SERVER_PKG, "--transport", "http",
          "--host", "127.0.0.1", "--port", str(port)],
         env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=subprocess.DEVNULL,
+        stderr=stderr_sink,
     )
     try:
-        _wait_until_listening(port, proc)
+        try:
+            _wait_until_listening(port, proc)
+        except (RuntimeError, TimeoutError) as exc:
+            stderr_sink.seek(0)
+            tail = stderr_sink.read()[-2000:].decode("utf-8", errors="replace")
+            raise RuntimeError(f"{exc}\nserver stderr tail:\n{tail}") from exc
         yield f"http://127.0.0.1:{port}/mcp"
     finally:
         proc.terminate()
@@ -88,6 +101,7 @@ def http_server_url() -> Iterator[str]:
         except subprocess.TimeoutExpired:
             proc.kill()
             proc.wait(timeout=10)
+        stderr_sink.close()
 
 
 @pytest.mark.asyncio

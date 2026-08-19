@@ -3,178 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <title>Playbook viewer</title>
+<!--THEME_CSS-->
 <style>
-  :root {
-    color-scheme: light dark;
-    --accent: #ACE849;            /* OptimNow chartreuse */
-    --accent-fg: #2a3510;
-    --fg: #1a1d23;
-    --fg-muted: #5b6370;
-    --bg: #ffffff;
-    --card-bg: #f7f8fa;
-    --border: #e2e5ea;
-    --code-bg: #eef0f3;
-    --accent-problem: #6b7280;
-    --accent-symptoms: #b45309;
-    --accent-detection: #1d4ed8;
-    --accent-fix: #15803d;
-    --accent-antipattern: #b91c1c;
-    --accent-seealso: #6b7280;
-    --badge-bg: #eef1ff;
-    --badge-fg: #3730a3;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --accent-fg: #d8f5a2;
-      --fg: #e7e9ec;
-      --fg-muted: #9aa2ad;
-      --bg: #15171c;
-      --card-bg: #1b1e24;
-      --border: #2a2e37;
-      --code-bg: #10141a;
-      --badge-bg: #232a4d;
-      --badge-fg: #b7c0ff;
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-  }
   #root { padding: 16px 18px 28px; max-width: 780px; margin: 0 auto; }
-  .header { margin-bottom: 14px; }
-  .header h1 {
-    font-size: 19px;
-    margin: 0 0 8px;
-    font-weight: 650;
-  }
-  .badges { display: flex; flex-wrap: wrap; gap: 6px; }
-  .badge {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 999px;
-    background: var(--badge-bg);
-    color: var(--badge-fg);
-    font-size: 11.5px;
-    font-weight: 600;
-    letter-spacing: .01em;
-    text-transform: uppercase;
-  }
-  .section {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--accent-problem);
-    border-radius: 8px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-  }
-  .section[data-kind="symptoms"] { border-left-color: var(--accent-symptoms); }
-  .section[data-kind="detection"] { border-left-color: var(--accent-detection); }
-  .section[data-kind="fix"] { border-left-color: var(--accent-fix); }
-  .section[data-kind="anti-pattern"] { border-left-color: var(--accent-antipattern); }
-  .section[data-kind="see-also"] { border-left-color: var(--accent-seealso); }
-  .section h2 {
-    font-size: 12.5px;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    margin: 0 0 8px;
-    color: var(--fg-muted);
-  }
-  .section :first-child { margin-top: 0; }
-  .section :last-child { margin-bottom: 0; }
-  .section p { margin: 0 0 8px; }
-  .section ul, .section ol { margin: 0 0 8px; padding-left: 20px; }
-  .section li { margin-bottom: 3px; }
-  .section pre {
-    position: relative;
-    background: var(--code-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 12px;
-    overflow-x: auto;
-    font-size: 12.5px;
-    margin: 0 0 8px;
-  }
-  .section code {
-    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  }
-  .section :not(pre) > code {
-    background: var(--code-bg);
-    padding: 1px 5px;
-    border-radius: 4px;
-    font-size: 12px;
-  }
-  .section strong { font-weight: 650; }
-  .copy-btn {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    color: var(--fg-muted);
-    font-size: 10.5px;
-    padding: 2px 8px;
-    cursor: pointer;
-  }
-  .copy-btn:hover { border-color: var(--accent); color: var(--fg); }
-  ul.checklist { list-style: none; padding-left: 4px; }
-  ul.checklist li { margin-bottom: 6px; }
-  ul.checklist label { display: flex; gap: 8px; align-items: baseline; cursor: pointer; }
-  ul.checklist input[type="checkbox"] { accent-color: var(--accent); }
-  ul.checklist input:checked + span { color: var(--fg-muted); text-decoration: line-through; }
-  .pb-link { background: none; border: none; padding: 0; cursor: pointer; font: inherit; }
-  .pb-link code {
-    background: var(--code-bg);
-    padding: 1px 5px;
-    border-radius: 4px;
-    font-size: 12px;
-    text-decoration: underline;
-    text-decoration-color: var(--accent);
-    text-underline-offset: 2px;
-    color: inherit;
-  }
-  .panel-loading { color: var(--fg-muted); font-size: 12.5px; margin-bottom: 10px; }
-  .footer-note {
-    color: var(--fg-muted);
-    font-size: 11.5px;
-    margin-top: 14px;
-    text-align: center;
-  }
-  .empty {
-    color: var(--fg-muted);
-    padding: 24px 4px;
-    text-align: center;
-  }
-  .empty .spinner {
-    width: 22px; height: 22px;
-    margin: 0 auto 10px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .error {
-    color: var(--accent-antipattern);
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-    white-space: pre-wrap;
-    font-size: 12.5px;
-  }
-  .hidden { display: none !important; }
+  .empty { border: none; background: none; }
 </style>
 </head>
 <body>
 <div id="root">
-  <div class="empty" id="empty-state">
+  <div class="state" id="empty-state">
     <div class="spinner"></div>
     Waiting for playbook data&hellip;
   </div>
@@ -184,27 +21,28 @@
 
 <!--BRIDGE-->
 <!--PLAYBOOK_RENDER-->
+<!--WIDGET_COMMON-->
 <script>
 (function () {
   "use strict";
   var R = window.PlaybookRender;
-
-  function $(id) { return document.getElementById(id); }
+  var W = window.WidgetCommon;
 
   function render(payload) {
-    var emptyState = $("empty-state");
+    var emptyState = W.$("empty-state");
     if (emptyState) emptyState.classList.add("hidden");
-    $("nav-loading").classList.add("hidden");
+    W.hide(W.$("nav-loading"));
 
-    var content = $("content");
+    var content = W.$("content");
 
     if (payload && payload.error) {
-      content.innerHTML =
-        '<div class="error">No playbook loaded: ' + R.escapeHtml(payload.error) +
-        (payload.suggestions && payload.suggestions.length
-          ? "\n\nDid you mean: " + payload.suggestions.join(", ") + "?"
-          : "") +
-        "</div>";
+      // First-render errors only: navigation errors are handled
+      // non-destructively in openPlaybook and never reach here.
+      content.textContent = "";
+      var err = document.createElement("div");
+      err.className = "error";
+      err.textContent = "No playbook loaded: " + R.errorText(payload);
+      content.appendChild(err);
       return;
     }
 
@@ -215,7 +53,7 @@
 
     content.innerHTML =
       R.renderPlaybookHtml(payload, { checklistFix: true }) +
-      '<div class="footer-note">Cloud FinOps Playbook by OptimNow &middot; rendered via MCP Apps (SEP-1865)</div>';
+      '<div class="brand-note"><a href="https://optimnow.io">OptimNow</a></div>';
 
     // v2 enhancements: Copy on every code block; `playbooks/<slug>.md`
     // entries in See also navigate to that playbook via the host bridge.
@@ -223,33 +61,38 @@
     R.enhanceSeeAlso(content, openPlaybook);
   }
 
+  /* Show a transient, NON-destructive note above the current playbook.
+   * Used for every navigation failure - a See-also click that misses
+   * (renamed slug, host error) must never wipe what the user is reading. */
+  function transientNote(message) {
+    var content = W.$("content");
+    var note = document.createElement("div");
+    note.className = "error";
+    note.textContent = message;
+    content.insertBefore(note, content.firstChild);
+    setTimeout(function () { if (note.parentNode) note.parentNode.removeChild(note); }, 6000);
+  }
+
   function openPlaybook(slug) {
-    $("nav-loading").classList.remove("hidden");
-    window.McpBridge.callTool("get_playbook", { name: slug }).then(render, function (err) {
-      $("nav-loading").classList.add("hidden");
-      var content = $("content");
-      var note = document.createElement("div");
-      note.className = "error";
-      note.textContent = "Could not open playbooks/" + slug + ".md: " + String(err && err.message || err);
-      content.insertBefore(note, content.firstChild);
-      setTimeout(function () { if (note.parentNode) note.parentNode.removeChild(note); }, 6000);
+    var token = W.nextToken();
+    W.show(W.$("nav-loading"));
+    window.McpBridge.callTool("get_playbook", { name: slug }).then(function (payload) {
+      if (!W.isCurrent(token)) return; // a newer interaction superseded this
+      W.hide(W.$("nav-loading"));
+      if (payload.error) {
+        transientNote("Could not open playbooks/" + slug + ".md: " + R.errorText(payload));
+        return;
+      }
+      render(payload);
+    }, function (err) {
+      if (!W.isCurrent(token)) return;
+      W.hide(W.$("nav-loading"));
+      transientNote("Could not open playbooks/" + slug + ".md: " + String(err && err.message || err));
     });
   }
 
-  // Links must not navigate the iframe itself: the host sandbox has
-  // allow-scripts/allow-same-origin but not allow-popups, so a plain
-  // target="_blank" is silently swallowed. Route clicks through the host's
-  // ui/open-link request instead (McpBridge.openLink). The href is kept
-  // as-is so a host without ui/open-link degrades to today's behaviour
-  // rather than to a dead element.
-  document.addEventListener("click", function (event) {
-    var anchor = event.target && event.target.closest && event.target.closest("a[href]");
-    if (!anchor) return;
-    var href = anchor.getAttribute("href");
-    if (!href || href === "#") return;
-    event.preventDefault();
-    window.McpBridge.openLink(href);
-  });
+  // External links are routed through the host's ui/open-link by the
+  // shared bridge's document-level click handler - no per-widget copy.
 
   window.McpBridge.init({
     appName: "cloud-finops-playbook-viewer",

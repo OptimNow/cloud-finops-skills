@@ -12,17 +12,31 @@
  * - host -> app: `ui/notifications/tool-result` carrying the result of the
  *   tool call that instantiated the widget; some hosts instead answer
  *   `ui/initialize` with the payload inline.
+ *
+ * Failure discipline: a widget must never sit on its loading spinner with
+ * no diagnostic. A host that answers ui/initialize with a JSON-RPC error,
+ * never answers at all, or relays a tool result the widget cannot parse,
+ * all surface as an error payload to the widget's onToolResult handler -
+ * every widget already renders `{error}` payloads. A late tool-result
+ * notification still re-renders over that error (self-healing).
  */
 (function () {
   "use strict";
 
-  var INIT_ID = 1;
   var nextId = 100;
   var pending = {};
   var toolResultHandler = null;
+  var gotResult = false;
 
   function post(message) {
     window.parent.postMessage(message, "*");
+  }
+
+  function deliver(payload) {
+    if (toolResultHandler) {
+      gotResult = true;
+      toolResultHandler(payload);
+    }
   }
 
   /* Pull the JSON payload out of a tool-result container: prefer
@@ -47,22 +61,19 @@
     if (!msg || msg.jsonrpc !== "2.0") return;
 
     if (msg.method === "ui/notifications/tool-result") {
-      if (toolResultHandler) {
-        var payload = extractPayload(msg.params);
-        if (payload) toolResultHandler(payload);
+      var payload = extractPayload(msg.params);
+      if (payload) {
+        deliver(payload);
+      } else if (msg.params) {
+        deliver({
+          error: "The host relayed a tool result this widget could not " +
+            "parse. The plain result is still available in the chat."
+        });
       }
       return;
     }
 
     if (typeof msg.id === "undefined") return;
-
-    /* Some hosts answer ui/initialize with the initial tool result inline
-     * rather than as a separate notification. */
-    if (msg.id === INIT_ID && msg.result) {
-      var inline = extractPayload(msg.result);
-      if (inline && toolResultHandler) toolResultHandler(inline);
-      return;
-    }
 
     var entry = pending[msg.id];
     if (entry) {
@@ -93,21 +104,51 @@
     });
   }
 
+  /* Links must not navigate the iframe: route every anchor click through
+   * the host's ui/open-link. Installed once here so every widget - and the
+   * playbook/reference bodies they render - inherits it; a per-widget copy
+   * is how the explorer and browser shipped with dead links (the exact
+   * target=_blank defect PR #135 fixed once already). The href is kept on
+   * the anchor so a host without ui/open-link degrades to a no-op rather
+   * than a dead element. */
+  document.addEventListener("click", function (event) {
+    var anchor = event.target && event.target.closest && event.target.closest("a[href]");
+    if (!anchor) return;
+    var href = anchor.getAttribute("href");
+    if (!href || href === "#") return;
+    event.preventDefault();
+    request("ui/open-link", { url: href }).catch(function () { /* best effort */ });
+  });
+
   window.McpBridge = {
     /* Announce readiness. opts.onToolResult receives the JSON payload of
-     * the tool call that instantiated the widget (via notification or
-     * inline initialize result). */
+     * the tool call that instantiated the widget - via the tool-result
+     * notification, an inline ui/initialize result, or a synthesized
+     * `{error}` payload when the handshake fails, so the widget always
+     * leaves its loading state. */
     init: function (opts) {
       toolResultHandler = (opts && opts.onToolResult) || null;
-      post({
-        jsonrpc: "2.0",
-        id: INIT_ID,
-        method: "ui/initialize",
-        params: {
-          protocolVersion: "2026-01-26",
-          clientInfo: { name: (opts && opts.appName) || "cloud-finops-widget", version: "1" },
-          capabilities: {},
-          appCapabilities: {}
+      request("ui/initialize", {
+        protocolVersion: "2026-01-26",
+        clientInfo: { name: (opts && opts.appName) || "cloud-finops-widget", version: "1" },
+        capabilities: {},
+        appCapabilities: {}
+      }, 15000).then(function (result) {
+        // Some hosts answer the handshake with the tool result inline.
+        var inline = extractPayload(result);
+        if (inline) deliver(inline);
+      }, function (err) {
+        // Handshake error or 15s of silence. Do not clobber a result that
+        // already arrived via notification; a late notification after this
+        // error still re-renders over it.
+        if (!gotResult) {
+          deliver({
+            error: "The MCP Apps handshake with the host failed (" +
+              String(err && err.message || err) + "). This host may not " +
+              "support interactive widgets - the tool result is still " +
+              "available in the chat."
+          });
+          gotResult = false; // let a late notification through as first data
         }
       });
     },

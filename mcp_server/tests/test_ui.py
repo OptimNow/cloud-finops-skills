@@ -39,8 +39,8 @@ def test_widget_is_selfcontained(uri: str) -> None:
     html = WIDGETS[uri]
     assert "<!DOCTYPE html>" in html
     # Markers must have been replaced by the inliner, not shipped raw.
-    assert "<!--BRIDGE-->" not in html
-    assert "<!--PLAYBOOK_RENDER-->" not in html
+    for marker, _asset, _tag in server._UI_MARKERS:
+        assert marker not in html, f"{uri} still carries the raw {marker} marker"
     # No element may load anything over the network.
     for pattern in (
         r'<link\b',
@@ -104,6 +104,18 @@ def test_viewer_v2_enhancements_present() -> None:
     assert "enhanceSeeAlso" in html    # clickable playbooks/<slug>.md links
     # The clipboard fallback must exist: the sandbox may deny the API.
     assert "execCommand" in html
+
+
+@pytest.mark.parametrize("uri", sorted(WIDGETS))
+def test_widget_branding_is_discreet(uri: str) -> None:
+    """One small OptimNow link, no protocol jargon stamped on every render."""
+    html = WIDGETS[uri]
+    assert "brand-note" in html
+    assert "optimnow.io" in html
+    assert "rendered via MCP Apps" not in html
+    assert "SEP-1865" not in html.split("</head>", 1)[1].split("<script>", 1)[0], (
+        f"{uri} shows protocol jargon in its visible markup"
+    )
 
 
 async def test_ui_resources_are_registered() -> None:

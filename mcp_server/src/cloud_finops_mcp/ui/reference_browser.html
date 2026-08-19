@@ -3,81 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <title>Reference browser</title>
+<!--THEME_CSS-->
 <style>
-  :root {
-    color-scheme: light dark;
-    --accent: #ACE849;            /* OptimNow chartreuse */
-    --accent-fg: #2a3510;
-    --fg: #1a1d23;
-    --fg-muted: #5b6370;
-    --bg: #ffffff;
-    --card-bg: #f7f8fa;
-    --border: #e2e5ea;
-    --code-bg: #eef0f3;
-    --danger: #b91c1c;
-    --badge-bg: #eef1ff;
-    --badge-fg: #3730a3;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --accent-fg: #d8f5a2;
-      --fg: #e7e9ec;
-      --fg-muted: #9aa2ad;
-      --bg: #15171c;
-      --card-bg: #1b1e24;
-      --border: #2a2e37;
-      --code-bg: #10141a;
-      --danger: #f87171;
-      --badge-bg: #232a4d;
-      --badge-fg: #b7c0ff;
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    background: var(--bg); color: var(--fg);
-    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 14px; line-height: 1.5;
-  }
   #root { padding: 14px 16px 24px; max-width: 900px; margin: 0 auto; }
 
-  .state { color: var(--fg-muted); padding: 24px 4px; text-align: center; }
-  .spinner {
-    width: 22px; height: 22px; margin: 0 auto 10px;
-    border: 2px solid var(--border); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .error {
-    color: var(--danger); background: var(--card-bg);
-    border: 1px solid var(--border); border-radius: 8px;
-    padding: 12px 14px; white-space: pre-wrap; font-size: 12.5px;
-  }
-  .empty {
-    color: var(--fg-muted); background: var(--card-bg);
-    border: 1px dashed var(--border); border-radius: 8px;
-    padding: 18px 14px; text-align: center; font-size: 13px;
-  }
-  .empty code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
-
   h1.page-title { font-size: 16px; font-weight: 650; margin: 0 0 10px; }
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
-  .filters select {
-    background: var(--card-bg); color: var(--fg);
-    border: 1px solid var(--border); border-radius: 6px;
-    padding: 4px 8px; font-size: 12px; max-width: 190px;
-  }
-  .filters .count { color: var(--fg-muted); font-size: 12px; margin-left: auto; }
-  .filters .reset {
-    background: none; border: 1px solid var(--border); border-radius: 6px;
-    color: var(--fg-muted); font-size: 12px; padding: 3px 9px; cursor: pointer;
-  }
-  .server-filters { font-size: 12px; color: var(--fg-muted); margin: -6px 0 10px; }
-  .server-filters .chip, .row .chip {
-    display: inline-block; background: var(--badge-bg); color: var(--badge-fg);
-    border-radius: 999px; padding: 1px 8px; margin-left: 4px;
-    font-weight: 600; font-size: 11px;
-  }
+  .filters select { font-size: 12px; }
 
   .list { display: flex; flex-direction: column; gap: 8px; }
   .row {
@@ -96,13 +27,6 @@
 
   /* --- reading panel ------------------------------------------------------ */
   #reader { max-width: 820px; margin: 0 auto; }
-  .panel-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .panel-bar button {
-    background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
-    color: var(--fg); font-size: 12.5px; padding: 4px 10px; cursor: pointer;
-  }
-  .panel-bar button:hover { border-color: var(--accent); }
-  .panel-loading { color: var(--fg-muted); font-size: 12.5px; }
   #reader-content h2, #reader-content h3, #reader-content h4 {
     margin: 18px 0 8px; line-height: 1.3;
   }
@@ -120,16 +44,8 @@
   #reader-content code { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
   #reader-content :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
   #reader-content hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-  .copy-btn {
-    position: absolute; top: 6px; right: 6px;
-    background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
-    color: var(--fg-muted); font-size: 10.5px; padding: 2px 8px; cursor: pointer;
-  }
-  .copy-btn:hover { border-color: var(--accent); color: var(--fg); }
   .reader-title { font-size: 18px; font-weight: 650; margin: 0 0 4px; }
   .reader-meta { color: var(--fg-muted); font-size: 11.5px; margin-bottom: 10px; }
-  .footer-note { color: var(--fg-muted); font-size: 11.5px; margin-top: 14px; text-align: center; }
-  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -165,15 +81,18 @@
     <div id="reader-content"></div>
   </div>
 
-  <div class="footer-note">Cloud FinOps references by OptimNow &middot; rendered via MCP Apps (SEP-1865)</div>
+  <div class="brand-note"><a href="https://optimnow.io">OptimNow</a></div>
 </div>
 
 <!--BRIDGE-->
 <!--PLAYBOOK_RENDER-->
+<!--WIDGET_COMMON-->
 <script>
 (function () {
   "use strict";
   var R = window.PlaybookRender;
+  var W = window.WidgetCommon;
+  var $ = W.$, show = W.show, hide = W.hide;
 
   /* facet key -> [payload entry fields it matches against] */
   var FACETS = {
@@ -187,10 +106,6 @@
   var all = [];
   var serverFilters = {};
   var local = { domain: "", capability: "", phase: "", persona: "", maturity: "" };
-
-  function $(id) { return document.getElementById(id); }
-  function show(el) { el.classList.remove("hidden"); }
-  function hide(el) { el.classList.add("hidden"); }
 
   function showError(message) {
     hide($("state-loading"));
@@ -248,6 +163,7 @@
   }
 
   function renderList() {
+    if (!all.length) return; // tool-level empty handled by render()
     var list = all.filter(matches);
     var listEl = $("list");
     listEl.innerHTML = "";
@@ -283,18 +199,18 @@
   }
 
   function openReference(entry) {
+    var token = W.nextToken();
     hide($("app"));
     show($("reader"));
     hide($("reader-error"));
     show($("reader-loading"));
     $("reader-content").innerHTML = "";
     window.McpBridge.callTool("get_reference", { name: entry.name }).then(function (payload) {
+      if (!W.isCurrent(token)) return; // superseded by a newer interaction
       hide($("reader-loading"));
       if (payload.error) {
         var el = $("reader-error");
-        el.textContent = payload.error +
-          (payload.suggestions && payload.suggestions.length
-            ? "\nDid you mean: " + payload.suggestions.join(", ") + "?" : "");
+        el.textContent = R.errorText(payload);
         show(el);
         return;
       }
@@ -308,6 +224,7 @@
         R.renderDocument(body);
       R.enhanceCodeBlocks(content);
     }).catch(function (err) {
+      if (!W.isCurrent(token)) return;
       hide($("reader-loading"));
       var el = $("reader-error");
       el.textContent = String(err && err.message || err);
@@ -316,6 +233,7 @@
   }
 
   $("reader-back").addEventListener("click", function () {
+    W.nextToken(); // invalidate any in-flight reader load
     hide($("reader"));
     show($("app"));
   });
@@ -338,15 +256,8 @@
     hide($("reader"));
 
     var sf = $("server-filters");
-    var keys = Object.keys(serverFilters);
-    if (keys.length) {
-      sf.innerHTML = "Filtered by the agent:" + keys.map(function (k) {
-        return '<span class="chip">' + R.escapeHtml(k) + "=" + R.escapeHtml(String(serverFilters[k])) + "</span>";
-      }).join("");
-      show(sf);
-    } else {
-      hide(sf);
-    }
+    var chips = W.chipsHtml(serverFilters);
+    if (chips) { sf.innerHTML = chips; show(sf); } else { hide(sf); }
 
     Object.keys(FACETS).forEach(fillSelect);
 

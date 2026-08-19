@@ -1,14 +1,23 @@
 /* Shared playbook/markdown rendering for the cloud-finops widgets.
  *
  * Inlined into widget HTML by server._load_ui() (the PLAYBOOK_RENDER
- * comment marker); edit this file, never the inlined copies.
- * Extracted from the original playbook_viewer.html so the viewer and the
- * explorer's inline playbook panel render identically.
+ * comment marker); edit this file, never the inlined copies. Extracted
+ * from the original playbook_viewer.html so the viewer and the explorer's
+ * inline playbook panel render identically.
  *
  * Deliberately NOT a general CommonMark parser: it covers what the bundled
  * playbooks and references actually use - fenced code, bullet/numbered
  * lists, bold, inline code, links, paragraphs, and (for references)
  * headings and pipe tables rendered as monospace blocks.
+ *
+ * Two hard-won rules encoded here:
+ * - Fence state is tracked EVERYWHERE lines are scanned. The reference
+ *   bodies carry KQL ('| where ...') and bash comments ('# ...') inside
+ *   fences; a fence-blind scanner turns them into tables and headings and
+ *   corrupts everything after (found on finops-azure, 83 such lines).
+ * - HTML comments are stripped outside fences. The content carries
+ *   maintainer/provenance comments that proper markdown renderers hide;
+ *   escapeHtml would print them as visible text.
  */
 (function () {
   "use strict";
@@ -25,8 +34,18 @@
     "see-also": "See also"
   };
 
+  /* Escape for BOTH element text and double/single-quoted attribute
+   * values. Quotes matter: renderInline interpolates link targets into
+   * href="..." and the explorer puts facet values into data-/title=
+   * attributes - without quote escaping, a crafted value breaks out of
+   * the attribute. */
   function escapeHtml(s) {
-    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function slugifyHeading(text) {
@@ -34,19 +53,36 @@
   }
 
   function renderInline(text) {
-    var out = escapeHtml(text);
-    out = out.replace(/`([^`]+)`/g, "<code>$1</code>");
+    // Protect inline code spans first: their content must render literally,
+    // not be re-processed by the bold/link passes below (a `[x](y)` inside
+    // backticks is code, not a link).
+    var codes = [];
+    var masked = text.replace(/`([^`]+)`/g, function (_, code) {
+      codes.push(code);
+      // U+0000 sentinels: cannot occur in markdown text, so the restore
+      // pass below can never collide with real content.
+      return "\u0000" + (codes.length - 1) + "\u0000";
+    });
+    var out = escapeHtml(masked);
+    // Drop inline HTML comments (provenance markers etc.) - a markdown
+    // renderer hides them; printing them as text is the bug.
+    out = out.replace(/&lt;!--[\s\S]*?--&gt;/g, "");
     out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
     out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (_, label, href) {
       var safeHref = /^https?:\/\//.test(href) ? href : "#";
       return '<a href="' + safeHref + '" target="_blank" rel="noopener noreferrer">' + label + "</a>";
     });
+    out = out.replace(/\u0000(\d+)\u0000/g, function (_, n) {
+      return "<code>" + escapeHtml(codes[Number(n)]) + "</code>";
+    });
     return out;
   }
 
-  /* Render a section body. opts.checklist turns top-level list items into
-   * checkbox rows (used for the Fix section; state is local to the widget
-   * and never persisted). */
+  /* Render a section body. opts.checklist turns NUMBERED (ol) top-level
+   * items into checkbox rows that keep their step numbers via CSS
+   * counters; bullet sub-lists stay plain bullets, so an explanatory
+   * sub-item can never be "checked off" as if it were an action. State is
+   * local to the widget and never persisted. */
   function renderBody(md, opts) {
     var checklist = !!(opts && opts.checklist);
     var lines = md.split("\n");
@@ -55,25 +91,24 @@
     var listBuffer = null; // {tag, items}
 
     function flushList() {
-      if (listBuffer) {
-        if (checklist) {
-          html.push(
-            '<ul class="checklist">' +
-            listBuffer.items.map(function (it) {
-              return '<li><label><input type="checkbox"><span>' +
-                renderInline(it) + "</span></label></li>";
-            }).join("") +
-            "</ul>"
-          );
-        } else {
-          html.push(
-            "<" + listBuffer.tag + ">" +
-            listBuffer.items.map(function (it) { return "<li>" + renderInline(it) + "</li>"; }).join("") +
-            "</" + listBuffer.tag + ">"
-          );
-        }
-        listBuffer = null;
+      if (!listBuffer) return;
+      if (checklist && listBuffer.tag === "ol") {
+        html.push(
+          '<ol class="checklist">' +
+          listBuffer.items.map(function (it) {
+            return '<li><label><input type="checkbox"><span>' +
+              renderInline(it) + "</span></label></li>";
+          }).join("") +
+          "</ol>"
+        );
+      } else {
+        html.push(
+          "<" + listBuffer.tag + ">" +
+          listBuffer.items.map(function (it) { return "<li>" + renderInline(it) + "</li>"; }).join("") +
+          "</" + listBuffer.tag + ">"
+        );
       }
+      listBuffer = null;
     }
 
     while (i < lines.length) {
@@ -89,6 +124,15 @@
         }
         html.push("<pre><code>" + escapeHtml(codeLines.join("\n")) + "</code></pre>");
         i++; // skip closing fence
+        continue;
+      }
+
+      // Whole-line/blocked HTML comments (provenance markers, maintainer
+      // notes): consume through the closing marker and emit nothing.
+      if (/^\s*<!--/.test(line)) {
+        flushList();
+        while (i < lines.length && lines[i].indexOf("-->") === -1) i++;
+        i++; // skip the line carrying -->
         continue;
       }
 
@@ -142,11 +186,14 @@
 
   /* Minimal whole-document renderer for reference bodies: headings become
    * h2-h4 (h1 is the widget's own header), pipe-table blocks become
-   * scrollable monospace blocks, everything else goes through renderBody. */
+   * scrollable monospace blocks, everything else goes through renderBody.
+   * Heading/table/hr detection is fence-aware: inside a fence, every line
+   * belongs to the buffered code and is handed to renderBody untouched. */
   function renderDocument(md) {
     var lines = md.split("\n");
     var html = [];
     var buffer = [];
+    var inFence = false;
 
     function flushBuffer() {
       if (buffer.length) {
@@ -158,6 +205,17 @@
     var i = 0;
     while (i < lines.length) {
       var line = lines[i];
+      if (/^```/.test(line)) {
+        inFence = !inFence;
+        buffer.push(line);
+        i++;
+        continue;
+      }
+      if (inFence) {
+        buffer.push(line);
+        i++;
+        continue;
+      }
       var heading = line.match(/^(#{1,4})\s+(.*)$/);
       if (heading) {
         flushBuffer();
@@ -253,6 +311,17 @@
     return out.join("\n");
   }
 
+  /* Human-readable text for a tool error payload, suggestions included.
+   * Callers must put this in textContent (or escape it) - it is plain
+   * text, and suggestions come from tool data. */
+  function errorText(payload) {
+    var text = String(payload.error || "The tool returned an error.");
+    if (payload.suggestions && payload.suggestions.length) {
+      text += "\nDid you mean: " + payload.suggestions.join(", ") + "?";
+    }
+    return text;
+  }
+
   /* Add a Copy button to every <pre> under root. navigator.clipboard is
    * expected to be unavailable in some host sandboxes (no clipboard-write
    * permission); the fallback selects the code so a manual Ctrl+C works,
@@ -324,6 +393,7 @@
     parseFrontmatter: parseFrontmatter,
     parseSections: parseSections,
     renderPlaybookHtml: renderPlaybookHtml,
+    errorText: errorText,
     enhanceCodeBlocks: enhanceCodeBlocks,
     enhanceSeeAlso: enhanceSeeAlso
   };
