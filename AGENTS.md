@@ -37,7 +37,8 @@ cloud-finops-skills/
 ├── LICENSE.md             <- CC BY-SA 4.0
 ├── install.sh             <- One-liner installer script
 ├── llms.txt               <- llms.txt index for cross-agent discovery
-├── assets/                <- Screenshots for installation guide
+├── assets/                <- Installation-guide screenshots + social preview
+├── docs/ROADMAP.md        <- Deliberately-deferred work + trigger to revisit
 ├── skills/cloud-finops/          <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
@@ -52,10 +53,10 @@ sub-modules, see CLAUDE.md.
 
 ## Content update pipeline
 
-The `pipeline/` folder contains a monthly content scanner (around the 1st of each
-month) that detects FinOps-relevant changes across 29 sources and proposes
-updates to the reference files. It is gitignored and not part of the public
-distribution.
+The `pipeline/` folder contains a fortnightly content scanner (the 1st and the
+15th of each month) that detects FinOps-relevant changes across ~30 sources and
+proposes updates to the reference files. It is gitignored and not part of the
+public distribution.
 
 The pipeline is human-in-the-loop: nothing is changed automatically. Every
 proposed update goes through review (list, preview diffs, approve/reject) before
@@ -85,9 +86,10 @@ pricing figures or discount mechanics.
 ## How to contribute
 
 For the full contributor guide (how to add a new reference file, FCP
-frontmatter convention, content rules, PR checklist, Roadmap of deferred work),
-see [CLAUDE.md](./CLAUDE.md). The contributor process is shared regardless of
-which agent surface you use.
+frontmatter convention, content rules, PR checklist), see
+[CLAUDE.md](./CLAUDE.md); deliberately-deferred work and the trigger to revisit
+each item live in [docs/ROADMAP.md](./docs/ROADMAP.md). The contributor process
+is shared regardless of which agent surface you use.
 
 Quick rules:
 - Use straight dashes (`-`), never em dashes

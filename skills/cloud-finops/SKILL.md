@@ -1,18 +1,17 @@
 ---
 name: cloud-finops
 description: >
-  Expert FinOps guidance covering cloud, AI, and SaaS technology spend. Includes AI cost
-  management, GenAI capacity planning, self-hosted vs managed inference,
-  Anthropic billing, AWS (EC2, Bedrock, SageMaker, GPU rightsizing, Savings Plans,
-  CUR, commitment strategy), Azure (reservations, Savings Plans, AHB, OpenAI PTUs, portfolio
-  liquidity), GCP (Vertex AI, Compute Engine, BigQuery), tagging governance, SaaS management
-  (SAM, licence optimisation, SMPs, shadow IT), AI coding tools (Cursor, Claude Code,
-  Copilot, Windsurf, Codex), ITAM, data platforms (Databricks allocation and governance with
-  DBCU commitments, Microsoft Fabric capacity FinOps with F-SKUs, CU smoothing, reservations,
-  pause/resume, Pro-to-Fabric migration), Snowflake, OCI, and GreenOps (AWS Sustainability
-  Console, CSRD). Use for any query about technology cost,
-  commitment portfolio management, rightsizing, cost allocation, SaaS sprawl, AI dev tool spend,
-  or connecting spend to business value. Built by OptimNow.
+  Expert FinOps guidance covering cloud, AI, and SaaS technology spend. Covers AI cost
+  management, agentic FinOps, GenAI capacity planning, self-hosted vs managed inference,
+  Anthropic billing, AWS (EC2, Bedrock, SageMaker, GPU rightsizing, Savings Plans, CUR),
+  Azure (reservations, AHB, OpenAI PTUs), GCP (Vertex AI, BigQuery), OCI, Kubernetes cost
+  allocation, data platforms (Databricks, Microsoft Fabric F-SKUs, Snowflake), tagging
+  governance, SaaS management (SAM, licence optimisation, shadow IT), AI coding tools
+  (Cursor, Claude Code, Copilot, Windsurf, Codex), ITAM, allocation, showback and
+  chargeback, anomaly management, waste detection playbooks, workload onboarding and M&A,
+  and GreenOps (cloud carbon, CSRD). Use for any query about technology cost, commitment
+  portfolio management, rightsizing, cost allocation, SaaS sprawl, AI dev tool spend, or
+  connecting spend to business value. Built by OptimNow.
 ---
 
 # FinOps - Expert Guidance
@@ -105,8 +104,9 @@ Billing **mechanics** are durable and are what these references are for. Price
 5. **When the tool returns provenance, read it before quoting.** The AI Pricing Hub
    tools return a `provenance` block. `tier: 1` means the figure was fetched live;
    `tier: 2` means it came from a dated static snapshot because the upstream was
-   unreachable, and `provenance.notice` says so explicitly. `dataAsOf` /
-   `upstreamTimestamp` is the date to put next to the number. A tier-2 figure is usable
+   unreachable, and `provenance.notice` says so explicitly. `upstreamTimestamp` is the
+   date to put next to a price; `eloAsOf` dates the quality scores, which move on a
+   different cadence. A tier-2 figure is usable
    as a dated snapshot, never as a current price. On tier 2 the compute catalogue is
    also a subset with no region dimension, so a region filter silently does not apply
    and an empty result can mean degraded data rather than no match - say which.

@@ -16,7 +16,7 @@ authors = [
   { name = "OptimNow", email = "contact@optimnow.io" }
 ]
 maintainers = [
-  { name = "Jean Latière", email = "j.latiere@gmail.com" }
+  { name = "Jean Latière", email = "jean@optimnow.io" }
 ]
 requires-python = ">=3.10"
 keywords = ["finops", "cloud", "cost", "mcp", "claude", "aws", "azure", "gcp"]

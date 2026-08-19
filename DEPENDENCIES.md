@@ -85,7 +85,8 @@ depends on.
 **`ai-pricing-hub-mcp` is not on this cascade.** Its static fallback catalogue is
 regenerated only by running `npm run refresh-fallback` by hand. That matters, because the
 fallback is what gets served whenever the live fetch fails, and an unrefreshed fallback
-ages silently. Check its `dataAsOf` before trusting a tier-2 response.
+ages silently. Read the `provenance` block's as-of timestamp and its `notice`, which
+states the snapshot's age, before trusting a tier-2 response.
 
 ---
 
@@ -127,7 +128,7 @@ The riskiest repo in the family: everything downstream reads it.
 | The `provenance` block - tier semantics, field names, the stale notice | `cloud-finops-skills` -> `SKILL.md` / `POWER.md` "Price figures" rule 5, and `INSTALLATION.md` | The skill's dated-price doctrine instructs the model to read those exact fields |
 | Tool names, signatures, output shape | `cloud-finops-skills` -> `SKILL.md`, `POWER.md`, `INSTALLATION.md` | Tool names appear in the doctrine and the routing |
 | The deployment URL | `cloud-finops-skills` -> `README.md`, `INSTALLATION.md` | Published in both |
-| The static fallback catalogue | Nothing, but check `dataAsOf` | See the cascade note above |
+| The static fallback catalogue | Nothing, but check the `provenance` as-of timestamp | See the cascade note above |
 
 ### `cloud-finops-skills` (this repo)
 
@@ -159,7 +160,7 @@ Worth carrying in your head when reviewing anything here.
    generated-and-CI-checked sync exists because of the second one. Before adding a
    capability to a second repo, check whether it can route to the first instead. The
    reasoning behind the standing decision not to put pricing tools inside
-   `cloud-finops-mcp` is in the Roadmap section of `CLAUDE.md`.
+   `cloud-finops-mcp` is in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ---
 

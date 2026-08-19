@@ -38,11 +38,11 @@ from shutil import which
 
 LIVENESS_SECONDS = 5
 ROUNDTRIP_TIMEOUT = 30
-# Floor for the bundled content. The real numbers are ~29 references and ~25
-# playbooks; the floor exists to catch a wheel built with an empty or partial
-# data bundle, not to pin exact counts (which would need bumping on every
-# content PR). A wheel that ships zero content starts cleanly and answers every
-# tool call with an empty list - phases 1 and 2 cannot tell the difference.
+# Floor for the bundled content, deliberately set well below the real counts so
+# it does not need bumping on every content PR. It exists to catch a wheel built
+# with an empty or partial data bundle, not to pin exact numbers: a wheel that
+# ships zero content starts cleanly and answers every tool call with an empty
+# list, which phases 1 and 2 cannot tell apart from a healthy server.
 MIN_REFERENCES = 20
 MIN_PLAYBOOKS = 20
 EXPECTED_TOOLS = {

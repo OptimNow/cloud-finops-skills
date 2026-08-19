@@ -2,8 +2,13 @@ name: Auto-tag and release on plugin.json bump
 
 # When a push to main changes .claude-plugin/plugin.json, read the version
 # field, create a matching v<version> tag (if one does not already exist),
-# build the cloud-finops-v<version>.zip artefact, and create the GitHub
-# Release with the zip attached.
+# build the cloud-finops-v<version>.zip artefact, create the GitHub Release
+# with the zip attached, publish the wheel to PyPI, and announce the new
+# version to the MCP Registry.
+#
+# The registry step was added in August 2026: it had been a manual step and
+# had already drifted (registry on 1.29.0, PyPI and server.json on 1.30.0).
+# Every distribution surface now moves from this one plugin.json bump.
 #
 # Why we don't just push the tag and let release.yml fire:
 # GitHub blocks workflows triggered by GITHUB_TOKEN events to prevent
@@ -47,6 +52,34 @@ jobs:
     steps:
       - name: Checkout pushed commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+
+      # server.json carries the version twice and nothing gated it until now,
+      # which is why it is the file that drifts (it was missed entirely in the
+      # 1.30.0 release checklist). pyproject.toml is auto-pinned below so it
+      # cannot drift; server.json is hand-edited and feeds the MCP Registry
+      # entry, so a mismatch would advertise the wrong version to every
+      # registry consumer. Checked here, before the first irreversible step.
+      - name: Verify server.json versions match plugin.json
+        run: |
+          set -euo pipefail
+          plugin_version=$(jq -r '.version' .claude-plugin/plugin.json)
+          top_version=$(jq -r '.version' server.json)
+          pkg_version=$(jq -r '.packages[0].version' server.json)
+
+          echo "plugin.json            = $plugin_version"
+          echo "server.json .version   = $top_version"
+          echo "server.json .packages[0].version = $pkg_version"
+
+          rc=0
+          if [[ "$top_version" != "$plugin_version" ]]; then
+            echo "::error file=server.json::top-level .version ($top_version) does not match plugin.json ($plugin_version)"
+            rc=1
+          fi
+          if [[ "$pkg_version" != "$plugin_version" ]]; then
+            echo "::error file=server.json::.packages[0].version ($pkg_version) does not match plugin.json ($plugin_version)"
+            rc=1
+          fi
+          exit $rc
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
@@ -294,3 +327,63 @@ jobs:
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
         with:
           packages-dir: dist/
+
+  # Announce the new version to the MCP Registry.
+  #
+  # Until this job existed, registry publishing was a manual step that nothing
+  # gated - and it drifted: the registry served 1.29.0 while PyPI and
+  # server.json were on 1.30.0. The registry is a discovery surface, so a
+  # stale entry means every consumer browsing it installs an old version.
+  #
+  # Auth is GitHub OIDC, which requires no secret: the registry grants the
+  # `io.github.OptimNow/*` namespace to workflows running in an OptimNow repo,
+  # which is exactly the namespace server.json declares. `id-token: write` is
+  # what makes the OIDC token available.
+  publish-registry:
+    name: Publish server.json to the MCP Registry
+    needs: [tag-and-release, publish-mcp]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # required for MCP Registry OIDC authentication
+    steps:
+      - name: Checkout tagged commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+        with:
+          ref: ${{ needs.tag-and-release.outputs.tag }}
+
+      # The registry validates that the PyPI package named in server.json
+      # actually exists at the declared version before accepting the entry
+      # ("Package validation failed" otherwise). PyPI's index is not
+      # instantly consistent after an upload, so wait for the version to be
+      # visible rather than racing it.
+      - name: Wait for the version to appear on PyPI
+        env:
+          VERSION: ${{ needs.tag-and-release.outputs.version }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            if curl -fsSL "https://pypi.org/pypi/cloud-finops-mcp/${VERSION}/json" >/dev/null 2>&1; then
+              echo "cloud-finops-mcp ${VERSION} is visible on PyPI (attempt ${attempt})"
+              exit 0
+            fi
+            echo "Attempt ${attempt}: cloud-finops-mcp ${VERSION} not on PyPI yet, retrying in 10s"
+            sleep 10
+          done
+          echo "::error::cloud-finops-mcp ${VERSION} never became visible on PyPI; registry publish would fail validation"
+          exit 1
+
+      # Asset names are GOOS_GOARCH, so `uname -m` (x86_64) has to be
+      # normalised to Go's `amd64`. This is the install snippet from the
+      # registry's own GitHub Actions guide.
+      - name: Install mcp-publisher
+        run: |
+          set -euo pipefail
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher --version
+
+      - name: Authenticate to the MCP Registry (GitHub OIDC)
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server.json
+        run: ./mcp-publisher publish

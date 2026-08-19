@@ -79,6 +79,14 @@ Claude Code projects.
 Builds `dist/claude-projects/cloud-finops.zip`. Upload via Claude.ai or Claude Desktop:
 **Settings → Skills → Upload zip**.
 
+In the Customize panel, open **Skills** and use the **+** menu:
+
+![The Skills panel in Claude's Customize settings, with the plus menu open on Create with Claude, Write skill instructions, and Upload a skill](assets/claude-skill-customize.png)
+
+Pick **Upload a skill** and drop the zip into the dialog:
+
+![The Upload skill dialog, showing the drag-and-drop area and the file requirements for a .zip containing a SKILL.md](assets/claude-skill-upload.png)
+
 The release workflow also attaches a version-tagged build
 (`cloud-finops-vX.Y.Z.zip`) to every GitHub release - you can grab it from
 https://github.com/OptimNow/cloud-finops-skills/releases without running the
@@ -312,24 +320,10 @@ pip install cloud-finops-mcp
 uvx cloud-finops-mcp
 ```
 
-**Six tools (all read-only), split across two surfaces:**
-
-References (long-form provider/discipline files):
-
-- `list_references()` - all references with their FCP metadata
-- `get_reference(name)` - full markdown body of one reference
-- `find_references(domain?, capability?, phase?, persona?, maturity?)` - faceted query
-  over the FinOps Capability/Phase frontmatter
-
-Playbooks (small named-pattern runbooks):
-
-- `list_playbooks()` - all playbooks with scope / service / waste-category metadata
-- `get_playbook(name)` - full markdown body of one playbook
-- `find_playbooks(scope?, service?, waste_category?, confidence?)` - faceted query
-
-Use a playbook for *"how do I detect/fix this specific pattern?"* (zombie NAT, snapshot
-sprawl, idle ELB). Use a reference for billing mechanics, commitment strategy,
-allocation methodology, or any cross-pattern reasoning.
+**What the six tools do** is documented once, in the
+[README's MCP server section](./README.md#mcp-server-cross-tool-search-style-retrieval):
+three over references, three over playbooks, each with the question it answers and when to
+reach for a playbook rather than a reference. This page covers the wiring instead.
 
 **Configure your client** by adding the appropriate snippet to its MCP config file:
 
@@ -416,10 +410,12 @@ Claude Desktop / Claude Code (`claude_desktop_config.json` or `.mcp.json`):
 
 On Windows, wrap the command: `"command": "cmd"`, `"args": ["/c", "npx", "mcp-remote", "<url>"]`.
 
-**Three tools (all read-only):**
+**Five tools (all read-only):**
 
-- `compare-llm-models(provider?, category?, openness?, capability?, maxInputPrice?, maxOutputPrice?, minElo?, useCasePreset?, volumePreset?, limit?)` - model comparison by price, quality (ELO), and efficiency, with list and cache/batch-optimised cost
-- `estimate-llm-cost(modelName?, useCasePreset?, monthlyVolume?, customInputTokens?, customOutputTokens?)` - per-request and monthly cost for a model against a use-case token profile
+- `compare-llm-models(provider?, category?, openness?, capability?, maxInputPrice?, maxOutputPrice?, minElo?, useCasePreset?, volumePreset?, limit?)` - browse and filter the whole catalogue into a ranked table. Use when the user wants to see the field
+- `recommend-llm-model(useCasePreset, maxMonthlyBudget?, minElo?, requiredCapability?, openness?, volumePreset?)` - a ranked top 3 for one workload, each with a per-constraint satisfied/violated breakdown. Use when the user wants an answer rather than a table. An over-constrained query is reported as such and returns nearest misses
+- `compare-models-side-by-side(models, volumePreset?)` - 2 to 4 named models against all 8 use-case profiles. Use when the user names the models to weigh against each other
+- `estimate-llm-cost(modelName?, useCasePreset?, monthlyVolume?, customInputTokens?, customOutputTokens?)` - per-request and monthly cost for a model against a use-case token profile. The one to reach for when the user supplies their own token counts or a volume outside the 10k/100k/1m presets
 - `compare-compute-pricing(provider?, category?, processor?, useCase?, minVCPUs?, maxVCPUs?, minMemory?, maxMemory?, sortBy?, limit?)` - instance pricing across AWS, Azure, GCP, DigitalOcean, OCI, OVH, and Alibaba, including spot, Savings Plan, and reserved rates
 
 **Read the provenance block before quoting anything it returns.** Every response carries
@@ -428,7 +424,9 @@ one, and it is the thing that makes the dated-price rule workable:
 | Field | Why it matters |
 |---|---|
 | `provenance.tier` | `1` = fetched live from optimtoken.optimnow.io. `2` = served from a committed static snapshot because the upstream was unreachable |
-| `provenance.dataAsOf` / `upstreamTimestamp` | The as-of date to put next to the figure |
+| `provenance.upstreamTimestamp` | The as-of date to put next to a price figure |
+| `provenance.eloAsOf` | The as-of date for the quality (ELO) scores, which move on a different cadence from prices |
+| `provenance.pricesVerified` | Whether the rates were reconciled against the vendor's own published pricing rather than taken from the upstream aggregator as-is |
 | `provenance.notice` | Present on tier 2, and states plainly that the pricing is stale, how old the snapshot is, and which filters were *not* applied |
 
 A tier-2 response is still usable - it is a dated snapshot, not a guess - but it must be

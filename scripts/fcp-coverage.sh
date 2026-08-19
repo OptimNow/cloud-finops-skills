@@ -14,9 +14,12 @@
 #
 # Usage:
 #   ./scripts/fcp-coverage.sh           Generate fcp-coverage.md
-#   ./scripts/fcp-coverage.sh --check   Generate AND fail if a frontmatter is
-#                                       missing or declares a non-canonical
-#                                       capability (use in CI).
+#   ./scripts/fcp-coverage.sh --check   Fail if a frontmatter is missing or
+#                                       declares a non-canonical capability,
+#                                       OR if the committed fcp-coverage.md
+#                                       differs from a fresh render (use in
+#                                       CI). Never writes fcp-coverage.md, so
+#                                       a check run leaves the tree clean.
 
 set -euo pipefail
 
@@ -29,6 +32,12 @@ CHECK_MODE=""
 
 REF_DIR="skills/cloud-finops/references"
 OUT_FILE="fcp-coverage.md"
+
+# Always render to a temporary file. In normal mode it is moved over
+# OUT_FILE; in --check mode it is diffed against the committed OUT_FILE and
+# then discarded, so CI never dirties the working tree.
+RENDER_FILE="$(mktemp "${TMPDIR:-/tmp}/fcp-coverage.XXXXXX")"
+trap 'rm -f "$RENDER_FILE"' EXIT
 
 # ---- Canonical FinOps Framework 2026 (4 Domains, 22 Capabilities) ----------
 # Source: https://www.finops.org/framework/ (post-2026 update)
@@ -218,7 +227,7 @@ covered_caps=0
         line="$line _(secondary: $secondary)_"
       fi
       if [[ -z "$primary" && -z "$secondary" ]]; then
-        line="$line - **GAP** (see Roadmap in CLAUDE.md for deferred capabilities)"
+        line="$line - **GAP** (see docs/ROADMAP.md for deferred capabilities)"
       fi
       echo "$line"
     done
@@ -233,15 +242,42 @@ covered_caps=0
   echo
   echo "**Any-coverage** (primary OR secondary): $((covered_caps + secondary_only_caps)) / ${total_caps} (${pct_any}%) - includes ${secondary_only_caps} capabilities marked \`[~]\` that are touched by another reference's \`fcp_capabilities_secondary\` but have no primary owner yet."
   echo
-  echo "**True gaps** (no primary AND no secondary): ${gap_caps}. These are tracked in the Roadmap section of CLAUDE.md with rationale and trigger-to-revisit."
+  echo "**True gaps** (no primary AND no secondary): ${gap_caps}. These are tracked in docs/ROADMAP.md with rationale and trigger-to-revisit."
   # Keep the legacy single-number for any caller that greps for it
   echo
   echo "_Legacy summary line (do not rely on this for scripting): **Coverage: ${covered_caps} / ${total_caps} Framework Capabilities (${pct_primary}%)**_"
-} > "$OUT_FILE"
+} > "$RENDER_FILE"
 
-echo "Generated $OUT_FILE: ${covered_caps}/${total_caps} capabilities covered"
-
-if [[ -n "$CHECK_MODE" && $ERRORS -gt 0 ]]; then
-  echo "FAIL: $ERRORS frontmatter error(s) - see warnings above" >&2
-  exit 1
+if [[ -z "$CHECK_MODE" ]]; then
+  mv "$RENDER_FILE" "$OUT_FILE"
+  trap - EXIT
+  echo "Generated $OUT_FILE: ${covered_caps}/${total_caps} capabilities covered"
+  exit 0
 fi
+
+# ---- --check mode ----------------------------------------------------------
+# Two independent failure conditions: bad frontmatter, and a committed matrix
+# that no longer matches what the frontmatter renders to. The second one is
+# the drift check CI advertises - without it a stale fcp-coverage.md passes
+# green, because generating the file and then not comparing it proves nothing.
+echo "Rendered matrix from frontmatter: ${covered_caps}/${total_caps} capabilities covered"
+
+CHECK_FAILED=0
+
+if [[ $ERRORS -gt 0 ]]; then
+  echo "FAIL: $ERRORS frontmatter error(s) - see warnings above" >&2
+  CHECK_FAILED=1
+fi
+
+if [[ ! -f "$OUT_FILE" ]]; then
+  echo "FAIL: $OUT_FILE is missing - run ./scripts/fcp-coverage.sh and commit it" >&2
+  CHECK_FAILED=1
+elif ! diff -u "$OUT_FILE" "$RENDER_FILE" \
+  --label "$OUT_FILE (committed)" --label "$OUT_FILE (regenerated)"; then
+  echo "" >&2
+  echo "FAIL: $OUT_FILE is stale - reference frontmatter has changed since it" >&2
+  echo "was last generated. Run ./scripts/fcp-coverage.sh and commit the result." >&2
+  CHECK_FAILED=1
+fi
+
+exit "$CHECK_FAILED"

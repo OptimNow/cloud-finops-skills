@@ -25,8 +25,8 @@ Marker legend:
 - [x] **Planning & Estimating** - finops-ai-value-management.md
 - [~] **Forecasting** _(secondary: finops-ai-value-management.md; finops-aws-commitments.md; finops-azure-commitments.md; finops-onboarding-workloads.md)_
 - [~] **Budgeting** _(secondary: finops-allocation-showback.md; finops-anomaly-management.md; finops-chargeback.md; finops-onboarding-workloads.md)_
-- [ ] **KPIs & Benchmarking** - **GAP** (see Roadmap in CLAUDE.md for deferred capabilities)
-- [x] **Unit Economics** - finops-for-ai.md
+- [ ] **KPIs & Benchmarking** - **GAP** (see docs/ROADMAP.md for deferred capabilities)
+- [x] **Unit Economics** - finops-for-ai.md _(secondary: finops-ai-value-management.md)_
 
 ## Optimize Usage & Cost
 
@@ -38,10 +38,10 @@ Marker legend:
 
 ## Manage the FinOps Practice
 
-- [ ] **Executive Strategy Alignment** - **GAP** (see Roadmap in CLAUDE.md for deferred capabilities)
+- [ ] **Executive Strategy Alignment** - **GAP** (see docs/ROADMAP.md for deferred capabilities)
 - [x] **FinOps Practice Operations** - finops-framework.md; optimnow-methodology.md _(secondary: finops-ai-value-management.md; finops-onboarding-workloads.md)_
 - [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-tagging.md)_
-- [ ] **FinOps Education & Enablement** - **GAP** (see Roadmap in CLAUDE.md for deferred capabilities)
+- [ ] **FinOps Education & Enablement** - **GAP** (see docs/ROADMAP.md for deferred capabilities)
 - [x] **Invoicing & Chargeback** - finops-chargeback.md
 - [~] **FinOps Assessment** _(secondary: finops-framework.md)_
 - [~] **Automation, Tools & Services** _(secondary: finops-tagging.md; finops-waste-detection-playbooks.md)_
@@ -53,6 +53,6 @@ Marker legend:
 
 **Any-coverage** (primary OR secondary): 19 / 22 (86%) - includes 7 capabilities marked `[~]` that are touched by another reference's `fcp_capabilities_secondary` but have no primary owner yet.
 
-**True gaps** (no primary AND no secondary): 3. These are tracked in the Roadmap section of CLAUDE.md with rationale and trigger-to-revisit.
+**True gaps** (no primary AND no secondary): 3. These are tracked in docs/ROADMAP.md with rationale and trigger-to-revisit.
 
 _Legacy summary line (do not rely on this for scripting): **Coverage: 12 / 22 Framework Capabilities (54%)**_

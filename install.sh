@@ -86,8 +86,13 @@ trap cleanup EXIT
 # Print the help block delimited by the #>>USAGE / #<<USAGE markers in the
 # header. Marker-delimited rather than line-numbered so the help cannot
 # silently truncate when the header grows.
+#
+# The comment prefix is stripped with `\{0,1\}` rather than `\?`. Both mean
+# "zero or one" to GNU sed, but `\?` is a GNU extension: BSD sed, which is what
+# macOS ships and this script claims to support, reads it as a literal `?` and
+# leaves every help line with its `# ` prefix intact.
 usage() {
-  awk '/^#>>USAGE$/{f=1; next} /^#<<USAGE$/{exit} f' "$0" | sed 's/^# \?//'
+  awk '/^#>>USAGE$/{f=1; next} /^#<<USAGE$/{exit} f' "$0" | sed 's/^# \{0,1\}//'
   exit 0
 }
 
@@ -165,6 +170,23 @@ write_concat_body() {
 #
 # The routing contract only works if the model can actually reach the bodies,
 # so the header states both retrieval paths explicitly.
+# Emit "- `<slug>` - <description>" for every reference, taking the description
+# from the file's line-3 blockquote.
+#
+# This loop used to exist twice - here and in build_copilot_instructions - with
+# two undocumented differences: the copilot copy truncated at 180 characters
+# instead of 220 and kept the `.md` suffix on the label. Neither difference was
+# deliberate, so the two call sites are now one and the longer, suffix-free form
+# won (it matches how references are named everywhere else in the repo).
+emit_reference_index() {
+  local ref desc name
+  for ref in "$SRC_DIR/skills/cloud-finops/references"/*.md; do
+    name=$(basename "$ref" .md)
+    desc=$(awk '/^>/{sub(/^> ?/,""); print; exit}' "$ref" | head -c 220)
+    echo "- \`$name\` - $desc"
+  done
+}
+
 write_routing_body() {
   strip_frontmatter "$SRC_DIR/skills/cloud-finops/SKILL.md"
   cat <<'EOF'
@@ -193,12 +215,7 @@ not from model recall.
 ## Reference index
 
 EOF
-  local ref desc name
-  for ref in "$SRC_DIR/skills/cloud-finops/references"/*.md; do
-    name=$(basename "$ref" .md)
-    desc=$(awk '/^>/{sub(/^> ?/,""); print; exit}' "$ref" | head -c 220)
-    echo "- \`$name\` - $desc"
-  done
+  emit_reference_index
   if [[ -d "$SRC_DIR/skills/cloud-finops/playbooks" ]]; then
     cat <<'EOF'
 
@@ -523,13 +540,70 @@ install_chatgpt() {
   fi
 }
 
+# The tail of both ChatGPT instruction variants - reasoning sequence, price
+# figures, response format, maturity awareness, source - was duplicated verbatim
+# across build_chatgpt_instructions and build_grouped_instructions. It differs in
+# exactly two places: where the methodology lens lives, and whether the knowledge
+# files are called "domain" or "grouped". Every doctrine edit therefore had to be
+# made twice, and an edit applied to only one variant drifted silently.
+#
+# $1 - where the methodology lens lives, as it should read in prose
+# $2 - the adjective for the knowledge files ("domain" or "grouped")
+#
+# Note the escaped \$X below: this heredoc is unquoted so $1/$2 expand, which
+# means the literal "$X per 1M input tokens" needs protecting.
+emit_instructions_tail() {
+  local methodology_ref="$1"
+  local file_noun="$2"
+  cat <<EOF
+## Reasoning sequence
+
+1. Apply the methodology lens (${methodology_ref}): diagnose before prescribing, connect cost to value, recommend progressively.
+2. Retrieve the ${file_noun} knowledge file(s) matching the query.
+3. Diagnose before prescribing - ask about the organisation's current state if missing.
+4. Connect cost recommendations to business outcomes.
+5. Recommend progressively - quick wins first, structural changes second.
+6. Reference open-source FinOps tools (FinOps Toolkit, OpenCost, Kubecost, Infracost, etc.) where they fit.
+7. Never quote a price without its as-of date and source - see Price figures below.
+
+## Price figures
+
+Billing mechanics are durable. Price figures are volatile and go stale in these
+knowledge files within weeks. Treat the two differently.
+
+- Quote mechanics and ratios (batch discount, cache-read multiplier, commitment term structure) with confidence. Any absolute price in the knowledge files is illustrative, and must be dated when you repeat it.
+- Format every figure as "\$X per 1M input tokens (list price, <source>, <date>)". A figure with no date is not usable in a client deliverable.
+- For a current figure, refer the user to https://optimtoken.optimnow.io rather than quoting from memory.
+- Never interpolate a missing price from a neighbouring model, a previous generation, or another region. If the figure is not available, say so.
+
+## Response format
+
+Structure substantive answers with these headers:
+- **Context** - what the user told you, what assumptions you're making
+- **Recommendation** - the actionable advice
+- **Metrics and signals** - what to measure or watch
+- **Business impact** - how this connects to outcomes (cost saved, risk reduced, capability unlocked)
+
+For brief factual questions, skip the structure. Use it for advisory or strategy questions.
+
+## Maturity awareness
+
+Always assess maturity before recommending solutions. A Crawl organisation (cost allocation <50%) needs visibility before optimisation. Recommending commitment discounts to an org with poor allocation creates committed waste.
+
+## Source
+
+Cloud FinOps Skill by OptimNow (https://optimnow.io). Licensed CC BY-SA 4.0.
+Source: https://github.com/OptimNow/cloud-finops-skills
+EOF
+}
+
 build_chatgpt_instructions() {
   cat <<'EOF'
 # Cloud FinOps Expert Assistant
 
 You are an expert FinOps practitioner. Help users understand and optimise spend on cloud (AWS / Azure / GCP / OCI), AI platforms (Anthropic, Bedrock, Azure OpenAI / Foundry, Vertex AI), data platforms (Databricks, Microsoft Fabric, Snowflake), AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf, Gemini Code Assist), SaaS, and cross-cutting concerns (tagging, FinOps Framework, GreenOps, ITAM).
 
-Your knowledge files contain accurate, current billing mechanics and optimisation patterns refreshed monthly (around the 1st of each month). Always retrieve relevant knowledge files before answering - do not rely on general training data for billing specifics.
+Your knowledge files contain accurate, current billing mechanics and optimisation patterns refreshed twice monthly (the 1st and the 15th). Always retrieve relevant knowledge files before answering - do not rely on general training data for billing specifics.
 
 ## Domain routing
 
@@ -575,45 +649,8 @@ Use these knowledge files for the following query types:
 For multi-domain queries, retrieve all relevant files and synthesise. For named
 waste patterns, retrieve the matching `playbook-<slug>.md` knowledge file.
 
-## Reasoning sequence
-
-1. Apply the methodology lens (see Reasoning Methodology Appendix in finops-for-ai.md): diagnose before prescribing, connect cost to value, recommend progressively.
-2. Retrieve the domain knowledge file(s) matching the query.
-3. Diagnose before prescribing - ask about the organisation's current state if missing.
-4. Connect cost recommendations to business outcomes.
-5. Recommend progressively - quick wins first, structural changes second.
-6. Reference open-source FinOps tools (FinOps Toolkit, OpenCost, Kubecost, Infracost, etc.) where they fit.
-7. Never quote a price without its as-of date and source - see Price figures below.
-
-## Price figures
-
-Billing mechanics are durable. Price figures are volatile and go stale in these
-knowledge files within weeks. Treat the two differently.
-
-- Quote mechanics and ratios (batch discount, cache-read multiplier, commitment term structure) with confidence. Any absolute price in the knowledge files is illustrative, and must be dated when you repeat it.
-- Format every figure as "$X per 1M input tokens (list price, <source>, <date>)". A figure with no date is not usable in a client deliverable.
-- For a current figure, refer the user to https://optimtoken.optimnow.io rather than quoting from memory.
-- Never interpolate a missing price from a neighbouring model, a previous generation, or another region. If the figure is not available, say so.
-
-## Response format
-
-Structure substantive answers with these headers:
-- **Context** - what the user told you, what assumptions you're making
-- **Recommendation** - the actionable advice
-- **Metrics and signals** - what to measure or watch
-- **Business impact** - how this connects to outcomes (cost saved, risk reduced, capability unlocked)
-
-For brief factual questions, skip the structure. Use it for advisory or strategy questions.
-
-## Maturity awareness
-
-Always assess maturity before recommending solutions. A Crawl organisation (cost allocation <50%) needs visibility before optimisation. Recommending commitment discounts to an org with poor allocation creates committed waste.
-
-## Source
-
-Cloud FinOps Skill by OptimNow (https://optimnow.io). Licensed CC BY-SA 4.0.
-Source: https://github.com/OptimNow/cloud-finops-skills
 EOF
+  emit_instructions_tail "see Reasoning Methodology Appendix in finops-for-ai.md" "domain"
 }
 
 build_grouped_instructions() {
@@ -622,7 +659,7 @@ build_grouped_instructions() {
 
 You are an expert FinOps practitioner. Help users understand and optimise spend on cloud (AWS / Azure / GCP / OCI), AI platforms (Anthropic, Bedrock, Azure OpenAI / Foundry, Vertex AI), data platforms (Databricks, Microsoft Fabric, Snowflake), AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf, Gemini Code Assist), SaaS, and cross-cutting concerns (tagging, FinOps Framework, GreenOps, ITAM, anomaly management, allocation/showback, chargeback, onboarding, Kubernetes, waste detection).
 
-Your knowledge files are grouped thematically and refreshed monthly (around the 1st of each month). Always retrieve the relevant grouped file before answering - do not rely on general training data for billing specifics.
+Your knowledge files are grouped thematically and refreshed twice monthly (the 1st and the 15th). Always retrieve the relevant grouped file before answering - do not rely on general training data for billing specifics.
 
 ## Domain routing (grouped layout)
 
@@ -646,45 +683,8 @@ For multi-domain queries, retrieve all relevant grouped files and synthesise. Fo
 named waste patterns, look up the matching `## playbook: <slug>` section inside
 `playbooks.md`.
 
-## Reasoning sequence
-
-1. Apply the methodology lens (methodology.md): diagnose before prescribing, connect cost to value, recommend progressively.
-2. Retrieve the grouped knowledge file(s) matching the query.
-3. Diagnose before prescribing - ask about the organisation's current state if missing.
-4. Connect cost recommendations to business outcomes.
-5. Recommend progressively - quick wins first, structural changes second.
-6. Reference open-source FinOps tools (FinOps Toolkit, OpenCost, Kubecost, Infracost, etc.) where they fit.
-7. Never quote a price without its as-of date and source - see Price figures below.
-
-## Price figures
-
-Billing mechanics are durable. Price figures are volatile and go stale in these
-knowledge files within weeks. Treat the two differently.
-
-- Quote mechanics and ratios (batch discount, cache-read multiplier, commitment term structure) with confidence. Any absolute price in the knowledge files is illustrative, and must be dated when you repeat it.
-- Format every figure as "$X per 1M input tokens (list price, <source>, <date>)". A figure with no date is not usable in a client deliverable.
-- For a current figure, refer the user to https://optimtoken.optimnow.io rather than quoting from memory.
-- Never interpolate a missing price from a neighbouring model, a previous generation, or another region. If the figure is not available, say so.
-
-## Response format
-
-Structure substantive answers with these headers:
-- **Context** - what the user told you, what assumptions you're making
-- **Recommendation** - the actionable advice
-- **Metrics and signals** - what to measure or watch
-- **Business impact** - how this connects to outcomes (cost saved, risk reduced, capability unlocked)
-
-For brief factual questions, skip the structure. Use it for advisory or strategy questions.
-
-## Maturity awareness
-
-Always assess maturity before recommending solutions. A Crawl organisation (cost allocation <50%) needs visibility before optimisation. Recommending commitment discounts to an org with poor allocation creates committed waste.
-
-## Source
-
-Cloud FinOps Skill by OptimNow (https://optimnow.io). Licensed CC BY-SA 4.0.
-Source: https://github.com/OptimNow/cloud-finops-skills
 EOF
+  emit_instructions_tail "methodology.md" "grouped"
 }
 
 
@@ -889,13 +889,7 @@ EOF
   echo
   echo "## Available reference files (for deeper context, see source repo)"
   echo
-  for ref in "$SRC_DIR/skills/cloud-finops/references"/*.md; do
-    local fname
-    fname=$(basename "$ref")
-    local desc
-    desc=$(awk '/^>/{sub(/^> ?/,""); print; exit}' "$ref" | head -c 180)
-    echo "- \`$fname\` - $desc"
-  done
+  emit_reference_index
   echo
   echo "Source: https://github.com/OptimNow/cloud-finops-skills"
 }
@@ -1000,7 +994,6 @@ main() {
       --grouped)  GROUPED=1; shift ;;
       --inline)   INLINE=1; shift ;;
       --dest)     DEST_OVERRIDE="${2:?--dest requires a value}"; shift 2 ;;
-      --dir)      DEST_OVERRIDE="${2:?--dir requires a value}"; shift 2 ;;  # legacy alias
       --list)     list_tools; exit 0 ;;
       --help|-h)  usage ;;
       *)          err "Unknown option: $1"; echo; usage ;;
