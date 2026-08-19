@@ -2,17 +2,17 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.OptimNow/cloud-finops",
   "title": "Cloud FinOps Skill & MCP",
-  "description": "Queryable Cloud FinOps knowledge for AI agents: cloud cost optimisation across AWS, Azure, GCP and OCI, AI inference economics, Kubernetes, Databricks/Fabric/Snowflake, allocation and chargeback, anomaly management, plus named-pattern waste detection playbooks. By OptimNow.",
+  "description": "Queryable Cloud FinOps knowledge for AI agents: AWS/Azure/GCP cost optimisation, waste playbooks.",
   "repository": {
     "url": "https://github.com/OptimNow/cloud-finops-skills",
     "source": "github"
   },
-  "version": "1.30.0",
+  "version": "1.31.0",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "cloud-finops-mcp",
-      "version": "1.30.0",
+      "version": "1.31.0",
       "transport": {
         "type": "stdio"
       }
