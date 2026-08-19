@@ -45,6 +45,56 @@ as "agents":
   by later steps. Output-only quality gates therefore under-detect failure, which
   understates the true cost per successful task.
 
+## Token complexity classes - Big-T notation
+
+Big-T notation (Dan Neff, Adobe; published by the
+[Tokenomics Foundation](https://www.tokeneconomics.com/projects/big-t-notation/)
+under CC BY 4.0) applies the logic of Big-O runtime analysis to token spend: before
+committing to an architecture, ask how the bill scales as usage grows, not what one
+call costs. Token cost scales as **T(n · k · a)**:
+
+- **n** - request volume and input size (the factor everyone forecasts)
+- **k** - model calls per request: reasoning steps, multi-turn chains, tool calls
+  that replay context. Usually invisible in the request as written ("hidden k")
+- **a** - agent depth: sub-agents spawning sub-agents, multiplying k again
+
+| Class | Scaling behaviour | Example |
+|---|---|---|
+| T(1) | Constant - no model call per request | Cache hit, embedding lookup |
+| T(log n) | Sublinear - deterministic code shrinks input before the model sees it | Pre-filter, then summarise the survivors |
+| T(n) | Linear - one call per request, cost proportional to input | Single-shot classification |
+| T(n·k) | Multiplicative - k calls per request, k usually invisible | Multi-turn chat replaying full history every turn |
+| T(n·k·a) | Agent-multiplicative | Orchestrator spawns sub-agents that spawn tool calls |
+| T(∞) | Unbounded - loop with no termination condition | Retry loop without a cap |
+
+This grades the "unbounded per task" verdict in the table above: workflows and
+pipelines sit at T(n) or T(n·k) with a known k; true agents are T(n·k·a) with k and
+a decided at run time; an uncapped retry loop is T(∞) and belongs in incident
+response, not in a budget.
+
+**FinOps implications:**
+
+- **Change the class before optimising the coefficient.** Restructuring a workload
+  from T(n·k) to T(n) - isolated contexts instead of full-history replay, bounded
+  output templates - is worth more than any amount of prompt-shortening inside the
+  wrong class. The framework's own worked example (illustrative, as of August 2026)
+  cut a ten-document summarisation job ~34x by moving it from chat-replay T(n·k) to
+  engineered T(n).
+- **Forecast by class.** A workload's class names the variable that dominates its
+  growth: linear workloads scale with volume, agentic ones with depth and retries.
+  A cost estimate that assumed T(n) for a system built as T(n·k·a) is the usual
+  anatomy of a "30x over estimate" agent pilot.
+- **Hidden k is the audit target.** Reasoning tokens, retries, and context replay
+  rarely appear in request logs. Per-task tracing across providers (see the cost
+  anatomy section below) is what makes k and a observable at all.
+- **Jevons caveat.** Class improvements get reinvested: cheaper per-task cost
+  typically raises run frequency, so total spend falls less than unit cost does.
+  Budget for the rebound, not just the efficiency gain.
+
+The notation itself is durable mechanics; the framework is early-stage (published
+2026) and most of its companion tooling was still unreleased as of August 2026 -
+cite the classification, not the ecosystem.
+
 ## Agentic cost anatomy - where the tokens actually go
 
 - **Refinement is the sink.** ~60% of an agentic task's cost sits in checking,
@@ -175,6 +225,6 @@ making progress treat agent development as iterative learning, not project deliv
 
 ---
 
-> Sources: OptimNow methodology; x402 / MPP provider documentation (linked inline).
+> Sources: OptimNow methodology; Big-T Notation by Dan Neff, Tokenomics Foundation (CC BY 4.0, linked inline); x402 / MPP provider documentation (linked inline).
 
 > *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

@@ -570,6 +570,10 @@ This skill incorporates content derived from the following sources:
   descriptions, and maturity model structure are based on the FinOps Framework.
 - **[Point Five](https://www.pointfive.co)** - cloud optimisation recommendations
   informed several provider-specific best practices and quick-win patterns.
+- **[Tokenomics Foundation](https://www.tokeneconomics.com/)** - the token complexity
+  classes in the agentic FinOps reference are adapted from *Big-T Notation* by
+  Dan Neff (Adobe), published by the Tokenomics Foundation under
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 All referenced content has been adapted with additional context from OptimNow's
 consulting delivery experience. Any errors or opinionated interpretations are our own.
