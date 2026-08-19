@@ -418,6 +418,17 @@ Every file carries YAML frontmatter mapping it to a FinOps Framework Capability,
 persona and maturity gate, and a client that only fetches files cannot filter on any of
 it.
 
+The server serves mechanics, not current prices: any figure inside a reference body is
+illustrative and dated inline. Current prices come from the
+[AI Pricing Hub](https://optimtoken.optimnow.io) at query time - the same rule the
+skill states under "Price figures" in SKILL.md.
+
+On hosts that support MCP Apps (SEP-1865), the tool results render as interactive
+widgets - a playbook explorer with facet filters and a coverage matrix, a playbook
+viewer with copyable detection queries and a checkable fix list, and a reference
+browser with a reading panel. Hosts without MCP Apps support get the plain results;
+nothing about the tools changes. Details in [mcp_server/README.md](./mcp_server/README.md).
+
 Wires into Claude Code, Cursor, Codex CLI, Windsurf, Cline, and any other MCP-aware
 client. See [mcp_server/](./mcp_server/README.md) and the
 [INSTALLATION.md MCP section](./INSTALLATION.md#mcp-server-cross-tool).

@@ -665,7 +665,6 @@ S3 Storage Lens Advanced provides valuable insights into storage usage and trend
 ---
 
 ### RDS cost management strategy
-<!-- src:optimnow-rds-handbook -->
 
 Amazon RDS is a fully managed database service but its pricing model is complex enough
 to generate unexpected cost surges. RDS instances are a subset of EC2 instance types

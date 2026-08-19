@@ -36,6 +36,47 @@ def test_description_is_non_empty_for_every_reference() -> None:
         assert ref.description, f"{ref.name} has no description"
 
 
+def test_extract_description_joins_multiline_blockquote() -> None:
+    """A blockquote wrapped across lines is one description, not its first line."""
+    body = (
+        "# Some Reference\n"
+        "\n"
+        "> First half of the sentence that\n"
+        "> continues on the next line.\n"
+        "\n"
+        "Prose that must not leak into the description.\n"
+    )
+    desc = metadata._extract_description({}, body)
+    assert desc == "First half of the sentence that continues on the next line."
+
+
+def test_extract_description_stops_at_blockquote_paragraph_break() -> None:
+    """An empty '>' line separates paragraphs; only the first one is the description."""
+    body = "# T\n\n> The description.\n>\n> A second paragraph.\n"
+    assert metadata._extract_description({}, body) == "The description."
+
+
+# --- content version stamp ---------------------------------------------------
+
+
+def test_content_version_summary_reads_stamp(monkeypatch, tmp_path) -> None:
+    stamp = tmp_path / "content_version.txt"
+    stamp.write_text(
+        "version: 1.32.0\nsynced_at: 2026-08-19T10:00:00Z\nreferences: 33\nplaybooks: 25\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(metadata, "CONTENT_VERSION_FILE", stamp)
+    assert (
+        metadata.content_version_summary()
+        == "content version 1.32.0, synced 2026-08-19T10:00:00Z"
+    )
+
+
+def test_content_version_summary_none_when_missing(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(metadata, "CONTENT_VERSION_FILE", tmp_path / "absent.txt")
+    assert metadata.content_version_summary() is None
+
+
 def test_lookup_unknown_returns_none() -> None:
     assert metadata.get_by_name("nope-not-here") is None
 

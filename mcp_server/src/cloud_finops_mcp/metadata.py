@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 PLAYBOOKS_DIR = DATA_DIR / "playbooks"
+CONTENT_VERSION_FILE = DATA_DIR / "content_version.txt"
 
 # FCP fields we expose. Anything not listed here is ignored by the index.
 FCP_SCALAR_FIELDS = (
@@ -44,6 +45,7 @@ class Reference:
     path: Path
     description: str
     lines: int
+    title: str = ""
     fcp_domain: str | None = None
     fcp_capability: str | None = None
     fcp_capabilities_secondary: list[str] = field(default_factory=list)
@@ -56,6 +58,7 @@ class Reference:
         """Stable JSON-friendly shape returned by the MCP tools."""
         return {
             "name": self.name,
+            "title": self.title,
             "description": self.description,
             "fcp_domain": self.fcp_domain,
             "fcp_capability": self.fcp_capability,
@@ -105,20 +108,32 @@ def _split_frontmatter(text: str, source: str = "<unknown>") -> tuple[dict, str]
 def _extract_description(fm: dict, body: str) -> str:
     """Pull a one-line description.
 
-    Preference order: ``description`` frontmatter field → first non-blank
-    blockquote line → first non-blank prose line.
+    Preference order: ``description`` frontmatter field → first blockquote
+    (all its contiguous lines joined, since the visible description under the
+    H1 usually wraps across several ``>`` lines and taking only the first cut
+    it mid-sentence) → first non-blank prose line.
     """
     if isinstance(fm.get("description"), str) and fm["description"].strip():
         return fm["description"].strip()
 
-    for line in body.splitlines():
+    lines = body.splitlines()
+    for i, line in enumerate(lines):
         stripped = line.strip()
         if not stripped:
             continue
         if stripped.startswith("#"):
             continue  # skip headings, we want the explainer line
         if stripped.startswith(">"):
-            return stripped.lstrip("> ").strip()
+            parts: list[str] = []
+            for follow in lines[i:]:
+                follow_stripped = follow.strip()
+                if not follow_stripped.startswith(">"):
+                    break
+                text = follow_stripped.lstrip("> ").strip()
+                if not text:
+                    break  # an empty '>' separates paragraphs; keep the first
+                parts.append(text)
+            return " ".join(parts)
         return stripped
 
     return ""
@@ -141,12 +156,14 @@ def _parse_reference(path: Path) -> Reference:
 
     name = str(fm.get("name") or path.stem)
     description = _extract_description(fm, body)
+    title = _extract_title(body, fallback=name)
     lines = text.count("\n") + (0 if text.endswith("\n") else 1)
 
     return Reference(
         name=name,
         path=path,
         description=description,
+        title=title,
         lines=lines,
         fcp_domain=fm.get("fcp_domain") if isinstance(fm.get("fcp_domain"), str) else None,
         fcp_capability=fm.get("fcp_capability") if isinstance(fm.get("fcp_capability"), str) else None,
@@ -320,6 +337,28 @@ def get_playbook_by_name(name: str) -> Playbook | None:
         if pb.name == name:
             return pb
     return None
+
+
+def content_version_summary() -> str | None:
+    """One-line summary of the bundle stamp, or ``None`` if there is none.
+
+    The stamp (``data/content_version.txt``) is written by
+    ``scripts/sync_references.py`` and names the release version and sync date
+    the bundled content belongs to. ``None`` means the bundle predates the
+    stamp or is an editable install whose sync has not been re-run.
+    """
+    try:
+        text = CONTENT_VERSION_FILE.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    fields: dict[str, str] = {}
+    for line in text.splitlines():
+        key, sep, value = line.partition(":")
+        if sep:
+            fields[key.strip()] = value.strip()
+    version = fields.get("version", "unknown")
+    synced_at = fields.get("synced_at", "unknown date")
+    return f"content version {version}, synced {synced_at}"
 
 
 def reset_cache() -> None:

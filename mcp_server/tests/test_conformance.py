@@ -213,3 +213,38 @@ def test_facet_values_are_lowercase_and_consistent() -> None:
     for facet in ("scope", "waste_category", "confidence"):
         odd = [v for v in vocab[facet] if v != v.lower()]
         assert not odd, f"{facet} values are not lowercase: {odd}"
+
+
+# --- directory conformance: tool annotations (F10) ---------------------------
+
+
+async def test_every_tool_declares_title_and_read_only_annotations() -> None:
+    """Every tool must carry a title and explicit read-only annotations.
+
+    Connector directories (Anthropic's included) treat a missing title or
+    readOnlyHint/destructiveHint as a rejection criterion, not a default.
+    Everything this server does is a read-only lookup over a bundled set,
+    so the hints are uniform.
+    """
+    tools_list = await server.mcp.list_tools()
+    assert tools_list, "server exposes no tools"
+    for tool in tools_list:
+        assert tool.title, f"{tool.name} declares no title"
+        ann = tool.annotations
+        assert ann is not None, f"{tool.name} declares no annotations"
+        assert ann.readOnlyHint is True, f"{tool.name} is not marked read-only"
+        assert ann.destructiveHint is False, f"{tool.name} lacks destructiveHint=False"
+
+
+async def test_every_tool_description_says_when_to_use_it() -> None:
+    """A description that only says WHAT a tool does reads as interchangeable.
+
+    The directory review expects each description to steer the model on WHEN
+    to pick this tool over its siblings; 'Use this' is the convention all six
+    docstrings follow.
+    """
+    tools_list = await server.mcp.list_tools()
+    for tool in tools_list:
+        assert tool.description and "Use this" in tool.description, (
+            f"{tool.name} description does not say when to use it"
+        )

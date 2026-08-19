@@ -95,7 +95,9 @@ cloud-finops-skills/
 ├── mcp_server/            <- `cloud-finops-mcp` PyPI package (six MCP tools,
 │                             faceted retrieval over references + playbooks;
 │                             stdio + streamable-HTTP transports; MCP Apps
-│                             `ui://cloud-finops/playbook-viewer` resource)
+│                             resources: playbook-viewer, playbook-explorer,
+│                             reference-browser - shared JS in ui/_*.js is
+│                             inlined at import by server._load_ui)
 ├── scripts/               <- `fcp-coverage.sh` (parses FCP frontmatter, emits
 │                             `fcp-coverage.md`; its --check mode diffs the
 │                             committed matrix in CI) plus the guards:
@@ -377,6 +379,27 @@ maintainer's control and on an unpublished timeline.
   hosting project. The prototype had sat unvalidated since PR #133
   precisely because the only test in place asserted the resource existed,
   never that it rendered.
+
+**Update (2026-08-19): the gate now has an observable mechanism.** Claude
+Desktop's `mcp-ext-apps-host` attempts to set up MCP Apps for custom
+connectors and validates a `ui.domain` on the widget resource:
+sha256(connector URL as entered in Settings, no trailing slash)[:32] +
+`.claudemcpcontent.com`. A wrong or missing value logs
+`ui.domain validation failed for connector "<url>"` in the Desktop logs
+(observed live for ai-pricing-hub on 2026-08-19, including the fix-it
+one-liner the error prints). So the 2026-08-16 claim that a custom
+connector "gets the text fallback no matter how correct it is" is no
+longer the whole story - but whether a correct `ui.domain` is *sufficient*
+for rendering is still unproven for this repo's connector: the render test
+needs the connector added to the account and the Alpic deployment current.
+Per the test-first rule, `_meta.ui.domain` is NOT set on the resources;
+the precomputed value for the canonical URL
+`https://cloud-finops-skills-590a051d.alpic.live/mcp` is
+`1a3b12085dbe8a536c1a9f86d2e7e1a1.claudemcpcontent.com` - apply it only if
+a real render attempt fails with that log signature. When computing it,
+hash the public connector URL exactly as users are told to enter it, never
+an internal path - the wrong-input variant of this is exactly what broke
+ai-pricing-hub-mcp (fixed 2026-08-19).
 
 ### A packaged artefact cannot own volatile data (2026-08-17)
 
@@ -706,6 +729,17 @@ Two standing rules that follow from the map:
       PyPI publish and waits for the version to be visible on PyPI, because the
       registry validates the package before accepting the entry. Verify it landed
       at <https://registry.modelcontextprotocol.io/v0/servers?search=finops>.
+- [ ] **Release PR only: redeploy the hosted MCP (Alpic) after the tag, then verify
+      by calling it.** The Alpic deployment does not reliably pick up releases on its
+      own - the 2026-08-19 audit found it serving 1.29.0 content (pre price-purge)
+      while PyPI was already at 1.31.0. After the PyPI publish, trigger a redeploy on
+      Alpic, then call the hosted endpoint
+      (`https://cloud-finops-skills-590a051d.alpic.live/mcp`) and confirm it serves
+      the released content: the server's startup log names the bundle stamp
+      (`data/content_version.txt`, version + sync date, written by
+      `sync_references.py` since 1.32), or compare a `list_references` line count
+      against the tag. Do not tick this from the source alone - the audit found the
+      staleness only by calling the surface.
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
       topic list (can ride the release PR). It carries no reference count by design -
       see the no-hardcoded-counts rule above.

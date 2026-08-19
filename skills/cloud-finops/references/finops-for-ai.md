@@ -94,7 +94,6 @@ within hours.
 > design and ~2 hours of implementation. The barrier is lower than most teams expect.
 
 ### The full AI cost surface
-<!-- ref:ai-cost-allocation-harness -->
 
 The model API invoice is the most visible AI cost. It is rarely the complete picture.
 

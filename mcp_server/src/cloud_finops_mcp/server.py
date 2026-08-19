@@ -9,14 +9,30 @@ streamable HTTP (for a hosted deployment). The actual tool logic lives in
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 
 from . import __version__
 from . import metadata as _metadata
 from . import tools as _tools
+
+logger = logging.getLogger(__name__)
+
+# Every tool is a read-only lookup over a bundled content set: nothing is
+# mutated, the same call always returns the same result for a given bundle,
+# and no external world is touched. Declared explicitly because connector
+# directories treat missing annotations as a rejection criterion, not a
+# default.
+_READ_ONLY = ToolAnnotations(
+    readOnlyHint=True,
+    destructiveHint=False,
+    idempotentHint=True,
+    openWorldHint=False,
+)
 
 # Streamable HTTP defaults. Bind all interfaces because the only reason to run
 # this transport is to be reachable from outside the process. The port is a
@@ -24,14 +40,39 @@ from . import tools as _tools
 DEFAULT_HTTP_HOST = "0.0.0.0"  # noqa: S104 - see docstring on run_http
 DEFAULT_HTTP_PORT = 8000
 
-# MCP Apps (SEP-1865, extension id io.modelcontextprotocol/ui) resource: a
-# self-contained HTML view that renders get_playbook()'s markdown as
-# structured sections instead of raw text. Prototype for the 2026-07-28 spec
-# - see ui/playbook_viewer.html for the iframe<->host wiring.
+# MCP Apps (SEP-1865, extension id io.modelcontextprotocol/ui) resources:
+# self-contained HTML views over the tool results. The iframe<->host wiring
+# (ui/initialize handshake, tools/call, ui/open-link) lives once in
+# ui/_bridge.js and the playbook/markdown rendering once in
+# ui/_playbook_render.js; _load_ui() inlines them into each widget at import
+# time, so the served HTML stays fully self-contained (the host sandbox
+# blocks every external fetch) without hand-duplicated copies.
 PLAYBOOK_VIEWER_URI = "ui://cloud-finops/playbook-viewer"
-_PLAYBOOK_VIEWER_HTML = (
-    Path(__file__).resolve().parent / "ui" / "playbook_viewer.html"
-).read_text(encoding="utf-8")
+PLAYBOOK_EXPLORER_URI = "ui://cloud-finops/playbook-explorer"
+REFERENCE_BROWSER_URI = "ui://cloud-finops/reference-browser"
+
+_UI_DIR = Path(__file__).resolve().parent / "ui"
+_UI_MARKERS = (
+    ("<!--THEME_CSS-->", "_theme.css", "style"),
+    ("<!--BRIDGE-->", "_bridge.js", "script"),
+    ("<!--PLAYBOOK_RENDER-->", "_playbook_render.js", "script"),
+    ("<!--WIDGET_COMMON-->", "_widget_common.js", "script"),
+)
+
+
+def _load_ui(filename: str) -> str:
+    """Read a widget HTML file and inline the shared JS/CSS it declares."""
+    html = (_UI_DIR / filename).read_text(encoding="utf-8")
+    for marker, asset_name, tag in _UI_MARKERS:
+        if marker in html:
+            asset = (_UI_DIR / asset_name).read_text(encoding="utf-8")
+            html = html.replace(marker, f"<{tag}>\n{asset}\n</{tag}>")
+    return html
+
+
+_PLAYBOOK_VIEWER_HTML = _load_ui("playbook_viewer.html")
+_PLAYBOOK_EXPLORER_HTML = _load_ui("playbook_explorer.html")
+_REFERENCE_BROWSER_HTML = _load_ui("reference_browser.html")
 
 mcp = FastMCP(
     "cloud-finops",
@@ -48,14 +89,28 @@ mcp = FastMCP(
         "Use a playbook for 'how do I detect/fix this specific pattern' "
         "(zombie NAT, snapshot sprawl, idle ELB, etc.). Use a reference for "
         "billing mechanics, commitment strategy, allocation methodology, "
-        "or any cross-pattern reasoning."
+        "or any cross-pattern reasoning. "
+        "References carry billing mechanics, not current prices: any figure "
+        "inside is illustrative and dated inline. For a current price, use a "
+        "live pricing tool if one is available in the session, otherwise "
+        "route the user to https://optimtoken.optimnow.io (OptimNow AI "
+        "Pricing Hub) - never quote an undated figure from a reference body."
     ),
 )
 
 
-@mcp.tool()
+@mcp.tool(
+    title="List FinOps references",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": REFERENCE_BROWSER_URI}},
+)
 def list_references() -> dict[str, Any]:
     """List every bundled FinOps reference with its FCP metadata.
+
+    Use this to discover what the reference library covers before deciding
+    what to fetch. When the question already names a FinOps domain, phase,
+    persona or maturity, call ``find_references`` instead of scanning this
+    full list.
 
     Returns a dict shaped ``{"references": [...], "total": N}`` where each
     entry includes ``name``, ``description``, FCP fields (``fcp_domain``,
@@ -64,9 +119,13 @@ def list_references() -> dict[str, Any]:
     return _tools.list_references()
 
 
-@mcp.tool()
+@mcp.tool(title="Get a FinOps reference", annotations=_READ_ONLY)
 def get_reference(name: str) -> dict[str, Any]:
     """Fetch the full markdown content of one reference by name.
+
+    Use this when you need the actual billing-mechanics content of one
+    known reference - after ``list_references`` or ``find_references`` told
+    you which one serves the question.
 
     Args:
         name: Reference name as returned by ``list_references`` (e.g.
@@ -80,7 +139,11 @@ def get_reference(name: str) -> dict[str, Any]:
     return _tools.get_reference(name)
 
 
-@mcp.tool()
+@mcp.tool(
+    title="Find FinOps references by facet",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": REFERENCE_BROWSER_URI}},
+)
 def find_references(
     domain: str | None = None,
     capability: str | None = None,
@@ -89,6 +152,10 @@ def find_references(
     maturity: str | None = None,
 ) -> dict[str, Any]:
     """Filter references by FinOps Capability/Phase (FCP) frontmatter.
+
+    Use this when the question maps to FinOps Framework facets - a domain,
+    capability, phase, persona, or maturity stage - and you want only the
+    references that serve it, instead of scanning the full list.
 
     All filters are optional and combine with AND semantics. String matching
     is case-insensitive and exact (not substring). Examples:
@@ -121,9 +188,17 @@ def find_references(
     )
 
 
-@mcp.tool()
+@mcp.tool(
+    title="List waste playbooks",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": PLAYBOOK_EXPLORER_URI}},
+)
 def list_playbooks() -> dict[str, Any]:
     """List every bundled named-pattern playbook.
+
+    Use this to discover which named waste patterns exist. When the
+    question already names a provider, waste category, or confidence tier,
+    call ``find_playbooks`` instead.
 
     Each playbook is a small (~80-130 line) runbook scoped to one waste
     pattern (e.g. ``aws-zombie-nat-gateway``, ``azure-orphan-disks``). Returns
@@ -135,9 +210,17 @@ def list_playbooks() -> dict[str, Any]:
     return _tools.list_playbooks()
 
 
-@mcp.tool(meta={"ui": {"resourceUri": PLAYBOOK_VIEWER_URI}})
+@mcp.tool(
+    title="Get a waste playbook",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": PLAYBOOK_VIEWER_URI}},
+)
 def get_playbook(name: str) -> dict[str, Any]:
     """Fetch the full markdown content of one playbook by slug.
+
+    Use this when the user asks how to detect, confirm, or fix one specific
+    named waste pattern (zombie NAT gateway, snapshot sprawl, idle SageMaker
+    endpoint, ...).
 
     Args:
         name: Playbook slug as returned by ``list_playbooks`` (e.g.
@@ -165,12 +248,53 @@ def playbook_viewer_ui() -> str:
 
     Self-contained HTML/JS that renders the tool result's markdown as
     labelled sections (Problem / Symptoms / Detection / Fix / Anti-pattern /
-    See also) inside the sandboxed iframe the host provides.
+    See also) inside the sandboxed iframe the host provides. v2 adds a Copy
+    button on every code block, a checkable Fix checklist (local state
+    only), and clickable ``playbooks/<slug>.md`` See-also links that reload
+    the viewer via an app-initiated ``get_playbook`` call.
     """
     return _PLAYBOOK_VIEWER_HTML
 
 
-@mcp.tool()
+@mcp.resource(
+    PLAYBOOK_EXPLORER_URI,
+    name="Playbook explorer",
+    mime_type="text/html;profile=mcp-app",
+)
+def playbook_explorer_ui() -> str:
+    """MCP Apps UI resource linked from ``list_playbooks`` and ``find_playbooks``.
+
+    Card grid over the returned playbooks with client-side facet filters
+    (scope, waste category, confidence - values derived from the data), a
+    coverage-matrix tab (waste_category x scope counts; a zero cell is a
+    visually distinct coverage gap), and an inline playbook panel opened via
+    an app-initiated ``get_playbook`` call. One resource serves both tools
+    because a tool declares a single ``ui.resourceUri``.
+    """
+    return _PLAYBOOK_EXPLORER_HTML
+
+
+@mcp.resource(
+    REFERENCE_BROWSER_URI,
+    name="Reference browser",
+    mime_type="text/html;profile=mcp-app",
+)
+def reference_browser_ui() -> str:
+    """MCP Apps UI resource linked from ``list_references`` and ``find_references``.
+
+    Dropdown row over the five FCP facets (values derived from the data),
+    live-filtered list of references (title + one-line description), and a
+    minimal-markdown reading panel fed by an app-initiated ``get_reference``
+    call.
+    """
+    return _REFERENCE_BROWSER_HTML
+
+
+@mcp.tool(
+    title="Find waste playbooks by facet",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": PLAYBOOK_EXPLORER_URI}},
+)
 def find_playbooks(
     scope: str | None = None,
     service: str | None = None,
@@ -178,6 +302,10 @@ def find_playbooks(
     confidence: str | None = None,
 ) -> dict[str, Any]:
     """Filter playbooks by their pattern frontmatter.
+
+    Use this when the user asks for waste patterns of a given provider,
+    waste category, or detection confidence - e.g. "the idle-resource
+    playbooks", "obvious AWS waste", "cross-cloud patterns".
 
     All filters are optional and combine with AND semantics. String matching
     is case-insensitive and exact. Examples:
@@ -210,16 +338,31 @@ def find_playbooks(
 
 
 def _warm_indexes() -> None:
-    """Build both content indexes before serving.
+    """Build both content indexes before serving, and say what they hold.
 
     They are lru_cached and built lazily, so without this an empty content
     bundle stays silent until the first tool call - and then answers it with an
     empty list rather than an error. The index builders log at ERROR when they
     find nothing, which surfaces in the client's MCP server log at startup
     instead of never.
+
+    The startup line also names the content version from the bundle stamp
+    (``data/content_version.txt``). A stale deployment or editable install is
+    otherwise invisible from the outside - the 2026-08-19 audit had to
+    fingerprint deployments by per-file line counts to discover they were
+    serving content two releases old.
     """
-    _metadata.get_index()
-    _metadata.get_playbook_index()
+    refs = _metadata.get_index()
+    playbooks = _metadata.get_playbook_index()
+    stamp = _metadata.content_version_summary()
+    logger.info(
+        "Serving %d references and %d playbooks (%s).",
+        len(refs),
+        len(playbooks),
+        stamp
+        or "no content_version.txt stamp - bundle synced by a pre-1.32 build "
+        "or an editable install; run scripts/sync_references.py to refresh",
+    )
 
 
 async def run() -> None:

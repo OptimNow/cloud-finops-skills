@@ -19,7 +19,6 @@ fcp_maturity_entry: "Walk"
 ---
 
 ## Why FinOps needs ITAM (and vice versa)
-<!-- ref:itam-finops-collab -->
 
 FinOps manages cloud cost through visibility, allocation, and optimisation. ITAM manages
 the broader technology estate through governance, compliance, and contractual accountability.

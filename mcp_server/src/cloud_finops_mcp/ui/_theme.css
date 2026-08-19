@@ -1,0 +1,178 @@
+/* Shared theme + shell styles for every cloud-finops widget.
+ *
+ * Inlined into each widget's HTML by server._load_ui() (the THEME_CSS
+ * comment marker) - the same never-hand-paste rule as _bridge.js. All
+ * colours live in the :root custom properties below with a
+ * prefers-color-scheme dark override; no widget hardcodes a colour in
+ * markup. Accent: OptimNow chartreuse.
+ */
+:root {
+  color-scheme: light dark;
+  --accent: #ACE849;
+  --accent-fg: #2a3510;         /* readable text on/next to the accent */
+  --fg: #1a1d23;
+  --fg-muted: #5b6370;
+  --bg: #ffffff;
+  --card-bg: #f7f8fa;
+  --border: #e2e5ea;
+  --code-bg: #eef0f3;
+  --danger: #b91c1c;
+  --badge-bg: #eef1ff;
+  --badge-fg: #3730a3;
+  --scope-aws: #b45309;
+  --scope-azure: #1d4ed8;
+  --scope-gcp: #15803d;
+  --scope-cross: #6d28d9;
+  --accent-problem: #6b7280;
+  --accent-symptoms: #b45309;
+  --accent-detection: #1d4ed8;
+  --accent-fix: #15803d;
+  --accent-antipattern: #b91c1c;
+  --accent-seealso: #6b7280;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent-fg: #d8f5a2;
+    --fg: #e7e9ec;
+    --fg-muted: #9aa2ad;
+    --bg: #15171c;
+    --card-bg: #1b1e24;
+    --border: #2a2e37;
+    --code-bg: #10141a;
+    --danger: #f87171;
+    --badge-bg: #232a4d;
+    --badge-fg: #b7c0ff;
+    --scope-aws: #f59e0b;
+    --scope-azure: #60a5fa;
+    --scope-gcp: #4ade80;
+    --scope-cross: #a78bfa;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg); color: var(--fg);
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+.hidden { display: none !important; }
+
+/* --- shell states ---------------------------------------------------- */
+.state { color: var(--fg-muted); padding: 24px 4px; text-align: center; }
+.spinner {
+  width: 22px; height: 22px; margin: 0 auto 10px;
+  border: 2px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.error {
+  color: var(--danger); background: var(--card-bg);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 14px; white-space: pre-wrap; font-size: 12.5px;
+}
+.empty {
+  color: var(--fg-muted); background: var(--card-bg);
+  border: 1px dashed var(--border); border-radius: 8px;
+  padding: 18px 14px; text-align: center; font-size: 13px;
+}
+.empty code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+
+/* --- shared shell chrome ---------------------------------------------- */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.filters select {
+  background: var(--card-bg); color: var(--fg);
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 4px 8px; font-size: 12.5px; max-width: 190px;
+}
+.filters .count { color: var(--fg-muted); font-size: 12px; margin-left: auto; }
+.filters .reset {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  color: var(--fg-muted); font-size: 12px; padding: 3px 9px; cursor: pointer;
+}
+.server-filters { font-size: 12px; color: var(--fg-muted); margin: -6px 0 10px; }
+.chip {
+  display: inline-block; background: var(--badge-bg); color: var(--badge-fg);
+  border-radius: 999px; padding: 1px 8px; margin-left: 4px;
+  font-weight: 600; font-size: 11px;
+}
+.panel-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.panel-bar button {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
+  color: var(--fg); font-size: 12.5px; padding: 4px 10px; cursor: pointer;
+}
+.panel-bar button:hover { border-color: var(--accent); }
+.panel-loading { color: var(--fg-muted); font-size: 12.5px; }
+
+/* --- playbook rendering (shared by viewer and explorer panel) --------- */
+.header { margin-bottom: 14px; }
+.header h1 { font-size: 19px; margin: 0 0 8px; font-weight: 650; }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge {
+  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  background: var(--badge-bg); color: var(--badge-fg);
+  font-size: 11.5px; font-weight: 600; letter-spacing: .01em; text-transform: uppercase;
+}
+.section {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-left: 4px solid var(--accent-problem); border-radius: 8px;
+  padding: 12px 14px; margin-bottom: 10px;
+}
+.section[data-kind="symptoms"] { border-left-color: var(--accent-symptoms); }
+.section[data-kind="detection"] { border-left-color: var(--accent-detection); }
+.section[data-kind="fix"] { border-left-color: var(--accent-fix); }
+.section[data-kind="anti-pattern"] { border-left-color: var(--accent-antipattern); }
+.section[data-kind="see-also"] { border-left-color: var(--accent-seealso); }
+.section h2 {
+  font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em;
+  margin: 0 0 8px; color: var(--fg-muted);
+}
+.section :first-child { margin-top: 0; }
+.section :last-child { margin-bottom: 0; }
+.section p { margin: 0 0 8px; }
+.section ul, .section ol { margin: 0 0 8px; padding-left: 20px; }
+.section li { margin-bottom: 3px; }
+.section pre {
+  position: relative;
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 12px; overflow-x: auto;
+  font-size: 12.5px; margin: 0 0 8px;
+}
+.section code { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
+.section :not(pre) > code {
+  background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: 12px;
+}
+.section strong { font-weight: 650; }
+.copy-btn {
+  position: absolute; top: 6px; right: 6px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
+  color: var(--fg-muted); font-size: 10.5px; padding: 2px 8px; cursor: pointer;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--fg); }
+
+/* Fix checklist: numbered steps stay numbered (CSS counter), checkbox per
+ * step, bullet sub-lists inside Fix stay plain bullets. */
+ol.checklist { list-style: none; counter-reset: fix-step; padding-left: 4px; margin: 0 0 8px; }
+ol.checklist > li { counter-increment: fix-step; margin-bottom: 6px; }
+ol.checklist label { display: flex; gap: 8px; align-items: baseline; cursor: pointer; }
+ol.checklist label::before {
+  content: counter(fix-step) "."; min-width: 1.4em;
+  font-weight: 650; color: var(--fg-muted);
+}
+ol.checklist input[type="checkbox"] { accent-color: var(--accent); }
+ol.checklist input:checked + span { color: var(--fg-muted); text-decoration: line-through; }
+
+.pb-link { background: none; border: none; padding: 0; cursor: pointer; font: inherit; }
+.pb-link code {
+  background: var(--code-bg); padding: 1px 5px; border-radius: 4px;
+  font-size: 12px; text-decoration: underline; text-decoration-color: var(--accent);
+  text-underline-offset: 2px; color: inherit;
+}
+
+/* Discreet brand mark - one small muted link, right-aligned. */
+.brand-note { text-align: right; font-size: 10.5px; margin-top: 12px; }
+.brand-note a {
+  color: var(--fg-muted); text-decoration: none;
+  border-bottom: 1px solid var(--border);
+}
+.brand-note a:hover { color: var(--fg); border-bottom-color: var(--accent); }

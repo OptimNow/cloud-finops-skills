@@ -58,6 +58,13 @@ and exact (no substring matching).
 - A **reference** answers anything broader: billing mechanics, commitment strategy,
   allocation methodology, persona-specific framings, or cross-pattern reasoning.
 
+Neither surface serves current prices. References carry billing *mechanics* -
+multipliers, commitment term structure, the shape of a break-even calculation - and
+any absolute figure inside them is illustrative and dated inline. For a current
+price, use a live pricing tool such as the
+[OptimNow AI Pricing Hub](https://optimtoken.optimnow.io) rather than a figure
+remembered from a reference body.
+
 ## Install
 
 ```bash
@@ -72,7 +79,27 @@ uvx cloud-finops-mcp
 
 ## Configure your MCP client
 
-After install, point your client at the `cloud-finops-mcp` console script.
+### Claude.ai / Claude Desktop (hosted - nothing to install)
+
+The server is deployed at:
+
+```
+https://cloud-finops-skills-590a051d.alpic.live/mcp
+```
+
+Add it via **Settings -> Connectors -> Add custom connector** and paste that URL.
+Do not wire a remote server through `claude_desktop_config.json`: Desktop silently
+drops `"type": "http"` entries from that file, and the `npx mcp-remote` bridge adds
+enough startup latency to blow Desktop's initialize timeout.
+
+Claude Code can use the same hosted URL without any install:
+
+```bash
+claude mcp add --transport http cloud-finops https://cloud-finops-skills-590a051d.alpic.live/mcp
+```
+
+For the local clients below, install the package first, then point the client at the
+`cloud-finops-mcp` console script.
 
 ### Claude Code
 
@@ -154,10 +181,22 @@ cloud-finops-mcp --transport http
 Nothing about the tools changes between transports. `tests/test_e2e_http.py`
 mirrors the stdio suite over HTTP so the two cannot silently diverge.
 
-Note that a self-hosted MCP server added to Claude as a custom connector will
-**not** render the bundled MCP Apps viewer, however conformant it is: Claude
-gates interactive rendering to connectors accepted into its Connectors
-Directory. See the `Lessons learned` entry in the repo's CLAUDE.md.
+## MCP Apps widgets (SEP-1865)
+
+Hosts that support MCP Apps can render three bundled widgets instead of raw
+JSON: a **playbook explorer** on `list_playbooks` / `find_playbooks` (card
+grid with facet filters plus a coverage-matrix view; clicking a card opens
+the playbook inline), a **playbook viewer** on `get_playbook` (colour-coded
+sections, Copy buttons on code blocks, a checkable Fix list, clickable
+See-also links), and a **reference browser** on `list_references` /
+`find_references` (facet dropdowns, live-filtered list, reading panel).
+Each widget is a single self-contained HTML file; hosts without MCP Apps
+support fall back to the plain tool result.
+
+Rendering in Claude Desktop / claude.ai for a custom connector is gated by
+the host's `ui.domain` validation of the connector URL (and historically by
+Connectors Directory acceptance) - a conformant widget may still fall back
+to text there. Other hosts (e.g. MCPJam's host emulation) render it as-is.
 
 ## Example tool calls
 

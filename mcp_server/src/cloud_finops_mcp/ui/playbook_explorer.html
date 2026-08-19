@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Playbook explorer</title>
+<!--THEME_CSS-->
+<style>
+  #root { padding: 14px 16px 24px; max-width: 900px; margin: 0 auto; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .toolbar h1 { font-size: 16px; font-weight: 650; margin: 0 auto 0 0; }
+  .tabs { display: inline-flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+  .tabs button {
+    background: var(--card-bg); color: var(--fg-muted); border: none;
+    padding: 4px 12px; font-size: 12.5px; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] {
+    background: var(--accent); color: var(--accent-fg); font-weight: 650;
+  }
+  .tabs button:disabled { opacity: .45; cursor: default; }
+
+  .grid {
+    display: grid; gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 11px 13px; cursor: pointer;
+    display: flex; flex-direction: column; gap: 7px; text-align: left;
+    color: var(--fg); font: inherit;
+  }
+  .card:hover, .card:focus-visible { border-color: var(--accent); outline: none; }
+  .card .title { font-weight: 650; font-size: 13.5px; line-height: 1.35; }
+  .card .meta-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .scope-badge {
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .03em; padding: 1px 8px; border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+  .scope-badge[data-scope="aws"] { color: var(--scope-aws); }
+  .scope-badge[data-scope="azure"] { color: var(--scope-azure); }
+  .scope-badge[data-scope="gcp"] { color: var(--scope-gcp); }
+  .scope-badge[data-scope="cross-cloud"] { color: var(--scope-cross); }
+  .service { color: var(--fg-muted); font-size: 11.5px; }
+  .confidence { display: inline-flex; gap: 3px; align-items: center; margin-left: auto; }
+  .confidence i {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--border); font-style: normal;
+  }
+  .confidence i.on { background: var(--accent); }
+  .confidence .label { font-size: 10.5px; color: var(--fg-muted); margin-left: 3px; }
+
+  .matrix-wrap { overflow-x: auto; }
+  table.matrix { border-collapse: separate; border-spacing: 4px; width: 100%; }
+  .matrix th {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .03em;
+    color: var(--fg-muted); font-weight: 650; padding: 4px 6px; text-align: center;
+  }
+  .matrix th.rowhead { text-align: right; white-space: nowrap; }
+  .matrix td { padding: 0; }
+  .matrix .cell {
+    width: 100%; min-width: 64px; height: 42px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--card-bg);
+    color: var(--fg); font-size: 13px; font-weight: 650; cursor: pointer;
+  }
+  .matrix .cell:hover, .matrix .cell:focus-visible { border-color: var(--accent); outline: none; }
+  .matrix .cell.zero {
+    border-style: dashed; color: var(--fg-muted); font-weight: 400;
+    background: transparent; cursor: default;
+  }
+  .matrix-note { color: var(--fg-muted); font-size: 11.5px; margin-top: 8px; }
+
+  #playbook-panel { max-width: 780px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<div id="root">
+  <div class="state" id="state-loading">
+    <div class="spinner"></div>
+    Waiting for playbook data&hellip;
+  </div>
+  <div class="error hidden" id="state-error"></div>
+
+  <div id="app" class="hidden">
+    <div class="toolbar">
+      <h1>Waste playbooks</h1>
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tab-cards" aria-selected="true">Cards</button>
+        <button type="button" role="tab" id="tab-matrix" aria-selected="false">Coverage</button>
+      </div>
+    </div>
+    <div class="server-filters hidden" id="server-filters"></div>
+
+    <div id="view-cards">
+      <div class="filters">
+        <select id="f-scope" aria-label="Filter by scope"></select>
+        <select id="f-category" aria-label="Filter by waste category"></select>
+        <select id="f-confidence" aria-label="Filter by confidence"></select>
+        <button type="button" class="reset" id="f-reset">Reset</button>
+        <span class="count" id="f-count"></span>
+      </div>
+      <div class="empty hidden" id="state-empty"></div>
+      <div class="grid" id="cards"></div>
+    </div>
+
+    <div id="view-matrix" class="hidden">
+      <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+      <div class="matrix-note" id="matrix-note"></div>
+    </div>
+  </div>
+
+  <div id="playbook-panel" class="hidden">
+    <div class="panel-bar">
+      <button type="button" id="panel-back">&larr; Back to playbooks</button>
+      <span class="panel-loading hidden" id="panel-loading">Loading&hellip;</span>
+    </div>
+    <div class="error hidden" id="panel-error"></div>
+    <div id="panel-content"></div>
+  </div>
+
+  <div class="brand-note"><a href="https://optimnow.io">OptimNow</a></div>
+</div>
+
+<!--BRIDGE-->
+<!--PLAYBOOK_RENDER-->
+<!--WIDGET_COMMON-->
+<script>
+(function () {
+  "use strict";
+  var R = window.PlaybookRender;
+  var W = window.WidgetCommon;
+  var $ = W.$, show = W.show, hide = W.hide;
+
+  var SCOPE_ORDER = ["aws", "azure", "gcp", "cross-cloud"];
+  var CONFIDENCE_ORDER = ["obvious", "likely", "possible"];
+  var CONFIDENCE_DOTS = { obvious: 3, likely: 2, possible: 1 };
+
+  var all = [];            // playbooks received from the tool result
+  var serverFilters = {};  // filters the agent passed to find_playbooks
+  var local = { scope: "", waste_category: "", confidence: "" };
+  var view = "cards";
+
+  function showError(message) {
+    hide($("state-loading"));
+    hide($("app"));
+    var el = $("state-error");
+    el.textContent = message;
+    show(el);
+  }
+
+  function distinct(field) {
+    var seen = {};
+    all.forEach(function (p) { if (p[field]) seen[p[field]] = true; });
+    return Object.keys(seen);
+  }
+
+  function orderedValues(field) {
+    var values = distinct(field);
+    var order = field === "scope" ? SCOPE_ORDER
+      : field === "confidence" ? CONFIDENCE_ORDER : null;
+    if (!order) return values.sort();
+    return values.sort(function (a, b) {
+      var ia = order.indexOf(a), ib = order.indexOf(b);
+      if (ia === -1 && ib === -1) return a < b ? -1 : 1;
+      if (ia === -1) return 1;
+      if (ib === -1) return -1;
+      return ia - ib;
+    });
+  }
+
+  function fillSelect(id, field, placeholder) {
+    var sel = $(id);
+    sel.innerHTML = "";
+    var opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = placeholder;
+    sel.appendChild(opt);
+    orderedValues(field).forEach(function (v) {
+      var o = document.createElement("option");
+      o.value = v;
+      o.textContent = v;
+      sel.appendChild(o);
+    });
+    sel.value = local[field] || "";
+  }
+
+  function filtered() {
+    return all.filter(function (p) {
+      return (!local.scope || p.scope === local.scope) &&
+        (!local.waste_category || p.waste_category === local.waste_category) &&
+        (!local.confidence || p.confidence === local.confidence);
+    });
+  }
+
+  function activeLocalFilterText() {
+    var parts = [];
+    ["scope", "waste_category", "confidence"].forEach(function (k) {
+      if (local[k]) parts.push(k + "=" + local[k]);
+    });
+    return parts.join(" × ");
+  }
+
+  function renderCards() {
+    // A tool-level empty result (all.length === 0) keeps the server's own
+    // explanation rendered by render(); repainting here would replace it
+    // with the local-filter message, which would be wrong and less useful.
+    if (!all.length) return;
+    var list = filtered();
+    var grid = $("cards");
+    grid.innerHTML = "";
+    $("f-count").textContent = list.length + " / " + all.length + " playbooks";
+
+    var empty = $("state-empty");
+    if (!list.length) {
+      empty.innerHTML = "No playbook matches <code>" +
+        R.escapeHtml(activeLocalFilterText() || "the current filters") +
+        "</code> among the " + all.length + " received. " +
+        "This combination is a coverage gap, not a data error - reset a filter to widen.";
+      show(empty);
+      return;
+    }
+    hide(empty);
+
+    list.forEach(function (p) {
+      var card = document.createElement("button");
+      card.className = "card";
+      card.type = "button";
+      var dots = CONFIDENCE_DOTS[p.confidence] || 0;
+      var dotHtml = [1, 2, 3].map(function (n) {
+        return '<i class="' + (n <= dots ? "on" : "") + '"></i>';
+      }).join("");
+      card.innerHTML =
+        '<span class="title">' + R.escapeHtml(p.title || p.name) + "</span>" +
+        '<span class="meta-row">' +
+          '<span class="scope-badge" data-scope="' + R.escapeHtml(p.scope || "") + '">' + R.escapeHtml(p.scope || "?") + "</span>" +
+          '<span class="chip">' + R.escapeHtml(p.waste_category || "?") + "</span>" +
+          '<span class="confidence" title="confidence: ' + R.escapeHtml(p.confidence || "?") + '">' +
+            dotHtml + '<span class="label">' + R.escapeHtml(p.confidence || "?") + "</span>" +
+          "</span>" +
+        "</span>" +
+        '<span class="service">' + R.escapeHtml(p.service || "") + "</span>";
+      card.addEventListener("click", function () { openPlaybook(p.name); });
+      grid.appendChild(card);
+    });
+  }
+
+  function renderMatrix() {
+    var scopes = orderedValues("scope");
+    var categories = distinct("waste_category").sort();
+    var counts = {};
+    var max = 0;
+    all.forEach(function (p) {
+      var key = p.waste_category + "|" + p.scope;
+      counts[key] = (counts[key] || 0) + 1;
+      if (counts[key] > max) max = counts[key];
+    });
+
+    var table = $("matrix");
+    table.innerHTML = "";
+    var head = document.createElement("tr");
+    head.innerHTML = "<th></th>" + scopes.map(function (s) {
+      return "<th>" + R.escapeHtml(s) + "</th>";
+    }).join("");
+    table.appendChild(head);
+
+    categories.forEach(function (cat) {
+      var tr = document.createElement("tr");
+      var th = document.createElement("th");
+      th.className = "rowhead";
+      th.textContent = cat;
+      tr.appendChild(th);
+      scopes.forEach(function (scope) {
+        var td = document.createElement("td");
+        var count = counts[cat + "|" + scope] || 0;
+        var cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "cell" + (count === 0 ? " zero" : "");
+        cell.textContent = String(count);
+        if (count === 0) {
+          cell.title = "Coverage gap: no " + cat + " playbook for " + scope;
+          cell.disabled = true;
+        } else {
+          cell.title = count + " playbook(s): " + cat + " × " + scope;
+          /* Intensity: colour-mix would be cleaner but is not everywhere;
+             opacity over the accent keeps it dependency-free. */
+          cell.style.background = "var(--accent)";
+          cell.style.opacity = String(0.35 + 0.65 * (count / max));
+          cell.style.color = "var(--accent-fg)";
+          cell.addEventListener("click", function () {
+            local.scope = scope;
+            local.waste_category = cat;
+            local.confidence = "";
+            syncSelects();
+            setView("cards");
+          });
+        }
+        td.appendChild(cell);
+        tr.appendChild(td);
+      });
+      table.appendChild(tr);
+    });
+
+    var note = "Counts over the " + all.length + " playbook(s) in this result.";
+    if (Object.keys(serverFilters).length) {
+      note += " The agent's filters (" + JSON.stringify(serverFilters) +
+        ") already narrowed the set - ask for all playbooks for the full coverage picture.";
+    }
+    note += " A dashed 0 is a coverage gap, not missing data.";
+    $("matrix-note").textContent = note;
+  }
+
+  function syncSelects() {
+    $("f-scope").value = local.scope;
+    $("f-category").value = local.waste_category;
+    $("f-confidence").value = local.confidence;
+    renderCards();
+  }
+
+  function setView(next) {
+    view = next;
+    $("tab-cards").setAttribute("aria-selected", String(view === "cards"));
+    $("tab-matrix").setAttribute("aria-selected", String(view === "matrix"));
+    if (view === "cards") { show($("view-cards")); hide($("view-matrix")); renderCards(); }
+    else { hide($("view-cards")); show($("view-matrix")); renderMatrix(); }
+  }
+
+  /* --- inline playbook panel (get_playbook via the host bridge) --------- */
+
+  function openPlaybook(name) {
+    var token = W.nextToken();
+    hide($("app"));
+    show($("playbook-panel"));
+    hide($("panel-error"));
+    show($("panel-loading"));
+    $("panel-content").innerHTML = "";
+    window.McpBridge.callTool("get_playbook", { name: name }).then(function (payload) {
+      if (!W.isCurrent(token)) return; // superseded by a newer interaction
+      hide($("panel-loading"));
+      if (payload.error) {
+        var el = $("panel-error");
+        el.textContent = R.errorText(payload);
+        show(el);
+        return;
+      }
+      var content = $("panel-content");
+      content.innerHTML = R.renderPlaybookHtml(payload, { checklistFix: true });
+      R.enhanceCodeBlocks(content);
+      R.enhanceSeeAlso(content, openPlaybook);
+    }).catch(function (err) {
+      if (!W.isCurrent(token)) return;
+      hide($("panel-loading"));
+      var el = $("panel-error");
+      el.textContent = String(err && err.message || err);
+      show(el);
+    });
+  }
+
+  $("panel-back").addEventListener("click", function () {
+    W.nextToken(); // invalidate any in-flight panel load
+    hide($("playbook-panel"));
+    show($("app"));
+  });
+
+  /* --- entry point -------------------------------------------------------- */
+
+  function render(payload) {
+    hide($("state-loading"));
+    hide($("state-error"));
+
+    if (payload && payload.error) { showError(payload.error); return; }
+    if (!payload || !Array.isArray(payload.playbooks)) {
+      showError("Unexpected tool result shape - no playbooks array found.");
+      return;
+    }
+
+    all = payload.playbooks;
+    serverFilters = payload.filters || {};
+    local = { scope: "", waste_category: "", confidence: "" };
+
+    show($("app"));
+    hide($("playbook-panel"));
+
+    var sf = $("server-filters");
+    var chips = W.chipsHtml(serverFilters);
+    if (chips) { sf.innerHTML = chips; show(sf); } else { hide(sf); }
+
+    fillSelect("f-scope", "scope", "scope: all");
+    fillSelect("f-category", "waste_category", "category: all");
+    fillSelect("f-confidence", "confidence", "confidence: all");
+
+    if (!all.length) {
+      // Tool-level empty result: surface the server's own explanation and
+      // keep the matrix tab out of reach - a matrix over zero playbooks is
+      // an empty table with a misleading note.
+      $("tab-matrix").disabled = true;
+      var empty = $("state-empty");
+      empty.innerHTML = "The tool returned no playbooks for these filters." +
+        (payload.hint ? "<br>" + R.escapeHtml(payload.hint) : "") +
+        "<br>Ask again with fewer filters.";
+      show(empty);
+      $("f-count").textContent = "0 playbooks";
+      $("cards").innerHTML = "";
+      setView("cards");
+      return;
+    }
+
+    $("tab-matrix").disabled = false;
+    setView(view);
+  }
+
+  $("f-scope").addEventListener("change", function () { local.scope = this.value; renderCards(); });
+  $("f-category").addEventListener("change", function () { local.waste_category = this.value; renderCards(); });
+  $("f-confidence").addEventListener("change", function () { local.confidence = this.value; renderCards(); });
+  $("f-reset").addEventListener("click", function () {
+    local = { scope: "", waste_category: "", confidence: "" };
+    syncSelects();
+  });
+  $("tab-cards").addEventListener("click", function () { setView("cards"); });
+  $("tab-matrix").addEventListener("click", function () { setView("matrix"); });
+
+  window.McpBridge.init({
+    appName: "cloud-finops-playbook-explorer",
+    onToolResult: render
+  });
+})();
+</script>
+</body>
+</html>
