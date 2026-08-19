@@ -380,6 +380,27 @@ maintainer's control and on an unpublished timeline.
   precisely because the only test in place asserted the resource existed,
   never that it rendered.
 
+**Update (2026-08-19): the gate now has an observable mechanism.** Claude
+Desktop's `mcp-ext-apps-host` attempts to set up MCP Apps for custom
+connectors and validates a `ui.domain` on the widget resource:
+sha256(connector URL as entered in Settings, no trailing slash)[:32] +
+`.claudemcpcontent.com`. A wrong or missing value logs
+`ui.domain validation failed for connector "<url>"` in the Desktop logs
+(observed live for ai-pricing-hub on 2026-08-19, including the fix-it
+one-liner the error prints). So the 2026-08-16 claim that a custom
+connector "gets the text fallback no matter how correct it is" is no
+longer the whole story - but whether a correct `ui.domain` is *sufficient*
+for rendering is still unproven for this repo's connector: the render test
+needs the connector added to the account and the Alpic deployment current.
+Per the test-first rule, `_meta.ui.domain` is NOT set on the resources;
+the precomputed value for the canonical URL
+`https://cloud-finops-skills-590a051d.alpic.live/mcp` is
+`1a3b12085dbe8a536c1a9f86d2e7e1a1.claudemcpcontent.com` - apply it only if
+a real render attempt fails with that log signature. When computing it,
+hash the public connector URL exactly as users are told to enter it, never
+an internal path - the wrong-input variant of this is exactly what broke
+ai-pricing-hub-mcp (fixed 2026-08-19).
+
 ### A packaged artefact cannot own volatile data (2026-08-17)
 
 Shipped across twelve PRs (#141 to #153, released as 1.30.0). The change is small to
