@@ -19,6 +19,7 @@ fcp_maturity_entry: "Crawl"
 ---
 
 ## Why tagging is a prerequisite, not a project
+<!-- doc:37b46c22605776cb -->
 
 Tagging is often treated as a one-time cleanup project. It is not. It is an ongoing
 operational discipline that requires design, enforcement, and continuous monitoring.

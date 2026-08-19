@@ -17,6 +17,7 @@ fcp_maturity_entry: "Walk"
 ---
 
 ## Why SAM matters for FinOps
+<!-- ref:37b46c22605776cb -->
 
 SaaS has become one of the largest and least visible cost categories in most organisations. Unlike IaaS, where billing data flows through cloud provider consoles, SaaS spend is decentralised: purchased on corporate credit cards, expensed by individual teams, auto-renewed without review, and rarely consolidated into a single view.
 

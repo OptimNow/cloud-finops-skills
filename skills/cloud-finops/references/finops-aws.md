@@ -33,6 +33,7 @@ material it does not need:
 | A specific named waste pattern with a runnable detection query | `playbooks/aws-*.md` |
 
 ## AWS cost data foundation
+<!-- src:37b46c22605776cb -->
 
 ### Cost and Usage Report (CUR)
 

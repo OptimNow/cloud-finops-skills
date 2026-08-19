@@ -30,6 +30,7 @@ through efficiency gains - tying FinOps directly to strategic AI enablement.
 ---
 
 ## Why AI cost signals behave differently
+<!-- ref:37b46c22605776cb -->
 
 Traditional FinOps assumes a rhythm: usage happens first, costs are reported later,
 decisions follow. AI disrupts this sequence. With LLMs and agentic systems, cost is

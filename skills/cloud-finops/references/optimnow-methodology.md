@@ -17,6 +17,7 @@ fcp_maturity_entry: "Crawl"
 ---
 
 ## What OptimNow is
+<!-- catalog:37b46c22605776cb -->
 
 OptimNow is a boutique FinOps consultancy based in France with European reach. Its work
 centers on helping organisations turn cloud and AI spend into measurable business value.

@@ -18,6 +18,7 @@ fcp_maturity_entry: "Crawl"
 ---
 
 ## The 6 FinOps Principles
+<!-- idx:37b46c22605776cb -->
 
 1. **Teams need to collaborate** - FinOps requires cooperation across engineering, finance,
    product, and leadership. No single team can practice FinOps alone.
