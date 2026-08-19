@@ -18,6 +18,7 @@ import logging
 import re
 
 import pytest
+
 from cloud_finops_mcp import metadata, server, tools
 
 # Advertised in the find_playbooks docstring but carried by no playbook today.

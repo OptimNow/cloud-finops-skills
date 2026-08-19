@@ -562,76 +562,64 @@ These actions typically deliver savings within 30 days with low risk.
 ## Database cost optimisation
 <!-- src:holori-database-optimization -->
 
-Database services often represent 20-40% of cloud spend, yet many organisations treat them as black boxes from a cost perspective. The following patterns apply across AWS RDS, Azure SQL Database, and GCP Cloud SQL.
+Database services often represent 20-40% of cloud spend, yet many organisations treat them as black boxes from a cost perspective. This section covers the AWS surface. For the equivalent treatments elsewhere, see "Database optimisation patterns" in `finops-azure.md` and "Databases Optimization Patterns" in `finops-gcp.md`.
 
 ### Common database cost drivers
 
 **1. Overprovisioning for peak load**
 - Databases sized for Black Friday traffic that run at 10% utilisation for 11 months
-- Solution: Implement auto-scaling (where supported) or scheduled scaling for predictable patterns
-- AWS: Aurora Serverless v2, RDS Proxy for connection pooling
-- Azure: SQL Database serverless compute tier, elastic pools
-- GCP: Cloud SQL automatic storage increases, read replica auto-scaling
+- Solution: auto-scaling where the engine supports it, or scheduled scaling for predictable patterns
+- Aurora Serverless v2 for genuinely variable load; RDS Proxy where the pressure is connection churn rather than compute
 
 **2. High availability in non-production**
-- Multi-AZ/zone deployments double infrastructure costs
+- Multi-AZ deployments double infrastructure costs
 - Dev/test rarely needs synchronous replication
-- Solution: Single-zone deployments for non-prod, with automated backups for recovery
+- Solution: single-AZ for non-prod, with automated backups sized to the recovery requirement
 
 **3. Storage inefficiencies**
-- Provisioned IOPS when standard storage suffices (AWS: gp3 vs io1/io2)
+- Provisioned IOPS (io1/io2) where gp3 suffices
 - Retained backups and snapshots beyond business requirements
 - Uncompressed or poorly indexed tables driving storage growth
-- Solution: Regular storage audits, lifecycle policies, compression strategies
+- Solution: regular storage audits, lifecycle policies, compression strategies
 
 **4. Backup retention overkill**
 - 35-day retention when 7 days meets actual RTO/RPO
 - Manual snapshots never deleted after migrations
-- Solution: Align retention to documented recovery requirements, automate cleanup
+- Solution: align retention to documented recovery requirements, automate cleanup
 
 ### Database-specific optimisation strategies
 
 **For transactional workloads (OLTP):**
-- Right-size based on connection count and active sessions, not just CPU/memory
+- Right-size on connection count and active sessions, not just CPU and memory
 - Implement connection pooling to reduce instance size requirements
-- Consider managed connection proxies (RDS Proxy, Azure SQL Database built-in pooling)
+- Reach for RDS Proxy before sizing up an instance to absorb connection churn
 
 **For analytical workloads (OLAP):**
-- Evaluate columnar storage options (Redshift, BigQuery, Synapse)
+- Evaluate Redshift for columnar storage rather than scaling an OLTP engine into a reporting role
 - Implement result caching to reduce repeated query costs
-- Schedule large queries during off-peak for better pricing (BigQuery flex slots)
+- Schedule large queries off-peak
 
 **For mixed workloads:**
-- Separate OLTP and OLAP with read replicas or data warehouse offload
+- Separate OLTP and OLAP with read replicas or a warehouse offload
 - Use change data capture (CDC) for real-time sync instead of expensive ETL
 
-### Commitment strategies by database type
+### Commitment and licensing
 
-**Open-source engines (MySQL, PostgreSQL, MariaDB):**
-- Maximum flexibility for commitments due to version compatibility
-- Size flexibility within instance families on AWS RDS
-- Consider Aurora for better price-performance at scale
+Commitment mechanics for databases - which instrument covers RDS, how Reserved Instances interact with the Database Savings Plan, the size-flexibility rules - live in the "Database commitment discount decision tree" of `finops-aws-patterns.md`, which is where `finops-aws-commitments.md` routes the question. Two points belong with the workload rather than with the instrument:
 
-**Commercial engines (Oracle, SQL Server):**
-- License costs often exceed infrastructure costs
-- BYOL can save 40-80% if you have existing licenses
-- Evaluate migration to open-source for non-critical workloads
-
-**NoSQL and managed services:**
-- DynamoDB: On-Demand vs Provisioned can be 5-10x cost difference
-- Cosmos DB: Request unit (RU) optimisation more impactful than storage
-- Firestore/Datastore: Document size and index strategy drive costs
+- **Commercial engines (Oracle, SQL Server)**: licence cost routinely exceeds infrastructure cost, so edition choice and BYOL move the bill more than instance sizing does. `finops-itam.md` covers the BYOL governance side.
+- **DynamoDB**: On-Demand versus Provisioned capacity swings cost by roughly an order of magnitude in either direction depending on traffic shape. Decide it from the measured traffic profile rather than from a default.
 
 ### Quick wins checklist
 
-- [ ] Identify databases with <20% average CPU utilisation for downsizing
-- [ ] Review Multi-AZ/HA configurations in non-production environments  
+- [ ] Identify databases with <20% average CPU utilisation for downsizing (playbook: `aws-oversized-rds`)
+- [ ] Review Multi-AZ configurations in non-production environments
 - [ ] Audit backup retention policies against actual recovery requirements
-- [ ] Check for orphaned snapshots from deleted databases
-- [ ] Evaluate storage tier options (standard vs provisioned IOPS/throughput)
+- [ ] Check for orphaned snapshots from deleted databases (playbook: `aws-snapshot-sprawl`)
+- [ ] Evaluate storage tier options (gp3 versus provisioned IOPS)
 - [ ] Implement connection pooling for high-connection workloads
 - [ ] Schedule non-production databases to stop outside business hours
-- [ ] Review commercial database licenses for BYOL opportunities
+- [ ] Review commercial database licences for BYOL opportunities
 
 ---
 

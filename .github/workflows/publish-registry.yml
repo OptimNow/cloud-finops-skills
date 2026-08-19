@@ -1,0 +1,80 @@
+name: Publish server.json to the MCP Registry
+
+# Manual catch-up path for the MCP Registry.
+#
+# The normal path is the `publish-registry` job in auto-tag-on-plugin-bump.yml,
+# which fires on every plugin.json bump. This workflow exists for the two cases
+# that job cannot cover:
+#
+#   1. A version that shipped to PyPI before registry publishing was automated
+#      and therefore never reached the registry (1.30.0 is exactly this - the
+#      registry sat on 1.29.0 while PyPI and server.json were on 1.30.0).
+#   2. A registry publish that failed after a successful PyPI publish. Re-running
+#      publish-mcp.yml is not an option there, because PyPI refuses a duplicate
+#      upload of a version that already exists.
+#
+# Run it with:
+#   gh workflow run publish-registry.yml
+#
+# It publishes server.json exactly as it stands on the ref the run is
+# dispatched on (the default branch unless you pass --ref). This is deliberate,
+# and it is why the workflow does NOT take a tag input and check out the tagged
+# commit instead: metadata-only edits to server.json (a better description, a
+# new remotes entry) land on main between releases, and the registry should
+# serve them without waiting for the next version bump. The package version the
+# entry points at is still validated against PyPI below, so a dispatch from a
+# ref whose server.json names an unpublished version fails before anything is
+# sent.
+#
+# Nothing is built or uploaded here: the registry entry is just server.json,
+# and the package it points at must already be on PyPI (the registry validates
+# that before accepting the entry).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write  # required for MCP Registry OIDC authentication
+
+jobs:
+  publish-registry:
+    name: Publish server.json
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+
+      # The registry rejects an entry whose package is not resolvable, so fail
+      # here with a clear message rather than inside mcp-publisher's validation.
+      - name: Verify the declared PyPI version exists
+        run: |
+          set -euo pipefail
+          identifier=$(jq -r '.packages[0].identifier' server.json)
+          version=$(jq -r '.packages[0].version' server.json)
+          top_version=$(jq -r '.version' server.json)
+          echo "server.json: ${identifier} ${version} (top-level version ${top_version})"
+
+          if [[ "$version" != "$top_version" ]]; then
+            echo "::error file=server.json::top-level .version ($top_version) and .packages[0].version ($version) disagree"
+            exit 1
+          fi
+          if ! curl -fsSL "https://pypi.org/pypi/${identifier}/${version}/json" >/dev/null 2>&1; then
+            echo "::error::${identifier} ${version} is not on PyPI; publish the package first"
+            exit 1
+          fi
+          echo "${identifier} ${version} is present on PyPI"
+
+      # Asset names are GOOS_GOARCH, so `uname -m` (x86_64) has to be
+      # normalised to Go's `amd64`.
+      - name: Install mcp-publisher
+        run: |
+          set -euo pipefail
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher --version
+
+      - name: Authenticate to the MCP Registry (GitHub OIDC)
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server.json
+        run: ./mcp-publisher publish

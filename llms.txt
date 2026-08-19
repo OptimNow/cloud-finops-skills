@@ -1,8 +1,6 @@
 # Cloud FinOps Skill & MCP - by OptimNow
 
-> Expert Cloud FinOps knowledge for AI agents. Model-agnostic: works with Claude, GPT, Gemini, or any LLM.
-
-## What this is
+> Expert Cloud FinOps knowledge for AI agents. Model-agnostic: works with Claude, GPT, Gemini, or any LLM. Also published as an MCP server (`cloud-finops-mcp`) for faceted retrieval.
 
 A structured knowledge skill that gives AI agents accurate Cloud FinOps expertise.
 It covers billing mechanics, pricing models, commitment discounts, AI cost management,
@@ -13,49 +11,60 @@ and major data platforms.
 The skill is plain markdown - no vector database, no embedding pipeline, no retrieval
 infrastructure. Copy the files into your agent's context and it gains FinOps expertise.
 
-## Key files
+Price figures are deliberately not carried here: they go stale inside a packaged
+artefact. Billing mechanics live in these files; live rates come from the AI Pricing
+Hub at https://optimtoken.optimnow.io.
 
-- skills/cloud-finops/SKILL.md: Entry point and domain router for Claude Code and generic agents
-- skills/cloud-finops/POWER.md: Entry point for Kiro IDE
-- INSTALLATION.md: cross-tool installer covering 12 tool integrations + model-agnostic response contract
-- DEPENDENCIES.md: cross-repo dependency map for the five OptimNow repos, and which repos a change ripples into
-- skills/cloud-finops/references/optimnow-methodology.md: Reasoning philosophy (read first on every query)
-- skills/cloud-finops/references/finops-for-ai.md: AI cost management, token economics, agentic patterns
-- skills/cloud-finops/references/finops-agentic.md: Agentic FinOps - agent cost anatomy, cost-safe architecture, agent-initiated payments (x402/MPP)
-- skills/cloud-finops/references/finops-ai-value-management.md: AI investment governance, stage gates
-- skills/cloud-finops/references/finops-genai-capacity.md: Provisioned vs shared capacity, cross-provider
-- skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md: Self-hosted vs managed AI inference decisioning
-- skills/cloud-finops/references/finops-ai-dev-tools.md: AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf)
-- skills/cloud-finops/references/finops-anthropic.md: Anthropic/Claude billing and governance
-- skills/cloud-finops/references/finops-aws.md: AWS FinOps (EC2, CUR, Savings Plans, cost allocation)
-- skills/cloud-finops/references/finops-aws-commitments.md: AWS Savings Plans, Reserved Instances, Spot, commitment decision tree, portfolio liquidity, EDP negotiation
-- skills/cloud-finops/references/finops-aws-patterns.md: AWS enumerated per-service optimisation pattern catalogue
-- skills/cloud-finops/references/finops-bedrock.md: AWS Bedrock billing and optimisation
-- skills/cloud-finops/references/finops-azure.md: Azure FinOps (reservations, policies, hybrid benefit)
-- skills/cloud-finops/references/finops-azure-commitments.md: Azure Reservations, Savings Plans, AHB, commitment decision trees, portfolio liquidity, phased purchasing, MACC
-- skills/cloud-finops/references/finops-azure-patterns.md: Azure enumerated per-service optimisation pattern catalogue
-- skills/cloud-finops/references/finops-azure-openai.md: Azure OpenAI Service (PTUs, spillover, costs)
-- skills/cloud-finops/references/finops-gcp.md: GCP FinOps (Compute, BigQuery, networking)
-- skills/cloud-finops/references/finops-vertexai.md: GCP Vertex AI billing and optimisation
-- skills/cloud-finops/references/finops-tagging.md: Tagging governance and naming conventions
-- skills/cloud-finops/references/finops-framework.md: FinOps Foundation framework and maturity model
-- skills/cloud-finops/references/finops-databricks.md: Databricks cost optimisation, allocation, DBCU commitments
-- skills/cloud-finops/references/finops-fabric.md: Microsoft Fabric capacity FinOps (F-SKU, CU smoothing)
-- skills/cloud-finops/references/finops-snowflake.md: Snowflake cost optimisation
-- skills/cloud-finops/references/finops-oci.md: Oracle Cloud Infrastructure optimisation
-- skills/cloud-finops/references/finops-sam.md: SaaS asset management
-- skills/cloud-finops/references/finops-itam.md: ITAM collaboration (BYOL, marketplace, vendor co-management)
-- skills/cloud-finops/references/greenops-cloud-carbon.md: Cloud carbon measurement and GreenOps
-- skills/cloud-finops/references/finops-anomaly-management.md: Cost anomaly management as standalone capability
-- skills/cloud-finops/references/finops-allocation-showback.md: Cost allocation methodology and showback
-- skills/cloud-finops/references/finops-chargeback.md: Chargeback maturity, Finance/accounting prerequisites
-- skills/cloud-finops/references/finops-onboarding-workloads.md: Migration-time cost hygiene, M&A integration
-- skills/cloud-finops/references/finops-kubernetes.md: Kubernetes FinOps (EKS / GKE / AKS) cross-cluster discipline
-- skills/cloud-finops/references/finops-waste-detection-playbooks.md: Eight-category waste taxonomy + WasteLine
-- skills/cloud-finops/playbooks/: RAG-friendly named-pattern runbooks (~2-4 KB each, Problem/Symptoms/Detection/Fix/Anti-pattern/See also format) covering AWS, Azure, GCP, and cross-cloud waste patterns. See `skills/cloud-finops/playbooks/README.md` for the full index.
+## Entry points
 
-## Built by
+- [SKILL.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/SKILL.md): Entry point and domain router for Claude Code and generic agents
+- [POWER.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/POWER.md): Entry point for Kiro IDE
+- [INSTALLATION.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/INSTALLATION.md): cross-tool installer covering 12 tool integrations + model-agnostic response contract
 
-OptimNow - https://optimnow.io
-GitHub: https://github.com/OptimNow
-License: CC BY-SA 4.0
+## References
+
+- [optimnow-methodology.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/optimnow-methodology.md): Reasoning philosophy (read first on every query)
+- [finops-for-ai.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-for-ai.md): AI cost management, token economics, agentic patterns
+- [finops-agentic.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-agentic.md): Agentic FinOps - agent cost anatomy, cost-safe architecture, agent-initiated payments (x402/MPP)
+- [finops-ai-value-management.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-ai-value-management.md): AI investment governance, stage gates
+- [finops-genai-capacity.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-genai-capacity.md): Provisioned vs shared capacity, cross-provider
+- [finops-ai-self-hosted-vs-managed.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md): Self-hosted vs managed AI inference decisioning
+- [finops-ai-dev-tools.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-ai-dev-tools.md): AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf)
+- [finops-anthropic.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-anthropic.md): Anthropic/Claude billing and governance
+- [finops-aws.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-aws.md): AWS FinOps (EC2, CUR, Savings Plans, cost allocation)
+- [finops-aws-commitments.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-aws-commitments.md): AWS Savings Plans, Reserved Instances, Spot, commitment decision tree, portfolio liquidity, EDP negotiation
+- [finops-aws-patterns.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-aws-patterns.md): AWS enumerated per-service optimisation pattern catalogue
+- [finops-bedrock.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-bedrock.md): AWS Bedrock billing and optimisation
+- [finops-azure.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure.md): Azure FinOps (reservations, policies, hybrid benefit)
+- [finops-azure-commitments.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure-commitments.md): Azure Reservations, Savings Plans, AHB, commitment decision trees, portfolio liquidity, phased purchasing, MACC
+- [finops-azure-patterns.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure-patterns.md): Azure enumerated per-service optimisation pattern catalogue
+- [finops-azure-openai.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure-openai.md): Azure OpenAI Service (PTUs, spillover, costs)
+- [finops-gcp.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-gcp.md): GCP FinOps (Compute, BigQuery, networking)
+- [finops-vertexai.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-vertexai.md): GCP Vertex AI billing and optimisation
+- [finops-tagging.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-tagging.md): Tagging governance and naming conventions
+- [finops-framework.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-framework.md): FinOps Foundation framework and maturity model
+- [finops-databricks.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-databricks.md): Databricks cost optimisation, allocation, DBCU commitments
+- [finops-fabric.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-fabric.md): Microsoft Fabric capacity FinOps (F-SKU, CU smoothing)
+- [finops-snowflake.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-snowflake.md): Snowflake cost optimisation
+- [finops-oci.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-oci.md): Oracle Cloud Infrastructure optimisation
+- [finops-sam.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-sam.md): SaaS asset management
+- [finops-itam.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-itam.md): ITAM collaboration (BYOL, marketplace, vendor co-management)
+- [greenops-cloud-carbon.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/greenops-cloud-carbon.md): Cloud carbon measurement and GreenOps
+- [finops-anomaly-management.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-anomaly-management.md): Cost anomaly management as standalone capability
+- [finops-allocation-showback.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-allocation-showback.md): Cost allocation methodology and showback
+- [finops-chargeback.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-chargeback.md): Chargeback maturity, Finance/accounting prerequisites
+- [finops-onboarding-workloads.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-onboarding-workloads.md): Migration-time cost hygiene, M&A integration
+- [finops-kubernetes.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-kubernetes.md): Kubernetes FinOps (EKS / GKE / AKS) cross-cluster discipline
+- [finops-waste-detection-playbooks.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-waste-detection-playbooks.md): Eight-category waste taxonomy + WasteLine
+
+## Playbooks
+
+- [playbooks/](https://github.com/OptimNow/cloud-finops-skills/blob/main/skills/cloud-finops/playbooks/): RAG-friendly named-pattern runbooks (~2-4 KB each, Problem/Symptoms/Detection/Fix/Anti-pattern/See also format) covering AWS, Azure, GCP, and cross-cloud waste patterns. See `skills/cloud-finops/playbooks/README.md` for the full index.
+
+## Optional
+
+- [DEPENDENCIES.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/DEPENDENCIES.md): cross-repo dependency map for the five OptimNow repos, and which repos a change ripples into
+- [Repository](https://github.com/OptimNow/cloud-finops-skills): source, installer, and MCP server
+- [MCP server on PyPI](https://pypi.org/project/cloud-finops-mcp/): `pip install cloud-finops-mcp`
+- [Hosted MCP endpoint](https://cloud-finops-skills-590a051d.alpic.live/mcp): streamable HTTP, nothing to install
+- [OptimNow](https://optimnow.io): the authors. Content licensed CC BY-SA 4.0

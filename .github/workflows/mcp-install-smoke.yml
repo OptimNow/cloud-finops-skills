@@ -39,10 +39,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The Python versions cloud-finops-mcp declares in its pyproject.toml
-        # classifiers (requires-python is ">=3.10"). Keep this list in step with
-        # those classifiers.
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        # Full sweep on the weekly cron and on manual dispatch; just the
+        # supported boundaries on push and PR.
+        #
+        # The full list is the Python versions cloud-finops-mcp declares in its
+        # pyproject.toml classifiers (requires-python is ">=3.10") - keep it in
+        # step with those classifiers. But the cron is what this workflow is
+        # really for: catching an upstream release that breaks a fresh install.
+        # A code change is caught just as well by the oldest and newest
+        # supported interpreters, which is where version-specific breakage
+        # lives, so a routine mcp_server PR runs 2 jobs instead of 5.
+        #
+        # The `X && A || B` form is the GitHub Actions ternary: the parentheses
+        # matter, because `&&` binds tighter than `||` and an unparenthesised
+        # condition would yield the boolean `true` rather than the JSON string.
+        python: ${{ fromJSON((github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '["3.10","3.11","3.12","3.13","3.14"]' || '["3.10","3.14"]') }}
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0

@@ -13,9 +13,16 @@
 # to drift, and it is intentionally not checked. If AGENTS.md ever starts
 # listing individual reference files, extend this script to cover it.
 #
-# Two checks, mirroring check-llms-txt.sh:
+# Three checks, the first two mirroring check-llms-txt.sh:
 #   1. Every skills/cloud-finops/references/*.md appears in the CLAUDE.md tree.
 #   2. Every reference filename in that tree block exists on disk.
+#   3. Every skills/cloud-finops/playbooks/*.md appears in the catalogue table
+#      of playbooks/README.md, and every catalogue entry exists on disk.
+#
+# Check 3 exists because SKILL.md and POWER.md carry representative examples
+# only and defer to playbooks/README.md "for the full list". That deferral was
+# dangling until August 2026 - the README had no list at all - so the catalogue
+# is now gated the same way the CLAUDE.md tree is.
 #
 # Usage:
 #   ./scripts/check-docs-drift.sh    Report drift; exit 1 if any is found.
@@ -73,3 +80,43 @@ if [[ $errors -gt 0 ]]; then
   exit 1
 fi
 echo "OK: CLAUDE.md structure tree lists all $count references, no stale entries."
+
+# ---- Check 3: playbooks/README.md catalogue ---------------------------------
+PB_DIR="skills/cloud-finops/playbooks"
+PB_README="$PB_DIR/README.md"
+
+# Catalogue rows are markdown links of the form [slug](slug.md) in a table.
+# Anchoring on the link target rather than the row shape keeps this tolerant of
+# column changes while still requiring a real, clickable link per playbook.
+catalogued="$(grep -oE '\]\([a-z0-9-]+\.md\)' "$PB_README" \
+  | sed 's/^](//;s/)$//' | sort -u)"
+
+if [[ -z "$catalogued" ]]; then
+  echo "FAIL: no playbook links found in $PB_README." >&2
+  echo "      SKILL.md and POWER.md defer to it for the full list, so the" >&2
+  echo "      catalogue table must exist. Update this script if the format changed." >&2
+  exit 1
+fi
+
+for f in "$PB_DIR"/*.md; do
+  base="$(basename "$f")"
+  [[ "$base" == "README.md" ]] && continue
+  if ! grep -qx "$base" <<<"$catalogued"; then
+    echo "MISSING: $base exists but is not in the $PB_README catalogue" >&2
+    errors=$((errors + 1))
+  fi
+done
+
+while IFS= read -r base; do
+  [[ -f "$PB_DIR/$base" ]] || {
+    echo "STALE: $PB_README lists $base which does not exist in $PB_DIR" >&2
+    errors=$((errors + 1))
+  }
+done <<<"$catalogued"
+
+pb_count="$(find "$PB_DIR" -maxdepth 1 -name '*.md' -type f -not -name 'README.md' | wc -l | tr -d ' ')"
+if [[ $errors -gt 0 ]]; then
+  echo "FAIL: $errors playbook catalogue sync error(s). Update $PB_README." >&2
+  exit 1
+fi
+echo "OK: $PB_README catalogues all $pb_count playbooks, no stale entries."

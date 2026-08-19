@@ -160,6 +160,30 @@ def _parse_reference(path: Path) -> Reference:
     )
 
 
+def _warn_on_duplicate_names(items: list, label: str) -> None:
+    """Log any ``name`` claimed by more than one bundled file.
+
+    Lookups are first-match, so a duplicate silently shadows whichever file
+    sorts later: ``get_reference(name=...)`` would return one body while the
+    other became unreachable, with nothing anywhere saying so. No duplicates
+    exist today; this exists so introducing one is visible rather than latent.
+    """
+    seen: dict[str, str] = {}
+    for item in items:
+        first = seen.get(item.name)
+        if first is None:
+            seen[item.name] = item.path.name
+        else:
+            logger.error(
+                "Duplicate %s name %r: %s shadows %s. The shadowed file is "
+                "unreachable by name; rename one of them.",
+                label,
+                item.name,
+                first,
+                item.path.name,
+            )
+
+
 @lru_cache(maxsize=1)
 def get_index() -> list[Reference]:
     """Return the full index of bundled references, sorted by name.
@@ -185,6 +209,7 @@ def get_index() -> list[Reference]:
             DATA_DIR,
         )
     refs.sort(key=lambda r: r.name)
+    _warn_on_duplicate_names(refs, "reference")
     return refs
 
 
@@ -285,6 +310,7 @@ def get_playbook_index() -> list[Playbook]:
             PLAYBOOKS_DIR,
         )
     playbooks.sort(key=lambda p: p.name)
+    _warn_on_duplicate_names(playbooks, "playbook")
     return playbooks
 
 

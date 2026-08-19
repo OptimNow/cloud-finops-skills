@@ -1,0 +1,298 @@
+# Roadmap
+
+Work that is intentionally not shipped, and the trigger to revisit it. This is the durable
+record of "what's deliberately out of scope right now and why" - distinct from GitHub
+issues, which track in-flight work.
+
+Split out of `CLAUDE.md` in August 2026. `CLAUDE.md` is read in full at the start of every
+agent session on this repo, and this section was roughly a third of it while being needed
+only when scoping new work. The `Lessons learned` section deliberately stayed behind: it is
+what stops an agent repeating the April-May 2026 truncation incident, so it has to be read
+by default.
+
+This file is the public subset of the roadmap: the entries that concern contributors and
+users of the skill. Internal product and positioning work is tracked in a private
+maintainer file.
+
+## In-flight (write when prerequisites land)
+
+- **P1 - Audit, harden, stabilise, and publish the refresh pipeline.** The pipeline
+  in `pipeline/` is currently frozen (`run_apply.py.FROZEN`) since the May 2026
+  truncation incident (8 reference files truncated across two runs - see the
+  `Lessons learned` section of `CLAUDE.md` for the forensic). Hard guard rails are in
+  the applier (`validate_post_apply` with deletion threshold + footer presence +
+  double-HR check; `apply_with_guard_rails` with snapshot + rollback; run-level
+  fail-safe at 2 failures), and 9 unit tests pass against synthesised failure
+  modes. What is missing is end-to-end validation, hardening of the rest of the
+  pipeline, and a decision on public release.
+
+  **Phase 1 (Audit) landed:** `pipeline/pipeline-audit-2026-05.md` (maintainer-local;
+  `pipeline/` is gitignored, so this is deliberately not a link - it would 404 in
+  every public clone)
+  covers module-by-module contracts, LLM-call inventory, destructive-actions
+  inventory, guard-rails verification (9/9 tests pass; full suite 43/43 green),
+  implicit assumptions, gap analysis vs Phase-2 targets, recommended
+  remediation order (9 items, 5 blocking unfreeze), and proposed unfreeze
+  criteria (U1-U4 below, plus U5-U8 from the audit). The
+  remaining three phases are still below; Phase 2 (Harden) is the next PR.
+
+  Four phases:
+
+  1. **Audit (week 1).** Read every module - `scanner/` (fetch + classify),
+     `proposer/` (CHANGES.md report builder), `applier/` (file rewrite, now
+     guard-railed), `alerter/` (Gmail draft builder), `state/`. Document each
+     module's contract (inputs, outputs, side effects, failure modes), the
+     LLM prompts in use, and any place where the pipeline takes a destructive
+     action. Identify implicit assumptions and any other module besides
+     `applier/` that can write to `skills/cloud-finops/references/` or `skills/cloud-finops/playbooks/`
+     - if anything else writes there, it must inherit the same guard-rail
+     contract.
+  2. **Harden (week 1-2).** Bring code-level validators to the modules that
+     currently rely on prompt instructions. Concrete targets: `scanner/`
+     validates fetch results (HTTP status, content-type, minimum payload
+     length) so a 200-with-empty-body cannot become a "this source has no
+     news" classification; `proposer/` validates that proposed CHANGES.md is
+     well-formed before write. **The third target originally listed here -
+     switching `applier/file_updater.py` to the structured-output (tool-use)
+     pattern - is withdrawn.** It was attempted and rolled back on 2026-05-15
+     when Opus regressed to legacy XML format under `tool_choice`; the shipped
+     architecture is plain-text FIND/REPLACE blocks with a regex parser (see
+     the 2026-05-15 lessons in `CLAUDE.md`). Do not resurrect it. Every
+     module produces a per-run structured report (one JSON file per run,
+     archived under `pipeline/state/runs/<timestamp>/`) so post-hoc audit
+     does not depend on stdout scrolling. Add ratchets: secrets handling
+     (no API keys in commit messages, no .env in stdout), idempotency
+     (re-running the same change produces zero diff), and replay-from-state
+     so a partial failure can be resumed.
+  3. **Stabilise (week 2-3).** Define the un-freeze criteria explicitly.
+     Recommended set: (a) 5 consecutive dry runs against the historical
+     change archive produce zero false-positive guard-rail rejections AND
+     zero silent truncations; (b) a fresh real run on a synthetic forked
+     references directory completes end-to-end without manual intervention;
+     (c) the run-level fail-safe correctly aborts a run that injects 3+
+     truncations across 3 different files; (d) all `pipeline/tests/`
+     unit tests pass on Python 3.10/3.11/3.12. When all four are green,
+     `mv pipeline/run_apply.py.FROZEN pipeline/run_apply.py` to unfreeze.
+     Document the unfreeze decision and the test evidence in the
+     `Lessons learned` section of `CLAUDE.md` so it is auditable.
+  4. **Publish (week 3-4, requires separate strategic decision).** The
+     pipeline is currently gitignored as "private until public release"
+     (per the `## Content update pipeline` section of `CLAUDE.md`). The
+     decision is whether public release adds more credibility (dogfooding
+     the doctrine that "agentic FinOps must be auditable", letting the
+     community contribute guard rails) than complexity (maintaining a
+     public repo, exposing internals like `sources.yaml`, prompt
+     strategies, .env handling, the OptimNow API key rotation cadence).
+     Two viable shapes if the answer is yes:
+     - **Same repo, public top-level `pipeline/` directory** (most
+       transparent; matches the doctrine). Keeps `.env*` and runtime
+       state gitignored. Maximum benefit, maximum maintenance burden.
+     - **Separate repo `OptimNow/cloud-finops-skills-pipeline`**
+       (compartmentalises the privacy boundary; harder to dogfood).
+       Lower exposure, lower transparency.
+     Either way, the Lessons learned section becomes the public artefact
+     that proves the discipline (the incident, the recovery, the guard
+     rails, the unfreeze criteria). Trigger: phases 1-3 must complete
+     before this decision is even on the table.
+
+  Cross-references: this work directly extends the `Lessons learned`
+  section of `CLAUDE.md` and should produce a follow-up Lessons learned entry
+  describing the un-freeze evidence.
+
+- **Host `cloud-finops-mcp` on Alpic - DONE (2026-08-17).** Live at
+  <https://cloud-finops-skills-590a051d.alpic.live/mcp>, published in README.md,
+  INSTALLATION.md and the `remotes` block of `server.json`. The decision to deploy
+  remotely was taken on 2026-08-16 on distribution grounds alone (let a non-technical
+  user paste a URL into claude.ai instead of installing a PyPI package), explicitly
+  *not* on interactive rendering - see the MCP Apps lesson in `CLAUDE.md` for why that is
+  allowlisted rather than earned.
+
+  **Verified against the deployed endpoint**, not just against a build log:
+  `initialize` returns `serverInfo {"name":"cloud-finops","version":"1.29.0"}` and
+  `tools/call list_references` returns `"total":33`. The reference count is the check
+  that matters - see constraint 1 below for why a deployment can come up healthy with
+  an empty catalogue.
+
+  One behavioural difference from the local run, worth knowing before writing a health
+  check: **the hosted endpoint is session-based.** A bare `tools/call` returns HTTP 400
+  even though `stateless_http = True` is set in the code; Alpic's ingress front-ends the
+  server with its own session layer. You must `initialize` first and pass the returned
+  `mcp-session-id` header on subsequent calls. Real MCP clients do this automatically;
+  a hand-rolled `curl` one-liner does not.
+
+  Four things about this repo that a deployment has to respect, all verified locally
+  before the config was written:
+
+  1. **Build from the repo root, never from `mcp_server/` in isolation.** The bundled
+     `data/*.md` are gitignored, so a fresh clone has none. They are produced at build
+     time by the `hatch-build-scripts` hook running `scripts/sync_references.py`, which
+     resolves the repo root from `__file__` and reads `skills/cloud-finops/`. Point the
+     build at `mcp_server/` alone and it will happily build a server with an empty
+     catalogue - a silent failure, not a build error.
+  2. **The start command must name the transport explicitly.** Alpic detects Python
+     transport by looking for `mcp.run()` / `mcp.http_app()` with an explicit transport
+     argument. This server routes through argparse in `__main__.py` and defaults to
+     stdio, so auto-detection would get it wrong. Hence `--transport http` in
+     `startCommand` rather than relying on detection.
+  3. `$PORT` and `0.0.0.0` are already handled in `__main__._env_port()` and
+     `run_http()`, and `stateless_http = True` is set deliberately so there is no
+     session affinity to preserve across instances.
+  4. The route is FastMCP's default `/mcp`. Do not move it.
+
+  Verified 2026-08-17 on a clean tree: `uv build --wheel` runs the sync hook and produces
+  a wheel carrying 33 references + 25 playbooks + the viewer HTML; `python -m
+  cloud_finops_mcp --transport http` binds and answers `initialize` and `tools/list` over
+  streamable HTTP.
+
+- **Live pricing tools inside `cloud-finops-mcp`: will not do (decided 2026-08-17).**
+  The idea was to add `get_llm_price` / `get_compute_price` to this server, fetching the
+  OptimToken API, so a user installs one server instead of two. Rejected, and the record
+  matters because the idea is superficially attractive and will come back.
+
+  The benefit turned out to be nearly nil. Both servers are *hosted*: the user pastes a
+  URL, they do not install anything. "One install instead of two" collapses into "one URL
+  instead of two", which is not a friction worth engineering for.
+
+  The cost is duplication of a computation, and this organisation has already paid it
+  twice. The pricing hub drifted between its website and its MCP (the MCP held a static
+  snapshot while the site resolved AWS live). The AI ROI Calculator drifted between its
+  web app and its MCP far enough to return a 7-point different ROI for the same preset,
+  and now carries a generated-and-CI-checked sync to stop it happening again. A third
+  implementation of price retrieval invites the third occurrence.
+
+  There is also a failure-domain argument. On 2026-08-17 `compare-compute-pricing` was
+  serving degraded tier-2 data while the LLM tools were fine; because pricing lives in
+  its own service, that fault stayed inside pricing answers. Folded into this server, the
+  same fault would sit inside knowledge retrieval.
+
+  **The architecture to keep instead:** separate hosted MCP servers, each owning one
+  domain, all reading OptimToken as the single price source, with the skill routing
+  between them. Revisit only if that composition proves to be real friction for users -
+  not because one endpoint feels tidier than two.
+
+- **Playbook coverage for `commitment-mismatch`.** The waste taxonomy defines the category and
+  the MCP `find_playbooks` tool advertises it as a facet value, but no playbook carries it, so
+  the query returns empty. Either write the playbooks (RI utilisation gap, expiring commitment
+  without renewal decision, Savings Plan covering the wrong family) or accept the gap
+  knowingly. Surfaced by the 2026-08-02 repository review (F9).
+
+- **Public Custom GPT for ChatGPT users.** The current ChatGPT install path is
+  self-host: `./install.sh --tool chatgpt --grouped` produces 10 grouped knowledge
+  files the user uploads themselves. A public Cloud FinOps GPT in the OpenAI GPT
+  Store would replace that with a single click for non-technical users. Build steps:
+  (1) run the grouped installer once to get the artefacts; (2) create the GPT in
+  `chatgpt.com/gpts/editor`, paste `instructions.md`, upload the 10 grouped knowledge
+  files; (3) set name, category, visibility = Anyone with link / Public; (4) capture
+  the resulting `https://chat.openai.com/g/g-XXXXX` URL and replace the placeholder in
+  `README.md`'s install table. Maintenance burden: a GitHub Action that re-builds the
+  artefacts on each release, plus a manual re-upload to ChatGPT (their API does not
+  expose a "publish new version" endpoint for Custom GPTs). Cadence target: monthly
+  refresh on top of the monthly source-update batch.
+
+- **Public Gemini Gem for Gemini users.** Same shape as the ChatGPT GPT. Build
+  steps: (1) run `./install.sh --tool gemini` to produce the 10 grouped knowledge
+  files; (2) at `gemini.google.com/gems/`, create a new Gem, paste `instructions.md`,
+  upload the 10 grouped files; (3) set the visibility, capture the public Gem URL and
+  replace the placeholder in `README.md`. Maintenance burden: same as the GPT (manual
+  re-upload, no API). Trigger: ship the GPT first, see whether the install-time
+  friction reduction matters, then mirror to Gemini.
+
+## Depth passes (extend existing files when bandwidth allows)
+
+- **Extend GreenOps depth to Azure and GCP.** The May 2026 GreenOps pass added AWS-specific
+  depth to `references/greenops-cloud-carbon.md` (Sustainability Console v2 with Methodology v3
+  alignment, the unused-capacity ventilation trap, critical reading of AWS sustainability claims,
+  AWS region intensity anchors with the 15x gap, hardware/storage anchors, Well-Architected
+  Sustainability Pillar SUS01-SUS06 with critical-read notes). The next pass should bring the
+  same depth to Azure and GCP:
+  - **Azure**: Emissions Impact Dashboard refresh (current methodology version, scope coverage,
+    location-based vs market-based handling), Azure region intensity anchors with concrete
+    numbers, Azure-specific hardware anchors (Cobalt 100, Ampere Altra, Spot equivalents), and
+    Azure Well-Architected sustainability guidance critical reading.
+  - **GCP**: Carbon Footprint refresh (granularity, scope coverage, location-based vs
+    market-based view), GCP region intensity anchors, GCP-specific hardware anchors (Axion, Tau
+    T2A, Spot/preemptible equivalents).
+  - Keep the engagement-framing section vendor-agnostic - it does not need to be duplicated
+    per provider. The trade-off tables, four-quadrant cost-vs-carbon framework, and CSRD
+    stakeholder roles already apply across all three providers.
+
+## Deferred reference files
+
+These files were identified in the white-space analysis (May 2026) and explicitly deferred,
+with the rationale captured here so future work picks them up at the right moment rather
+than re-litigating priority. Tracking issue: `OptimNow/cloud-finops-skills#55`.
+
+| Proposed file | Priority | Trigger to revisit | Why deferred |
+|---|---|---|---|
+| `finops-tools-services.md` | P2 | Next engagement raises a vendor-evaluation question | OptimNow has implicit views (FinOps Toolkit, MCP, OpenCost) but no formal write-up; better to write against a real client question than a generic checklist |
+| `finops-practice-operations.md` | P2 | Next Walk to Run client engagement starts | `optimnow-methodology.md` covers the consultancy-positioning lens; this would be the operator-grade discipline below it (three-cadence operating model, per-Capability scorecard, allied-discipline integration charter) |
+| `finops-forecasting.md` | P2 | Non-AI forecasting demand emerges | `finops-ai-value-management.md` covers AI forecasting; non-AI demand has not surfaced in current engagements |
+| `finops-unit-economics.md` | P2 | Non-AI unit-economics demand emerges | Same reasoning as forecasting; AI-side covered by AI value management and finops-for-ai files |
+| `finops-education-enablement.md` | P2 | Demand emerges; consider folding into practice-operations | Smaller scope than the other P2 files; could double as a section in practice-operations |
+| `finops-benchmarking.md` | P3 | Client engagement specifically requires it | Clients rarely ask; external benchmarking has well-known data-quality issues. Could be a section in `finops-framework.md` |
+| `finops-cost-warehouse.md` | P3 | Engagement requires it (e.g. Snowflake-FinOps integration) | Heavy lift, specialist content (FOCUS conformed-dim modelling, dbt + semantic layer, CUR2 / Azure Cost Mgmt / BigQuery loading patterns, late-binding analytics) |
+| `finops-executive-strategy-alignment.md` | **Will not write** | (no trigger - deliberately not covering) | The 2026 FCP added "Executive Strategy Alignment" as a capability. The OptimNow doctrine ("connect cost to business value", the CFO test) already covers the practitioner-grade version of executive engagement; the FCP framing reads as a positioning concept rather than an operating discipline. If a client engagement specifically asks for the FCP-aligned executive-strategy artefact, it can be written then; the Roadmap-default position is not to ship it as a separate reference. |
+
+**Note on Budgeting**: Budgeting is NOT a deferred capability. It is covered as a
+secondary in `finops-anomaly-management.md`, `finops-allocation-showback.md`,
+`finops-chargeback.md`, and `finops-onboarding-workloads.md` because each of
+those files has a substantive Budgeting section (AWS Budgets, Azure Budgets and
+Alerts, GCP budget anomaly alerts, OCI Budgets, Snowflake Budgets, Databricks
+budget policies, AI investment budgets, the 60-90 day forecast-then-commit rule
+at intake, the soft-to-hard chargeback budget enforcement). The FCP coverage
+matrix renders Budgeting as `[~]` (any-coverage via secondary) rather than
+`[ ]` (true gap) once the frontmatter declares it. There is no plan to ship a
+dedicated `finops-budgeting.md` because the cross-cutting nature of budgeting
+is better served by the dispersed coverage.
+
+**Note on Automation, Tools & Services**: same shape as Budgeting. Covered as
+secondary in `finops-tagging.md` (MCP automation, IaC enforcement) and
+`finops-waste-detection-playbooks.md` (WasteLine appliance). Plus the
+`finops-tools-services.md` deferred entry above which would be the dedicated
+write-up if engagement demand emerges.
+
+When picking up a deferred item: read the rationale above and confirm the trigger is real
+before starting the file.
+
+## Closed gaps (May 2026 batch)
+
+These files shipped during the white-space analysis follow-up (PRs #48, #50, #51, #52, #54,
+#56) and now exist in the catalogue. Listed here for the record:
+
+- `finops-anomaly-management.md` (PR #48) - Anomaly Management as standalone Inform capability
+- `finops-allocation-showback.md` (PR #50) - Allocation methodology + showback delivery
+- `finops-chargeback.md` (PR #51) - Chargeback + Finance/accounting prerequisites
+- `finops-onboarding-workloads.md` (PR #52) - Migration-time cost hygiene + M&A
+- `finops-kubernetes.md` (PR #54) - Cross-cluster K8s discipline (EKS/GKE/AKS)
+- `finops-waste-detection-playbooks.md` (PR #56) - Seven-category waste taxonomy + WasteLine
+  (extended to eight categories in August 2026 with egress / data transfer)
+- Split of `finops-aws.md` and `finops-azure.md` (August 2026) - the second-level
+  progressive-disclosure fix from the 2026-08-02 review (F15). Each became core /
+  commitments / patterns: AWS 2,893 lines -> 899 + 604 + 1,463; Azure 3,211 -> 1,810 +
+  983 + 478. A routine AWS Savings Plans question now loads ~8.3K tokens instead of
+  ~44K (-82%); an Azure commitment question ~13.6K instead of ~43K (-69%).
+
+  Two things the pre-split analysis got wrong, recorded so the next restructure does
+  not repeat them. First, Azure's two rightsizing sections were **not** duplicated -
+  they were complementary and mis-ordered, with the fundamentals sitting ~1,200 lines
+  *after* the advanced Advisor material and a note in the later section explaining the
+  relationship. They were merged and reordered, not deduplicated. Second, the repeated
+  liquidity table **was** a real duplication but a deliberate one: the file said so
+  explicitly, justifying it because the two sections sat ~2,000 lines apart. Once both
+  landed in `finops-azure-commitments.md` that rationale disappeared, so the duplicate
+  collapsed to a cross-reference. The lesson is to read the seam before assuming drift -
+  "duplicated content" in a long file is as often deliberate redundancy or bad ordering
+  as it is pipeline damage.
+
+- YAML FCP frontmatter pass across all 22 pre-existing references (PR #53)
+- `skills/cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - RAG-friendly
+  named-pattern playbooks (`<scope>-<pattern>.md`, ~2-3KB each,
+  Problem/Symptoms/Detection/Fix/Anti-pattern/See also format) covering AWS (incl. SageMaker + GPU), Azure, GCP, and cross-cloud waste patterns.
+  Routed from SKILL.md and POWER.md "named waste pattern" rows
+- `scripts/fcp-coverage.sh` + top-level `fcp-coverage.md` (PR #64) - bash matrix that
+  parses FCP frontmatter from every reference and renders a 22-capability coverage table.
+  Run on each PR; `[~]` secondary-only cells distinguish dispersed coverage from true gaps
+
+---
+
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

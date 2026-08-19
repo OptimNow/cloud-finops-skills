@@ -1,10 +1,14 @@
 # Cloud FinOps Skill & MCP
 
-> Built by [OptimNow](https://optimnow.io). Covers cloud financial management across
-> AWS, Azure, GCP, AI inference costs, GenAI capacity planning, SaaS asset management,
-> and tagging governance - grounded in enterprise delivery experience.
+> Open-source FinOps knowledge skill and MCP server for AI agents - Claude, ChatGPT,
+> Gemini, Cursor, and any MCP-compatible client. Cloud cost optimisation across AWS,
+> Azure, GCP and OCI, AI inference economics, Kubernetes, data platforms, allocation,
+> chargeback, anomaly management, and named-pattern waste detection playbooks.
+> Built by [OptimNow](https://optimnow.io), grounded in enterprise delivery experience.
 
 [![GitHub Stars](https://img.shields.io/github/stars/OptimNow/cloud-finops-skills?style=flat)](https://github.com/OptimNow/cloud-finops-skills/stargazers)
+[![PyPI](https://img.shields.io/pypi/v/cloud-finops-mcp?label=cloud-finops-mcp)](https://pypi.org/project/cloud-finops-mcp/)
+[![Latest release](https://img.shields.io/github/v/release/OptimNow/cloud-finops-skills?label=release)](https://github.com/OptimNow/cloud-finops-skills/releases/latest)
 [![FinOps Framework](https://img.shields.io/badge/FinOps-Framework-blue)](https://www.finops.org/framework/)
 [![Agent Skills](https://img.shields.io/badge/Agent-Skills%20Spec-green)](https://agentskills.io/specification)
 [![Kiro Power](https://img.shields.io/badge/Kiro-Power-orange)](https://kiro.dev/docs/powers/installation/)
@@ -125,7 +129,7 @@ and follow the installation steps, you can add FinOps expertise to any compatibl
   more, not less: agents execute discipline, not culture.
 
 These principles will grow into a `skills/cloud-finops/doctrine/` directory of opposable
-theses with their own primary sources; see the `Roadmap` section of `CLAUDE.md`.
+theses with their own primary sources.
 
 ---
 
@@ -486,8 +490,8 @@ in any of the layers below.
 - **Fix or enrich an existing playbook.** A detection query that returns
   false positives in your data, an anti-pattern you saw burn a team, a fix step
   that does not work without a precondition we missed.
-- **Pick up a deferred reference file.** The `Roadmap > Deferred reference
-  files` section of [`CLAUDE.md`](./CLAUDE.md) lists the P2/P3 items
+- **Pick up a deferred reference file.** The `Deferred reference files` section
+  of [`docs/ROADMAP.md`](./docs/ROADMAP.md) lists the P2/P3 items
   (forecasting, unit economics, practice operations, education & enablement,
   benchmarking, cost warehouse) with the rationale and trigger to revisit.
   If your engagement has surfaced one of those, that is the trigger - open
@@ -513,7 +517,7 @@ in any of the layers below.
 - Vendor marketing material restated as fact, without a primary source or
   practitioner-grade evidence behind the claim.
 - Wholesale AI-generated reference content with no human practitioner pass.
-  The pipeline that powers the monthly refresh has hard guard rails (see
+  The pipeline that powers the fortnightly refresh has hard guard rails (see
   the `Lessons learned` section of `CLAUDE.md` for why). Hand-written
   contributions go through human review for the same reasons.
 - "Best practices" lists with no business-value framing. Every recommendation

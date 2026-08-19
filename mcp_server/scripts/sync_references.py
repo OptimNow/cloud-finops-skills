@@ -33,8 +33,9 @@ PLAYBOOKS_DEST = DATA_ROOT / "playbooks"
 def _sync(label: str, src_dir: Path, dest_dir: Path, *, skip: set[str]) -> int:
     """Mirror ``*.md`` from ``src_dir`` into ``dest_dir``.
 
-    Returns the number of files copied. Falls back gracefully when ``src_dir`` is
-    missing (sdist-build case) but ``dest_dir`` is already populated.
+    Returns the number of files copied, or -1 if the source could not supply
+    any content. Falls back gracefully when ``src_dir`` is missing
+    (sdist-build case) but ``dest_dir`` is already populated.
     """
     dest_dir.mkdir(parents=True, exist_ok=True)
     existing = [p for p in dest_dir.glob("*.md")]
@@ -53,11 +54,10 @@ def _sync(label: str, src_dir: Path, dest_dir: Path, *, skip: set[str]) -> int:
         )
         return -1
 
-    # Wipe stale .md files so deletions upstream propagate to the bundle.
-    for stale in existing:
-        stale.unlink()
-
-    copied = 0
+    # Resolve the candidate list before touching the destination. An existing
+    # but empty source would otherwise wipe the bundle and report success,
+    # producing a wheel with an empty catalogue that only fails at runtime.
+    candidates = []
     for src in sorted(src_dir.glob("*.md")):
         if src.name in skip:
             continue
@@ -67,9 +67,25 @@ def _sync(label: str, src_dir: Path, dest_dir: Path, *, skip: set[str]) -> int:
         if src.is_symlink():
             print(f"[sync_references] {label}: skipping symlink {src.name}")
             continue
-        shutil.copy2(src, dest_dir / src.name)
-        copied += 1
+        candidates.append(src)
 
+    if not candidates:
+        print(
+            f"[sync_references] {label}: source directory exists but contains "
+            f"no eligible *.md files: {src_dir}. Refusing to empty the bundle "
+            f"at {dest_dir} ({len(existing)} file(s) left untouched).",
+            file=sys.stderr,
+        )
+        return -1
+
+    # Wipe stale .md files so deletions upstream propagate to the bundle.
+    for stale in existing:
+        stale.unlink()
+
+    for src in candidates:
+        shutil.copy2(src, dest_dir / src.name)
+
+    copied = len(candidates)
     print(f"[sync_references] {label}: copied {copied} file(s) to {dest_dir}")
     return copied
 
@@ -81,6 +97,9 @@ def main() -> int:
     )
 
     if refs < 0:
+        # Either the source is missing with nothing pre-bundled, or it is
+        # present but empty. Both would ship a server with no catalogue, so
+        # the build fails here rather than at first query.
         return 1
     if playbooks < 0:
         # Playbooks are optional - older skill versions may not have shipped

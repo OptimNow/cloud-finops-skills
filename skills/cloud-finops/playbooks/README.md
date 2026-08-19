@@ -10,6 +10,62 @@ end of the band because the detection queries and remediation steps need
 more space; cloud-native patterns (NAT gateways, orphaned disks) stay
 closer to ~2-3 KB.
 
+## Catalogue
+
+`SKILL.md` and `POWER.md` carry representative examples only and defer here for
+the full list. Over the MCP server, `list_playbooks()` and
+`find_playbooks(scope=, service=, waste_category=, confidence=)` return the same
+set with its facets.
+
+### AWS
+
+| Playbook | Pattern | Waste category | Confidence |
+|---|---|---|---|
+| [aws-cross-az-egress](aws-cross-az-egress.md) | Cross-AZ Egress Chatterbox | egress | likely |
+| [aws-gpu-for-cpu-bound-workload](aws-gpu-for-cpu-bound-workload.md) | GPU Instance for a CPU-Bound Workload | overprovisioned | likely |
+| [aws-gpu-instance-oversized](aws-gpu-instance-oversized.md) | Oversized GPU Instance | overprovisioned | likely |
+| [aws-idle-load-balancer](aws-idle-load-balancer.md) | Idle Load Balancer | idle | obvious |
+| [aws-mig-candidate](aws-mig-candidate.md) | MIG (Multi-Instance GPU) Candidate | overprovisioned | possible |
+| [aws-multi-gpu-underutilized](aws-multi-gpu-underutilized.md) | Multi-GPU Instance with Single-GPU Workload | overprovisioned | obvious |
+| [aws-orphaned-ebs-volumes](aws-orphaned-ebs-volumes.md) | Orphaned EBS Volumes | orphaned | obvious |
+| [aws-outdated-gpu-generation](aws-outdated-gpu-generation.md) | Outdated GPU Generation | modernization | possible |
+| [aws-oversized-rds](aws-oversized-rds.md) | Oversized RDS Instance | overprovisioned | likely |
+| [aws-sagemaker-idle-endpoint](aws-sagemaker-idle-endpoint.md) | SageMaker Idle Endpoint | idle | obvious |
+| [aws-sagemaker-mme-consolidation](aws-sagemaker-mme-consolidation.md) | SageMaker Endpoint Sprawl (MME / inference components) | overprovisioned | likely |
+| [aws-sagemaker-notebook-always-on](aws-sagemaker-notebook-always-on.md) | SageMaker Always-On Notebook Instance | idle | obvious |
+| [aws-snapshot-sprawl](aws-snapshot-sprawl.md) | Snapshot Sprawl | orphaned | likely |
+| [aws-zombie-nat-gateway](aws-zombie-nat-gateway.md) | Zombie NAT Gateway | idle | obvious |
+
+### Azure
+
+| Playbook | Pattern | Waste category | Confidence |
+|---|---|---|---|
+| [azure-app-service-overprovisioned](azure-app-service-overprovisioned.md) | App Service Plan Overprovisioned | overprovisioned | likely |
+| [azure-idle-sql-database](azure-idle-sql-database.md) | Idle SQL Database | idle | likely |
+| [azure-log-analytics-sprawl](azure-log-analytics-sprawl.md) | Log Analytics Ingestion Sprawl | overprovisioned | likely |
+| [azure-orphan-disks](azure-orphan-disks.md) | Orphan Managed Disks | orphaned | obvious |
+
+### GCP
+
+| Playbook | Pattern | Waste category | Confidence |
+|---|---|---|---|
+| [gcp-cloud-functions-cold-starts](gcp-cloud-functions-cold-starts.md) | Cloud Functions Cold Starts | overprovisioned | possible |
+| [gcp-idle-gke-autopilot](gcp-idle-gke-autopilot.md) | Idle GKE Autopilot Cluster | idle | likely |
+| [gcp-orphan-persistent-disks](gcp-orphan-persistent-disks.md) | Orphan Persistent Disks | orphaned | obvious |
+
+### Cross-cloud
+
+| Playbook | Pattern | Waste category | Confidence |
+|---|---|---|---|
+| [cross-cloud-agent-loop-burn](cross-cloud-agent-loop-burn.md) | Agent-Loop Flat-Line Burn | ai-ml-inefficiency | likely |
+| [cross-cloud-coding-agent-token-waste](cross-cloud-coding-agent-token-waste.md) | Coding-Agent Token Waste | ai-ml-inefficiency | likely |
+| [cross-cloud-schedule-blindness](cross-cloud-schedule-blindness.md) | Schedule Blindness (non-production 24/7) | schedule-blindness | obvious |
+| [cross-cloud-untagged-spend-drift](cross-cloud-untagged-spend-drift.md) | Untagged Spend Drift | orphaned | likely |
+
+`commitment-mismatch` is a declared waste category with no playbook behind it
+yet, so a `find_playbooks(waste_category="commitment-mismatch")` query returns
+empty by design. The gap is tracked in `docs/ROADMAP.md`.
+
 ## How playbooks differ from reference files
 
 The reference files in `../references/` carry the linear, narrative
@@ -124,13 +180,16 @@ drift, the recommended workflow is:
    provider console/API changes as a reason to re-run the affected queries,
    not just to reword the prose
 
-The `cloud-finops/references/finops-waste-detection-playbooks.md` file is
-the canonical taxonomy and confidence rubric; playbooks instantiate it.
+The `../references/finops-waste-detection-playbooks.md` file is the canonical
+taxonomy and confidence rubric; playbooks instantiate it.
 
 ## Status
 
 This directory is seeded with a curated subset of high-frequency patterns.
-The full per-provider catalogues live in `references/finops-aws-patterns.md`,
-`references/finops-azure-patterns.md`, and `references/finops-gcp.md`;
-extracting more of them into playbooks is tracked in the Roadmap section of
-`CLAUDE.md`.
+The full per-provider catalogues live in `../references/finops-aws-patterns.md`,
+`../references/finops-azure-patterns.md`, and `../references/finops-gcp.md`;
+extracting more of them into playbooks is tracked in `docs/ROADMAP.md`.
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
