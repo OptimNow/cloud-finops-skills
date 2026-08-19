@@ -1,0 +1,38 @@
+# Dependabot PRs are dependency bumps that do not need a human for patch and minor
+# versions. This workflow approves them as github-actions (satisfying a required-review
+# rule where one exists) and queues a squash auto-merge, so they land on their own once
+# required checks pass. Major bumps are deliberately skipped: those still wait for a
+# human review.
+#
+# Two repository settings must stay enabled for this to work:
+#   - General -> Allow auto-merge
+#   - Actions -> General -> Workflow permissions -> "Allow GitHub Actions to create and
+#     approve pull requests"
+name: Dependabot auto-merge
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' && github.repository == 'OptimNow/cloud-finops-skills'
+    steps:
+      - name: Fetch dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approve and queue auto-merge (patch/minor only)
+        if: steps.meta.outputs.update-type != 'version-update:semver-major'
+        run: |
+          gh pr review "$PR_URL" --approve --body "Auto-approved dependabot ${UPDATE_TYPE#version-update:semver-} bump. Majors still wait for a human."
+          gh pr merge "$PR_URL" --squash --auto
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
