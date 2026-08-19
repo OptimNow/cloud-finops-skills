@@ -33,7 +33,7 @@ cloud-finops-skills/
 ├── AGENTS.md              <- Agent-facing repo brief (truncated tree, defers to CLAUDE.md)
 ├── INSTALLATION.md        <- Setup instructions (12 tool integrations) + response contract
 ├── LICENSE.md             <- CC BY-SA 4.0
-├── llms.txt               <- Machine-readable "Key files" list (CI-gated)
+├── llms.txt               <- llmstxt.org-format index (linked sections; CI-gated)
 ├── DEPENDENCIES.md        <- Cross-repo dependency map for the five OptimNow repos,
 │                             plus the "if I change X, what else needs review" table
 ├── install.sh             <- One-liner installer script
@@ -97,11 +97,13 @@ cloud-finops-skills/
 │                             stdio + streamable-HTTP transports; MCP Apps
 │                             `ui://cloud-finops/playbook-viewer` resource)
 ├── scripts/               <- `fcp-coverage.sh` (parses FCP frontmatter, emits
-│                             `fcp-coverage.md` matrix) plus five CI guards run by
-│                             the `CI` workflow: check-artefact-size,
-│                             check-docs-drift, check-llms-txt,
-│                             check-marketplace-version, check-skill-description
-├── fcp-coverage.md        <- Generated FCP capability coverage matrix (22 caps)
+│                             `fcp-coverage.md`; its --check mode diffs the
+│                             committed matrix in CI) plus the guards:
+│                             check-artefact-size, check-docs-drift,
+│                             check-llms-txt, check-skill-description (run by
+│                             the `CI` workflow) and check-marketplace-version
+│                             (its own `marketplace-version-check` workflow)
+├── fcp-coverage.md        <- Generated FCP coverage matrix (22 caps; CI-gated)
 ├── .gitattributes         <- Force LF on *.sh for Windows checkouts
 └── pipeline/              <- Content update pipeline (gitignored, private)
     ├── run_scan.py        <- Fortnightly scan entry point
@@ -164,7 +166,7 @@ execute pass before touching any reference file.
 
 **Operational reference:** `pipeline/MONTHLY_WORKFLOW.md` (gitignored,
 private; only present in the maintainer's local repo) is the step-by-step
-doctrine for running a monthly batch - pre-flight checks, per-item review,
+doctrine for running a batch - pre-flight checks, per-item review,
 execute, PR management, failure-mode handling, cost guidance. The
 `pipeline/README.md` alongside it covers the same workflow at a lower
 technical level. Both are intentionally kept out of public Git history -
@@ -655,10 +657,11 @@ Two standing rules that follow from the map:
 - [ ] README directory listing and "What this skill covers" section updated
 - [ ] CLAUDE.md "Repository structure" directory listing updated (CI-gated by
       `scripts/check-docs-drift.sh` - a reference missing from the tree, or a
-      tree entry with no file behind it, fails the `CI` workflow)
+      tree entry with no file behind it, fails the `CI` workflow. The same
+      script also gates the playbook catalogue in `playbooks/README.md`)
 - [ ] AGENTS.md and llms.txt updated to reflect the new reference (the llms.txt
-      "Key files" list is CI-gated by `scripts/check-llms-txt.sh` - a missing or
-      stale entry fails the `CI` workflow, so this can't drift silently).
+      References section is CI-gated by `scripts/check-llms-txt.sh` - a missing
+      or stale entry fails the `CI` workflow, so this can't drift silently).
       AGENTS.md deliberately does not enumerate references - it shows a
       truncated tree and defers to CLAUDE.md - so there is nothing to update
       there unless the new file changes what AGENTS.md says about the repo.
@@ -671,7 +674,8 @@ Two standing rules that follow from the map:
 - [ ] If adding a new playbook, follow the format in
       `skills/cloud-finops/playbooks/README.md` (frontmatter schema, Problem /
       Symptoms / Detection / Fix / Anti-pattern / See also sections, OptimNow
-      CC BY-SA footer), and update the named-
+      CC BY-SA footer), add it to that README's catalogue table (CI-gated by
+      `scripts/check-docs-drift.sh`), and update the named-
       pattern parenthetical in the ChatGPT / grouped routing tables in
       install.sh. SKILL.md and POWER.md carry representative examples only
       (since the 2026-08 token-efficiency pass) and defer to
