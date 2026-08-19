@@ -1,6 +1,6 @@
 # Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
 
-Copyright 2025–2026 OptimNow (James Barney)
+Copyright 2025–2026 OptimNow (Jean Latière)
 
 This work is licensed under the Creative Commons Attribution-ShareAlike 4.0
 International License.
