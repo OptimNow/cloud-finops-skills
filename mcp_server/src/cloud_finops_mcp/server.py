@@ -9,6 +9,7 @@ streamable HTTP (for a hosted deployment). The actual tool logic lives in
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from pathlib import Path
 from typing import Any
@@ -50,6 +51,38 @@ DEFAULT_HTTP_PORT = 8000
 PLAYBOOK_VIEWER_URI = "ui://cloud-finops/playbook-viewer"
 PLAYBOOK_EXPLORER_URI = "ui://cloud-finops/playbook-explorer"
 REFERENCE_BROWSER_URI = "ui://cloud-finops/reference-browser"
+
+# The claude.ai / Claude Desktop MCP Apps host only mounts a widget iframe
+# when the ui:// resource declares the sandbox domain it will be served from:
+# sha256(<connector URL exactly as the user entered it in Settings, no
+# trailing slash>)[:32] + ".claudemcpcontent.com". A wrong or missing value
+# logs "ui.domain validation failed for connector <url>" in the host log
+# (mcp-ext-apps-host) and leaves a dead blank frame - observed live on
+# 2026-08-19 for both this server and ai-pricing-hub. The hash is DERIVED
+# from the canonical URL rather than pasted, so the URL constant is the only
+# thing that has to stay true; hashing an internal path instead of the
+# public URL is exactly the mistake that broke ai-pricing-hub.
+CANONICAL_CONNECTOR_URL = "https://cloud-finops-skills-590a051d.alpic.live/mcp"
+UI_DOMAIN = (
+    hashlib.sha256(CANONICAL_CONNECTOR_URL.encode("utf-8")).hexdigest()[:32]
+    + ".claudemcpcontent.com"
+)
+_UI_RESOURCE_META = {"ui": {"domain": UI_DOMAIN}}
+
+
+def _ui_tool_meta(resource_uri: str) -> dict[str, Any]:
+    """Tool-side widget link, declared under every key shape hosts read.
+
+    The working reference (ai-pricing-hub's tool listing as captured in the
+    Desktop logs) declares all three: the SEP-1865 nested form, the flat
+    slash form, and the OpenAI Apps SDK form. Redundant on any one host,
+    but each host reads a different one and the duplication is three lines.
+    """
+    return {
+        "ui": {"resourceUri": resource_uri},
+        "ui/resourceUri": resource_uri,
+        "openai/outputTemplate": resource_uri,
+    }
 
 _UI_DIR = Path(__file__).resolve().parent / "ui"
 _UI_MARKERS = (
@@ -102,7 +135,7 @@ mcp = FastMCP(
 @mcp.tool(
     title="List FinOps references",
     annotations=_READ_ONLY,
-    meta={"ui": {"resourceUri": REFERENCE_BROWSER_URI}},
+    meta=_ui_tool_meta(REFERENCE_BROWSER_URI),
 )
 def list_references() -> dict[str, Any]:
     """List every bundled FinOps reference with its FCP metadata.
@@ -142,7 +175,7 @@ def get_reference(name: str) -> dict[str, Any]:
 @mcp.tool(
     title="Find FinOps references by facet",
     annotations=_READ_ONLY,
-    meta={"ui": {"resourceUri": REFERENCE_BROWSER_URI}},
+    meta=_ui_tool_meta(REFERENCE_BROWSER_URI),
 )
 def find_references(
     domain: str | None = None,
@@ -191,7 +224,7 @@ def find_references(
 @mcp.tool(
     title="List waste playbooks",
     annotations=_READ_ONLY,
-    meta={"ui": {"resourceUri": PLAYBOOK_EXPLORER_URI}},
+    meta=_ui_tool_meta(PLAYBOOK_EXPLORER_URI),
 )
 def list_playbooks() -> dict[str, Any]:
     """List every bundled named-pattern playbook.
@@ -213,7 +246,7 @@ def list_playbooks() -> dict[str, Any]:
 @mcp.tool(
     title="Get a waste playbook",
     annotations=_READ_ONLY,
-    meta={"ui": {"resourceUri": PLAYBOOK_VIEWER_URI}},
+    meta=_ui_tool_meta(PLAYBOOK_VIEWER_URI),
 )
 def get_playbook(name: str) -> dict[str, Any]:
     """Fetch the full markdown content of one playbook by slug.
@@ -240,6 +273,7 @@ def get_playbook(name: str) -> dict[str, Any]:
 
 @mcp.resource(
     PLAYBOOK_VIEWER_URI,
+    meta=_UI_RESOURCE_META,
     name="Playbook viewer",
     mime_type="text/html;profile=mcp-app",
 )
@@ -258,6 +292,7 @@ def playbook_viewer_ui() -> str:
 
 @mcp.resource(
     PLAYBOOK_EXPLORER_URI,
+    meta=_UI_RESOURCE_META,
     name="Playbook explorer",
     mime_type="text/html;profile=mcp-app",
 )
@@ -276,6 +311,7 @@ def playbook_explorer_ui() -> str:
 
 @mcp.resource(
     REFERENCE_BROWSER_URI,
+    meta=_UI_RESOURCE_META,
     name="Reference browser",
     mime_type="text/html;profile=mcp-app",
 )
@@ -293,7 +329,7 @@ def reference_browser_ui() -> str:
 @mcp.tool(
     title="Find waste playbooks by facet",
     annotations=_READ_ONLY,
-    meta={"ui": {"resourceUri": PLAYBOOK_EXPLORER_URI}},
+    meta=_ui_tool_meta(PLAYBOOK_EXPLORER_URI),
 )
 def find_playbooks(
     scope: str | None = None,

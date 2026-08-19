@@ -392,14 +392,19 @@ connector "gets the text fallback no matter how correct it is" is no
 longer the whole story - but whether a correct `ui.domain` is *sufficient*
 for rendering is still unproven for this repo's connector: the render test
 needs the connector added to the account and the Alpic deployment current.
-Per the test-first rule, `_meta.ui.domain` is NOT set on the resources;
-the precomputed value for the canonical URL
-`https://cloud-finops-skills-590a051d.alpic.live/mcp` is
-`1a3b12085dbe8a536c1a9f86d2e7e1a1.claudemcpcontent.com` - apply it only if
-a real render attempt fails with that log signature. When computing it,
-hash the public connector URL exactly as users are told to enter it, never
-an internal path - the wrong-input variant of this is exactly what broke
-ai-pricing-hub-mcp (fixed 2026-08-19).
+The real render attempt happened on 2026-08-19 (four prompts through the
+connector on claude.ai): tools executed, the host reserved the widget
+iframe, the frame stayed blank - the predicted failure. `ui.domain` was
+therefore applied on 2026-08-20: the three widget resources declare
+`meta={"ui": {"domain": ...}}` where the value is DERIVED in server.py
+from `CANONICAL_CONNECTOR_URL` (sha256 of the URL exactly as users enter
+it, no trailing slash, first 32 hex chars + `.claudemcpcontent.com`) and
+pinned by tests. When touching this, never hash an internal path instead
+of the public URL - that wrong-input variant is exactly what broke
+ai-pricing-hub-mcp. Correction to an earlier note in this entry:
+ai-pricing-hub was NOT fixed on 2026-08-19 - no such fix exists in that
+repo and its failures were still logging at 17:30 that day; it needs the
+same change as this one.
 
 ### A packaged artefact cannot own volatile data (2026-08-17)
 
