@@ -6,6 +6,8 @@
 <style>
   :root {
     color-scheme: light dark;
+    --accent: #ACE849;            /* OptimNow chartreuse */
+    --accent-fg: #2a3510;
     --fg: #1a1d23;
     --fg-muted: #5b6370;
     --bg: #ffffff;
@@ -23,6 +25,7 @@
   }
   @media (prefers-color-scheme: dark) {
     :root {
+      --accent-fg: #d8f5a2;
       --fg: #e7e9ec;
       --fg-muted: #9aa2ad;
       --bg: #15171c;
@@ -88,6 +91,7 @@
   .section ul, .section ol { margin: 0 0 8px; padding-left: 20px; }
   .section li { margin-bottom: 3px; }
   .section pre {
+    position: relative;
     background: var(--code-bg);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -106,6 +110,36 @@
     font-size: 12px;
   }
   .section strong { font-weight: 650; }
+  .copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--fg-muted);
+    font-size: 10.5px;
+    padding: 2px 8px;
+    cursor: pointer;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--fg); }
+  ul.checklist { list-style: none; padding-left: 4px; }
+  ul.checklist li { margin-bottom: 6px; }
+  ul.checklist label { display: flex; gap: 8px; align-items: baseline; cursor: pointer; }
+  ul.checklist input[type="checkbox"] { accent-color: var(--accent); }
+  ul.checklist input:checked + span { color: var(--fg-muted); text-decoration: line-through; }
+  .pb-link { background: none; border: none; padding: 0; cursor: pointer; font: inherit; }
+  .pb-link code {
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 2px;
+    color: inherit;
+  }
+  .panel-loading { color: var(--fg-muted); font-size: 12.5px; margin-bottom: 10px; }
   .footer-note {
     color: var(--fg-muted);
     font-size: 11.5px;
@@ -121,7 +155,7 @@
     width: 22px; height: 22px;
     margin: 0 auto 10px;
     border: 2px solid var(--border);
-    border-top-color: var(--accent-detection);
+    border-top-color: var(--accent);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -135,6 +169,7 @@
     white-space: pre-wrap;
     font-size: 12.5px;
   }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -143,179 +178,29 @@
     <div class="spinner"></div>
     Waiting for playbook data&hellip;
   </div>
+  <div class="panel-loading hidden" id="nav-loading">Loading&hellip;</div>
+  <div id="content"></div>
 </div>
 
+<!--BRIDGE-->
+<!--PLAYBOOK_RENDER-->
 <script>
 (function () {
   "use strict";
+  var R = window.PlaybookRender;
 
-  // --- MCP Apps host bridge -------------------------------------------
-  // Prototype of the SEP-1865 iframe<->host wiring: we announce readiness
-  // with ui/initialize, then react to the tool-result notification the
-  // host relays once get_playbook() returns. See
-  // https://github.com/modelcontextprotocol/ext-apps (2026-01-26 apps.mdx).
-
-  var SECTION_ORDER = [
-    "problem", "symptoms", "detection", "fix", "anti-pattern", "see-also"
-  ];
-  var SECTION_LABELS = {
-    "problem": "Problem",
-    "symptoms": "Symptoms",
-    "detection": "Detection",
-    "fix": "Fix",
-    "anti-pattern": "Anti-pattern",
-    "see-also": "See also"
-  };
-
-  function post(message) {
-    window.parent.postMessage(message, "*");
-  }
-
-  function slugifyHeading(text) {
-    return text.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  }
-
-  // Very small, dependency-free markdown-ish renderer scoped to what the
-  // bundled playbooks actually use: fenced code, bullet/numbered lists,
-  // bold, inline code, links, paragraphs. Not a general CommonMark parser.
-  function escapeHtml(s) {
-    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  }
-
-  function renderInline(text) {
-    var out = escapeHtml(text);
-    out = out.replace(/`([^`]+)`/g, "<code>$1</code>");
-    out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-    out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (_, label, href) {
-      var safeHref = /^https?:\/\//.test(href) ? href : "#";
-      return '<a href="' + safeHref + '" target="_blank" rel="noopener noreferrer">' + label + "</a>";
-    });
-    return out;
-  }
-
-  function renderBody(md) {
-    var lines = md.split("\n");
-    var html = [];
-    var i = 0;
-    var listBuffer = null; // {tag, items}
-
-    function flushList() {
-      if (listBuffer) {
-        html.push(
-          "<" + listBuffer.tag + ">" +
-          listBuffer.items.map(function (it) { return "<li>" + renderInline(it) + "</li>"; }).join("") +
-          "</" + listBuffer.tag + ">"
-        );
-        listBuffer = null;
-      }
-    }
-
-    while (i < lines.length) {
-      var line = lines[i];
-
-      if (/^```/.test(line)) {
-        flushList();
-        var codeLines = [];
-        i++;
-        while (i < lines.length && !/^```/.test(lines[i])) {
-          codeLines.push(lines[i]);
-          i++;
-        }
-        html.push("<pre><code>" + escapeHtml(codeLines.join("\n")) + "</code></pre>");
-        i++; // skip closing fence
-        continue;
-      }
-
-      var bulletMatch = line.match(/^\s*[-*]\s+(.*)$/);
-      var numberedMatch = line.match(/^\s*\d+\.\s+(.*)$/);
-
-      if (bulletMatch) {
-        if (!listBuffer || listBuffer.tag !== "ul") { flushList(); listBuffer = { tag: "ul", items: [] }; }
-        listBuffer.items.push(bulletMatch[1]);
-        i++;
-        continue;
-      }
-      if (numberedMatch) {
-        if (!listBuffer || listBuffer.tag !== "ol") { flushList(); listBuffer = { tag: "ol", items: [] }; }
-        listBuffer.items.push(numberedMatch[1]);
-        i++;
-        continue;
-      }
-
-      // Wrapped continuation of the previous list item: indented, not a new
-      // bullet/number, not blank. Source markdown wraps long bullets like
-      // "- foo bar\n  baz" across two lines without repeating the marker.
-      if (listBuffer && listBuffer.items.length && /^\s+\S/.test(line)) {
-        listBuffer.items[listBuffer.items.length - 1] += " " + line.trim();
-        i++;
-        continue;
-      }
-
-      flushList();
-
-      if (line.trim() === "") { i++; continue; }
-
-      // Paragraph: consume until blank line / list / fence.
-      var paraLines = [line];
-      i++;
-      while (
-        i < lines.length &&
-        lines[i].trim() !== "" &&
-        !/^```/.test(lines[i]) &&
-        !/^\s*[-*]\s+/.test(lines[i]) &&
-        !/^\s*\d+\.\s+/.test(lines[i])
-      ) {
-        paraLines.push(lines[i]);
-        i++;
-      }
-      html.push("<p>" + renderInline(paraLines.join(" ")) + "</p>");
-    }
-    flushList();
-    return html.join("\n");
-  }
-
-  function parseFrontmatter(raw) {
-    var fm = {};
-    var body = raw;
-    if (raw.indexOf("---") === 0) {
-      var end = raw.indexOf("\n---", 3);
-      if (end !== -1) {
-        var block = raw.slice(3, end);
-        body = raw.slice(end + 4).replace(/^\n+/, "");
-        block.split("\n").forEach(function (line) {
-          var m = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
-          if (m) fm[m[1]] = m[2].trim();
-        });
-      }
-    }
-    return { fm: fm, body: body };
-  }
-
-  function parseSections(body) {
-    // Drop the leading "# Title" line, split the rest on "## Heading".
-    var withoutTitle = body.replace(/^#\s+.*\n+/, "");
-    var parts = withoutTitle.split(/\n(?=##\s+)/);
-    var sections = [];
-    parts.forEach(function (part) {
-      var m = part.match(/^##\s+(.*)\n?([\s\S]*)$/);
-      if (!m) return;
-      var label = m[1].trim();
-      var kind = slugifyHeading(label);
-      sections.push({ kind: kind, label: label, body: m[2] });
-    });
-    return sections;
-  }
+  function $(id) { return document.getElementById(id); }
 
   function render(payload) {
-    var emptyState = document.getElementById("empty-state");
-    if (emptyState) emptyState.remove();
+    var emptyState = $("empty-state");
+    if (emptyState) emptyState.classList.add("hidden");
+    $("nav-loading").classList.add("hidden");
 
-    var root = document.getElementById("root");
-    var content = payload && payload.content;
+    var content = $("content");
 
     if (payload && payload.error) {
-      root.innerHTML =
-        '<div class="error">No playbook loaded: ' + escapeHtml(payload.error) +
+      content.innerHTML =
+        '<div class="error">No playbook loaded: ' + R.escapeHtml(payload.error) +
         (payload.suggestions && payload.suggestions.length
           ? "\n\nDid you mean: " + payload.suggestions.join(", ") + "?"
           : "") +
@@ -323,108 +208,52 @@
       return;
     }
 
-    if (typeof content !== "string") {
-      root.innerHTML = '<div class="error">Unexpected tool result shape - no content string found.</div>';
+    if (!payload || typeof payload.content !== "string") {
+      content.innerHTML = '<div class="error">Unexpected tool result shape - no content string found.</div>';
       return;
     }
 
-    var parsed = parseFrontmatter(content);
-    var fm = parsed.fm;
-    var sections = parseSections(parsed.body);
-    var byKind = {};
-    sections.forEach(function (s) { byKind[s.kind] = s; });
+    content.innerHTML =
+      R.renderPlaybookHtml(payload, { checklistFix: true }) +
+      '<div class="footer-note">Cloud FinOps Playbook by OptimNow &middot; rendered via MCP Apps (SEP-1865)</div>';
 
-    var badgeValues = [fm.scope, fm.service, fm.waste_category, fm.confidence].filter(Boolean);
+    // v2 enhancements: Copy on every code block; `playbooks/<slug>.md`
+    // entries in See also navigate to that playbook via the host bridge.
+    R.enhanceCodeBlocks(content);
+    R.enhanceSeeAlso(content, openPlaybook);
+  }
 
-    var out = [];
-    out.push('<div class="header">');
-    out.push("<h1>" + escapeHtml(payload.title || payload.name || "Playbook") + "</h1>");
-    if (badgeValues.length) {
-      out.push('<div class="badges">' + badgeValues.map(function (v) {
-        return '<span class="badge">' + escapeHtml(v) + "</span>";
-      }).join("") + "</div>");
-    }
-    out.push("</div>");
-
-    var orderedKinds = SECTION_ORDER.slice();
-    sections.forEach(function (s) { if (orderedKinds.indexOf(s.kind) === -1) orderedKinds.push(s.kind); });
-
-    orderedKinds.forEach(function (kind) {
-      var s = byKind[kind];
-      if (!s) return;
-      out.push('<div class="section" data-kind="' + kind + '">');
-      out.push("<h2>" + escapeHtml(SECTION_LABELS[kind] || s.label) + "</h2>");
-      out.push(renderBody(s.body));
-      out.push("</div>");
+  function openPlaybook(slug) {
+    $("nav-loading").classList.remove("hidden");
+    window.McpBridge.callTool("get_playbook", { name: slug }).then(render, function (err) {
+      $("nav-loading").classList.add("hidden");
+      var content = $("content");
+      var note = document.createElement("div");
+      note.className = "error";
+      note.textContent = "Could not open playbooks/" + slug + ".md: " + String(err && err.message || err);
+      content.insertBefore(note, content.firstChild);
+      setTimeout(function () { if (note.parentNode) note.parentNode.removeChild(note); }, 6000);
     });
-
-    out.push('<div class="footer-note">Cloud FinOps Playbook by OptimNow &middot; rendered via MCP Apps (SEP-1865)</div>');
-
-    root.innerHTML = out.join("\n");
   }
-
-  function extractPayload(params) {
-    if (params && params.structuredContent) return params.structuredContent;
-    if (params && Array.isArray(params.content)) {
-      for (var j = 0; j < params.content.length; j++) {
-        var block = params.content[j];
-        if (block && typeof block.text === "string") {
-          try { return JSON.parse(block.text); } catch (e) { /* not JSON, ignore */ }
-        }
-      }
-    }
-    return null;
-  }
-
-  window.addEventListener("message", function (event) {
-    var msg = event.data;
-    if (!msg || msg.jsonrpc !== "2.0") return;
-
-    if (msg.method === "ui/notifications/tool-result") {
-      var payload = extractPayload(msg.params);
-      if (payload) render(payload);
-      return;
-    }
-
-    // Some hosts may reply to our ui/initialize call with a result carrying
-    // an initial tool result inline rather than as a separate notification.
-    if (msg.id === 1 && msg.result) {
-      var inline = extractPayload(msg.result);
-      if (inline) render(inline);
-    }
-  });
 
   // Links must not navigate the iframe itself: the host sandbox has
   // allow-scripts/allow-same-origin but not allow-popups, so a plain
   // target="_blank" is silently swallowed. Route clicks through the host's
-  // ui/open-link request instead. The href is kept as-is so a host that
-  // does not implement ui/open-link degrades to today's behaviour rather
-  // than to a dead element.
-  var linkRequestId = 100;
+  // ui/open-link request instead (McpBridge.openLink). The href is kept
+  // as-is so a host without ui/open-link degrades to today's behaviour
+  // rather than to a dead element.
   document.addEventListener("click", function (event) {
     var anchor = event.target && event.target.closest && event.target.closest("a[href]");
     if (!anchor) return;
     var href = anchor.getAttribute("href");
     if (!href || href === "#") return;
     event.preventDefault();
-    post({
-      jsonrpc: "2.0",
-      id: ++linkRequestId,
-      method: "ui/open-link",
-      params: { url: href }
-    });
+    window.McpBridge.openLink(href);
   });
 
-  post({
-    jsonrpc: "2.0",
-    id: 1,
-    method: "ui/initialize",
-    params: {
-      protocolVersion: "2026-01-26",
-      clientInfo: { name: "cloud-finops-playbook-viewer", version: "1" },
-      capabilities: {},
-      appCapabilities: {}
-    }
+  window.McpBridge.init({
+    appName: "cloud-finops-playbook-viewer",
+    onToolResult: render
   });
 })();
 </script>

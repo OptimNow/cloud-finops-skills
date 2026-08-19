@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Playbook explorer</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --accent: #ACE849;            /* OptimNow chartreuse */
+    --accent-fg: #2a3510;         /* readable text on/next to the accent */
+    --fg: #1a1d23;
+    --fg-muted: #5b6370;
+    --bg: #ffffff;
+    --card-bg: #f7f8fa;
+    --border: #e2e5ea;
+    --code-bg: #eef0f3;
+    --danger: #b91c1c;
+    --badge-bg: #eef1ff;
+    --badge-fg: #3730a3;
+    --scope-aws: #b45309;
+    --scope-azure: #1d4ed8;
+    --scope-gcp: #15803d;
+    --scope-cross: #6d28d9;
+    --accent-problem: #6b7280;
+    --accent-symptoms: #b45309;
+    --accent-detection: #1d4ed8;
+    --accent-fix: #15803d;
+    --accent-antipattern: #b91c1c;
+    --accent-seealso: #6b7280;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --accent-fg: #d8f5a2;
+      --fg: #e7e9ec;
+      --fg-muted: #9aa2ad;
+      --bg: #15171c;
+      --card-bg: #1b1e24;
+      --border: #2a2e37;
+      --code-bg: #10141a;
+      --danger: #f87171;
+      --badge-bg: #232a4d;
+      --badge-fg: #b7c0ff;
+      --scope-aws: #f59e0b;
+      --scope-azure: #60a5fa;
+      --scope-gcp: #4ade80;
+      --scope-cross: #a78bfa;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--fg);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+  #root { padding: 14px 16px 24px; max-width: 900px; margin: 0 auto; }
+
+  /* --- states ---------------------------------------------------------- */
+  .state { color: var(--fg-muted); padding: 24px 4px; text-align: center; }
+  .spinner {
+    width: 22px; height: 22px; margin: 0 auto 10px;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error {
+    color: var(--danger); background: var(--card-bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; white-space: pre-wrap; font-size: 12.5px;
+  }
+  .empty {
+    color: var(--fg-muted); background: var(--card-bg);
+    border: 1px dashed var(--border); border-radius: 8px;
+    padding: 18px 14px; text-align: center; font-size: 13px;
+  }
+  .empty code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+
+  /* --- toolbar ---------------------------------------------------------- */
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .toolbar h1 { font-size: 16px; font-weight: 650; margin: 0 auto 0 0; }
+  .tabs { display: inline-flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+  .tabs button {
+    background: var(--card-bg); color: var(--fg-muted); border: none;
+    padding: 4px 12px; font-size: 12.5px; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] {
+    background: var(--accent); color: var(--accent-fg); font-weight: 650;
+  }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .filters select {
+    background: var(--card-bg); color: var(--fg);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 4px 8px; font-size: 12.5px;
+  }
+  .filters .count { color: var(--fg-muted); font-size: 12px; margin-left: auto; }
+  .filters .reset {
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    color: var(--fg-muted); font-size: 12px; padding: 3px 9px; cursor: pointer;
+  }
+  .server-filters { font-size: 12px; color: var(--fg-muted); margin: -6px 0 10px; }
+  .server-filters .chip {
+    display: inline-block; background: var(--badge-bg); color: var(--badge-fg);
+    border-radius: 999px; padding: 1px 8px; margin-left: 4px; font-weight: 600;
+  }
+
+  /* --- card grid --------------------------------------------------------- */
+  .grid {
+    display: grid; gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 11px 13px; cursor: pointer;
+    display: flex; flex-direction: column; gap: 7px; text-align: left;
+    color: var(--fg); font: inherit;
+  }
+  .card:hover, .card:focus-visible { border-color: var(--accent); outline: none; }
+  .card .title { font-weight: 650; font-size: 13.5px; line-height: 1.35; }
+  .card .meta-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .scope-badge {
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .03em; padding: 1px 8px; border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+  .scope-badge[data-scope="aws"] { color: var(--scope-aws); }
+  .scope-badge[data-scope="azure"] { color: var(--scope-azure); }
+  .scope-badge[data-scope="gcp"] { color: var(--scope-gcp); }
+  .scope-badge[data-scope="cross-cloud"] { color: var(--scope-cross); }
+  .chip {
+    font-size: 11px; background: var(--badge-bg); color: var(--badge-fg);
+    padding: 1px 8px; border-radius: 999px; font-weight: 600;
+  }
+  .service { color: var(--fg-muted); font-size: 11.5px; }
+  .confidence { display: inline-flex; gap: 3px; align-items: center; margin-left: auto; }
+  .confidence i {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--border); font-style: normal;
+  }
+  .confidence i.on { background: var(--accent); }
+  .confidence .label { font-size: 10.5px; color: var(--fg-muted); margin-left: 3px; }
+
+  /* --- coverage matrix ---------------------------------------------------- */
+  .matrix-wrap { overflow-x: auto; }
+  table.matrix { border-collapse: separate; border-spacing: 4px; width: 100%; }
+  .matrix th {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .03em;
+    color: var(--fg-muted); font-weight: 650; padding: 4px 6px; text-align: center;
+  }
+  .matrix th.rowhead { text-align: right; white-space: nowrap; }
+  .matrix td { padding: 0; }
+  .matrix .cell {
+    width: 100%; min-width: 64px; height: 42px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--card-bg);
+    color: var(--fg); font-size: 13px; font-weight: 650; cursor: pointer;
+  }
+  .matrix .cell:hover, .matrix .cell:focus-visible { border-color: var(--accent); outline: none; }
+  .matrix .cell.zero {
+    border-style: dashed; color: var(--fg-muted); font-weight: 400;
+    background: transparent; cursor: default;
+  }
+  .matrix-note { color: var(--fg-muted); font-size: 11.5px; margin-top: 8px; }
+
+  /* --- inline playbook panel ----------------------------------------------- */
+  #playbook-panel { max-width: 780px; margin: 0 auto; }
+  .panel-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .panel-bar button {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--fg); font-size: 12.5px; padding: 4px 10px; cursor: pointer;
+  }
+  .panel-bar button:hover { border-color: var(--accent); }
+  .panel-loading { color: var(--fg-muted); font-size: 12.5px; }
+  .header h1 { font-size: 19px; margin: 0 0 8px; font-weight: 650; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .badge {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    background: var(--badge-bg); color: var(--badge-fg);
+    font-size: 11.5px; font-weight: 600; letter-spacing: .01em; text-transform: uppercase;
+  }
+  .section {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent-problem); border-radius: 8px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .section[data-kind="symptoms"] { border-left-color: var(--accent-symptoms); }
+  .section[data-kind="detection"] { border-left-color: var(--accent-detection); }
+  .section[data-kind="fix"] { border-left-color: var(--accent-fix); }
+  .section[data-kind="anti-pattern"] { border-left-color: var(--accent-antipattern); }
+  .section[data-kind="see-also"] { border-left-color: var(--accent-seealso); }
+  .section h2 {
+    font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em;
+    margin: 0 0 8px; color: var(--fg-muted);
+  }
+  .section p { margin: 0 0 8px; }
+  .section ul, .section ol { margin: 0 0 8px; padding-left: 20px; }
+  .section li { margin-bottom: 3px; }
+  .section pre {
+    position: relative; background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 12px; overflow-x: auto;
+    font-size: 12.5px; margin: 0 0 8px;
+  }
+  .section code { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
+  .section :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  .copy-btn {
+    position: absolute; top: 6px; right: 6px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--fg-muted); font-size: 10.5px; padding: 2px 8px; cursor: pointer;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--fg); }
+  ul.checklist { list-style: none; padding-left: 4px; }
+  ul.checklist li { margin-bottom: 6px; }
+  ul.checklist label { display: flex; gap: 8px; align-items: baseline; cursor: pointer; }
+  ul.checklist input[type="checkbox"] { accent-color: var(--accent); }
+  ul.checklist input:checked + span { color: var(--fg-muted); text-decoration: line-through; }
+  .pb-link {
+    background: none; border: none; padding: 0; cursor: pointer; font: inherit;
+  }
+  .pb-link code {
+    background: var(--code-bg); padding: 1px 5px; border-radius: 4px;
+    font-size: 12px; text-decoration: underline; text-decoration-color: var(--accent);
+    text-underline-offset: 2px; color: inherit;
+  }
+  .footer-note { color: var(--fg-muted); font-size: 11.5px; margin-top: 14px; text-align: center; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="root">
+  <div class="state" id="state-loading">
+    <div class="spinner"></div>
+    Waiting for playbook data&hellip;
+  </div>
+  <div class="error hidden" id="state-error"></div>
+
+  <div id="app" class="hidden">
+    <div class="toolbar">
+      <h1>Waste playbooks</h1>
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tab-cards" aria-selected="true">Cards</button>
+        <button type="button" role="tab" id="tab-matrix" aria-selected="false">Coverage</button>
+      </div>
+    </div>
+    <div class="server-filters hidden" id="server-filters"></div>
+
+    <div id="view-cards">
+      <div class="filters">
+        <select id="f-scope" aria-label="Filter by scope"></select>
+        <select id="f-category" aria-label="Filter by waste category"></select>
+        <select id="f-confidence" aria-label="Filter by confidence"></select>
+        <button type="button" class="reset" id="f-reset">Reset</button>
+        <span class="count" id="f-count"></span>
+      </div>
+      <div class="empty hidden" id="state-empty"></div>
+      <div class="grid" id="cards"></div>
+    </div>
+
+    <div id="view-matrix" class="hidden">
+      <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+      <div class="matrix-note" id="matrix-note"></div>
+    </div>
+  </div>
+
+  <div id="playbook-panel" class="hidden">
+    <div class="panel-bar">
+      <button type="button" id="panel-back">&larr; Back to playbooks</button>
+      <span class="panel-loading hidden" id="panel-loading">Loading&hellip;</span>
+    </div>
+    <div class="error hidden" id="panel-error"></div>
+    <div id="panel-content"></div>
+  </div>
+
+  <div class="footer-note">Cloud FinOps Playbooks by OptimNow &middot; rendered via MCP Apps (SEP-1865)</div>
+</div>
+
+<!--BRIDGE-->
+<!--PLAYBOOK_RENDER-->
+<script>
+(function () {
+  "use strict";
+  var R = window.PlaybookRender;
+  var SCOPE_ORDER = ["aws", "azure", "gcp", "cross-cloud"];
+  var CONFIDENCE_ORDER = ["obvious", "likely", "possible"];
+  var CONFIDENCE_DOTS = { obvious: 3, likely: 2, possible: 1 };
+
+  var all = [];            // playbooks received from the tool result
+  var serverFilters = {};  // filters the agent passed to find_playbooks
+  var local = { scope: "", waste_category: "", confidence: "" };
+  var view = "cards";
+
+  function $(id) { return document.getElementById(id); }
+  function show(el) { el.classList.remove("hidden"); }
+  function hide(el) { el.classList.add("hidden"); }
+
+  function showError(message) {
+    hide($("state-loading"));
+    hide($("app"));
+    var el = $("state-error");
+    el.textContent = message;
+    show(el);
+  }
+
+  function distinct(field) {
+    var seen = {};
+    all.forEach(function (p) { if (p[field]) seen[p[field]] = true; });
+    return Object.keys(seen);
+  }
+
+  function orderedValues(field) {
+    var values = distinct(field);
+    var order = field === "scope" ? SCOPE_ORDER
+      : field === "confidence" ? CONFIDENCE_ORDER : null;
+    if (!order) return values.sort();
+    return values.sort(function (a, b) {
+      var ia = order.indexOf(a), ib = order.indexOf(b);
+      if (ia === -1 && ib === -1) return a < b ? -1 : 1;
+      if (ia === -1) return 1;
+      if (ib === -1) return -1;
+      return ia - ib;
+    });
+  }
+
+  function fillSelect(id, field, placeholder) {
+    var sel = $(id);
+    sel.innerHTML = "";
+    var opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = placeholder;
+    sel.appendChild(opt);
+    orderedValues(field).forEach(function (v) {
+      var o = document.createElement("option");
+      o.value = v;
+      o.textContent = v;
+      sel.appendChild(o);
+    });
+    sel.value = local[field] || "";
+  }
+
+  function filtered() {
+    return all.filter(function (p) {
+      return (!local.scope || p.scope === local.scope) &&
+        (!local.waste_category || p.waste_category === local.waste_category) &&
+        (!local.confidence || p.confidence === local.confidence);
+    });
+  }
+
+  function activeLocalFilterText() {
+    var parts = [];
+    ["scope", "waste_category", "confidence"].forEach(function (k) {
+      if (local[k]) parts.push(k + "=" + local[k]);
+    });
+    return parts.join(" × ");
+  }
+
+  function renderCards() {
+    // A tool-level empty result (all.length === 0) keeps the server's own
+    // explanation rendered by render(); repainting here would replace it
+    // with the local-filter message, which would be wrong and less useful.
+    if (!all.length) return;
+    var list = filtered();
+    var grid = $("cards");
+    grid.innerHTML = "";
+    $("f-count").textContent = list.length + " / " + all.length + " playbooks";
+
+    var empty = $("state-empty");
+    if (!list.length) {
+      empty.innerHTML = "No playbook matches <code>" +
+        R.escapeHtml(activeLocalFilterText() || "the current filters") +
+        "</code> among the " + all.length + " received. " +
+        "This combination is a coverage gap, not a data error - reset a filter to widen.";
+      show(empty);
+      return;
+    }
+    hide(empty);
+
+    list.forEach(function (p) {
+      var card = document.createElement("button");
+      card.className = "card";
+      card.type = "button";
+      var dots = CONFIDENCE_DOTS[p.confidence] || 0;
+      var dotHtml = [1, 2, 3].map(function (n) {
+        return '<i class="' + (n <= dots ? "on" : "") + '"></i>';
+      }).join("");
+      card.innerHTML =
+        '<span class="title">' + R.escapeHtml(p.title || p.name) + "</span>" +
+        '<span class="meta-row">' +
+          '<span class="scope-badge" data-scope="' + R.escapeHtml(p.scope || "") + '">' + R.escapeHtml(p.scope || "?") + "</span>" +
+          '<span class="chip">' + R.escapeHtml(p.waste_category || "?") + "</span>" +
+          '<span class="confidence" title="confidence: ' + R.escapeHtml(p.confidence || "?") + '">' +
+            dotHtml + '<span class="label">' + R.escapeHtml(p.confidence || "?") + "</span>" +
+          "</span>" +
+        "</span>" +
+        '<span class="service">' + R.escapeHtml(p.service || "") + "</span>";
+      card.addEventListener("click", function () { openPlaybook(p.name); });
+      grid.appendChild(card);
+    });
+  }
+
+  function renderMatrix() {
+    var scopes = orderedValues("scope");
+    var categories = distinct("waste_category").sort();
+    var counts = {};
+    var max = 0;
+    all.forEach(function (p) {
+      var key = p.waste_category + "|" + p.scope;
+      counts[key] = (counts[key] || 0) + 1;
+      if (counts[key] > max) max = counts[key];
+    });
+
+    var table = $("matrix");
+    table.innerHTML = "";
+    var head = document.createElement("tr");
+    head.innerHTML = "<th></th>" + scopes.map(function (s) {
+      return "<th>" + R.escapeHtml(s) + "</th>";
+    }).join("");
+    table.appendChild(head);
+
+    categories.forEach(function (cat) {
+      var tr = document.createElement("tr");
+      var th = document.createElement("th");
+      th.className = "rowhead";
+      th.textContent = cat;
+      tr.appendChild(th);
+      scopes.forEach(function (scope) {
+        var td = document.createElement("td");
+        var count = counts[cat + "|" + scope] || 0;
+        var cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "cell" + (count === 0 ? " zero" : "");
+        cell.textContent = String(count);
+        if (count === 0) {
+          cell.title = "Coverage gap: no " + cat + " playbook for " + scope;
+          cell.disabled = true;
+        } else {
+          cell.title = count + " playbook(s): " + cat + " × " + scope;
+          /* Intensity: colour-mix would be cleaner but is not everywhere;
+             opacity over the accent keeps it dependency-free. */
+          cell.style.background = "var(--accent)";
+          cell.style.opacity = String(0.35 + 0.65 * (count / max));
+          cell.style.color = "var(--accent-fg)";
+          cell.addEventListener("click", function () {
+            local.scope = scope;
+            local.waste_category = cat;
+            local.confidence = "";
+            syncSelects();
+            setView("cards");
+          });
+        }
+        td.appendChild(cell);
+        tr.appendChild(td);
+      });
+      table.appendChild(tr);
+    });
+
+    var note = "Counts over the " + all.length + " playbook(s) in this result.";
+    if (Object.keys(serverFilters).length) {
+      note += " The agent's filters (" + JSON.stringify(serverFilters) +
+        ") already narrowed the set - ask for all playbooks for the full coverage picture.";
+    }
+    note += " A dashed 0 is a coverage gap, not missing data.";
+    $("matrix-note").textContent = note;
+  }
+
+  function syncSelects() {
+    $("f-scope").value = local.scope;
+    $("f-category").value = local.waste_category;
+    $("f-confidence").value = local.confidence;
+    renderCards();
+  }
+
+  function setView(next) {
+    view = next;
+    $("tab-cards").setAttribute("aria-selected", String(view === "cards"));
+    $("tab-matrix").setAttribute("aria-selected", String(view === "matrix"));
+    if (view === "cards") { show($("view-cards")); hide($("view-matrix")); renderCards(); }
+    else { hide($("view-cards")); show($("view-matrix")); renderMatrix(); }
+  }
+
+  /* --- inline playbook panel (get_playbook via the host bridge) --------- */
+
+  function openPlaybook(name) {
+    hide($("app"));
+    show($("playbook-panel"));
+    hide($("panel-error"));
+    show($("panel-loading"));
+    $("panel-content").innerHTML = "";
+    window.McpBridge.callTool("get_playbook", { name: name }).then(function (payload) {
+      hide($("panel-loading"));
+      if (payload.error) {
+        var el = $("panel-error");
+        el.textContent = payload.error +
+          (payload.suggestions && payload.suggestions.length
+            ? "\nDid you mean: " + payload.suggestions.join(", ") + "?" : "");
+        show(el);
+        return;
+      }
+      var content = $("panel-content");
+      content.innerHTML = R.renderPlaybookHtml(payload, { checklistFix: true });
+      R.enhanceCodeBlocks(content);
+      R.enhanceSeeAlso(content, openPlaybook);
+    }).catch(function (err) {
+      hide($("panel-loading"));
+      var el = $("panel-error");
+      el.textContent = String(err && err.message || err);
+      show(el);
+    });
+  }
+
+  $("panel-back").addEventListener("click", function () {
+    hide($("playbook-panel"));
+    show($("app"));
+  });
+
+  /* --- entry point -------------------------------------------------------- */
+
+  function render(payload) {
+    hide($("state-loading"));
+    hide($("state-error"));
+
+    if (payload && payload.error) { showError(payload.error); return; }
+    if (!payload || !Array.isArray(payload.playbooks)) {
+      showError("Unexpected tool result shape - no playbooks array found.");
+      return;
+    }
+
+    all = payload.playbooks;
+    serverFilters = payload.filters || {};
+    local = { scope: "", waste_category: "", confidence: "" };
+
+    show($("app"));
+    hide($("playbook-panel"));
+
+    var sf = $("server-filters");
+    var keys = Object.keys(serverFilters);
+    if (keys.length) {
+      sf.innerHTML = "Filtered by the agent:" + keys.map(function (k) {
+        return '<span class="chip">' + R.escapeHtml(k) + "=" + R.escapeHtml(String(serverFilters[k])) + "</span>";
+      }).join("");
+      show(sf);
+    } else {
+      hide(sf);
+    }
+
+    if (!all.length) {
+      // Tool-level empty result: surface the server's own explanation.
+      fillSelect("f-scope", "scope", "scope: all");
+      fillSelect("f-category", "waste_category", "category: all");
+      fillSelect("f-confidence", "confidence", "confidence: all");
+      var empty = $("state-empty");
+      empty.innerHTML = "The tool returned no playbooks for these filters." +
+        (payload.hint ? "<br>" + R.escapeHtml(payload.hint) : "") +
+        "<br>Ask again with fewer filters.";
+      show(empty);
+      $("f-count").textContent = "0 playbooks";
+      $("cards").innerHTML = "";
+      setView("cards");
+      return;
+    }
+
+    fillSelect("f-scope", "scope", "scope: all");
+    fillSelect("f-category", "waste_category", "category: all");
+    fillSelect("f-confidence", "confidence", "confidence: all");
+    setView(view);
+  }
+
+  $("f-scope").addEventListener("change", function () { local.scope = this.value; renderCards(); });
+  $("f-category").addEventListener("change", function () { local.waste_category = this.value; renderCards(); });
+  $("f-confidence").addEventListener("change", function () { local.confidence = this.value; renderCards(); });
+  $("f-reset").addEventListener("click", function () {
+    local = { scope: "", waste_category: "", confidence: "" };
+    syncSelects();
+  });
+  $("tab-cards").addEventListener("click", function () { setView("cards"); });
+  $("tab-matrix").addEventListener("click", function () { setView("matrix"); });
+
+  window.McpBridge.init({
+    appName: "cloud-finops-playbook-explorer",
+    onToolResult: render
+  });
+})();
+</script>
+</body>
+</html>

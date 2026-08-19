@@ -45,6 +45,7 @@ class Reference:
     path: Path
     description: str
     lines: int
+    title: str = ""
     fcp_domain: str | None = None
     fcp_capability: str | None = None
     fcp_capabilities_secondary: list[str] = field(default_factory=list)
@@ -57,6 +58,7 @@ class Reference:
         """Stable JSON-friendly shape returned by the MCP tools."""
         return {
             "name": self.name,
+            "title": self.title,
             "description": self.description,
             "fcp_domain": self.fcp_domain,
             "fcp_capability": self.fcp_capability,
@@ -154,12 +156,14 @@ def _parse_reference(path: Path) -> Reference:
 
     name = str(fm.get("name") or path.stem)
     description = _extract_description(fm, body)
+    title = _extract_title(body, fallback=name)
     lines = text.count("\n") + (0 if text.endswith("\n") else 1)
 
     return Reference(
         name=name,
         path=path,
         description=description,
+        title=title,
         lines=lines,
         fcp_domain=fm.get("fcp_domain") if isinstance(fm.get("fcp_domain"), str) else None,
         fcp_capability=fm.get("fcp_capability") if isinstance(fm.get("fcp_capability"), str) else None,

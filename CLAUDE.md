@@ -95,7 +95,9 @@ cloud-finops-skills/
 ├── mcp_server/            <- `cloud-finops-mcp` PyPI package (six MCP tools,
 │                             faceted retrieval over references + playbooks;
 │                             stdio + streamable-HTTP transports; MCP Apps
-│                             `ui://cloud-finops/playbook-viewer` resource)
+│                             resources: playbook-viewer, playbook-explorer,
+│                             reference-browser - shared JS in ui/_*.js is
+│                             inlined at import by server._load_ui)
 ├── scripts/               <- `fcp-coverage.sh` (parses FCP frontmatter, emits
 │                             `fcp-coverage.md`; its --check mode diffs the
 │                             committed matrix in CI) plus the guards:

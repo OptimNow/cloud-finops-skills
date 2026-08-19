@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Reference browser</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --accent: #ACE849;            /* OptimNow chartreuse */
+    --accent-fg: #2a3510;
+    --fg: #1a1d23;
+    --fg-muted: #5b6370;
+    --bg: #ffffff;
+    --card-bg: #f7f8fa;
+    --border: #e2e5ea;
+    --code-bg: #eef0f3;
+    --danger: #b91c1c;
+    --badge-bg: #eef1ff;
+    --badge-fg: #3730a3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --accent-fg: #d8f5a2;
+      --fg: #e7e9ec;
+      --fg-muted: #9aa2ad;
+      --bg: #15171c;
+      --card-bg: #1b1e24;
+      --border: #2a2e37;
+      --code-bg: #10141a;
+      --danger: #f87171;
+      --badge-bg: #232a4d;
+      --badge-fg: #b7c0ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--fg);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+  #root { padding: 14px 16px 24px; max-width: 900px; margin: 0 auto; }
+
+  .state { color: var(--fg-muted); padding: 24px 4px; text-align: center; }
+  .spinner {
+    width: 22px; height: 22px; margin: 0 auto 10px;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error {
+    color: var(--danger); background: var(--card-bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; white-space: pre-wrap; font-size: 12.5px;
+  }
+  .empty {
+    color: var(--fg-muted); background: var(--card-bg);
+    border: 1px dashed var(--border); border-radius: 8px;
+    padding: 18px 14px; text-align: center; font-size: 13px;
+  }
+  .empty code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+
+  h1.page-title { font-size: 16px; font-weight: 650; margin: 0 0 10px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .filters select {
+    background: var(--card-bg); color: var(--fg);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 4px 8px; font-size: 12px; max-width: 190px;
+  }
+  .filters .count { color: var(--fg-muted); font-size: 12px; margin-left: auto; }
+  .filters .reset {
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    color: var(--fg-muted); font-size: 12px; padding: 3px 9px; cursor: pointer;
+  }
+  .server-filters { font-size: 12px; color: var(--fg-muted); margin: -6px 0 10px; }
+  .server-filters .chip, .row .chip {
+    display: inline-block; background: var(--badge-bg); color: var(--badge-fg);
+    border-radius: 999px; padding: 1px 8px; margin-left: 4px;
+    font-weight: 600; font-size: 11px;
+  }
+
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  .row {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 13px; cursor: pointer;
+    text-align: left; color: var(--fg); font: inherit;
+  }
+  .row:hover, .row:focus-visible { border-color: var(--accent); outline: none; }
+  .row .row-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+  .row .title { font-weight: 650; font-size: 13.5px; }
+  .row .name { color: var(--fg-muted); font-size: 11.5px; font-family: ui-monospace, Consolas, monospace; }
+  .row .desc {
+    color: var(--fg-muted); font-size: 12.5px; margin-top: 3px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  /* --- reading panel ------------------------------------------------------ */
+  #reader { max-width: 820px; margin: 0 auto; }
+  .panel-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .panel-bar button {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--fg); font-size: 12.5px; padding: 4px 10px; cursor: pointer;
+  }
+  .panel-bar button:hover { border-color: var(--accent); }
+  .panel-loading { color: var(--fg-muted); font-size: 12.5px; }
+  #reader-content h2, #reader-content h3, #reader-content h4 {
+    margin: 18px 0 8px; line-height: 1.3;
+  }
+  #reader-content h2 { font-size: 16.5px; border-bottom: 2px solid var(--accent); padding-bottom: 4px; }
+  #reader-content h3 { font-size: 14.5px; }
+  #reader-content h4 { font-size: 13.5px; color: var(--fg-muted); }
+  #reader-content p { margin: 0 0 8px; }
+  #reader-content ul, #reader-content ol { margin: 0 0 8px; padding-left: 20px; }
+  #reader-content li { margin-bottom: 3px; }
+  #reader-content pre {
+    position: relative; background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 12px; overflow-x: auto;
+    font-size: 12px; margin: 0 0 10px;
+  }
+  #reader-content code { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
+  #reader-content :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  #reader-content hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+  .copy-btn {
+    position: absolute; top: 6px; right: 6px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--fg-muted); font-size: 10.5px; padding: 2px 8px; cursor: pointer;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--fg); }
+  .reader-title { font-size: 18px; font-weight: 650; margin: 0 0 4px; }
+  .reader-meta { color: var(--fg-muted); font-size: 11.5px; margin-bottom: 10px; }
+  .footer-note { color: var(--fg-muted); font-size: 11.5px; margin-top: 14px; text-align: center; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="root">
+  <div class="state" id="state-loading">
+    <div class="spinner"></div>
+    Waiting for reference data&hellip;
+  </div>
+  <div class="error hidden" id="state-error"></div>
+
+  <div id="app" class="hidden">
+    <h1 class="page-title">FinOps reference library</h1>
+    <div class="server-filters hidden" id="server-filters"></div>
+    <div class="filters">
+      <select id="f-domain" aria-label="Filter by FinOps domain"></select>
+      <select id="f-capability" aria-label="Filter by capability"></select>
+      <select id="f-phase" aria-label="Filter by phase"></select>
+      <select id="f-persona" aria-label="Filter by persona"></select>
+      <select id="f-maturity" aria-label="Filter by maturity"></select>
+      <button type="button" class="reset" id="f-reset">Reset</button>
+      <span class="count" id="f-count"></span>
+    </div>
+    <div class="empty hidden" id="state-empty"></div>
+    <div class="list" id="list"></div>
+  </div>
+
+  <div id="reader" class="hidden">
+    <div class="panel-bar">
+      <button type="button" id="reader-back">&larr; Back to the library</button>
+      <span class="panel-loading hidden" id="reader-loading">Loading&hellip;</span>
+    </div>
+    <div class="error hidden" id="reader-error"></div>
+    <div id="reader-content"></div>
+  </div>
+
+  <div class="footer-note">Cloud FinOps references by OptimNow &middot; rendered via MCP Apps (SEP-1865)</div>
+</div>
+
+<!--BRIDGE-->
+<!--PLAYBOOK_RENDER-->
+<script>
+(function () {
+  "use strict";
+  var R = window.PlaybookRender;
+
+  /* facet key -> [payload entry fields it matches against] */
+  var FACETS = {
+    domain: ["fcp_domain"],
+    capability: ["fcp_capability", "fcp_capabilities_secondary"],
+    phase: ["fcp_phases"],
+    persona: ["fcp_personas_primary", "fcp_personas_collaborating"],
+    maturity: ["fcp_maturity_entry"]
+  };
+
+  var all = [];
+  var serverFilters = {};
+  var local = { domain: "", capability: "", phase: "", persona: "", maturity: "" };
+
+  function $(id) { return document.getElementById(id); }
+  function show(el) { el.classList.remove("hidden"); }
+  function hide(el) { el.classList.add("hidden"); }
+
+  function showError(message) {
+    hide($("state-loading"));
+    hide($("app"));
+    var el = $("state-error");
+    el.textContent = message;
+    show(el);
+  }
+
+  function valuesOf(entry, fields) {
+    var out = [];
+    fields.forEach(function (f) {
+      var v = entry[f];
+      if (Array.isArray(v)) out = out.concat(v);
+      else if (v) out.push(v);
+    });
+    return out;
+  }
+
+  function facetValues(facet) {
+    var seen = {};
+    all.forEach(function (entry) {
+      valuesOf(entry, FACETS[facet]).forEach(function (v) { seen[v] = true; });
+    });
+    return Object.keys(seen).sort();
+  }
+
+  function fillSelect(facet) {
+    var sel = $("f-" + facet);
+    sel.innerHTML = "";
+    var opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = facet + ": all";
+    sel.appendChild(opt);
+    facetValues(facet).forEach(function (v) {
+      var o = document.createElement("option");
+      o.value = v;
+      o.textContent = v;
+      sel.appendChild(o);
+    });
+    sel.value = local[facet] || "";
+  }
+
+  function matches(entry) {
+    return Object.keys(FACETS).every(function (facet) {
+      if (!local[facet]) return true;
+      return valuesOf(entry, FACETS[facet]).indexOf(local[facet]) !== -1;
+    });
+  }
+
+  function activeLocalFilterText() {
+    var parts = [];
+    Object.keys(FACETS).forEach(function (k) { if (local[k]) parts.push(k + "=" + local[k]); });
+    return parts.join(" × ");
+  }
+
+  function renderList() {
+    var list = all.filter(matches);
+    var listEl = $("list");
+    listEl.innerHTML = "";
+    $("f-count").textContent = list.length + " / " + all.length + " references";
+
+    var empty = $("state-empty");
+    if (!list.length) {
+      empty.innerHTML = "No reference matches <code>" +
+        R.escapeHtml(activeLocalFilterText() || "the current filters") +
+        "</code> among the " + all.length + " received. Every filter value exists " +
+        "on its own - this combination just has no file. Reset one filter to widen.";
+      show(empty);
+      return;
+    }
+    hide(empty);
+
+    list.forEach(function (entry) {
+      var row = document.createElement("button");
+      row.className = "row";
+      row.type = "button";
+      row.innerHTML =
+        '<span class="row-head">' +
+          '<span class="title">' + R.escapeHtml(entry.title || entry.name) + "</span>" +
+          '<span class="name">' + R.escapeHtml(entry.name) + "</span>" +
+          (entry.fcp_maturity_entry
+            ? '<span class="chip">' + R.escapeHtml(entry.fcp_maturity_entry) + "+</span>"
+            : "") +
+        "</span>" +
+        '<span class="desc">' + R.escapeHtml(entry.description || "") + "</span>";
+      row.addEventListener("click", function () { openReference(entry); });
+      listEl.appendChild(row);
+    });
+  }
+
+  function openReference(entry) {
+    hide($("app"));
+    show($("reader"));
+    hide($("reader-error"));
+    show($("reader-loading"));
+    $("reader-content").innerHTML = "";
+    window.McpBridge.callTool("get_reference", { name: entry.name }).then(function (payload) {
+      hide($("reader-loading"));
+      if (payload.error) {
+        var el = $("reader-error");
+        el.textContent = payload.error +
+          (payload.suggestions && payload.suggestions.length
+            ? "\nDid you mean: " + payload.suggestions.join(", ") + "?" : "");
+        show(el);
+        return;
+      }
+      var parsed = R.parseFrontmatter(payload.content);
+      var body = parsed.body.replace(/^#\s+.*\n+/, ""); // title shown separately
+      var content = $("reader-content");
+      content.innerHTML =
+        '<div class="reader-title">' + R.escapeHtml(entry.title || payload.name) + "</div>" +
+        '<div class="reader-meta">' + R.escapeHtml(payload.name) + " &middot; " +
+          payload.lines + " lines</div>" +
+        R.renderDocument(body);
+      R.enhanceCodeBlocks(content);
+    }).catch(function (err) {
+      hide($("reader-loading"));
+      var el = $("reader-error");
+      el.textContent = String(err && err.message || err);
+      show(el);
+    });
+  }
+
+  $("reader-back").addEventListener("click", function () {
+    hide($("reader"));
+    show($("app"));
+  });
+
+  function render(payload) {
+    hide($("state-loading"));
+    hide($("state-error"));
+
+    if (payload && payload.error) { showError(payload.error); return; }
+    if (!payload || !Array.isArray(payload.references)) {
+      showError("Unexpected tool result shape - no references array found.");
+      return;
+    }
+
+    all = payload.references;
+    serverFilters = payload.filters || {};
+    local = { domain: "", capability: "", phase: "", persona: "", maturity: "" };
+
+    show($("app"));
+    hide($("reader"));
+
+    var sf = $("server-filters");
+    var keys = Object.keys(serverFilters);
+    if (keys.length) {
+      sf.innerHTML = "Filtered by the agent:" + keys.map(function (k) {
+        return '<span class="chip">' + R.escapeHtml(k) + "=" + R.escapeHtml(String(serverFilters[k])) + "</span>";
+      }).join("");
+      show(sf);
+    } else {
+      hide(sf);
+    }
+
+    Object.keys(FACETS).forEach(fillSelect);
+
+    if (!all.length) {
+      var empty = $("state-empty");
+      empty.innerHTML = "The tool returned no references for these filters." +
+        (payload.hint ? "<br>" + R.escapeHtml(payload.hint) : "") +
+        "<br>Ask again with fewer filters.";
+      show(empty);
+      $("f-count").textContent = "0 references";
+      $("list").innerHTML = "";
+      return;
+    }
+
+    renderList();
+  }
+
+  Object.keys(FACETS).forEach(function (facet) {
+    $("f-" + facet).addEventListener("change", function () {
+      local[facet] = this.value;
+      renderList();
+    });
+  });
+  $("f-reset").addEventListener("click", function () {
+    local = { domain: "", capability: "", phase: "", persona: "", maturity: "" };
+    Object.keys(FACETS).forEach(function (facet) { $("f-" + facet).value = ""; });
+    renderList();
+  });
+
+  window.McpBridge.init({
+    appName: "cloud-finops-reference-browser",
+    onToolResult: render
+  });
+})();
+</script>
+</body>
+</html>

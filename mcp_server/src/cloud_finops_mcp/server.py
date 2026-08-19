@@ -40,14 +40,37 @@ _READ_ONLY = ToolAnnotations(
 DEFAULT_HTTP_HOST = "0.0.0.0"  # noqa: S104 - see docstring on run_http
 DEFAULT_HTTP_PORT = 8000
 
-# MCP Apps (SEP-1865, extension id io.modelcontextprotocol/ui) resource: a
-# self-contained HTML view that renders get_playbook()'s markdown as
-# structured sections instead of raw text. Prototype for the 2026-07-28 spec
-# - see ui/playbook_viewer.html for the iframe<->host wiring.
+# MCP Apps (SEP-1865, extension id io.modelcontextprotocol/ui) resources:
+# self-contained HTML views over the tool results. The iframe<->host wiring
+# (ui/initialize handshake, tools/call, ui/open-link) lives once in
+# ui/_bridge.js and the playbook/markdown rendering once in
+# ui/_playbook_render.js; _load_ui() inlines them into each widget at import
+# time, so the served HTML stays fully self-contained (the host sandbox
+# blocks every external fetch) without hand-duplicated copies.
 PLAYBOOK_VIEWER_URI = "ui://cloud-finops/playbook-viewer"
-_PLAYBOOK_VIEWER_HTML = (
-    Path(__file__).resolve().parent / "ui" / "playbook_viewer.html"
-).read_text(encoding="utf-8")
+PLAYBOOK_EXPLORER_URI = "ui://cloud-finops/playbook-explorer"
+REFERENCE_BROWSER_URI = "ui://cloud-finops/reference-browser"
+
+_UI_DIR = Path(__file__).resolve().parent / "ui"
+_UI_MARKERS = (
+    ("<!--BRIDGE-->", "_bridge.js"),
+    ("<!--PLAYBOOK_RENDER-->", "_playbook_render.js"),
+)
+
+
+def _load_ui(filename: str) -> str:
+    """Read a widget HTML file and inline the shared JS helpers it declares."""
+    html = (_UI_DIR / filename).read_text(encoding="utf-8")
+    for marker, script_name in _UI_MARKERS:
+        if marker in html:
+            script = (_UI_DIR / script_name).read_text(encoding="utf-8")
+            html = html.replace(marker, "<script>\n" + script + "\n</script>")
+    return html
+
+
+_PLAYBOOK_VIEWER_HTML = _load_ui("playbook_viewer.html")
+_PLAYBOOK_EXPLORER_HTML = _load_ui("playbook_explorer.html")
+_REFERENCE_BROWSER_HTML = _load_ui("reference_browser.html")
 
 mcp = FastMCP(
     "cloud-finops",
@@ -74,7 +97,11 @@ mcp = FastMCP(
 )
 
 
-@mcp.tool(title="List FinOps references", annotations=_READ_ONLY)
+@mcp.tool(
+    title="List FinOps references",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": REFERENCE_BROWSER_URI}},
+)
 def list_references() -> dict[str, Any]:
     """List every bundled FinOps reference with its FCP metadata.
 
@@ -110,7 +137,11 @@ def get_reference(name: str) -> dict[str, Any]:
     return _tools.get_reference(name)
 
 
-@mcp.tool(title="Find FinOps references by facet", annotations=_READ_ONLY)
+@mcp.tool(
+    title="Find FinOps references by facet",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": REFERENCE_BROWSER_URI}},
+)
 def find_references(
     domain: str | None = None,
     capability: str | None = None,
@@ -155,7 +186,11 @@ def find_references(
     )
 
 
-@mcp.tool(title="List waste playbooks", annotations=_READ_ONLY)
+@mcp.tool(
+    title="List waste playbooks",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": PLAYBOOK_EXPLORER_URI}},
+)
 def list_playbooks() -> dict[str, Any]:
     """List every bundled named-pattern playbook.
 
@@ -211,12 +246,53 @@ def playbook_viewer_ui() -> str:
 
     Self-contained HTML/JS that renders the tool result's markdown as
     labelled sections (Problem / Symptoms / Detection / Fix / Anti-pattern /
-    See also) inside the sandboxed iframe the host provides.
+    See also) inside the sandboxed iframe the host provides. v2 adds a Copy
+    button on every code block, a checkable Fix checklist (local state
+    only), and clickable ``playbooks/<slug>.md`` See-also links that reload
+    the viewer via an app-initiated ``get_playbook`` call.
     """
     return _PLAYBOOK_VIEWER_HTML
 
 
-@mcp.tool(title="Find waste playbooks by facet", annotations=_READ_ONLY)
+@mcp.resource(
+    PLAYBOOK_EXPLORER_URI,
+    name="Playbook explorer",
+    mime_type="text/html;profile=mcp-app",
+)
+def playbook_explorer_ui() -> str:
+    """MCP Apps UI resource linked from ``list_playbooks`` and ``find_playbooks``.
+
+    Card grid over the returned playbooks with client-side facet filters
+    (scope, waste category, confidence - values derived from the data), a
+    coverage-matrix tab (waste_category x scope counts; a zero cell is a
+    visually distinct coverage gap), and an inline playbook panel opened via
+    an app-initiated ``get_playbook`` call. One resource serves both tools
+    because a tool declares a single ``ui.resourceUri``.
+    """
+    return _PLAYBOOK_EXPLORER_HTML
+
+
+@mcp.resource(
+    REFERENCE_BROWSER_URI,
+    name="Reference browser",
+    mime_type="text/html;profile=mcp-app",
+)
+def reference_browser_ui() -> str:
+    """MCP Apps UI resource linked from ``list_references`` and ``find_references``.
+
+    Dropdown row over the five FCP facets (values derived from the data),
+    live-filtered list of references (title + one-line description), and a
+    minimal-markdown reading panel fed by an app-initiated ``get_reference``
+    call.
+    """
+    return _REFERENCE_BROWSER_HTML
+
+
+@mcp.tool(
+    title="Find waste playbooks by facet",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": PLAYBOOK_EXPLORER_URI}},
+)
 def find_playbooks(
     scope: str | None = None,
     service: str | None = None,
