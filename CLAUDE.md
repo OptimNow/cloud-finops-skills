@@ -98,14 +98,17 @@ cloud-finops-skills/
 │                             resources: playbook-viewer, playbook-explorer,
 │                             reference-browser - shared JS in ui/_*.js is
 │                             inlined at import by server._load_ui)
-├── scripts/               <- `fcp-coverage.sh` (parses FCP frontmatter, emits
-│                             `fcp-coverage.md`; its --check mode diffs the
-│                             committed matrix in CI) plus the guards:
+├── scripts/               <- `fcp-coverage.sh` and `playbook-coverage.sh`
+│                             (parse frontmatter, emit the two coverage
+│                             matrices; their --check modes diff the
+│                             committed files in CI) plus the guards:
 │                             check-artefact-size, check-docs-drift,
 │                             check-llms-txt, check-skill-description (run by
 │                             the `CI` workflow) and check-marketplace-version
 │                             (its own `marketplace-version-check` workflow)
 ├── fcp-coverage.md        <- Generated FCP coverage matrix (22 caps; CI-gated)
+├── playbook-coverage.md   <- Generated waste-playbook matrix (category x
+│                             scope, gaps listed; CI-gated)
 ├── .gitattributes         <- Force LF on *.sh for Windows checkouts
 └── pipeline/              <- Content update pipeline (gitignored, private)
     ├── run_scan.py        <- Fortnightly scan entry point
@@ -698,7 +701,9 @@ Two standing rules that follow from the map:
       `skills/cloud-finops/playbooks/README.md` (frontmatter schema, Problem /
       Symptoms / Detection / Fix / Anti-pattern / See also sections, OptimNow
       CC BY-SA footer), add it to that README's catalogue table (CI-gated by
-      `scripts/check-docs-drift.sh`), and update the named-
+      `scripts/check-docs-drift.sh`), regenerate `playbook-coverage.md`
+      (`./scripts/playbook-coverage.sh` - CI-gated, so the coverage change
+      shows in the PR diff), and update the named-
       pattern parenthetical in the ChatGPT / grouped routing tables in
       install.sh. SKILL.md and POWER.md carry representative examples only
       (since the 2026-08 token-efficiency pass) and defer to
