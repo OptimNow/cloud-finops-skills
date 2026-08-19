@@ -14,12 +14,25 @@ from pathlib import Path
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 
 from . import __version__
 from . import metadata as _metadata
 from . import tools as _tools
 
 logger = logging.getLogger(__name__)
+
+# Every tool is a read-only lookup over a bundled content set: nothing is
+# mutated, the same call always returns the same result for a given bundle,
+# and no external world is touched. Declared explicitly because connector
+# directories treat missing annotations as a rejection criterion, not a
+# default.
+_READ_ONLY = ToolAnnotations(
+    readOnlyHint=True,
+    destructiveHint=False,
+    idempotentHint=True,
+    openWorldHint=False,
+)
 
 # Streamable HTTP defaults. Bind all interfaces because the only reason to run
 # this transport is to be reachable from outside the process. The port is a
@@ -61,9 +74,14 @@ mcp = FastMCP(
 )
 
 
-@mcp.tool()
+@mcp.tool(title="List FinOps references", annotations=_READ_ONLY)
 def list_references() -> dict[str, Any]:
     """List every bundled FinOps reference with its FCP metadata.
+
+    Use this to discover what the reference library covers before deciding
+    what to fetch. When the question already names a FinOps domain, phase,
+    persona or maturity, call ``find_references`` instead of scanning this
+    full list.
 
     Returns a dict shaped ``{"references": [...], "total": N}`` where each
     entry includes ``name``, ``description``, FCP fields (``fcp_domain``,
@@ -72,9 +90,13 @@ def list_references() -> dict[str, Any]:
     return _tools.list_references()
 
 
-@mcp.tool()
+@mcp.tool(title="Get a FinOps reference", annotations=_READ_ONLY)
 def get_reference(name: str) -> dict[str, Any]:
     """Fetch the full markdown content of one reference by name.
+
+    Use this when you need the actual billing-mechanics content of one
+    known reference - after ``list_references`` or ``find_references`` told
+    you which one serves the question.
 
     Args:
         name: Reference name as returned by ``list_references`` (e.g.
@@ -88,7 +110,7 @@ def get_reference(name: str) -> dict[str, Any]:
     return _tools.get_reference(name)
 
 
-@mcp.tool()
+@mcp.tool(title="Find FinOps references by facet", annotations=_READ_ONLY)
 def find_references(
     domain: str | None = None,
     capability: str | None = None,
@@ -97,6 +119,10 @@ def find_references(
     maturity: str | None = None,
 ) -> dict[str, Any]:
     """Filter references by FinOps Capability/Phase (FCP) frontmatter.
+
+    Use this when the question maps to FinOps Framework facets - a domain,
+    capability, phase, persona, or maturity stage - and you want only the
+    references that serve it, instead of scanning the full list.
 
     All filters are optional and combine with AND semantics. String matching
     is case-insensitive and exact (not substring). Examples:
@@ -129,9 +155,13 @@ def find_references(
     )
 
 
-@mcp.tool()
+@mcp.tool(title="List waste playbooks", annotations=_READ_ONLY)
 def list_playbooks() -> dict[str, Any]:
     """List every bundled named-pattern playbook.
+
+    Use this to discover which named waste patterns exist. When the
+    question already names a provider, waste category, or confidence tier,
+    call ``find_playbooks`` instead.
 
     Each playbook is a small (~80-130 line) runbook scoped to one waste
     pattern (e.g. ``aws-zombie-nat-gateway``, ``azure-orphan-disks``). Returns
@@ -143,9 +173,17 @@ def list_playbooks() -> dict[str, Any]:
     return _tools.list_playbooks()
 
 
-@mcp.tool(meta={"ui": {"resourceUri": PLAYBOOK_VIEWER_URI}})
+@mcp.tool(
+    title="Get a waste playbook",
+    annotations=_READ_ONLY,
+    meta={"ui": {"resourceUri": PLAYBOOK_VIEWER_URI}},
+)
 def get_playbook(name: str) -> dict[str, Any]:
     """Fetch the full markdown content of one playbook by slug.
+
+    Use this when the user asks how to detect, confirm, or fix one specific
+    named waste pattern (zombie NAT gateway, snapshot sprawl, idle SageMaker
+    endpoint, ...).
 
     Args:
         name: Playbook slug as returned by ``list_playbooks`` (e.g.
@@ -178,7 +216,7 @@ def playbook_viewer_ui() -> str:
     return _PLAYBOOK_VIEWER_HTML
 
 
-@mcp.tool()
+@mcp.tool(title="Find waste playbooks by facet", annotations=_READ_ONLY)
 def find_playbooks(
     scope: str | None = None,
     service: str | None = None,
@@ -186,6 +224,10 @@ def find_playbooks(
     confidence: str | None = None,
 ) -> dict[str, Any]:
     """Filter playbooks by their pattern frontmatter.
+
+    Use this when the user asks for waste patterns of a given provider,
+    waste category, or detection confidence - e.g. "the idle-resource
+    playbooks", "obvious AWS waste", "cross-cloud patterns".
 
     All filters are optional and combine with AND semantics. String matching
     is case-insensitive and exact. Examples:

@@ -79,7 +79,27 @@ uvx cloud-finops-mcp
 
 ## Configure your MCP client
 
-After install, point your client at the `cloud-finops-mcp` console script.
+### Claude.ai / Claude Desktop (hosted - nothing to install)
+
+The server is deployed at:
+
+```
+https://cloud-finops-skills-590a051d.alpic.live/mcp
+```
+
+Add it via **Settings -> Connectors -> Add custom connector** and paste that URL.
+Do not wire a remote server through `claude_desktop_config.json`: Desktop silently
+drops `"type": "http"` entries from that file, and the `npx mcp-remote` bridge adds
+enough startup latency to blow Desktop's initialize timeout.
+
+Claude Code can use the same hosted URL without any install:
+
+```bash
+claude mcp add --transport http cloud-finops https://cloud-finops-skills-590a051d.alpic.live/mcp
+```
+
+For the local clients below, install the package first, then point the client at the
+`cloud-finops-mcp` console script.
 
 ### Claude Code
 

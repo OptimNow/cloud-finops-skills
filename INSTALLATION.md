@@ -395,20 +395,20 @@ endpoint:
 https://ai-pricing-hub-mcp-9604f763.alpic.live/
 ```
 
-Claude Desktop / Claude Code (`claude_desktop_config.json` or `.mcp.json`):
+For Claude.ai / Claude Desktop, **Settings -> Connectors -> Add custom connector** and
+paste the URL. Do not wire it through `claude_desktop_config.json`: Desktop silently
+drops `"type": "http"` entries from that file, and the `npx mcp-remote` bridge adds
+enough startup latency to blow Desktop's initialize timeout - both paths end in a
+connector that never answers.
 
-```json
-{
-  "mcpServers": {
-    "ai-pricing-hub": {
-      "command": "npx",
-      "args": ["mcp-remote", "https://ai-pricing-hub-mcp-9604f763.alpic.live/"]
-    }
-  }
-}
+Claude Code:
+
+```bash
+claude mcp add --transport http ai-pricing-hub https://ai-pricing-hub-mcp-9604f763.alpic.live/
 ```
 
-On Windows, wrap the command: `"command": "cmd"`, `"args": ["/c", "npx", "mcp-remote", "<url>"]`.
+For clients with no native remote-MCP support, `npx mcp-remote <url>` remains the
+fallback (on Windows, wrap it: `"command": "cmd"`, `"args": ["/c", "npx", "mcp-remote", "<url>"]`).
 
 **Five tools (all read-only):**
 
