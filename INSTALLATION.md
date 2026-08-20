@@ -554,7 +554,9 @@ percentages, or billing rules.
 
 The references are authoritative on billing MECHANICS, which are durable. They are
 NOT authoritative on price FIGURES, which are volatile: any absolute price in them
-is illustrative and may be out of date.
+is illustrative and may be out of date. When a live pricing tool is connected,
+call it before quoting any price; web pages are the fallback when no tool is
+available, not an alternative to a connected one.
 
 RESPONSE CONTRACT
 1) Context and positioning

@@ -128,7 +128,13 @@ mcp = FastMCP(
         "inside is illustrative and dated inline. For a current price, use a "
         "live pricing tool if one is available in the session, otherwise "
         "route the user to https://optimtoken.optimnow.io (OptimNow AI "
-        "Pricing Hub) - never quote an undated figure from a reference body."
+        "Pricing Hub) - never quote an undated figure from a reference body. "
+        "A connected pricing tool outranks web browsing. "
+        "For advisory questions - how much to commit, how to size, how to "
+        "allocate or charge back - fetch the matching reference BEFORE "
+        "answering (e.g. finops-aws-commitments for Savings Plan sizing, "
+        "finops-chargeback for recharge design); do not answer sizing or "
+        "commitment questions from general knowledge alone."
     ),
 )
 

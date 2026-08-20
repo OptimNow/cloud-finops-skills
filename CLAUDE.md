@@ -563,6 +563,12 @@ fcp_maturity_entry: "Crawl" | "Walk" | "Run"         # the gate below which the 
 ---
 ```
 
+`fcp_phases` is deliberately independent of `fcp_domain`: a file whose primary
+domain is Understand Usage & Cost (e.g. finops-kubernetes) legitimately carries
+the Optimize phase when it also serves optimisation work. Audited and confirmed
+intentional on 2026-08-20 (kubernetes, oci, for-ai) - do not "fix" this apparent
+mismatch.
+
 Why this matters:
 - Programmatic routing (future "load all references where fcp_capability=Anomaly Management"
   filter is feasible)
