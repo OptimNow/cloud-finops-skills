@@ -402,7 +402,7 @@ patterns.
 |---|---|
 | `list_references()` | What is in the library? Every reference with its FinOps Framework metadata |
 | `get_reference(name)` | Give me the full text of one |
-| `find_references(domain?, capability?, phase?, persona?, maturity?)` | Which references serve Rate Optimization, at Walk maturity, written for Engineering? |
+| `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | Which references serve Rate Optimization, at Walk maturity, written for Engineering? (`persona_primary_only` cuts to the primary audience - broad personas collaborate on nearly everything) |
 
 **Playbooks** - small named-pattern runbooks, one waste pattern each. Reach for these for
 "how do I detect and fix this specific thing".

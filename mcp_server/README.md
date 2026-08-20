@@ -21,7 +21,7 @@ Six tools, all read-only, split across two surfaces.
 |---|---|
 | `list_references()` | List all references with their FCP metadata. |
 | `get_reference(name)` | Fetch the full markdown body of one reference. |
-| `find_references(domain?, capability?, phase?, persona?, maturity?)` | Faceted query over the FinOps Capability/Phase frontmatter. |
+| `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | Faceted query over the FinOps Capability/Phase frontmatter. |
 
 The reference faceted query supports any combination of:
 
@@ -29,6 +29,9 @@ The reference faceted query supports any combination of:
 - `capability` - FinOps capability (matches both primary and secondary)
 - `phase` - `Inform`, `Optimize`, `Operate`
 - `persona` - matches both primary and collaborating personas
+- `persona_primary_only` - optional flag: match `persona` against the primary
+  list only. Broad personas (Engineering) collaborate on nearly every file,
+  so the default match barely narrows; the flag is the reading-list cut.
 - `maturity` - `Crawl`, `Walk`, `Run`
 
 **Playbooks** - small named-pattern runbooks (~80-130 lines each):
