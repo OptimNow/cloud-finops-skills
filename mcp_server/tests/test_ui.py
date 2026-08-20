@@ -153,16 +153,18 @@ async def test_tools_link_their_widgets() -> None:
 def test_ui_domain_is_derived_from_the_canonical_connector_url() -> None:
     """The sandbox-domain hash must follow the URL constant, never drift.
 
-    The claude host validates sha256(<connector URL as entered, no trailing
-    slash>)[:32] + ".claudemcpcontent.com" against the resource meta; a
-    pasted hash that stops matching the URL is the ai-pricing-hub failure
-    mode.
+    The claude host validates sha256(<connector URL as it displays it -
+    for a root-entered connector that is the ROOT url WITH its trailing
+    slash>)[:32] + ".claudemcpcontent.com" against the resource meta.
+    Observed live on 2026-08-20: hashing "/mcp" while the host saw the
+    root url logged 'ui.domain validation failed'. Skybridge hashes
+    https://<host><request-pathname>, i.e. root-with-slash.
     """
     import hashlib
 
-    assert not server.CANONICAL_CONNECTOR_URL.endswith("/"), (
-        "the connector URL is hashed as entered - no trailing slash"
-    )
+    assert server.CANONICAL_CONNECTOR_URL == (
+        server.CANONICAL_CONNECTOR_ORIGIN + "/"
+    ), "the connector URL is the root form, trailing slash included"
     expected = (
         hashlib.sha256(server.CANONICAL_CONNECTOR_URL.encode("utf-8")).hexdigest()[:32]
         + ".claudemcpcontent.com"
