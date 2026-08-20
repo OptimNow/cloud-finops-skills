@@ -124,6 +124,11 @@ async def test_ui_resources_are_registered() -> None:
     for uri in WIDGETS:
         assert uri in by_uri, f"{uri} is not a registered resource"
         assert by_uri[uri].mimeType == "text/html;profile=mcp-app"
+        # Skybridge parity: every widget also ships an apps-sdk variant
+        # (the shape the connectors that DO render in Claude expose).
+        variant = server._apps_sdk_uri(uri)
+        assert variant in by_uri, f"{variant} is not a registered resource"
+        assert by_uri[variant].mimeType == "text/html+skybridge"
 
 
 async def test_tools_link_their_widgets() -> None:
@@ -137,7 +142,9 @@ async def test_tools_link_their_widgets() -> None:
             f"{tool_name} does not declare {uri}"
         )
         assert meta.get("ui/resourceUri") == uri
-        assert meta.get("openai/outputTemplate") == uri
+        # openai/outputTemplate points at the apps-sdk variant (Skybridge
+        # parity): the SEP-1865 keys keep the spec resource.
+        assert meta.get("openai/outputTemplate") == server._apps_sdk_uri(uri)
     # get_reference deliberately has no widget: its content is read inside
     # the reference browser via an app-initiated call.
     assert not (by_name["get_reference"].meta or {}).get("ui")
@@ -167,11 +174,26 @@ async def test_ui_resources_declare_the_sandbox_domain() -> None:
     """Without ui.domain the host kills the iframe after reserving it."""
     resources = await server.mcp.list_resources()
     checked = 0
+    variants = {server._apps_sdk_uri(u) for u in WIDGETS}
     for r in resources:
+        meta = r.meta or {}
         if str(r.uri) in WIDGETS:
-            meta = r.meta or {}
-            assert meta.get("ui", {}).get("domain") == server.UI_DOMAIN, (
+            ui = meta.get("ui", {})
+            assert ui.get("domain") == server.UI_DOMAIN, (
                 f"{r.uri} does not declare ui.domain"
             )
+            # Skybridge parity: the csp block the rendering connectors send.
+            assert ui.get("csp", {}).get("resourceDomains") == [
+                server.CANONICAL_CONNECTOR_ORIGIN
+            ]
+            assert ui.get("csp", {}).get("connectDomains") == [
+                server.CANONICAL_CONNECTOR_ORIGIN
+            ]
             checked += 1
-    assert checked == len(WIDGETS)
+        elif str(r.uri) in variants:
+            assert meta.get("openai/widgetDomain") == server.UI_DOMAIN, (
+                f"{r.uri} does not declare openai/widgetDomain"
+            )
+            assert "openai/widgetCSP" in meta
+            checked += 1
+    assert checked == len(WIDGETS) * 2
