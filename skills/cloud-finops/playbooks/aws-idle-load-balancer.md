@@ -35,13 +35,16 @@ SELECT
   line_item_resource_id           AS elb_arn,
   line_item_usage_account_id      AS account,
   SUM(CASE WHEN line_item_usage_type LIKE '%LoadBalancer%' AND line_item_usage_type LIKE '%Hours' THEN line_item_usage_amount END) AS hours,
-  SUM(CASE WHEN line_item_usage_type LIKE '%LCU%' THEN line_item_usage_amount END) AS lcu_units,
+  COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%LCU%' THEN line_item_usage_amount END), 0) AS lcu_units,
   SUM(line_item_unblended_cost)   AS cost_30d
 FROM cur2
 WHERE line_item_usage_start_date >= current_date - interval '30' day
   AND product_servicecode = 'AWSELB'
 GROUP BY 1, 2
-HAVING SUM(CASE WHEN line_item_usage_type LIKE '%LCU%' THEN line_item_usage_amount END) < 1
+-- COALESCE matters: a load balancer with zero traffic produces no LCU
+-- line items at all, so the bare SUM returns NULL and NULL < 1 filters
+-- out exactly the idlest load balancers the query exists to find.
+HAVING COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%LCU%' THEN line_item_usage_amount END), 0) < 1
 ORDER BY cost_30d DESC;
 ```
 

@@ -11,7 +11,9 @@ confidence: obvious
 ## Problem
 
 An AWS NAT Gateway is billed at roughly $0.045/hr per gateway plus
-$0.045/GB of data processed (rate varies slightly by region). The hourly
+$0.045/GB of data processed (us-east-1 rate; several regions run
+materially higher - Sao Paulo and some Asia-Pacific regions up to roughly
+double - so estimate savings per region, never from one rate). The hourly
 charge alone is about $32/month per gateway, accrued whether traffic flows
 or not. A NAT Gateway processing near-zero data still pays the full hourly.
 Multiply across accounts, AZs, and forgotten migration leftovers and the
@@ -34,7 +36,7 @@ SELECT
   line_item_resource_id           AS nat_id,
   line_item_availability_zone     AS az,
   SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Hours' THEN line_item_usage_amount END) AS hours,
-  SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END) / 1024 / 1024 / 1024 AS gb_processed,
+  COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 1024 / 1024 / 1024 AS gb_processed,
   SUM(line_item_unblended_cost)   AS cost_month
 FROM cur2
 WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '1' month)
@@ -42,15 +44,28 @@ WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval 
   AND product_servicecode = 'AmazonEC2'
   AND line_item_usage_type LIKE '%NatGateway%'
 GROUP BY 1, 2
-HAVING SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END) / 1024 / 1024 / 1024 < 5
+-- COALESCE matters: a NAT with literally zero traffic produces no
+-- NatGateway-Bytes line items at all, so the bare SUM returns NULL and
+-- NULL < 5 filters out exactly the clearest zombies.
+HAVING COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 1024 / 1024 / 1024 < 5
 ORDER BY cost_month DESC;
 ```
+
+This query finds the idle end of the distribution. A *high-traffic* NAT
+moving mostly S3 or DynamoDB data is a different and usually larger
+finding - gateway-endpoint substitution eliminates its per-GB processing
+fee entirely - and is deliberately out of this playbook's scope.
 
 For real-time validation, the canonical CloudWatch metrics are
 `BytesOutToSource` and `BytesOutToDestination` in the `AWS/NATGateway`
 namespace, dimensioned by `NatGatewayId`, at 1-minute granularity.
 
 ## Fix
+
+Detection needs only the billing signal above - that is what makes this
+pattern `obvious` in the confidence model. The steps below are the
+pre-deletion safety validation, not part of classification: you classify
+on one signal, you delete only after confirming.
 
 1. Confirm the gateway has < 5 GB / month over a 60-day window (one month
    can be misleading - some workloads run quarterly).
