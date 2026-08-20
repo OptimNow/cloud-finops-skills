@@ -114,8 +114,9 @@ mcp = FastMCP(
         "REFERENCES (long-form provider/discipline files) and PLAYBOOKS "
         "(small named-pattern runbooks for specific waste patterns). "
         "REFERENCES: list_references() to discover, find_references(domain=, "
-        "capability=, phase=, persona=, maturity=) to narrow by FinOps "
-        "Capability/Phase facets, get_reference(name=) to fetch one body. "
+        "capability=, phase=, persona=, maturity=, persona_primary_only=) to "
+        "narrow by FinOps Capability/Phase facets, get_reference(name=) to "
+        "fetch one body. "
         "PLAYBOOKS: list_playbooks() to discover, find_playbooks(scope=, "
         "service=, waste_category=, confidence=) to narrow by pattern facets, "
         "get_playbook(name=) to fetch one body. "
@@ -183,6 +184,7 @@ def find_references(
     phase: str | None = None,
     persona: str | None = None,
     maturity: str | None = None,
+    persona_primary_only: bool = False,
 ) -> dict[str, Any]:
     """Filter references by FinOps Capability/Phase (FCP) frontmatter.
 
@@ -195,6 +197,7 @@ def find_references(
 
     - ``find_references(domain="Optimize Usage & Cost")``
     - ``find_references(phase="Optimize", persona="Engineering")``
+    - ``find_references(persona="Engineering", persona_primary_only=True)``
     - ``find_references(capability="Rate Optimization")``
     - ``find_references(maturity="Crawl")``
 
@@ -207,6 +210,13 @@ def find_references(
         persona: Persona (matches ``fcp_personas_primary`` and
             ``fcp_personas_collaborating``).
         maturity: Entry maturity level (``"Crawl"``, ``"Walk"``, ``"Run"``).
+        persona_primary_only: when True, ``persona`` matches only the primary
+            list. Use it when the default match barely narrows the set -
+            broad personas like Engineering collaborate on nearly every file,
+            so filtering on collaboration is descriptive, not discriminating.
+            ``persona="Engineering", persona_primary_only=True`` is the
+            engineering reading list; the default is the everything-they-touch
+            view.
 
     Returns ``{"filters": {...}, "references": [...], "total": N}``. A query
     that matches nothing also returns `hint` and `valid_values`, so a typo is
@@ -218,6 +228,7 @@ def find_references(
         phase=phase,
         persona=persona,
         maturity=maturity,
+        persona_primary_only=persona_primary_only,
     )
 
 

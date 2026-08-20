@@ -13,6 +13,7 @@ pattern each.
 from __future__ import annotations
 
 import difflib
+import logging
 from typing import Any
 
 from .metadata import (
@@ -23,6 +24,20 @@ from .metadata import (
     get_playbook_by_name,
     get_playbook_index,
 )
+
+logger = logging.getLogger(__name__)
+
+
+def _log_zero_result(tool: str, active: dict[str, Any]) -> None:
+    """Log a faceted query that matched nothing.
+
+    A zero-result query is the purest coverage signal there is: an agent
+    (so, a user) asked for something the bundled set does not have. The
+    marker string is grepped from the hosted deployment's logs during the
+    periodic coverage review (see the maintainer coverage-probe doctrine),
+    which is why it must stay stable.
+    """
+    logger.info("zero-result query: %s filters=%r", tool, active)
 
 
 def list_references() -> dict[str, Any]:
@@ -77,11 +92,20 @@ def _matches_list(values: list[str], filter_value: str) -> bool:
     return any(v.casefold() == fv for v in values)
 
 
-def _persona_match(ref: Reference, persona: str) -> bool:
-    """Persona filter checks both primary and collaborating lists."""
-    return _matches_list(ref.fcp_personas_primary, persona) or _matches_list(
-        ref.fcp_personas_collaborating, persona
-    )
+def _persona_match(ref: Reference, persona: str, primary_only: bool = False) -> bool:
+    """Persona filter checks the primary list, plus collaborating by default.
+
+    The collaborating check is opt-out for a reason found in the field: a
+    persona like Engineering collaborates on nearly everything in FinOps, so
+    the OR over both lists barely narrows anything (the 2026-08-19 test
+    measured exactly one exclusion across the whole library). The metadata is
+    descriptively correct; ``primary_only`` is the operational cut.
+    """
+    if _matches_list(ref.fcp_personas_primary, persona):
+        return True
+    if primary_only:
+        return False
+    return _matches_list(ref.fcp_personas_collaborating, persona)
 
 
 def _capability_match(ref: Reference, capability: str) -> bool:
@@ -189,6 +213,7 @@ def find_references(
     phase: str | None = None,
     persona: str | None = None,
     maturity: str | None = None,
+    persona_primary_only: bool = False,
 ) -> dict[str, Any]:
     """Filter references by FCP frontmatter.
 
@@ -208,6 +233,11 @@ def find_references(
             ``"Engineering"``.
         maturity: ``Crawl``, ``Walk``, or ``Run`` - the entry gate below which
             the reference is premature.
+        persona_primary_only: when True, ``persona`` matches only
+            ``fcp_personas_primary``. Use it when the default match barely
+            narrows the set - broad personas like Engineering collaborate on
+            nearly every file, so the collaborating list is descriptive
+            rather than discriminating.
     """
     filters = {
         "domain": domain,
@@ -226,7 +256,9 @@ def find_references(
             continue
         if "phase" in active and not _matches_list(ref.fcp_phases, active["phase"]):
             continue
-        if "persona" in active and not _persona_match(ref, active["persona"]):
+        if "persona" in active and not _persona_match(
+            ref, active["persona"], primary_only=persona_primary_only
+        ):
             continue
         if "maturity" in active and not _matches_scalar(
             ref.fcp_maturity_entry, active["maturity"]
@@ -234,13 +266,18 @@ def find_references(
             continue
         matches.append(ref)
 
+    reported_filters: dict[str, Any] = dict(active)
+    if persona_primary_only and "persona" in active:
+        reported_filters["persona_primary_only"] = True
+
     result: dict[str, Any] = {
-        "filters": active,
+        "filters": reported_filters,
         "references": [r.to_dict() for r in matches],
         "total": len(matches),
     }
     if not matches and active:
         result.update(_empty_result_help(active, reference_vocabulary()))
+        _log_zero_result("find_references", reported_filters)
     return result
 
 
@@ -352,4 +389,5 @@ def find_playbooks(
     }
     if not matches and active:
         result.update(_empty_result_help(active, playbook_vocabulary()))
+        _log_zero_result("find_playbooks", active)
     return result

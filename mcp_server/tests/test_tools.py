@@ -237,3 +237,43 @@ def test_vocabulary_helpers_are_derived_from_data() -> None:
     ref_vocab = tools.reference_vocabulary()
     assert set(ref_vocab["maturity"]) <= {"Crawl", "Walk", "Run"}
     assert set(ref_vocab["phase"]) <= {"Inform", "Optimize", "Operate"}
+
+
+# --- persona_primary_only (2026-08-20, from the connector field test) --------
+
+
+def test_persona_primary_only_narrows_the_set() -> None:
+    """Broad personas collaborate everywhere; the flag is the operational cut.
+
+    The 2026-08-19 field test measured persona="Engineering" excluding exactly
+    one reference over the whole library - the collaborating list makes the
+    default filter descriptive rather than discriminating.
+    """
+    default = tools.find_references(persona="Engineering")
+    primary = tools.find_references(persona="Engineering", persona_primary_only=True)
+    assert 0 < primary["total"] < default["total"]
+    names_default = {r["name"] for r in default["references"]}
+    names_primary = {r["name"] for r in primary["references"]}
+    assert names_primary < names_default
+    # finops-itam lists Engineering only as collaborating: kept by the
+    # default match, cut by the primary-only one.
+    assert "finops-itam" in names_default
+    assert "finops-itam" not in names_primary
+    # The applied flag is echoed in the filters so the caller can see that
+    # a narrowing actually happened.
+    assert primary["filters"].get("persona_primary_only") is True
+    assert "persona_primary_only" not in default["filters"]
+
+
+def test_zero_result_faceted_query_is_logged(caplog) -> None:
+    """A zero-result query is the purest coverage-gap signal; it must leave
+    a grep-able trace in the server logs."""
+    import logging
+
+    with caplog.at_level(logging.INFO, logger="cloud_finops_mcp.tools"):
+        tools.find_playbooks(scope="aws", waste_category="nonexistent")
+        tools.find_references(persona="Nonexistent Persona")
+    zero_logs = [r.message for r in caplog.records if "zero-result query" in r.message]
+    assert len(zero_logs) == 2
+    assert any("find_playbooks" in m for m in zero_logs)
+    assert any("find_references" in m for m in zero_logs)
