@@ -44,7 +44,10 @@ cloud-finops-skills/
 │                             publish-mcp, publish-registry, mcp-install-smoke,
 │                             release
 ├── assets/                <- Installation-guide screenshots (embedded in
-│                             INSTALLATION.md) + the GitHub social preview
+│                             INSTALLATION.md), the GitHub social preview, and
+│                             the generated playbook-coverage.svg and
+│                             fcp-coverage.svg heat maps (embedded in
+│                             README.md; both CI-gated)
 ├── docs/
 │   └── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
 │                             (split out of CLAUDE.md, Aug 2026)
@@ -101,7 +104,10 @@ cloud-finops-skills/
 ├── scripts/               <- `fcp-coverage.sh` and `playbook-coverage.sh`
 │                             (parse frontmatter, emit the two coverage
 │                             matrices; their --check modes diff the
-│                             committed files in CI) plus the guards:
+│                             committed files in CI), the heat-map renderers
+│                             `render-coverage-heatmap.py` and
+│                             `render-fcp-heatmap.py` (emit the README SVGs,
+│                             --check gated in CI) plus the guards:
 │                             check-artefact-size, check-docs-drift,
 │                             check-llms-txt, check-skill-description (run by
 │                             the `CI` workflow) and check-marketplace-version
@@ -414,6 +420,28 @@ ai-pricing-hub was NOT fixed on 2026-08-19 - no such fix exists in that
 repo and its failures were still logging at 17:30 that day; it needs the
 same change as this one.
 
+**Update (2026-08-20): rendering for custom connectors IS possible - the
+gate is implementation shape, not the Directory.** Two facts landed the
+same day. First, a Desktop render test on this repo's connector called
+`find_playbooks` (visible as `tool_approval_gate` log entries, MCP Apps
+runtime activating right after), logged NO `ui.domain` error - and still
+showed no widget. Second, and decisive: the Skybridge-built companions
+(`ai-pricing-hub-mcp`, `ai-roi-calculator-mcp`) DO render their widgets
+in Claude as plain custom connectors (user-confirmed with a screenshot of
+`compare-models-side-by-side` rendering in the chat). So the 2026-08-16
+"Directory review is the gate" conclusion is wrong for widgets. What
+Skybridge does that this server does not, in likely order of relevance:
+(a) registers each widget TWICE - an apps-sdk variant (mime
+`text/html+skybridge`, `openai/*` meta, tool `openai/outputTemplate`
+pointing at it) alongside the spec variant (`text/html;profile=mcp-app`,
+`ui.resourceUri`); (b) computes `ui.domain` per request from the URL
+Claude actually calls (sha256 of host+path), instead of a static
+precomputed hash; (c) declares a `ui.csp` block ({resourceDomains,
+connectDomains}) in the resource-read `_meta`. (a) and (c) were mirrored
+in server.py the same day (PR #174), which moved the failure forward to a
+ui.domain mismatch on the ROOT connector URL, fixed by hashing the
+root-with-slash form (PR #175). Keep `ui.domain`; it stays required.
+
 ### A packaged artefact cannot own volatile data (2026-08-17)
 
 Shipped across twelve PRs (#141 to #153, released as 1.30.0). The change is small to
@@ -718,8 +746,9 @@ Two standing rules that follow from the map:
       Symptoms / Detection / Fix / Anti-pattern / See also sections, OptimNow
       CC BY-SA footer), add it to that README's catalogue table (CI-gated by
       `scripts/check-docs-drift.sh`), regenerate `playbook-coverage.md`
-      (`./scripts/playbook-coverage.sh` - CI-gated, so the coverage change
-      shows in the PR diff), and update the named-
+      and the README heat map (`./scripts/playbook-coverage.sh` and
+      `python scripts/render-coverage-heatmap.py` - both CI-gated, so the
+      coverage change shows in the PR diff), and update the named-
       pattern parenthetical in the ChatGPT / grouped routing tables in
       install.sh. SKILL.md and POWER.md carry representative examples only
       (since the 2026-08 token-efficiency pass) and defer to
