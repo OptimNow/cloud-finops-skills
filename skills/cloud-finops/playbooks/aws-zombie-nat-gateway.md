@@ -31,15 +31,19 @@ waste compounds quickly.
 ## Detection
 
 ```sql
--- Athena over CUR 2.0: NAT Gateway hours vs data processed last full month
+-- Athena over CUR 2.0: NAT Gateway hours vs data processed, last two full
+-- months. The window is deliberately 60 days, not one month: some workloads
+-- run quarterly, and a single quiet month would misclassify them.
+-- gb_per_month is the monthly average over the window, so the < 5 GB/month
+-- threshold reads the same as the CloudWatch symptom above.
 SELECT
   line_item_resource_id           AS nat_id,
   line_item_availability_zone     AS az,
   SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Hours' THEN line_item_usage_amount END) AS hours,
-  COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 1024 / 1024 / 1024 AS gb_processed,
-  SUM(line_item_unblended_cost)   AS cost_month
+  COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 1024 / 1024 / 1024 / 2 AS gb_per_month,
+  SUM(line_item_unblended_cost)   AS cost_period
 FROM cur2
-WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '1' month)
+WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '2' month)
   AND line_item_usage_start_date <  date_trunc('month', current_date)
   AND product_servicecode = 'AmazonEC2'
   AND line_item_usage_type LIKE '%NatGateway%'
@@ -47,8 +51,8 @@ GROUP BY 1, 2
 -- COALESCE matters: a NAT with literally zero traffic produces no
 -- NatGateway-Bytes line items at all, so the bare SUM returns NULL and
 -- NULL < 5 filters out exactly the clearest zombies.
-HAVING COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 1024 / 1024 / 1024 < 5
-ORDER BY cost_month DESC;
+HAVING COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 1024 / 1024 / 1024 / 2 < 5
+ORDER BY cost_period DESC;
 ```
 
 This query finds the idle end of the distribution. A *high-traffic* NAT
@@ -67,8 +71,9 @@ pattern `obvious` in the confidence model. The steps below are the
 pre-deletion safety validation, not part of classification: you classify
 on one signal, you delete only after confirming.
 
-1. Confirm the gateway has < 5 GB / month over a 60-day window (one month
-   can be misleading - some workloads run quarterly).
+1. Confirm the gateway has < 5 GB / month over a 60-day window - the
+   Detection query above already spans two full months for exactly this
+   reason (one month can be misleading - some workloads run quarterly).
 2. Identify the route table(s) pointing at the gateway. If no private
    subnet routes to it, deletion is safe.
 3. Delete the NAT Gateway. Release the associated Elastic IP if no other
