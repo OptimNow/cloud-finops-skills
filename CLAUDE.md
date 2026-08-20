@@ -45,8 +45,9 @@ cloud-finops-skills/
 │                             release
 ├── assets/                <- Installation-guide screenshots (embedded in
 │                             INSTALLATION.md), the GitHub social preview, and
-│                             the generated playbook-coverage.svg heat map
-│                             (embedded in README.md; CI-gated)
+│                             the generated playbook-coverage.svg and
+│                             fcp-coverage.svg heat maps (embedded in
+│                             README.md; both CI-gated)
 ├── docs/
 │   └── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
 │                             (split out of CLAUDE.md, Aug 2026)
@@ -103,7 +104,10 @@ cloud-finops-skills/
 ├── scripts/               <- `fcp-coverage.sh` and `playbook-coverage.sh`
 │                             (parse frontmatter, emit the two coverage
 │                             matrices; their --check modes diff the
-│                             committed files in CI) plus the guards:
+│                             committed files in CI), the heat-map renderers
+│                             `render-coverage-heatmap.py` and
+│                             `render-fcp-heatmap.py` (emit the README SVGs,
+│                             --check gated in CI) plus the guards:
 │                             check-artefact-size, check-docs-drift,
 │                             check-llms-txt, check-skill-description (run by
 │                             the `CI` workflow) and check-marketplace-version
@@ -410,6 +414,20 @@ ai-pricing-hub-mcp. Correction to an earlier note in this entry:
 ai-pricing-hub was NOT fixed on 2026-08-19 - no such fix exists in that
 repo and its failures were still logging at 17:30 that day; it needs the
 same change as this one.
+
+**Update (2026-08-20): a correct `ui.domain` is confirmed insufficient.**
+With the derived value deployed and the connector re-added, a Desktop
+render test called `find_playbooks` through the connector (visible in the
+Desktop web log as `tool_approval_gate` entries, with the MCP Apps runtime
+activating right after), logged NO `ui.domain validation failed` error -
+and still produced no visible widget. So the full evidence chain now
+reads: spec-conformant HTML, valid `ui.domain`, tool executed, host
+runtime engaged, no render. The remaining gate is the Connectors
+Directory review, as the 2026-08-16 entry concluded. Keep `ui.domain` in
+place (it is one of the review prerequisites and removes one observable
+failure mode), do not spend further engineering effort chasing rendering
+in Claude hosts, and treat MCPJam as the validation host for widget work
+until the Directory submission is reviewed.
 
 ### A packaged artefact cannot own volatile data (2026-08-17)
 

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="762" viewBox="0 0 700 762" role="img" aria-label="FinOps Framework capability coverage: 19 of 22 capabilities covered by the reference library">
+<rect width="700" height="762" rx="10" fill="#ffffff" stroke="#c9cdd4"/>
+<text x="16" y="28" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23">FinOps Framework capability coverage (19 of 22 capabilities)</text>
+<text x="16" y="58" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370">Understand Usage & Cost</text>
+<rect x="24" y="73" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="84" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Data Ingestion</text>
+<text x="682" y="84" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary + 3 secondary</text>
+<rect x="24" y="97" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="108" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Allocation</text>
+<text x="682" y="108" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">3 primary + 4 secondary</text>
+<rect x="24" y="121" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
+<text x="48" y="132" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Reporting & Analytics</text>
+<text x="682" y="132" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (4)</text>
+<rect x="24" y="145" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="156" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Anomaly Management</text>
+<text x="682" y="156" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary + 5 secondary</text>
+<text x="16" y="184" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370">Quantify Business Value</text>
+<rect x="24" y="199" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="210" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Planning & Estimating</text>
+<text x="682" y="210" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary</text>
+<rect x="24" y="223" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
+<text x="48" y="234" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Forecasting</text>
+<text x="682" y="234" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (4)</text>
+<rect x="24" y="247" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
+<text x="48" y="258" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Budgeting</text>
+<text x="682" y="258" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (4)</text>
+<rect x="24" y="271" width="14" height="14" rx="3" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="3 2"/>
+<text x="48" y="282" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">KPIs & Benchmarking</text>
+<text x="682" y="282" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">deferred (ROADMAP)</text>
+<rect x="24" y="295" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="306" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Unit Economics</text>
+<text x="682" y="306" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary + 1 secondary</text>
+<text x="16" y="334" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370">Optimize Usage & Cost</text>
+<rect x="24" y="349" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="360" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Architecting & Workload Placement</text>
+<text x="682" y="360" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">3 primary + 8 secondary</text>
+<rect x="24" y="373" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="384" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Usage Optimization</text>
+<text x="682" y="384" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">8 primary + 13 secondary</text>
+<rect x="24" y="397" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="408" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Rate Optimization</text>
+<text x="682" y="408" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">9 primary + 4 secondary</text>
+<rect x="24" y="421" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="432" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Licensing & SaaS</text>
+<text x="682" y="432" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">2 primary + 1 secondary</text>
+<rect x="24" y="445" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="456" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Sustainability</text>
+<text x="682" y="456" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary</text>
+<text x="16" y="484" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370">Manage the FinOps Practice</text>
+<rect x="24" y="499" width="14" height="14" rx="3" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="3 2"/>
+<text x="48" y="510" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Executive Strategy Alignment</text>
+<text x="682" y="510" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">deferred (ROADMAP)</text>
+<rect x="24" y="523" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="534" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">FinOps Practice Operations</text>
+<text x="682" y="534" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">2 primary + 2 secondary</text>
+<rect x="24" y="547" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
+<text x="48" y="558" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Governance, Policy & Risk</text>
+<text x="682" y="558" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (2)</text>
+<rect x="24" y="571" width="14" height="14" rx="3" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="3 2"/>
+<text x="48" y="582" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">FinOps Education & Enablement</text>
+<text x="682" y="582" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">deferred (ROADMAP)</text>
+<rect x="24" y="595" width="14" height="14" rx="3" fill="#ace849"/>
+<text x="48" y="606" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Invoicing & Chargeback</text>
+<text x="682" y="606" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary</text>
+<rect x="24" y="619" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
+<text x="48" y="630" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">FinOps Assessment</text>
+<text x="682" y="630" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (1)</text>
+<rect x="24" y="643" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
+<text x="48" y="654" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Automation, Tools & Services</text>
+<text x="682" y="654" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (2)</text>
+<rect x="24" y="667" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
+<text x="48" y="678" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Intersecting Disciplines</text>
+<text x="682" y="678" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (1)</text>
+<text x="16" y="708" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370">Filled = owned by at least one reference; pale = touched as a secondary capability only; dashed = deliberate gap,</text>
+<text x="16" y="723" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370">deferred with its reasoning in docs/ROADMAP.md. Generated by scripts/render-fcp-heatmap.py from fcp-coverage.md (CI-gated).</text>
+</svg>

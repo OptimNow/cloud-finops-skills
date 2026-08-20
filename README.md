@@ -413,12 +413,31 @@ patterns.
 | `get_playbook(name)` | The runbook: symptoms, detection query, fix, anti-pattern |
 | `find_playbooks(scope?, service?, waste_category?, confidence?)` | Which AWS playbooks cover orphaned resources at obvious confidence? |
 
-![Waste-playbook coverage heat map](assets/playbook-coverage.svg)
+### Coverage, published deliberately
 
-Coverage is published deliberately, gaps included: a dashed cell is a known hole,
-and the prioritised backlog behind it is public in [docs/ROADMAP.md](docs/ROADMAP.md).
-The map regenerates from the playbook frontmatter and CI fails if it drifts
-(details in [playbook-coverage.md](playbook-coverage.md)).
+Coverage has two structural surfaces, and they answer different questions. The
+first is the **named waste-pattern runbooks**: which specific, detectable waste
+patterns have a ready-made playbook, per provider. A dashed cell is a known
+hole in the *runbook* catalogue, with its prioritised backlog public in
+[docs/ROADMAP.md](docs/ROADMAP.md) - it does not mean the skill cannot answer
+on that theme, because the reference library covers the underlying mechanics
+even where no runbook exists.
+
+![Waste-playbook runbook coverage heat map](assets/playbook-coverage.svg)
+
+The second surface is the **reference library mapped to the FinOps Framework**:
+which of the 22 Framework capabilities have a reference that owns them. This is
+where commitment strategy, chargeback, allocation and the other advisory themes
+live - none of which need a runbook to be answerable.
+
+![FinOps Framework capability coverage](assets/fcp-coverage.svg)
+
+Both maps regenerate from file frontmatter and CI fails if either drifts
+(details in [playbook-coverage.md](playbook-coverage.md) and
+[fcp-coverage.md](fcp-coverage.md)). A third, behavioural surface - does the
+library actually ground answers to real practitioner questions - is measured
+with a rotating probe battery on the maintainer side; gaps it finds land in the
+same public backlog.
 
 The faceted queries are the reason this is a server and not just a folder of markdown.
 Every file carries YAML frontmatter mapping it to a FinOps Framework Capability, phase,
