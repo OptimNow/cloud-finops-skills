@@ -131,9 +131,47 @@ async def test_tools_link_their_widgets() -> None:
     by_name = {t.name: t for t in tools}
     for tool_name, uri in EXPECTED_TOOL_WIRING.items():
         meta = by_name[tool_name].meta or {}
+        # Declared under every key shape hosts read (SEP-1865 nested, flat
+        # slash form, OpenAI Apps SDK form) - see server._ui_tool_meta.
         assert meta.get("ui", {}).get("resourceUri") == uri, (
             f"{tool_name} does not declare {uri}"
         )
+        assert meta.get("ui/resourceUri") == uri
+        assert meta.get("openai/outputTemplate") == uri
     # get_reference deliberately has no widget: its content is read inside
     # the reference browser via an app-initiated call.
     assert not (by_name["get_reference"].meta or {}).get("ui")
+
+
+def test_ui_domain_is_derived_from_the_canonical_connector_url() -> None:
+    """The sandbox-domain hash must follow the URL constant, never drift.
+
+    The claude host validates sha256(<connector URL as entered, no trailing
+    slash>)[:32] + ".claudemcpcontent.com" against the resource meta; a
+    pasted hash that stops matching the URL is the ai-pricing-hub failure
+    mode.
+    """
+    import hashlib
+
+    assert not server.CANONICAL_CONNECTOR_URL.endswith("/"), (
+        "the connector URL is hashed as entered - no trailing slash"
+    )
+    expected = (
+        hashlib.sha256(server.CANONICAL_CONNECTOR_URL.encode("utf-8")).hexdigest()[:32]
+        + ".claudemcpcontent.com"
+    )
+    assert server.UI_DOMAIN == expected
+
+
+async def test_ui_resources_declare_the_sandbox_domain() -> None:
+    """Without ui.domain the host kills the iframe after reserving it."""
+    resources = await server.mcp.list_resources()
+    checked = 0
+    for r in resources:
+        if str(r.uri) in WIDGETS:
+            meta = r.meta or {}
+            assert meta.get("ui", {}).get("domain") == server.UI_DOMAIN, (
+                f"{r.uri} does not declare ui.domain"
+            )
+            checked += 1
+    assert checked == len(WIDGETS)
