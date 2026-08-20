@@ -62,12 +62,41 @@ REFERENCE_BROWSER_URI = "ui://cloud-finops/reference-browser"
 # from the canonical URL rather than pasted, so the URL constant is the only
 # thing that has to stay true; hashing an internal path instead of the
 # public URL is exactly the mistake that broke ai-pricing-hub.
-CANONICAL_CONNECTOR_URL = "https://cloud-finops-skills-590a051d.alpic.live/mcp"
+CANONICAL_CONNECTOR_ORIGIN = "https://cloud-finops-skills-590a051d.alpic.live"
+CANONICAL_CONNECTOR_URL = CANONICAL_CONNECTOR_ORIGIN + "/mcp"
 UI_DOMAIN = (
     hashlib.sha256(CANONICAL_CONNECTOR_URL.encode("utf-8")).hexdigest()[:32]
     + ".claudemcpcontent.com"
 )
-_UI_RESOURCE_META = {"ui": {"domain": UI_DOMAIN}}
+
+# Skybridge parity (2026-08-20). The Skybridge-built companion connectors
+# (ai-pricing-hub, ai-roi-calculator) render their widgets in Claude as
+# plain custom connectors while this server, spec-conformant and with a
+# valid ui.domain, stayed text-only. Three observable deltas in what
+# Skybridge emits, mirrored here: (1) a ui.csp block in the widget
+# resource meta; (2) an apps-sdk VARIANT of every widget resource (mime
+# "text/html+skybridge", openai/* meta) alongside the SEP-1865 one; (3)
+# the tool's openai/outputTemplate pointing at that variant while
+# ui.resourceUri keeps pointing at the SEP-1865 resource. The HTML served
+# is identical - the widgets are self-contained and the bridge negotiates
+# the host protocol at runtime.
+_UI_CSP = {
+    "resourceDomains": [CANONICAL_CONNECTOR_ORIGIN],
+    "connectDomains": [CANONICAL_CONNECTOR_ORIGIN],
+}
+_UI_RESOURCE_META = {"ui": {"domain": UI_DOMAIN, "csp": _UI_CSP}}
+_APPS_SDK_RESOURCE_META = {
+    "openai/widgetDomain": UI_DOMAIN,
+    "openai/widgetCSP": {
+        "resource_domains": [CANONICAL_CONNECTOR_ORIGIN],
+        "connect_domains": [CANONICAL_CONNECTOR_ORIGIN],
+    },
+}
+
+
+def _apps_sdk_uri(resource_uri: str) -> str:
+    """The apps-sdk variant URI for a SEP-1865 widget resource."""
+    return resource_uri.replace("ui://cloud-finops/", "ui://cloud-finops/apps-sdk/")
 
 
 def _ui_tool_meta(resource_uri: str) -> dict[str, Any]:
@@ -81,7 +110,7 @@ def _ui_tool_meta(resource_uri: str) -> dict[str, Any]:
     return {
         "ui": {"resourceUri": resource_uri},
         "ui/resourceUri": resource_uri,
-        "openai/outputTemplate": resource_uri,
+        "openai/outputTemplate": _apps_sdk_uri(resource_uri),
     }
 
 _UI_DIR = Path(__file__).resolve().parent / "ui"
@@ -340,6 +369,44 @@ def reference_browser_ui() -> str:
     minimal-markdown reading panel fed by an app-initiated ``get_reference``
     call.
     """
+    return _REFERENCE_BROWSER_HTML
+
+
+# Apps-sdk variants of the three widgets (Skybridge parity - see the note
+# above _UI_CSP). Same HTML, different URI, mime and meta vocabulary; the
+# tool meta's openai/outputTemplate points here.
+
+
+@mcp.resource(
+    _apps_sdk_uri(PLAYBOOK_VIEWER_URI),
+    meta=_APPS_SDK_RESOURCE_META,
+    name="Playbook viewer (apps-sdk)",
+    mime_type="text/html+skybridge",
+)
+def playbook_viewer_ui_apps_sdk() -> str:
+    """Apps-sdk variant of the playbook viewer widget."""
+    return _PLAYBOOK_VIEWER_HTML
+
+
+@mcp.resource(
+    _apps_sdk_uri(PLAYBOOK_EXPLORER_URI),
+    meta=_APPS_SDK_RESOURCE_META,
+    name="Playbook explorer (apps-sdk)",
+    mime_type="text/html+skybridge",
+)
+def playbook_explorer_ui_apps_sdk() -> str:
+    """Apps-sdk variant of the playbook explorer widget."""
+    return _PLAYBOOK_EXPLORER_HTML
+
+
+@mcp.resource(
+    _apps_sdk_uri(REFERENCE_BROWSER_URI),
+    meta=_APPS_SDK_RESOURCE_META,
+    name="Reference browser (apps-sdk)",
+    mime_type="text/html+skybridge",
+)
+def reference_browser_ui_apps_sdk() -> str:
+    """Apps-sdk variant of the reference browser widget."""
     return _REFERENCE_BROWSER_HTML
 
 
