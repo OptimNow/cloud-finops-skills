@@ -377,6 +377,33 @@ A version-tagged release zip (`cloud-finops-vX.Y.Z.zip`) is attached to every
 [GitHub release](https://github.com/OptimNow/cloud-finops-skills/releases) for
 Claude Desktop / claude.ai users who prefer downloading over building locally.
 
+### Skill or MCP, or both?
+
+Same content, two delivery mechanisms - and they behave differently, because of
+how models use them. Field-tested conclusion (same battery of practitioner
+questions through both channels):
+
+- **The skill is pushed into context.** The guidance is already there when the
+  model reasons, so it grounds *advisory* answers - commitment sizing,
+  chargeback design, allocation methodology - without the model having to
+  decide anything. This is the primary channel on surfaces that support
+  skills (Claude Code, Claude Desktop, claude.ai, Kiro).
+- **The MCP server is retrieval on demand.** The model must decide to call a
+  tool, which it reliably does for lookup questions ("show me the idle waste
+  runbooks") and much less for advisory ones, where it tends to answer from
+  its own knowledge. Its strengths are distribution (paste one URL, nothing
+  to install - the right path for non-technical users and for hosts without
+  skill support), faceted queries over the library's metadata, and
+  interactive widgets on hosts that render MCP Apps.
+- **Recommended setup on Claude:** install the skill, and add the
+  [AI Pricing Hub](https://optimtoken.optimnow.io) connector next to it - the
+  skill carries the doctrine, the hub serves live prices when the skill
+  routes a pricing question to it. Add the cloud-finops connector too if you
+  want the widgets or work across hosts; skip it if the skill is already
+  loaded and you only need text answers.
+- **No skill support in your tool?** Use the MCP server alone - it is the
+  same library behind six read-only tools.
+
 ### MCP server (cross-tool, search-style retrieval)
 
 For agents that want tool-style retrieval rather than full-context injection, the skill
@@ -400,18 +427,18 @@ patterns.
 
 | Tool | What it answers |
 |---|---|
-| `list_references()` | What is in the library? Every reference with its FinOps Framework metadata |
-| `get_reference(name)` | Give me the full text of one |
-| `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | Which references serve Rate Optimization, at Walk maturity, written for Engineering? (`persona_primary_only` cuts to the primary audience - broad personas collaborate on nearly everything) |
+| `list_references()` | What guidance exists? The full catalogue with its FinOps Framework metadata |
+| `get_reference(name)` | The full guide on one topic - mechanics, decision rules, worked examples |
+| `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | "How should we size Savings Plans?" "What must be true before chargeback?" - routes a FinOps question to the guides that serve it (`persona_primary_only` cuts to the primary audience) |
 
 **Playbooks** - small named-pattern runbooks, one waste pattern each. Reach for these for
 "how do I detect and fix this specific thing".
 
 | Tool | What it answers |
 |---|---|
-| `list_playbooks()` | Which named patterns exist? |
-| `get_playbook(name)` | The runbook: symptoms, detection query, fix, anti-pattern |
-| `find_playbooks(scope?, service?, waste_category?, confidence?)` | Which AWS playbooks cover orphaned resources at obvious confidence? |
+| `list_playbooks()` | What cloud waste can we hunt with a ready-made runbook? |
+| `get_playbook(name)` | The step-by-step runbook: symptoms, detection queries, fix, anti-pattern |
+| `find_playbooks(scope?, service?, waste_category?, confidence?)` | "Which VMs run for nothing?" "Why is the NAT bill so high?" - finds the runbook for a specific waste suspicion |
 
 The faceted queries are the reason this is a server and not just a folder of markdown.
 Every file carries YAML frontmatter mapping it to a FinOps Framework Capability, phase,
