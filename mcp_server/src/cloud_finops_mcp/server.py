@@ -175,17 +175,19 @@ mcp = FastMCP(
 
 
 @mcp.tool(
-    title="List FinOps references",
+    title="Browse the FinOps knowledge library",
     annotations=_READ_ONLY,
     meta=_ui_tool_meta(REFERENCE_BROWSER_URI),
 )
 def list_references() -> dict[str, Any]:
-    """List every bundled FinOps reference with its FCP metadata.
+    """See what FinOps guidance is available: billing mechanics, commitment
+    strategy, allocation and chargeback, AI cost management, and per-provider
+    cost handbooks (AWS, Azure, GCP, OCI, Databricks, Snowflake, ...).
 
-    Use this to discover what the reference library covers before deciding
-    what to fetch. When the question already names a FinOps domain, phase,
-    persona or maturity, call ``find_references`` instead of scanning this
-    full list.
+    Use this to discover what the library covers before deciding what to
+    fetch. When the question already names a FinOps domain, phase, persona
+    or maturity, call ``find_references`` instead of scanning this full
+    list.
 
     Returns a dict shaped ``{"references": [...], "total": N}`` where each
     entry includes ``name``, ``description``, FCP fields (``fcp_domain``,
@@ -194,13 +196,16 @@ def list_references() -> dict[str, Any]:
     return _tools.list_references()
 
 
-@mcp.tool(title="Get a FinOps reference", annotations=_READ_ONLY)
+@mcp.tool(title="Read one FinOps guide", annotations=_READ_ONLY)
 def get_reference(name: str) -> dict[str, Any]:
-    """Fetch the full markdown content of one reference by name.
+    """Fetch the full guidance on one FinOps topic - the billing mechanics,
+    decision rules and worked examples behind a defensible answer.
 
-    Use this when you need the actual billing-mechanics content of one
-    known reference - after ``list_references`` or ``find_references`` told
-    you which one serves the question.
+    Use this when you need the actual content of one known reference -
+    after ``list_references`` or ``find_references`` told you which one
+    serves the question, and ALWAYS before answering an advisory question
+    (commitment sizing, chargeback design, allocation methodology) the
+    library covers.
 
     Args:
         name: Reference name as returned by ``list_references`` (e.g.
@@ -215,7 +220,7 @@ def get_reference(name: str) -> dict[str, Any]:
 
 
 @mcp.tool(
-    title="Find FinOps references by facet",
+    title="Find the right FinOps guide",
     annotations=_READ_ONLY,
     meta=_ui_tool_meta(REFERENCE_BROWSER_URI),
 )
@@ -227,10 +232,13 @@ def find_references(
     maturity: str | None = None,
     persona_primary_only: bool = False,
 ) -> dict[str, Any]:
-    """Filter references by FinOps Capability/Phase (FCP) frontmatter.
+    """Find which guidance serves a FinOps question - how to commit, size,
+    allocate, charge back, forecast, or govern cloud and AI spend.
 
-    Use this when the question maps to FinOps Framework facets - a domain,
-    capability, phase, persona, or maturity stage - and you want only the
+    Use this for questions like "how should we size Savings Plans",
+    "what should Finance own in chargeback", "what does a Crawl-stage org
+    tackle first" - anything that maps to FinOps Framework facets (domain,
+    capability, phase, persona, maturity) - and you want only the
     references that serve it, instead of scanning the full list.
 
     All filters are optional and combine with AND semantics. String matching
@@ -274,14 +282,16 @@ def find_references(
 
 
 @mcp.tool(
-    title="List waste playbooks",
+    title="Browse the cloud waste runbooks",
     annotations=_READ_ONLY,
     meta=_ui_tool_meta(PLAYBOOK_EXPLORER_URI),
 )
 def list_playbooks() -> dict[str, Any]:
-    """List every bundled named-pattern playbook.
+    """See every ready-made runbook for finding and fixing cloud waste:
+    idle, orphaned and overprovisioned resources, egress surprises,
+    schedule blindness and AI/ML inefficiency across AWS, Azure and GCP.
 
-    Use this to discover which named waste patterns exist. When the
+    Use this to discover which waste patterns have a runbook. When the
     question already names a provider, waste category, or confidence tier,
     call ``find_playbooks`` instead.
 
@@ -296,12 +306,14 @@ def list_playbooks() -> dict[str, Any]:
 
 
 @mcp.tool(
-    title="Get a waste playbook",
+    title="Read one waste runbook",
     annotations=_READ_ONLY,
     meta=_ui_tool_meta(PLAYBOOK_VIEWER_URI),
 )
 def get_playbook(name: str) -> dict[str, Any]:
-    """Fetch the full markdown content of one playbook by slug.
+    """Fetch the step-by-step runbook for one specific waste pattern:
+    symptoms, the detection queries to run, the fix, and the anti-pattern
+    to avoid.
 
     Use this when the user asks how to detect, confirm, or fix one specific
     named waste pattern (zombie NAT gateway, snapshot sprawl, idle SageMaker
@@ -417,7 +429,7 @@ def reference_browser_ui_apps_sdk() -> str:
 
 
 @mcp.tool(
-    title="Find waste playbooks by facet",
+    title="Find a waste runbook",
     annotations=_READ_ONLY,
     meta=_ui_tool_meta(PLAYBOOK_EXPLORER_URI),
 )
@@ -427,11 +439,14 @@ def find_playbooks(
     waste_category: str | None = None,
     confidence: str | None = None,
 ) -> dict[str, Any]:
-    """Filter playbooks by their pattern frontmatter.
+    """Answer "we are wasting money on X - how do I find and fix it?":
+    filter the runbooks by provider, service, waste category or detection
+    confidence.
 
-    Use this when the user asks for waste patterns of a given provider,
-    waste category, or detection confidence - e.g. "the idle-resource
-    playbooks", "obvious AWS waste", "cross-cloud patterns".
+    Use this for questions like "which VMs are running for nothing",
+    "why is our NAT bill so high", "what waste can we clean up safely
+    without review" - anything that names a provider, a waste category, or
+    how confident the detection needs to be before acting.
 
     All filters are optional and combine with AND semantics. String matching
     is case-insensitive and exact. Examples:

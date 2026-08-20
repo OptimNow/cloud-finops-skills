@@ -19,9 +19,9 @@ Six tools, all read-only, split across two surfaces.
 
 | Tool | Purpose |
 |---|---|
-| `list_references()` | List all references with their FCP metadata. |
-| `get_reference(name)` | Fetch the full markdown body of one reference. |
-| `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | Faceted query over the FinOps Capability/Phase frontmatter. |
+| `list_references()` | Browse the knowledge library: what guidance exists, with its FinOps Framework metadata. |
+| `get_reference(name)` | Read the full guide on one topic - mechanics, decision rules, worked examples. |
+| `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | Route a FinOps question (commitment sizing, chargeback design, ...) to the guides that serve it, by FinOps Framework facet. |
 
 The reference faceted query supports any combination of:
 
@@ -38,9 +38,9 @@ The reference faceted query supports any combination of:
 
 | Tool | Purpose |
 |---|---|
-| `list_playbooks()` | List all named-pattern playbooks with their metadata. |
-| `get_playbook(name)` | Fetch the full markdown body of one playbook. |
-| `find_playbooks(scope?, service?, waste_category?, confidence?)` | Faceted query over the playbook frontmatter. |
+| `list_playbooks()` | Browse the waste runbooks: which patterns of idle, orphaned, overprovisioned or leaking spend have a ready-made runbook. |
+| `get_playbook(name)` | Read one runbook: symptoms, detection queries, fix, anti-pattern. |
+| `find_playbooks(scope?, service?, waste_category?, confidence?)` | "We are wasting money on X - how do I find and fix it?" - filter runbooks by provider, service, waste category, confidence. |
 
 The playbook faceted query supports:
 
