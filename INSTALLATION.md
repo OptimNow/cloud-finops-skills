@@ -293,12 +293,15 @@ There are two ways to reach it.
 #### Hosted (nothing to install)
 
 ```bash
-claude mcp add --transport http cloud-finops https://cloud-finops-skills-590a051d.alpic.live/mcp
+claude mcp add --transport http cloud-finops https://cloud-finops-skills-590a051d.alpic.live/
 ```
 
 For Claude.ai / Claude Desktop, **Settings -> Connectors -> Add custom connector** and
-paste the same URL. Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry
-pointing at it.
+paste exactly `https://cloud-finops-skills-590a051d.alpic.live/` - trailing slash
+included. The widget sandbox domain (MCP Apps) is derived from the URL as entered, so
+a variant form (`/mcp`, no slash) connects fine but silently disables widget rendering.
+Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry pointing at the
+same URL.
 
 This is the same code as the package below, deployed on Alpic and tracking `main`. Prefer
 it unless you need the server to run offline or pinned to a version.

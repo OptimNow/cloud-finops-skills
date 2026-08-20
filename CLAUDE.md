@@ -386,8 +386,13 @@ maintainer's control and on an unpublished timeline.
 **Update (2026-08-19): the gate now has an observable mechanism.** Claude
 Desktop's `mcp-ext-apps-host` attempts to set up MCP Apps for custom
 connectors and validates a `ui.domain` on the widget resource:
-sha256(connector URL as entered in Settings, no trailing slash)[:32] +
-`.claudemcpcontent.com`. A wrong or missing value logs
+sha256(connector URL exactly as the host displays it in its error log -
+for a root-entered connector that is the ROOT url WITH its trailing
+slash)[:32] + `.claudemcpcontent.com`. (Corrected 2026-08-20: the
+original "no trailing slash" note here was wrong - hashing `/mcp` while
+the host saw `https://.../` reproduced the failure on this repo's own
+connector; Skybridge, which passes, hashes https://<host><pathname> per
+request.) A wrong or missing value logs
 `ui.domain validation failed for connector "<url>"` in the Desktop logs
 (observed live for ai-pricing-hub on 2026-08-19, including the fix-it
 one-liner the error prints). So the 2026-08-16 claim that a custom
