@@ -185,6 +185,9 @@ maintainer file.
   sub-patterns. Prioritised backlog, one playbook each unless noted:
   1. **Storage tiering** - absent across all three clouds (S3 lifecycle, Azure Blob access
      tiers, GCS storage classes). Common, high-value, mechanically easy to detect.
+     *Seeded 2026-08-20*: probe P11 produced a near-final four-rule spec (two-signal
+     pairs, tiers, read-only constraints, suppression traps) - see the maintainer
+     drafts folder; adapt to playbook format rather than writing from scratch.
   2. **Commitment-mismatch x3 providers** - see the entry above.
   3. **NAT-to-gateway-endpoint substitution (AWS)** - the high-traffic end of the NAT
      distribution, which the zombie-NAT playbook deliberately scopes out: a NAT moving
@@ -199,6 +202,14 @@ maintainer file.
   7. **Egress beyond AWS cross-AZ** - NAT-path egress, Azure/GCP equivalents, CDN bypass.
   8. **GCP depth** - BigQuery slot and storage waste, Cloud SQL idle, CUD mismatch (also
      covered by item 2).
+  9. **Kubernetes beyond one playbook** (added by the 2026-08-20 probe run) - only
+     gcp-idle-gke-autopilot exists. Missing: EKS/AKS equivalents, over-requested
+     CPU/memory vs actual usage, idle node pools, orphaned persistent volumes.
+
+  Product note from the same run: of the nine obvious-tier playbooks, one is Azure
+  and one is GCP. If WasteLine gates auto-remediation proposals on the obvious tier,
+  the non-AWS product is effectively two checks - weight new non-AWS playbooks
+  towards patterns that can honestly carry the obvious tier.
 
   Two composition notes from the same test, recorded as positioning decisions rather than
   defects until decided otherwise: (a) the library reads AI-workload-heavy (8 of 14 AWS
