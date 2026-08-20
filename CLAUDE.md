@@ -44,7 +44,9 @@ cloud-finops-skills/
 │                             publish-mcp, publish-registry, mcp-install-smoke,
 │                             release
 ├── assets/                <- Installation-guide screenshots (embedded in
-│                             INSTALLATION.md) + the GitHub social preview
+│                             INSTALLATION.md), the GitHub social preview, and
+│                             the generated playbook-coverage.svg heat map
+│                             (embedded in README.md; CI-gated)
 ├── docs/
 │   └── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
 │                             (split out of CLAUDE.md, Aug 2026)
@@ -713,8 +715,9 @@ Two standing rules that follow from the map:
       Symptoms / Detection / Fix / Anti-pattern / See also sections, OptimNow
       CC BY-SA footer), add it to that README's catalogue table (CI-gated by
       `scripts/check-docs-drift.sh`), regenerate `playbook-coverage.md`
-      (`./scripts/playbook-coverage.sh` - CI-gated, so the coverage change
-      shows in the PR diff), and update the named-
+      and the README heat map (`./scripts/playbook-coverage.sh` and
+      `python scripts/render-coverage-heatmap.py` - both CI-gated, so the
+      coverage change shows in the PR diff), and update the named-
       pattern parenthetical in the ChatGPT / grouped routing tables in
       install.sh. SKILL.md and POWER.md carry representative examples only
       (since the 2026-08 token-efficiency pass) and defer to

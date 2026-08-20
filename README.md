@@ -413,6 +413,13 @@ patterns.
 | `get_playbook(name)` | The runbook: symptoms, detection query, fix, anti-pattern |
 | `find_playbooks(scope?, service?, waste_category?, confidence?)` | Which AWS playbooks cover orphaned resources at obvious confidence? |
 
+![Waste-playbook coverage heat map](assets/playbook-coverage.svg)
+
+Coverage is published deliberately, gaps included: a dashed cell is a known hole,
+and the prioritised backlog behind it is public in [docs/ROADMAP.md](docs/ROADMAP.md).
+The map regenerates from the playbook frontmatter and CI fails if it drifts
+(details in [playbook-coverage.md](playbook-coverage.md)).
+
 The faceted queries are the reason this is a server and not just a folder of markdown.
 Every file carries YAML frontmatter mapping it to a FinOps Framework Capability, phase,
 persona and maturity gate, and a client that only fetches files cannot filter on any of

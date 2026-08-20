@@ -27,6 +27,9 @@ jobs:
       - name: Waste-playbook coverage matrix (--check)
         run: bash scripts/playbook-coverage.sh --check
 
+      - name: Coverage heat map SVG (--check)
+        run: python scripts/render-coverage-heatmap.py --check
+
       - name: llms.txt reference list in sync
         run: bash scripts/check-llms-txt.sh
 
