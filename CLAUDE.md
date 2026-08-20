@@ -432,9 +432,10 @@ pointing at it) alongside the spec variant (`text/html;profile=mcp-app`,
 `ui.resourceUri`); (b) computes `ui.domain` per request from the URL
 Claude actually calls (sha256 of host+path), instead of a static
 precomputed hash; (c) declares a `ui.csp` block ({resourceDomains,
-connectDomains}) in the resource-read `_meta`. The parity experiment is
-to mirror (a) and (c) in server.py and re-test on Desktop after an Alpic
-redeploy. Keep `ui.domain`; it passed validation and stays required.
+connectDomains}) in the resource-read `_meta`. (a) and (c) were mirrored
+in server.py the same day (PR #174), which moved the failure forward to a
+ui.domain mismatch on the ROOT connector URL, fixed by hashing the
+root-with-slash form (PR #175). Keep `ui.domain`; it stays required.
 
 ### A packaged artefact cannot own volatile data (2026-08-17)
 
