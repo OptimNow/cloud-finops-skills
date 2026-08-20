@@ -174,7 +174,39 @@ maintainer file.
   the MCP `find_playbooks` tool advertises it as a facet value, but no playbook carries it, so
   the query returns empty. Either write the playbooks (RI utilisation gap, expiring commitment
   without renewal decision, Savings Plan covering the wrong family) or accept the gap
-  knowingly. Surfaced by the 2026-08-02 repository review (F9).
+  knowingly. Surfaced by the 2026-08-02 repository review (F9); priority confirmed by the
+  2026-08-19 field test below - commitment waste is usually a larger, faster-moving number
+  than orphaned resources.
+
+- **Playbook backlog from the 2026-08-19 connector field test.** Four probe prompts run
+  through the hosted MCP produced a coverage read worth keeping. The ordering principle it
+  validated: **weight gaps by expected recoverable spend, not by category count** - a missing
+  storage-tiering playbook is worth more in a typical estate than several narrow GPU
+  sub-patterns. Prioritised backlog, one playbook each unless noted:
+  1. **Storage tiering** - absent across all three clouds (S3 lifecycle, Azure Blob access
+     tiers, GCS storage classes). Common, high-value, mechanically easy to detect.
+  2. **Commitment-mismatch x3 providers** - see the entry above.
+  3. **NAT-to-gateway-endpoint substitution (AWS)** - the high-traffic end of the NAT
+     distribution, which the zombie-NAT playbook deliberately scopes out: a NAT moving
+     mostly S3/DynamoDB data pays a per-GB processing fee a gateway endpoint eliminates
+     entirely. Larger recoverable than the idle end.
+  4. **Azure idle VM + orphaned NICs / public IPs + snapshot sprawl** - the Azure set is
+     four playbooks against fourteen for AWS; these three are the everyday-estate gaps.
+  5. **Schedule blindness beyond compute** - databases and non-production data platforms
+     (SQL pause/resume, Fabric capacity pause, warehouse auto-suspend).
+  6. **Modernization beyond GPU generations** - Graviton/ARM migration, gp2-to-gp3,
+     Azure v-series refresh.
+  7. **Egress beyond AWS cross-AZ** - NAT-path egress, Azure/GCP equivalents, CDN bypass.
+  8. **GCP depth** - BigQuery slot and storage waste, Cloud SQL idle, CUD mismatch (also
+     covered by item 2).
+
+  Two composition notes from the same test, recorded as positioning decisions rather than
+  defects until decided otherwise: (a) the library reads AI-workload-heavy (8 of 14 AWS
+  playbooks are GPU/SageMaker; ~43% of engineering-primary Optimize references are
+  AI-specific) - that is the OptimNow positioning, but new playbooks should rebalance
+  towards everyday-estate patterns; (b) users read the skill description's topic list as a
+  playbook promise (e.g. "Azure OpenAI PTUs" is covered by references, not by a playbook) -
+  a wording nuance to keep in mind when the description is next touched.
 
 - **Public Custom GPT for ChatGPT users.** The current ChatGPT install path is
   self-host: `./install.sh --tool chatgpt --grouped` produces 10 grouped knowledge
