@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import re
 import sys
+from xml.sax.saxutils import escape
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -99,7 +100,7 @@ def render(domains: list[tuple[str, list[tuple[str, str, int, int]]]]) -> str:
         y += DOMAIN_H
         parts.append(
             f'<text x="{PAD + 2}" y="{y - 10}" {font} font-size="11" '
-            f'font-weight="600" fill="{MUTED}">{domain}</text>'
+            f'font-weight="600" fill="{MUTED}">{escape(domain)}</text>'
         )
         for cap, state, n_primary, n_secondary in rows:
             cy = y + ROW_H / 2
@@ -128,11 +129,11 @@ def render(domains: list[tuple[str, list[tuple[str, str, int, int]]]]) -> str:
                 note = "deferred (ROADMAP)"
             parts.append(
                 f'<text x="{cx + CELL + 10}" y="{cy + 4:.0f}" {font} font-size="12" '
-                f'fill="{TEXT}">{cap}</text>'
+                f'fill="{TEXT}">{escape(cap)}</text>'
             )
             parts.append(
                 f'<text x="{WIDTH - PAD - 4}" y="{cy + 4:.0f}" {font} font-size="10.5" '
-                f'fill="{MUTED}" text-anchor="end">{note}</text>'
+                f'fill="{MUTED}" text-anchor="end">{escape(note)}</text>'
             )
             y += ROW_H
 

@@ -415,19 +415,26 @@ ai-pricing-hub was NOT fixed on 2026-08-19 - no such fix exists in that
 repo and its failures were still logging at 17:30 that day; it needs the
 same change as this one.
 
-**Update (2026-08-20): a correct `ui.domain` is confirmed insufficient.**
-With the derived value deployed and the connector re-added, a Desktop
-render test called `find_playbooks` through the connector (visible in the
-Desktop web log as `tool_approval_gate` entries, with the MCP Apps runtime
-activating right after), logged NO `ui.domain validation failed` error -
-and still produced no visible widget. So the full evidence chain now
-reads: spec-conformant HTML, valid `ui.domain`, tool executed, host
-runtime engaged, no render. The remaining gate is the Connectors
-Directory review, as the 2026-08-16 entry concluded. Keep `ui.domain` in
-place (it is one of the review prerequisites and removes one observable
-failure mode), do not spend further engineering effort chasing rendering
-in Claude hosts, and treat MCPJam as the validation host for widget work
-until the Directory submission is reviewed.
+**Update (2026-08-20): rendering for custom connectors IS possible - the
+gate is implementation shape, not the Directory.** Two facts landed the
+same day. First, a Desktop render test on this repo's connector called
+`find_playbooks` (visible as `tool_approval_gate` log entries, MCP Apps
+runtime activating right after), logged NO `ui.domain` error - and still
+showed no widget. Second, and decisive: the Skybridge-built companions
+(`ai-pricing-hub-mcp`, `ai-roi-calculator-mcp`) DO render their widgets
+in Claude as plain custom connectors (user-confirmed with a screenshot of
+`compare-models-side-by-side` rendering in the chat). So the 2026-08-16
+"Directory review is the gate" conclusion is wrong for widgets. What
+Skybridge does that this server does not, in likely order of relevance:
+(a) registers each widget TWICE - an apps-sdk variant (mime
+`text/html+skybridge`, `openai/*` meta, tool `openai/outputTemplate`
+pointing at it) alongside the spec variant (`text/html;profile=mcp-app`,
+`ui.resourceUri`); (b) computes `ui.domain` per request from the URL
+Claude actually calls (sha256 of host+path), instead of a static
+precomputed hash; (c) declares a `ui.csp` block ({resourceDomains,
+connectDomains}) in the resource-read `_meta`. The parity experiment is
+to mirror (a) and (c) in server.py and re-test on Desktop after an Alpic
+redeploy. Keep `ui.domain`; it passed validation and stays required.
 
 ### A packaged artefact cannot own volatile data (2026-08-17)
 
