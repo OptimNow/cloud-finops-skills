@@ -42,7 +42,7 @@ cloud-finops-skills/
 ├── .claude-plugin/        <- plugin.json + marketplace.json (versions bump together)
 ├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
 │                             publish-mcp, publish-registry, mcp-install-smoke,
-│                             release
+│                             release, dependabot-automerge
 ├── assets/                <- Installation-guide screenshots (embedded in
 │                             INSTALLATION.md), the GitHub social preview, and
 │                             the generated playbook-coverage.svg and
@@ -85,6 +85,7 @@ cloud-finops-skills/
 │       ├── finops-sam.md                   <- SaaS asset management
 │       ├── greenops-cloud-carbon.md        <- GreenOps + cloud carbon
 │       ├── finops-anomaly-management.md    <- Anomaly management (standalone Inform-phase)
+│       ├── finops-kpis-benchmarking.md     <- KPIs, benchmarking, executive reporting
 │       ├── finops-allocation-showback.md   <- Allocation methodology + showback
 │       ├── finops-chargeback.md            <- Chargeback + Finance/accounting prerequisites
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A
@@ -125,6 +126,9 @@ cloud-finops-skills/
     ├── config.yaml        <- Pipeline configuration
     ├── sources.yaml       <- ~30 content sources (RSS, pricing pages, blogs)
     ├── MONTHLY_WORKFLOW.md <- Operating doctrine for a batch (maintainer-local)
+    ├── coverage-probes.md <- Behavioural coverage probe battery + run log
+    │                         (maintainer-local; see docs/ROADMAP.md backlog)
+    ├── drafts/            <- Probe-seeded content drafts awaiting adaptation
     ├── pipeline-audit-2026-05.md / pipeline-harden-plan.md  <- Phase-1 forensics
     ├── scanner/           <- Fetcher + Sonnet-based classifier
     ├── proposer/          <- CHANGES.md report generator
@@ -787,7 +791,7 @@ Two standing rules that follow from the map:
       (`https://cloud-finops-skills-590a051d.alpic.live/mcp`) and confirm it serves
       the released content: the server's startup log names the bundle stamp
       (`data/content_version.txt`, version + sync date, written by
-      `sync_references.py` since 1.32), or compare a `list_references` line count
+      `mcp_server/scripts/sync_references.py` since 1.32), or compare a `list_references` line count
       against the tag. Do not tick this from the source alone - the audit found the
       staleness only by calling the surface.
 - [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new

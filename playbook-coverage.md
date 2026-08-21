@@ -11,31 +11,28 @@ spend, not by cell count.
 
 | waste_category | aws | azure | gcp | cross-cloud | total |
 |---|---|---|---|---|---|
-| orphaned | 2 | 1 | 1 | 1 | 5 |
+| orphaned | 4 | 1 | 1 | 1 | 7 |
 | idle | 4 | 1 | 1 | - | 6 |
-| overprovisioned | 6 | 2 | 1 | - | 9 |
-| commitment-mismatch | - | - | - | - | 0 |
+| overprovisioned | 7 | 2 | 1 | - | 10 |
+| commitment-mismatch | 1 | 1 | 1 | - | 3 |
 | schedule-blindness | - | - | - | 1 | 1 |
 | modernization | 1 | - | - | - | 1 |
 | ai-ml-inefficiency | - | - | - | 2 | 2 |
 | egress | 1 | - | - | - | 1 |
-| **total** | 14 | 4 | 3 | 4 | 25 |
+| **total** | 18 | 5 | 4 | 4 | 31 |
 
 ## Confidence distribution
 
 | confidence | playbooks |
 |---|---|
-| obvious | 9 |
-| likely | 13 |
-| possible | 3 |
+| obvious | 12 |
+| likely | 15 |
+| possible | 4 |
 
 ## Gaps (zero cells)
 
 - idle x cross-cloud
 - overprovisioned x cross-cloud
-- commitment-mismatch x aws
-- commitment-mismatch x azure
-- commitment-mismatch x gcp
 - commitment-mismatch x cross-cloud
 - schedule-blindness x aws
 - schedule-blindness x azure

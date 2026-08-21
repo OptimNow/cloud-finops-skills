@@ -24,9 +24,11 @@ from cloud_finops_mcp import metadata, server, tools
 # Advertised in the find_playbooks docstring but carried by no playbook today.
 # The taxonomy defines the category and the tool offers it as a filter, so a
 # caller can ask for it and get an empty result. Tracked as a coverage gap in
-# the CLAUDE.md Roadmap. If you add a playbook for one of these, delete it from
-# this set - the test will tell you to.
-KNOWN_EMPTY_FACET_VALUES = {"commitment-mismatch"}
+# docs/ROADMAP.md. If you add a playbook for one of these, delete it from
+# this set - the test will tell you to. Empty since PR #177 closed the last
+# one (commitment-mismatch, 2026-08-21); kept so the ratchet still guards
+# any future enum-without-content regression.
+KNOWN_EMPTY_FACET_VALUES: set[str] = set()
 
 
 FACET_ORDER = ("scope", "service", "waste_category", "confidence")
