@@ -185,6 +185,10 @@ The skill provides accurate, framework-aligned guidance across the following dom
 - **Anomaly management** - cost anomaly detection as a standalone Inform-phase
   capability across AWS / Azure / GCP native tooling, layered detection, masked-anomaly
   failure mode, integration with Security
+- **KPIs and benchmarking** - KPI portfolio by maturity stage, unit-economics
+  denominators, realised vs potential savings reporting, forecast variance,
+  internal-first benchmarking with external-benchmark caveats, executive reporting
+  and strategy alignment, per-capability maturity scorecard
 - **Allocation and showback** - FOCUS cost columns (EffectiveCost vs BilledCost), AWS
   legacy mapping, defensible allocation keys, shared-services hard cases,
   InvoiceId reconciliation, showback report design
@@ -352,6 +356,7 @@ cloud-finops-skills/
     │   ├── finops-itam.md                     ← ITAM collaboration (BYOL, marketplace, entitlements)
     │   ├── greenops-cloud-carbon.md            ← GreenOps and cloud carbon
     │   ├── finops-anomaly-management.md        ← Anomaly management (standalone Inform-phase capability)
+    │   ├── finops-kpis-benchmarking.md         ← KPIs, benchmarking, executive reporting
     │   ├── finops-allocation-showback.md       ← Cost allocation methodology + showback
     │   ├── finops-chargeback.md                ← Chargeback maturity ladder + Finance/accounting prerequisites
     │   ├── finops-onboarding-workloads.md      ← Migration-time cost hygiene + M&A integration

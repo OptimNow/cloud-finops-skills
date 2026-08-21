@@ -51,6 +51,7 @@ Hub at https://optimtoken.optimnow.io.
 - [finops-itam.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-itam.md): ITAM collaboration (BYOL, marketplace, vendor co-management)
 - [greenops-cloud-carbon.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/greenops-cloud-carbon.md): Cloud carbon measurement and GreenOps
 - [finops-anomaly-management.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-anomaly-management.md): Cost anomaly management as standalone capability
+- [finops-kpis-benchmarking.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-kpis-benchmarking.md): KPIs, unit economics, benchmarking, executive reporting
 - [finops-allocation-showback.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-allocation-showback.md): Cost allocation methodology and showback
 - [finops-chargeback.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-chargeback.md): Chargeback maturity, Finance/accounting prerequisites
 - [finops-onboarding-workloads.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-onboarding-workloads.md): Migration-time cost hygiene, M&A integration

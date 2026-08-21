@@ -85,6 +85,7 @@ cloud-finops-skills/
 │       ├── finops-sam.md                   <- SaaS asset management
 │       ├── greenops-cloud-carbon.md        <- GreenOps + cloud carbon
 │       ├── finops-anomaly-management.md    <- Anomaly management (standalone Inform-phase)
+│       ├── finops-kpis-benchmarking.md     <- KPIs, benchmarking, executive reporting
 │       ├── finops-allocation-showback.md   <- Allocation methodology + showback
 │       ├── finops-chargeback.md            <- Chargeback + Finance/accounting prerequisites
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A

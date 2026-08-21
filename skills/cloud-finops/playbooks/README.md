@@ -22,6 +22,7 @@ set with its facets.
 | Playbook | Pattern | Waste category | Confidence |
 |---|---|---|---|
 | [aws-cross-az-egress](aws-cross-az-egress.md) | Cross-AZ Egress Chatterbox | egress | likely |
+| [aws-expiring-commitment-no-decision](aws-expiring-commitment-no-decision.md) | Expiring Commitment Without a Renewal Decision | commitment-mismatch | obvious |
 | [aws-gpu-for-cpu-bound-workload](aws-gpu-for-cpu-bound-workload.md) | GPU Instance for a CPU-Bound Workload | overprovisioned | likely |
 | [aws-gpu-instance-oversized](aws-gpu-instance-oversized.md) | Oversized GPU Instance | overprovisioned | likely |
 | [aws-idle-load-balancer](aws-idle-load-balancer.md) | Idle Load Balancer | idle | obvious |
@@ -32,6 +33,9 @@ set with its facets.
 | [aws-oversized-rds](aws-oversized-rds.md) | Oversized RDS Instance | overprovisioned | likely |
 | [aws-sagemaker-idle-endpoint](aws-sagemaker-idle-endpoint.md) | SageMaker Idle Endpoint | idle | obvious |
 | [aws-sagemaker-mme-consolidation](aws-sagemaker-mme-consolidation.md) | SageMaker Endpoint Sprawl (MME / inference components) | overprovisioned | likely |
+| [aws-s3-cold-data-in-standard](aws-s3-cold-data-in-standard.md) | S3 Cold Data Sitting in Standard | overprovisioned | possible |
+| [aws-s3-incomplete-multipart-uploads](aws-s3-incomplete-multipart-uploads.md) | S3 Incomplete Multipart Uploads Never Aborted | orphaned | obvious |
+| [aws-s3-noncurrent-version-sprawl](aws-s3-noncurrent-version-sprawl.md) | S3 Noncurrent Version Sprawl | orphaned | likely |
 | [aws-sagemaker-notebook-always-on](aws-sagemaker-notebook-always-on.md) | SageMaker Always-On Notebook Instance | idle | obvious |
 | [aws-snapshot-sprawl](aws-snapshot-sprawl.md) | Snapshot Sprawl | orphaned | likely |
 | [aws-zombie-nat-gateway](aws-zombie-nat-gateway.md) | Zombie NAT Gateway | idle | obvious |
@@ -44,12 +48,14 @@ set with its facets.
 | [azure-idle-sql-database](azure-idle-sql-database.md) | Idle SQL Database | idle | likely |
 | [azure-log-analytics-sprawl](azure-log-analytics-sprawl.md) | Log Analytics Ingestion Sprawl | overprovisioned | likely |
 | [azure-orphan-disks](azure-orphan-disks.md) | Orphan Managed Disks | orphaned | obvious |
+| [azure-unused-reservation](azure-unused-reservation.md) | Unused Azure Reservation | commitment-mismatch | obvious |
 
 ### GCP
 
 | Playbook | Pattern | Waste category | Confidence |
 |---|---|---|---|
 | [gcp-cloud-functions-cold-starts](gcp-cloud-functions-cold-starts.md) | Cloud Functions Cold Starts | overprovisioned | possible |
+| [gcp-cud-mismatch](gcp-cud-mismatch.md) | Resource-Based CUD Mismatch | commitment-mismatch | likely |
 | [gcp-idle-gke-autopilot](gcp-idle-gke-autopilot.md) | Idle GKE Autopilot Cluster | idle | likely |
 | [gcp-orphan-persistent-disks](gcp-orphan-persistent-disks.md) | Orphan Persistent Disks | orphaned | obvious |
 
@@ -62,9 +68,10 @@ set with its facets.
 | [cross-cloud-schedule-blindness](cross-cloud-schedule-blindness.md) | Schedule Blindness (non-production 24/7) | schedule-blindness | obvious |
 | [cross-cloud-untagged-spend-drift](cross-cloud-untagged-spend-drift.md) | Untagged Spend Drift | orphaned | likely |
 
-`commitment-mismatch` is a declared waste category with no playbook behind it
-yet, so a `find_playbooks(waste_category="commitment-mismatch")` query returns
-empty by design. The gap is tracked in `docs/ROADMAP.md`.
+The `commitment-mismatch` category is served by one playbook per provider
+(`aws-expiring-commitment-no-decision`, `azure-unused-reservation`,
+`gcp-cud-mismatch`); the deeper sizing and portfolio reasoning behind each
+stays in the commitments reference files, which those playbooks link.
 
 ## How playbooks differ from reference files
 

@@ -170,25 +170,27 @@ maintainer file.
   between them. Revisit only if that composition proves to be real friction for users -
   not because one endpoint feels tidier than two.
 
-- **Playbook coverage for `commitment-mismatch`.** The waste taxonomy defines the category and
-  the MCP `find_playbooks` tool advertises it as a facet value, but no playbook carries it, so
-  the query returns empty. Either write the playbooks (RI utilisation gap, expiring commitment
-  without renewal decision, Savings Plan covering the wrong family) or accept the gap
-  knowingly. Surfaced by the 2026-08-02 repository review (F9); priority confirmed by the
-  2026-08-19 field test below - commitment waste is usually a larger, faster-moving number
-  than orphaned resources.
+- **Playbook coverage for `commitment-mismatch` - CLOSED (2026-08-21).** One playbook
+  per provider shipped: `aws-expiring-commitment-no-decision` (obvious),
+  `azure-unused-reservation` (obvious), `gcp-cud-mismatch` (likely). The deeper
+  sizing/portfolio reasoning stays in the commitments references, which the playbooks
+  link. Originally surfaced by the 2026-08-02 repository review (F9); priority
+  confirmed by the 2026-08-19 field test and by probe P12 (cycle 3, 2026-08-20),
+  where the model asked for account data instead of handing over a runbook.
 
 - **Playbook backlog from the 2026-08-19 connector field test.** Four probe prompts run
   through the hosted MCP produced a coverage read worth keeping. The ordering principle it
   validated: **weight gaps by expected recoverable spend, not by category count** - a missing
   storage-tiering playbook is worth more in a typical estate than several narrow GPU
   sub-patterns. Prioritised backlog, one playbook each unless noted:
-  1. **Storage tiering** - absent across all three clouds (S3 lifecycle, Azure Blob access
-     tiers, GCS storage classes). Common, high-value, mechanically easy to detect.
-     *Seeded 2026-08-20*: probe P11 produced a near-final four-rule spec (two-signal
-     pairs, tiers, read-only constraints, suppression traps) - see the maintainer
-     drafts folder; adapt to playbook format rather than writing from scratch.
-  2. **Commitment-mismatch x3 providers** - see the entry above.
+  1. **Storage tiering** - *AWS side SHIPPED 2026-08-21* as three playbooks from the
+     P11 seed: `aws-s3-incomplete-multipart-uploads` (obvious),
+     `aws-s3-noncurrent-version-sprawl` (likely), `aws-s3-cold-data-in-standard`
+     (possible, carries the prerequisite-finding pattern - rule 3 of the seed - and
+     folds rule 4, expire-don't-transition, into its Fix/Anti-pattern). Azure Blob
+     access tiers and GCS storage classes remain open; port the same three-way split
+     rather than one catch-all playbook.
+  2. **Commitment-mismatch x3 providers** - CLOSED 2026-08-21, see the entry above.
   3. **NAT-to-gateway-endpoint substitution (AWS)** - the high-traffic end of the NAT
      distribution, which the zombie-NAT playbook deliberately scopes out: a NAT moving
      mostly S3/DynamoDB data pays a per-GB processing fee a gateway endpoint eliminates
@@ -272,9 +274,9 @@ than re-litigating priority. Tracking issue: `OptimNow/cloud-finops-skills#55`.
 | `finops-forecasting.md` | P2 | Non-AI forecasting demand emerges | `finops-ai-value-management.md` covers AI forecasting; non-AI demand has not surfaced in current engagements |
 | `finops-unit-economics.md` | P2 | Non-AI unit-economics demand emerges | Same reasoning as forecasting; AI-side covered by AI value management and finops-for-ai files |
 | `finops-education-enablement.md` | P2 | Demand emerges; consider folding into practice-operations | Smaller scope than the other P2 files; could double as a section in practice-operations |
-| `finops-benchmarking.md` | P3 | Client engagement specifically requires it | Clients rarely ask; external benchmarking has well-known data-quality issues. Could be a section in `finops-framework.md` |
+| `finops-benchmarking.md` | **Shipped 2026-08-21** | (closed) | Shipped as `finops-kpis-benchmarking.md` (primary capability: KPIs & Benchmarking), reopened by maintainer decision 2026-08-20. The data-quality caveats that justified the deferral became the file's benchmarking section |
 | `finops-cost-warehouse.md` | P3 | Engagement requires it (e.g. Snowflake-FinOps integration) | Heavy lift, specialist content (FOCUS conformed-dim modelling, dbt + semantic layer, CUR2 / Azure Cost Mgmt / BigQuery loading patterns, late-binding analytics) |
-| `finops-executive-strategy-alignment.md` | **Will not write** | (no trigger - deliberately not covering) | The 2026 FCP added "Executive Strategy Alignment" as a capability. The OptimNow doctrine ("connect cost to business value", the CFO test) already covers the practitioner-grade version of executive engagement; the FCP framing reads as a positioning concept rather than an operating discipline. If a client engagement specifically asks for the FCP-aligned executive-strategy artefact, it can be written then; the Roadmap-default position is not to ship it as a separate reference. |
+| `finops-executive-strategy-alignment.md` | **Covered as secondary (2026-08-21)** | Split into its own file only if the executive content in `finops-kpis-benchmarking.md` outgrows a section | Maintainer reopened the capability on 2026-08-20. It now lives as the "executive conversation" treatment inside `finops-kpis-benchmarking.md` (declared in `fcp_capabilities_secondary`, so the FCP matrix shows `[~]` rather than a gap). The original concern stands: a standalone executive-strategy file risks positioning prose, so the practitioner-grade version rides the KPI file where the numbers live. |
 
 **Note on Budgeting**: Budgeting is NOT a deferred capability. It is covered as a
 secondary in `finops-anomaly-management.md`, `finops-allocation-showback.md`,

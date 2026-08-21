@@ -411,7 +411,7 @@ install_cursor() {
 build_cursor_rule() {
   cat <<'EOF'
 ---
-description: Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic). Use for cost questions on AWS, Azure, GCP, Anthropic, Bedrock, Vertex AI, Azure OpenAI, Databricks, Microsoft Fabric, Snowflake, OCI, AI coding tools, self-hosted vs managed AI inference, agentic FinOps, GenAI capacity planning, AI value management, GreenOps, FinOps Framework, SaaS asset management, ITAM, anomaly management, allocation and showback, chargeback, onboarding workloads, Kubernetes FinOps, waste detection.
+description: Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic). Use for cost questions on AWS, Azure, GCP, Anthropic, Bedrock, Vertex AI, Azure OpenAI, Databricks, Microsoft Fabric, Snowflake, OCI, AI coding tools, self-hosted vs managed AI inference, agentic FinOps, GenAI capacity planning, AI value management, GreenOps, FinOps Framework, SaaS asset management, ITAM, anomaly management, allocation and showback, chargeback, onboarding workloads, Kubernetes FinOps, waste detection, KPIs and benchmarking.
 globs:
   - "**/*"
 alwaysApply: false
@@ -638,12 +638,13 @@ Use these knowledge files for the following query types:
 | ITAM, BYOL, marketplace governance | finops-itam.md |
 | GreenOps, cloud carbon, sustainability | greenops-cloud-carbon.md |
 | Cost anomaly management, masked anomalies, layered detection, threshold tuning | finops-anomaly-management.md |
+| FinOps KPIs, unit economics denominators, forecast variance, benchmarking caveats, executive reporting, maturity scorecard | finops-kpis-benchmarking.md |
 | Cost allocation methodology and showback, FOCUS EffectiveCost vs BilledCost, defensible allocation keys, shared-services hard cases | finops-allocation-showback.md |
 | Chargeback, soft-to-hard maturity, Finance and accounting prerequisites (ERP, transfer pricing, cross-border tax, SOX), chargeback-revolt anti-pattern | finops-chargeback.md |
 | Onboarding workloads, migration-time cost hygiene, intake gate, 60-90 day forecast-then-commit rule, double-bubble cost, M&A integration | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, FOCUS-emitting K8s allocation, container rightsizing, Karpenter, Spot diversification | finops-kubernetes.md |
 | Waste detection playbooks, eight-category waste taxonomy, two-signal classification, egress / data transfer waste, WasteLine appliance | finops-waste-detection-playbooks.md |
-| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste) | playbook-<slug>.md (e.g. playbook-aws-zombie-nat-gateway.md) |
+| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste, expiring commitment without a renewal decision, unused Azure reservation, GCP CUD mismatch, S3 incomplete multipart uploads, S3 noncurrent version sprawl, S3 cold data in Standard) | playbook-<slug>.md (e.g. playbook-aws-zombie-nat-gateway.md) |
 | What does model X / instance Y cost right now (a current price figure, not a billing mechanic) | No knowledge file - send the user to https://optimtoken.optimnow.io (OptimNow AI Pricing Hub). Never answer from a figure remembered from a knowledge file. |
 
 For multi-domain queries, retrieve all relevant files and synthesise. For named
@@ -657,7 +658,7 @@ build_grouped_instructions() {
   cat <<'EOF'
 # Cloud FinOps Expert Assistant
 
-You are an expert FinOps practitioner. Help users understand and optimise spend on cloud (AWS / Azure / GCP / OCI), AI platforms (Anthropic, Bedrock, Azure OpenAI / Foundry, Vertex AI), data platforms (Databricks, Microsoft Fabric, Snowflake), AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf, Gemini Code Assist), SaaS, and cross-cutting concerns (tagging, FinOps Framework, GreenOps, ITAM, anomaly management, allocation/showback, chargeback, onboarding, Kubernetes, waste detection).
+You are an expert FinOps practitioner. Help users understand and optimise spend on cloud (AWS / Azure / GCP / OCI), AI platforms (Anthropic, Bedrock, Azure OpenAI / Foundry, Vertex AI), data platforms (Databricks, Microsoft Fabric, Snowflake), AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf, Gemini Code Assist), SaaS, and cross-cutting concerns (tagging, FinOps Framework, GreenOps, ITAM, anomaly management, allocation/showback, chargeback, onboarding, Kubernetes, waste detection, KPIs and benchmarking).
 
 Your knowledge files are grouped thematically and refreshed twice monthly (the 1st and the 15th). Always retrieve the relevant grouped file before answering - do not rely on general training data for billing specifics.
 
@@ -674,8 +675,8 @@ Use these knowledge files for the following query types:
 | Databricks (DBCU, allocation, Photon), Microsoft Fabric (F-SKUs, CU smoothing), Snowflake (QUERY_ATTRIBUTION_HISTORY, Cortex) | data-platforms.md |
 | OCI (Cost Reports, FOCUS, cost-tracking tags, Universal Credits) | oci.md |
 | FinOps Framework 2026 (4 domains, 22 capabilities), tagging, SaaS management, ITAM, GreenOps, Kubernetes FinOps, waste detection playbooks | cross-cutting.md |
-| Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene + M&A) | finops-discipline.md |
-| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste) | playbooks.md |
+| Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene + M&A), KPIs and benchmarking, executive reporting | finops-discipline.md |
+| Named waste pattern (zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste, expiring commitment without a renewal decision, unused Azure reservation, GCP CUD mismatch, S3 incomplete multipart uploads, S3 noncurrent version sprawl, S3 cold data in Standard) | playbooks.md |
 | Reasoning methodology lens (diagnose before prescribing, connect cost to value, recommend progressively) | methodology.md |
 | What does model X / instance Y cost right now (a current price figure, not a billing mechanic) | No knowledge file - send the user to https://optimtoken.optimnow.io (OptimNow AI Pricing Hub). Never answer from a figure remembered from a knowledge file. |
 
@@ -760,7 +761,8 @@ build_gemini_grouped_knowledge() {
     "$refs/finops-kubernetes.md" "$refs/finops-waste-detection-playbooks.md"
   cat_required "$outdir/finops-discipline.md" \
     "$refs/finops-anomaly-management.md" "$refs/finops-allocation-showback.md" \
-    "$refs/finops-chargeback.md" "$refs/finops-onboarding-workloads.md"
+    "$refs/finops-chargeback.md" "$refs/finops-onboarding-workloads.md" \
+    "$refs/finops-kpis-benchmarking.md"
   cat_required "$outdir/methodology.md" \
     "$refs/optimnow-methodology.md"
 
