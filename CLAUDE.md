@@ -62,6 +62,8 @@ cloud-finops-skills/
 │       ├── finops-ai-value-management.md   <- AI Investment Council, stage gates
 │       ├── finops-genai-capacity.md        <- Provisioned vs shared capacity
 │       ├── finops-ai-self-hosted-vs-managed.md  <- Self-host vs managed inference
+│       ├── finops-open-weight-vendors.md    <- Open-weight vendor hosted APIs
+│       │                                     (DeepSeek, Qwen, Kimi, GLM)
 │       ├── finops-ai-dev-tools.md          <- Cursor / Claude Code / Copilot / Windsurf / Codex
 │       ├── finops-anthropic.md             <- Anthropic billing
 │       ├── finops-aws.md                   <- AWS FinOps core (billing data, rightsizing,
@@ -100,7 +102,7 @@ cloud-finops-skills/
 │                             faceted retrieval over references + playbooks;
 │                             stdio + streamable-HTTP transports; MCP Apps
 │                             resources: playbook-viewer, playbook-explorer,
-│                             reference-browser - shared JS in ui/_*.js is
+│                             reference-browser - shared JS/CSS in ui/_* is
 │                             inlined at import by server._load_ui)
 ├── scripts/               <- `fcp-coverage.sh` and `playbook-coverage.sh`
 │                             (parse frontmatter, emit the two coverage
@@ -116,7 +118,8 @@ cloud-finops-skills/
 ├── fcp-coverage.md        <- Generated FCP coverage matrix (22 caps; CI-gated)
 ├── playbook-coverage.md   <- Generated waste-playbook matrix (category x
 │                             scope, gaps listed; CI-gated)
-├── .gitattributes         <- Force LF on *.sh for Windows checkouts
+├── .gitattributes         <- Force LF on *.sh and fcp-coverage.md (Windows
+│                             checkouts with core.autocrlf=true)
 └── pipeline/              <- Content update pipeline (gitignored, private)
     ├── run_scan.py        <- Fortnightly scan entry point
     ├── run_apply.py.FROZEN <- Review and apply entry point, frozen since the
@@ -415,9 +418,10 @@ connector on claude.ai): tools executed, the host reserved the widget
 iframe, the frame stayed blank - the predicted failure. `ui.domain` was
 therefore applied on 2026-08-20: the three widget resources declare
 `meta={"ui": {"domain": ...}}` where the value is DERIVED in server.py
-from `CANONICAL_CONNECTOR_URL` (sha256 of the URL exactly as users enter
-it, no trailing slash, first 32 hex chars + `.claudemcpcontent.com`) and
-pinned by tests. When touching this, never hash an internal path instead
+from `CANONICAL_CONNECTOR_URL` (sha256 of the ROOT connector URL exactly as
+users enter it, **trailing slash included** - `CANONICAL_CONNECTOR_ORIGIN + "/"`
+in server.py - first 32 hex chars + `.claudemcpcontent.com`) and pinned by
+tests. When touching this, never hash an internal path instead
 of the public URL - that wrong-input variant is exactly what broke
 ai-pricing-hub-mcp. Correction to an earlier note in this entry:
 ai-pricing-hub was NOT fixed on 2026-08-19 - no such fix exists in that
@@ -462,8 +466,13 @@ in a file.
 and the shape of a break-even calculation are durable, and they are what a practitioner
 actually reasons with - so they stay. Absolute prices route to a live source (OptimToken),
 and where a worked example genuinely needs a number, it carries an inline as-of date.
-After the purge, `grep -E '\$[0-9.]+\s*(/|per )\s*(1M|MTok)'` over `references/` returns
-nothing.
+Immediately after the purge, `grep -E '\$[0-9.]+\s*(/|per )\s*(1M|MTok)'` over
+`references/` returned nothing. It is no longer empty and is not meant to be: the rule
+permits a dated, explicitly-illustrative figure where a worked example needs one, and
+`finops-open-weight-vendors.md` (August 2026) carries several, because the argument it
+makes - that an open-weight flagship can price at or above a Western mid-tier model - is
+not expressible as a ratio. Treat the grep as a review prompt, not a pass/fail gate:
+every hit it returns must carry an as-of date and be marked illustrative.
 
 Two things this bought beyond correctness: the answer now carries its own date and source,
 which is what makes it usable in a client deliverable; and the pipeline's rotating
@@ -533,7 +542,7 @@ discount mechanics.
 
 ## How to add a new reference file
 
-Follow these five steps whenever you add a new domain:
+Follow these six steps whenever you add a new domain:
 
 1. **Create the reference file** in `skills/cloud-finops/references/`
    - Name it `finops-{domain}.md` (or `{category}-{domain}.md` for non-FinOps topics like `greenops-cloud-carbon.md`)
@@ -556,7 +565,19 @@ Follow these five steps whenever you add a new domain:
    - Add the file to the "Directory structure" listing
    - Add usage examples if applicable
 
-5. **Do NOT bump versions in the content PR (release-train rule, 2026-08)**
+5. **Register the file in the three CI-gated places.** Skipping any of these
+   fails the `CI` workflow, so they are not optional tidying:
+   - `llms.txt` References section (gated by `scripts/check-llms-txt.sh`)
+   - The CLAUDE.md "Repository structure" tree above (gated by
+     `scripts/check-docs-drift.sh`)
+   - `install.sh` per-tool routing: the ChatGPT inline routing table and the
+     Gemini grouped-knowledge `cat_required` list
+
+   Then regenerate the FCP coverage matrix and its heat map, which change
+   whenever a new file's frontmatter lands: `./scripts/fcp-coverage.sh` and
+   `python scripts/render-fcp-heatmap.py` (both `--check` gated in CI).
+
+6. **Do NOT bump versions in the content PR (release-train rule, 2026-08)**
    - Content PRs never touch `.claude-plugin/plugin.json`,
      `.claude-plugin/marketplace.json` versions, or `mcp_server/pyproject.toml`.
      Every `plugin.json` bump that reaches main triggers one tag + GitHub
@@ -765,7 +786,7 @@ Two standing rules that follow from the map:
       phrasing. `llms.txt` is the one list to keep current.)
 - [ ] **Content PR: no version bump.** `.claude-plugin/plugin.json`,
       `.claude-plugin/marketplace.json` `metadata.version`, and
-      `mcp_server/pyproject.toml` are untouched (release-train rule - see step 5
+      `mcp_server/pyproject.toml` are untouched (release-train rule - see step 6
       of "How to add a new reference file"). A `plugin.json` bump reaching main
       publishes to PyPI, so bumps live only in dedicated release PRs.
 - [ ] **Release PR only: bump all four versions together** - `plugin.json`

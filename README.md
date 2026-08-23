@@ -147,6 +147,9 @@ The skill provides accurate, framework-aligned guidance across the following dom
   spillover mechanics, throughput units, cross-provider comparison
 - **Self-hosted vs managed AI inference** - decision framework for self-host vs managed LLM,
   hidden cost surface, ML-Ops maturity rubric, hybrid routing patterns (LiteLLM, Portkey)
+- **Open-weight vendor hosted APIs** - DeepSeek, Qwen, Kimi and GLM sold direct: the three
+  buying channels for one checkpoint, time-of-day pricing, cache and batch mechanics,
+  licensing as a cost input, data residency as the channel selector
 - **Anthropic billing** - Claude model pricing, Fast mode, long-context cliffs,
   prompt caching, Batch API, governance controls
 - **AWS Bedrock** - model pricing, provisioned throughput, batch inference, cost allocation
@@ -334,6 +337,7 @@ cloud-finops-skills/
     │   ├── finops-ai-value-management.md       ← AI investment governance
     │   ├── finops-genai-capacity.md            ← GenAI capacity models (cross-provider)
     │   ├── finops-ai-self-hosted-vs-managed.md ← Self-hosted vs managed AI inference decision
+    │   ├── finops-open-weight-vendors.md    ← Open-weight vendor hosted APIs (DeepSeek, Qwen, Kimi, GLM)
     │   ├── finops-anthropic.md                 ← Anthropic billing + governance
     │   ├── finops-aws.md                       ← AWS FinOps core
     │   ├── finops-aws-commitments.md           ← AWS SPs / RIs / Spot, liquidity, EDP

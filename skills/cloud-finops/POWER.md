@@ -35,6 +35,13 @@ keywords:
   - ptu
   - vertex ai
   - anthropic billing
+  - deepseek
+  - qwen
+  - kimi
+  - glm
+  - open-weight pricing
+  - chinese model apis
+  - time-based pricing
   - claude pricing
   - genai capacity
   - provisioned throughput
@@ -263,6 +270,7 @@ methodology questions - not for routine billing-mechanics queries.
 | AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations, AI business case, quantifying AI business value, cost displacement vs revenue uplift vs retention vs premium monetisation, realisation rate, ROI sensitivity analysis, payback, break-even volume | `references/finops-ai-value-management.md` |
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | Self-hosted vs managed AI inference, build vs buy LLM, vLLM, SGLang, llama.cpp, GPU rental, RunPod, CoreWeave, Lambda, hidden cost surface, ML-Ops maturity rubric, hybrid routing (LiteLLM, Portkey) | `references/finops-ai-self-hosted-vs-managed.md` |
+| Open-weight model vendors on their own hosted APIs, DeepSeek, Qwen, Kimi, Moonshot, GLM, Z.ai, Chinese model APIs, open-weight pricing, time-based pricing, peak and off-peak token rates, vendor API vs third-party host channel choice, open-weight model licensing, GLM Coding Plan | `references/finops-open-weight-vendors.md` |
 | AWS billing data, CUR, Data Exports for FOCUS 1.2, Cost Explorer, EC2/compute rightsizing, SageMaker operational FinOps, cost allocation, governance, CloudFront flat-rate plans, S3 Files, multi-org billing | `references/finops-aws.md` |
 | AWS Savings Plans, Reserved Instances, Spot, commitment decision tree, commitment portfolio liquidity, phased purchasing, EDP negotiation, Convertible RI exchange | `references/finops-aws-commitments.md` |
 | AWS per-service inefficiency catalogue, enumerated AWS optimisation patterns | `references/finops-aws-patterns.md` |
