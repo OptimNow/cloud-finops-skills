@@ -29,6 +29,7 @@ Hub at https://optimtoken.optimnow.io.
 - [finops-ai-value-management.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-ai-value-management.md): AI investment governance, stage gates
 - [finops-genai-capacity.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-genai-capacity.md): Provisioned vs shared capacity, cross-provider
 - [finops-ai-self-hosted-vs-managed.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md): Self-hosted vs managed AI inference decisioning
+- [finops-open-weight-vendors.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-open-weight-vendors.md): Open-weight vendor hosted APIs (DeepSeek, Qwen, Kimi, GLM) - channels, rate mechanics, licensing
 - [finops-ai-dev-tools.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-ai-dev-tools.md): AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf)
 - [finops-anthropic.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-anthropic.md): Anthropic/Claude billing and governance
 - [finops-aws.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-aws.md): AWS FinOps (EC2, CUR, Savings Plans, cost allocation)

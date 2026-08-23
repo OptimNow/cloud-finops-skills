@@ -62,6 +62,8 @@ cloud-finops-skills/
 │       ├── finops-ai-value-management.md   <- AI Investment Council, stage gates
 │       ├── finops-genai-capacity.md        <- Provisioned vs shared capacity
 │       ├── finops-ai-self-hosted-vs-managed.md  <- Self-host vs managed inference
+│       ├── finops-open-weight-vendors.md    <- Open-weight vendor hosted APIs
+│       │                                     (DeepSeek, Qwen, Kimi, GLM)
 │       ├── finops-ai-dev-tools.md          <- Cursor / Claude Code / Copilot / Windsurf / Codex
 │       ├── finops-anthropic.md             <- Anthropic billing
 │       ├── finops-aws.md                   <- AWS FinOps core (billing data, rightsizing,

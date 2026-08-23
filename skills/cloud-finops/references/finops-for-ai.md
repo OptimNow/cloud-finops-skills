@@ -439,7 +439,9 @@ harness is worth building.
 Call a pricing tool if one is available, or check <https://optimtoken.optimnow.io>. The
 payoff from tiered routing depends directly on the current spread. For the Claude
 per-model rate structure, see `finops-anthropic.md` - and treat the figures there as
-illustrative, not as a quotable rate card.
+illustrative, not as a quotable rate card. For the open-weight vendors' own hosted
+APIs (DeepSeek, Qwen, Kimi, GLM) and their distinct discount mechanics, see
+`finops-open-weight-vendors.md`.
 
 Implement tiered routing: classify query complexity first (cheap), then route to the
 appropriate model. Simple queries to small models, complex queries to large models.

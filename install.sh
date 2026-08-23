@@ -627,6 +627,7 @@ Use these knowledge files for the following query types:
 | AI investment governance, Investment Council, stage gates, AI business case, value quantification methods, ROI sensitivity | finops-ai-value-management.md |
 | GenAI capacity planning, provisioned vs shared, spillover | finops-genai-capacity.md |
 | Self-hosted vs managed AI inference, build-vs-buy LLM, vLLM, GPU rental, hidden cost surface | finops-ai-self-hosted-vs-managed.md |
+| Open-weight vendor hosted APIs (DeepSeek, Qwen, Kimi, GLM), time-based pricing, open-weight licensing | finops-open-weight-vendors.md |
 | AI coding tools (Cursor, Copilot, Claude Code, Codex, Windsurf, Gemini Code Assist) | finops-ai-dev-tools.md |
 | Databricks (system.billing.usage, DBCU, allocation, Photon) | finops-databricks.md |
 | Microsoft Fabric (F-SKUs, CU smoothing, pause/resume, governance trap) | finops-fabric.md |
@@ -750,6 +751,7 @@ build_gemini_grouped_knowledge() {
     "$refs/finops-for-ai.md" "$refs/finops-anthropic.md" "$refs/finops-ai-dev-tools.md" \
     "$refs/finops-genai-capacity.md" "$refs/finops-ai-value-management.md" \
     "$refs/finops-ai-self-hosted-vs-managed.md" \
+    "$refs/finops-open-weight-vendors.md" \
     "$refs/finops-agentic.md"
   cat_required "$outdir/data-platforms.md" \
     "$refs/finops-databricks.md" "$refs/finops-fabric.md" "$refs/finops-snowflake.md"

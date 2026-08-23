@@ -298,6 +298,8 @@ sources of bad recommendations from generic consultants. The OptimNow approach i
 ## References (other files in this skill)
 
 - `finops-for-ai.md` for AI cost mechanics, allocation, ROI framework
+- `finops-open-weight-vendors.md` for the third channel: buying an open-weight model
+  from the lab that trained it (DeepSeek, Qwen, Kimi, GLM hosted APIs)
 - `finops-genai-capacity.md` for provisioned vs shared capacity and traffic shape
 - `finops-anthropic.md`, `finops-bedrock.md`, `finops-azure-openai.md`, `finops-vertexai.md`
   for managed API specifics
