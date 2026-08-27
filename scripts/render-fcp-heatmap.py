@@ -25,6 +25,18 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_FILE = REPO_ROOT / "fcp-coverage.md"
 OUT_FILE = REPO_ROOT / "assets" / "fcp-coverage.svg"
 
+# The FinOps Framework 2026 has 4 Domains and 22 Capabilities, and
+# fcp-coverage.sh renders a line for every one of them - so a parse that yields
+# any other number means the matrix format moved, not that the framework did.
+# Asserted because the row regex silently skips what it does not match: a
+# formatting change in fcp-coverage.md would have shrunk the SVG on both sides
+# of --check (fresh render and committed file agree, both wrong) and passed CI
+# green with capabilities missing from the README card. Update these two
+# constants only when the FinOps Foundation actually changes the framework, in
+# step with the CANONICAL table in scripts/fcp-coverage.sh.
+CANONICAL_DOMAINS = 4
+CANONICAL_CAPABILITIES = 22
+
 # Same palette as render-coverage-heatmap.py so the two READMEs cards read
 # as one family.
 PRIMARY_FILL = "#ace849"
@@ -69,6 +81,26 @@ def parse_matrix() -> list[tuple[str, list[tuple[str, str, int, int]]]]:
         current.append((cap, state, n_primary, n_secondary))
     if not domains:
         print(f"ERROR: no domains parsed from {SRC_FILE.name}", file=sys.stderr)
+        raise SystemExit(1)
+
+    n_domains = len(domains)
+    n_caps = sum(len(rows) for _, rows in domains)
+    if n_domains != CANONICAL_DOMAINS or n_caps != CANONICAL_CAPABILITIES:
+        print(
+            f"ERROR: parsed {n_domains} domains / {n_caps} capabilities from "
+            f"{SRC_FILE.name}, expected {CANONICAL_DOMAINS} / "
+            f"{CANONICAL_CAPABILITIES}.",
+            file=sys.stderr,
+        )
+        print(
+            "       Either fcp-coverage.md is truncated, or its row format "
+            "changed and this script's ROW_RE no longer matches every "
+            "capability line. Rows that do not match are skipped silently, so "
+            "fix the parse - do not lower the constant to make this pass.",
+            file=sys.stderr,
+        )
+        for domain, rows in domains:
+            print(f"       {len(rows):>2} - {domain}", file=sys.stderr)
         raise SystemExit(1)
     return domains
 
@@ -167,7 +199,12 @@ def main() -> int:
             return 1
         print(f"OK: {OUT_FILE.name} matches fcp-coverage.md.")
         return 0
-    OUT_FILE.write_text(fresh, encoding="utf-8")
+    # newline="\n" so the artefact is byte-identical wherever it is generated.
+    # Without it Python's text mode translates every \n to \r\n on Windows, and
+    # the committed SVG then differs from a CI (Linux) render by every line
+    # ending. The --check above reads with universal newlines and so never
+    # noticed.
+    OUT_FILE.write_text(fresh, encoding="utf-8", newline="\n")
     print(f"Wrote {OUT_FILE.relative_to(REPO_ROOT)}.")
     return 0
 

@@ -36,11 +36,36 @@ jobs:
       - name: llms.txt reference list in sync
         run: bash scripts/check-llms-txt.sh
 
+      # llms-full.txt inlines the whole library for one-fetch ingestion. It is
+      # generated, so it goes stale the moment any reference or playbook changes.
+      - name: llms-full.txt matches the content library (--check)
+        run: bash scripts/build-llms-full.sh --check
+
       - name: CLAUDE.md structure tree in sync
         run: bash scripts/check-docs-drift.sh
 
+      # The truncation tripwire. Two documented incidents (April and May 2026)
+      # shipped reference files that had lost their tail, and the missing
+      # footer was the only signal - which nothing checked. See the CLAUDE.md
+      # "Pipeline applier truncated 8 reference files" entry.
+      - name: Every reference and playbook keeps its footer
+        run: bash scripts/check-footers.sh
+
+      # SKILL.md and POWER.md are two entry points onto one body of content and
+      # have drifted before (a routing row added to one only).
+      - name: SKILL.md and POWER.md have not drifted
+        run: bash scripts/check-skill-power-parity.sh
+
       - name: Installer artefacts within the size ceiling
         run: bash scripts/check-artefact-size.sh
+
+      # Also gated by its own marketplace-version-check workflow, but that one
+      # is path-filtered: it fires only when plugin.json or marketplace.json
+      # changes. Pre-existing drift on main therefore never gets re-detected,
+      # and the release train reads marketplace.json. It runs in well under a
+      # second, so there is no reason not to run it on every PR too.
+      - name: Marketplace version matches plugin.json
+        run: bash scripts/check-marketplace-version.sh
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0

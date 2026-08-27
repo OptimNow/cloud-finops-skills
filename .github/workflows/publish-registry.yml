@@ -65,12 +65,38 @@ jobs:
           fi
           echo "${identifier} ${version} is present on PyPI"
 
-      # Asset names are GOOS_GOARCH, so `uname -m` (x86_64) has to be
-      # normalised to Go's `amd64`.
+      # Pinned to a release and checksum-verified rather than fetched from
+      # `releases/latest` and piped straight into tar. This job holds
+      # `id-token: write`, so whatever this downloads runs with the ability to
+      # mint an OIDC token for the `io.github.OptimNow/*` namespace.
+      #
+      # Verified 2026-08-27: the SHA256 below is the value published in
+      # https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/registry_1.8.1_checksums.txt
+      # and was confirmed by hashing the downloaded artefact independently.
+      # Bump the version and the checksum together. This step is duplicated in
+      # auto-tag-on-plugin-bump.yml (that workflow inlines its publish chain for
+      # OIDC reasons); move both or neither.
       - name: Install mcp-publisher
+        env:
+          MCP_PUBLISHER_VERSION: v1.8.1
+          MCP_PUBLISHER_SHA256: a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc
         run: |
           set -euo pipefail
-          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          # Asset names are GOOS_GOARCH, so `uname -m` (x86_64) is normalised to
+          # Go's `amd64`. The pinned checksum covers the linux/amd64 asset only,
+          # so an unexpected runner architecture must fail rather than quietly
+          # skip verification.
+          os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+          arch="$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')"
+          if [[ "${os}/${arch}" != "linux/amd64" ]]; then
+            echo "::error::runner is ${os}/${arch}; the pinned mcp-publisher checksum covers linux/amd64 only"
+            exit 1
+          fi
+          asset="mcp-publisher_${os}_${arch}.tar.gz"
+          curl -fsSL -o "$asset" \
+            "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/${asset}"
+          echo "${MCP_PUBLISHER_SHA256}  ${asset}" | sha256sum -c -
+          tar xzf "$asset" mcp-publisher
           ./mcp-publisher --version
 
       - name: Authenticate to the MCP Registry (GitHub OIDC)
