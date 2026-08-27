@@ -163,7 +163,7 @@ requiring more PTUs.
   (`spilloverDeploymentName` on the deployment, or the `x-ms-spillover-deployment`
   request header) and requires a matching standard deployment of the same
   model/version in the same resource
-- **Two waste types:** idle allocated capacity (PTUs assigned but underutilized) and
+- **Two waste types:** idle allocated capacity (PTUs assigned but underutilised) and
   unallocated capacity (PTUs reserved but not assigned to any deployment)
 
 ### PTU deployment guidance from Azure
@@ -186,10 +186,10 @@ for during the wait.
 ### PTU governance checklist
 
 - [ ] Deploy models first - validate capacity availability before purchasing reservation
-- [ ] Calculate break-even utilization for each model (provisioned ÷ standard per-token rate)
+- [ ] Calculate break-even utilisation for each model (provisioned ÷ standard per-token rate)
 - [ ] Load-test to validate effective throughput against your actual token mix
 - [ ] Monitor unallocated PTUs - set alerts when PTUs are reserved but undeployed
-- [ ] Monitor allocated PTU utilization - target >80%
+- [ ] Monitor allocated PTU utilisation - target >80%
 - [ ] Define spillover policy: what percentage of requests can route to PAYG within SLA?
 - [ ] Set spending alerts on PAYG spillover costs (variable component of a provisioned setup)
 - [ ] Apply existing Azure EA discounts - verify they apply to PTU reservations
@@ -297,7 +297,7 @@ actively; this waste is invisible unless you build a dedicated utilisation view.
 | Metric | Use |
 |---|---|
 | `TokenTransaction` | Input/output token volume by model and deployment |
-| `ProvisionedUtilizationRate` | PTU utilization (target >80%) |
+| `ProvisionedUtilizationRate` | PTU utilisation (target >80%) |
 | `AzureOpenAIRequests` | Request volume |
 | `SuccessfulRequests` | Baseline for error rate calculation |
 | `RateLimitErrors` | Signals capacity exhaustion in PAYG or PTU |
@@ -319,7 +319,7 @@ highest ROI for the effort.
 | **Model selection** | Choice of model type and version | Switching GPT-4o → GPT-4o mini for eligible tasks; o1 → o3 for reasoning workloads |
 | **Model interaction** | How applications engage the model | Prompt optimisation, context truncation, caching |
 
-### Model right-sizing and modernization
+### Model right-sizing and modernisation
 
 - Define a quality benchmark for your specific task before selecting a model
 - Test GPT-4o mini / GPT-4.1 mini before defaulting to GPT-4o or GPT-5
@@ -327,7 +327,7 @@ highest ROI for the effort.
 - Use the lowest-cost model that meets your quality threshold
 - **Model modernisation is an optimisation lever in its own right:** newer models within
   the same capability tier are often faster and cheaper than the models they replace.
-  Replacing o1 with o3 can deliver up to 80–90% cost reduction on reasoning workloads.
+  Replacing o1 with o3 can deliver up to 80-90% cost reduction on reasoning workloads.
   Treat model refresh as a recurring FinOps activity, not a one-time migration.
 - Scan deployments periodically for outdated models - paying a higher per-token rate
   for a superseded model generation is pure waste
@@ -346,7 +346,7 @@ rather than assuming reads-only billing. Effective for:
 ### Prompt optimisation
 
 - Audit system prompt length - verbose instructions inflate every API call
-- Truncate or summarize conversation history for multi-turn applications
+- Truncate or summarise conversation history for multi-turn applications
 - Avoid sending redundant context in RAG pipelines
 
 ### Context window management
@@ -398,7 +398,7 @@ To build use case economics:
    middleware
 3. Establish a cost-per-outcome baseline, then track it over time as models and
    architectures change
-4. Use this data to prioritize optimisation work: focus on the use cases where
+4. Use this data to prioritise optimisation work: focus on the use cases where
    cost-per-outcome is highest relative to the business value delivered
 
 Without this instrumentation layer, optimisation remains reactive and teams cannot
@@ -421,11 +421,11 @@ it affects how GenAI spend is credited against existing commitments.
 - [ ] Use resource groups or subscriptions for team/environment cost separation
 - [ ] Tag all OpenAI resources with owner, team, environment, and cost centre
 - [ ] Define deployment locality per workload based on compliance requirements - do not default to Regional unless required
-- [ ] Monitor PTU utilization and unallocated PTUs monthly
+- [ ] Monitor PTU utilisation and unallocated PTUs monthly
 - [ ] Track spillover volume and cost as a separate budget line
 - [ ] Move non-production workloads (dev/test/QA) to PAYG - remove from PTU allocations
 - [ ] Review fine-tuned model hosting charges - decommission idle fine-tuned deployments
-- [ ] Establish a model modernization cadence - review deployed model versions quarterly against current Azure OpenAI catalog
+- [ ] Establish a model modernisation cadence - review deployed model versions quarterly against current Azure OpenAI catalog
 - [ ] Verify whether OpenAI spend counts toward MACC commitments
 - [ ] Establish a model review cadence - Azure OpenAI model catalog updates frequently
 

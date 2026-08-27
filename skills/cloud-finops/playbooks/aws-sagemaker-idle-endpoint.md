@@ -17,6 +17,8 @@ it or not. A small `ml.m5.xlarge` endpoint costs ~$170/month; a single
 endpoint costs ~$18,400/month. Forgotten demo endpoints, A/B test variants
 that were never decommissioned, and "we might need it again" endpoints are
 among the highest-density waste patterns in any AWS account running ML.
+The monthly figures are illustrative us-east-1 list rates written between
+May and August 2026 - verify against live pricing before quoting.
 
 ## Symptoms
 

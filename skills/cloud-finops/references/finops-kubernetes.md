@@ -338,7 +338,9 @@ This meaningfully narrows the cost gap between EKS Auto Mode and
 Karpenter / self-managed node groups for GPU workloads (ML inference,
 fine-tuning, batch). Re-run the Auto Mode vs Karpenter cost comparison for
 GPU node pools against the reduced fees before defaulting to self-managed;
-see the EKS / GPU decision tree in `finops-aws.md`.
+the "GPU instance rightsizing" section of `finops-aws.md` carries the same
+fee-reduction note alongside the DCGM metric guidance and the five GPU
+rightsizing playbooks to run before resizing a node pool.
 
 ### Idle node cost
 

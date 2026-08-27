@@ -20,7 +20,9 @@ is ~$0.53/hour ~= $385/month; the equivalent CPU-bound `c7i.xlarge` is
 ~$0.18/hour ~= $130/month. For larger instances the gap widens: a
 `g5.4xlarge` is ~$1.62/hour vs `c7i.4xlarge` at ~$0.71/hour. Multiplied
 across an inference fleet, the wrong compute choice is the costliest
-silent waste in an AI stack.
+silent waste in an AI stack. The rates above are illustrative us-east-1
+on-demand list prices as at May 2026 - they anchor the size of the gap,
+not the current bill; verify against live pricing before quoting.
 
 ## Symptoms
 
@@ -101,7 +103,7 @@ the diagnosis is near-certain - confirm with one DCGM run, then move.
 - `playbooks/aws-gpu-instance-oversized.md` - when the workload needs a
   GPU but a smaller one
 - `playbooks/aws-multi-gpu-underutilized.md` - when 7 of 8 GPUs are idle
-- `references/finops-for-ai.md` - "GPU utilization is misleading" section
+- `references/finops-for-ai.md` - "GPU utilisation is misleading" section
   and DCGM metric reference
 - `references/finops-ai-self-hosted-vs-managed.md` - cost framing for
   self-hosted inference compute

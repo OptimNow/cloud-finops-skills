@@ -17,6 +17,9 @@ diagnostic settings on App Service, AKS audit logs, Azure Activity
 Logs, NSG flow logs. Within months, 80% of ingestion volume is from
 high-churn telemetry that nobody queries, and the bill is dominated by
 table types like `AzureDiagnostics`, `ContainerLog`, `AppPlatformLogs`.
+The per-GB figure is an illustrative list rate as at May 2026 and varies
+by region - verify against the Azure pricing page before sizing a
+business case.
 
 ## Symptoms
 

@@ -42,7 +42,7 @@ The default model. You pay per token consumed, drawing from a shared provider po
 ### Provisioned capacity (reserved)
 
 You purchase a fixed block of throughput for a defined term (monthly or annual). You pay
-for that capacity 24/7 regardless of actual utilization.
+for that capacity 24/7 regardless of actual utilisation.
 
 - Dedicated throughput - predictable latency
 - Workload isolation (training exclusion is not the differentiator - the hyperscalers
@@ -60,13 +60,13 @@ look like over 24 hours?**
 
 | Traffic pattern | Provisioned capacity fit | Rationale |
 |---|---|---|
-| Consistent, high-volume (24/7) | Strong fit - likely cost savings | High utilization of reserved capacity |
+| Consistent, high-volume (24/7) | Strong fit - likely cost savings | High utilisation of reserved capacity |
 | Business hours peaks, quiet nights | Weak fit - potential trap | Reserved capacity idles 16+ hours/day |
 | Bursty, unpredictable | Weak fit without spillover | Must reserve for peak; wastes money otherwise |
 | Latency-sensitive regardless of volume | Justified - performance, not savings | Pay premium for SLA and TTFT/OTPS guarantees |
 
 **Key principle:** provisioned capacity is like a Savings Plan or CUD - the break-even
-depends on your coverage target and actual utilization, not just the per-token rate.
+depends on your coverage target and actual utilisation, not just the per-token rate.
 
 ---
 
@@ -76,7 +76,7 @@ depends on your coverage target and actual utilization, not just the per-token r
 
 You have reserved capacity assigned to a model, but your workload does not use it.
 
-- Example: 100% reservation, 15% peak utilization → paying for 85% idle capacity
+- Example: 100% reservation, 15% peak utilisation → paying for 85% idle capacity
 - Amplified when running workloads with high output token ratios (output tokens are
   billed at 4-8x the input rate on current models)
 - Most common form of GenAI capacity waste
@@ -95,7 +95,7 @@ You have reserved a pool of capacity units (PTUs) but have not deployed models a
 ## Spillover
 
 Spillover automatically routes overflow traffic to shared (pay-as-you-go) capacity when
-provisioned capacity is fully utilized, instead of returning a throttle error (HTTP 429).
+provisioned capacity is fully utilised, instead of returning a throttle error (HTTP 429).
 
 **Example:** 1,000 TPM reserved. A spike sends 1,200 requests/min. The extra 200 route
 to shared capacity at pay-as-you-go rates.
@@ -137,13 +137,13 @@ For latency-sensitive applications, this performance gain alone may justify high
 ## Capacity unit pricing: do not assume provisioned is cheaper
 
 Provisioned capacity pricing is expressed in provider-specific units (PTUs, throughput
-units, scale tier units). To compare against standard rates, you must normalize to cost
-per million tokens at 100% utilization.
+units, scale tier units). To compare against standard rates, you must normalise to cost
+per million tokens at 100% utilisation.
 
-**The result may be higher than pay-as-you-go**, even at full utilization. In that case,
+**The result may be higher than pay-as-you-go**, even at full utilisation. In that case,
 provisioned capacity is a performance and SLA purchase, not a cost-saving one.
 
-| Model | Provisioned vs standard input, at 100% utilization |
+| Model | Provisioned vs standard input, at 100% utilisation |
 |---|---|
 | GPT-5 | +67% |
 | GPT-4.1 | +27% |
@@ -155,18 +155,18 @@ and on which price point (hourly vs 1-month vs 1-year reservation) is used. Trea
 the deltas as illustrative of the pattern, and rebuild the math from current
 $/PTU/hour rates for any client decision.
 
-**Implication:** always compute your break-even utilization rate before purchasing.
+**Implication:** always compute your break-even utilisation rate before purchasing.
 For some models, provisioned capacity never generates token-cost savings - it is purely
 a performance and SLA product.
 
-### Normalization checklist
+### Normalisation checklist
 
 - [ ] Identify the capacity unit type (PTU, throughput unit, scale tier unit)
 - [ ] Identify billing frequency (hourly, daily, monthly, annual)
 - [ ] Obtain vendor TPM estimate for the unit - treat as rough estimate only
 - [ ] Load-test your specific workload (realistic input/output token mix + caching)
-- [ ] Calculate effective cost per million tokens at your expected utilization rate
-- [ ] Compare against standard rate to determine break-even utilization
+- [ ] Calculate effective cost per million tokens at your expected utilisation rate
+- [ ] Compare against standard rate to determine break-even utilisation
 - [ ] Factor in enterprise/EA discounts on provisioned purchases
 
 ---
@@ -192,7 +192,7 @@ capacity alike - do not buy provisioned capacity to obtain it. What provisioned
 capacity does add is workload isolation and, in some regulated contexts, a cleaner
 compliance narrative.
 
-**Traffic affinitization strategy:** where isolation (not training exclusion) is the
+**Traffic affinitisation strategy:** where isolation (not training exclusion) is the
 requirement, route requests containing PII or confidential data to provisioned
 endpoints and non-sensitive traffic to shared capacity. This reduces the required
 reservation size (and cost) while keeping sensitive workloads on isolated capacity.
@@ -240,15 +240,15 @@ Observed result: paying for 2-3x the capacity actually needed (Pay-i-reported).
 
 - [ ] Calculate cost at standard (PAYG) rates at current and projected volume
 - [ ] Obtain provisioned capacity unit pricing from the provider
-- [ ] Normalize to cost per million tokens at 100%, 80%, and 50% utilization
-- [ ] Determine break-even utilization rate
-- [ ] Estimate realistic utilization based on traffic shape
+- [ ] Normalise to cost per million tokens at 100%, 80%, and 50% utilisation
+- [ ] Determine break-even utilisation rate
+- [ ] Estimate realistic utilisation based on traffic shape
 
 ### Step 3 - Choose capacity model
 
 | Condition | Recommendation |
 |---|---|
-| High utilization + break-even favorable | Provisioned - cost + performance |
+| High utilisation + break-even favourable | Provisioned - cost + performance |
 | Latency-sensitive regardless of economics | Provisioned - performance justifies premium |
 | Data privacy requirements | Provisioned - segmented by sensitivity |
 | Bursty traffic, no spillover available | PAYG or hybrid with manual failover |
@@ -266,7 +266,7 @@ Observed result: paying for 2-3x the capacity actually needed (Pay-i-reported).
 
 ## Governance checklist
 
-- [ ] Treat provisioned capacity utilization as a tracked metric (target >80%)
+- [ ] Treat provisioned capacity utilisation as a tracked metric (target >80%)
 - [ ] Alert on unallocated PTUs (Azure) - treat as idle reserved capacity
 - [ ] Load-test before purchasing - vendor TPM figures are rough estimates
 - [ ] Do not commit to a model you expect to replace within the reservation term (AWS/GCP)

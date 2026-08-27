@@ -2,7 +2,7 @@
 
 Named-pattern runbooks for the highest-frequency waste and cost-anomaly
 patterns across AWS, Azure, GCP, and cross-cloud concerns. Each playbook is
-a small (~2-6 KB), self-contained chunk optimised for **retrieval-augmented
+a small (~3-8 KB, average ~5 KB), self-contained chunk optimised for **retrieval-augmented
 generation** (RAG) - so ChatGPT, Gemini, or any LLM that fetches knowledge
 chunks pulls exactly the relevant pattern instead of loading the full
 provider reference file. AI/ML playbooks (SageMaker, GPU) sit at the upper

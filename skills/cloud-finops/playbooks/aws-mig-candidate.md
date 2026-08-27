@@ -19,6 +19,8 @@ is paying for a whole GPU when it could share the hardware via MIG. With
 `p4d.24xlarge` at ~$22/hour (8 x A100) and `p5.48xlarge` at ~$55/hour (8 x
 H100), running multiple light workloads on a MIG-partitioned single
 server can recover 4-7x of the GPU bill compared to one GPU per workload.
+The two hourly rates are illustrative us-east-1 on-demand list prices as
+at August 2026 - verify against live pricing before quoting.
 
 ## Symptoms
 

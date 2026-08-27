@@ -54,5 +54,3 @@ Marker legend:
 **Any-coverage** (primary OR secondary): 21 / 22 (95%) - includes 8 capabilities marked `[~]` that are touched by another reference's `fcp_capabilities_secondary` but have no primary owner yet.
 
 **True gaps** (no primary AND no secondary): 1. These are tracked in docs/ROADMAP.md with rationale and trigger-to-revisit.
-
-_Legacy summary line (do not rely on this for scripting): **Coverage: 13 / 22 Framework Capabilities (59%)**_

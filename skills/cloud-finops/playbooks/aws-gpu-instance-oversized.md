@@ -21,7 +21,9 @@ surfaced by the CloudWatch agent as `nvidia_smi_utilization_gpu`) reports
 whether the GPU did anything in the interval, not how much of its compute
 capacity was actually used (see
 [finops-for-ai.md](../references/finops-for-ai.md), section on GPU
-telemetry).
+telemetry). The rates above are illustrative us-east-1 on-demand list
+prices written between May and August 2026 - verify against live pricing
+before quoting.
 
 ## Symptoms
 
@@ -126,7 +128,7 @@ rightsize candidate.
 
 ## See also
 
-- `references/finops-for-ai.md` - "GPU utilization is misleading" section
+- `references/finops-for-ai.md` - "GPU utilisation is misleading" section
   on DCGM metrics
 - `playbooks/aws-multi-gpu-underutilized.md` - related pattern when only
   one of several GPUs is doing work

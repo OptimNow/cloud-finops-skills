@@ -420,11 +420,11 @@ Even when no user workloads are active, GKE Autopilot clusters continue running 
 **Excessive Cold Starts In Gcp Cloud Functions**
 Service: GCP Cloud Functions | Type: Inefficient Configuration
 
-Cloud Functions scale to zero when idle. When invoked after inactivity, they undergo a "cold start," initializing runtime, loading dependencies, and establishing any required network connections (e.g., VPC connectors).
+Cloud Functions scale to zero when idle. When invoked after inactivity, they undergo a "cold start," initialising runtime, loading dependencies, and establishing any required network connections (e.g., VPC connectors).
 
-- Reduce function size by minimizing dependencies and optimizing startup code
+- Reduce function size by minimising dependencies and optimising startup code
 - Use minimum instance settings to keep warm instances running during active periods
-- Avoid using VPC connectors unless absolutely necessary  - consider Private Google Access instead
+- Avoid using VPC connectors unless absolutely necessary - consider Private Google Access instead
 
 **Missing Scheduled Shutdown For Non Production Compute Engine Instances**
 Service: GCP Compute Engine | Type: Inefficient Configuration
@@ -456,7 +456,7 @@ In GKE environments, it is common for unused Kubernetes resources to accumulate 
 **Overprovisioned Memory In Cloud Run Services**
 Service: GCP Cloud Run | Type: Overprovisioned Resource
 
-Cloud Run allows users to allocate up to 8 GB of memory per container instance. If memory is overestimated  - often as a buffer or based on unvalidated assumptions  - customers pay for more than what the workload consumes during execution.
+Cloud Run allows users to allocate up to 8 GB of memory per container instance. If memory is overestimated - often as a buffer or based on unvalidated assumptions - customers pay for more than what the workload consumes during execution.
 
 - Reduce memory allocation to match observed memory usage with a buffer for spikes
 - Continuously monitor function-level memory metrics to right-size allocations over time
@@ -465,7 +465,7 @@ Cloud Run allows users to allocate up to 8 GB of memory per container instance. 
 **Overprovisioned Node Pool In Gke Cluster**
 Service: GCP GKE | Type: Overprovisioned Resource
 
-Node pools provisioned with large or specialized VMs (e.g., high-memory, GPU-enabled, or compute-optimized) can be significantly overprovisioned relative to the actual pod requirements. If workloads consistently leave a large portion of resources unused (e.g., low CPU/memory request-to-capacity ratio), the organization incurs unnecessary compute spend.
+Node pools provisioned with large or specialised VMs (e.g., high-memory, GPU-enabled, or compute-optimized) can be significantly overprovisioned relative to the actual pod requirements. If workloads consistently leave a large portion of resources unused (e.g., low CPU/memory request-to-capacity ratio), the organisation incurs unnecessary compute spend.
 
 - Resize nodes to align with observed workload requirements
 - Enable or tune cluster autoscaler to manage node pool size dynamically
@@ -476,7 +476,7 @@ Service: GCP Compute Engine | Type: Overprovisioned Resource
 
 GCP VM instances are often provisioned with more CPU or memory than needed, especially when using custom machine types or legacy templates. If an instance consistently consumes only a small portion of its allocated resources, it likely represents an opportunity to reduce costs through rightsizing.
 
-- Analyze average CPU and memory utilization of running Compute Engine instance
+- Analyse average CPU and memory utilisation of running Compute Engine instance
 - Determine whether actual usage justifies the current machine type or custom configuration
 - Review whether the workload could be met using a smaller predefined or custom machine type
 
@@ -492,7 +492,7 @@ In Cloud Run, each revision is deployed with a fixed memory allocation (e.g., 51
 **Underutilized Vm Commitments Due To Architectural Drift**
 Service: GCP Compute Engine | Type: Underutilized Commitment
 
-VM-based Committed Use Discounts in GCP offer cost savings for predictable workloads, but they are rigid: they apply only to specified VM types, quantities, and regions. When organizations evolve their architecture  - such as moving to GKE (Kubernetes), Cloud Run, or autoscaling  - usage patterns often shift away from the original commitments.
+VM-based Committed Use Discounts in GCP offer cost savings for predictable workloads, but they are rigid: they apply only to specified VM types, quantities, and regions. When organisations evolve their architecture - such as moving to GKE (Kubernetes), Cloud Run, or autoscaling - usage patterns often shift away from the original commitments.
 
 - Consolidate workloads onto committed VM types where feasible
 - Avoid renewing commitments for workloads that are scaling down or migrating
@@ -505,7 +505,7 @@ VM-based Committed Use Discounts in GCP offer cost savings for predictable workl
 **Missing Autoclass On Gcs Bucket**
 Service: GCP GCS | Type: Inefficient Configuration
 
-Buckets without Autoclass enabled can accumulate infrequently accessed data in more expensive storage classes, inflating monthly costs. Enabling Autoclass allows GCS to automatically move objects to lower-cost tiers based on observed access behavior, optimizing storage costs without manual lifecycle policy management.
+Buckets without Autoclass enabled can accumulate infrequently accessed data in more expensive storage classes, inflating monthly costs. Enabling Autoclass allows GCS to automatically move objects to lower-cost tiers based on observed access behaviour, optimising storage costs without manual lifecycle policy management.
 
 - Identify GCS buckets where Autoclass is not enabled
 - Review object access patterns to confirm a mix of frequently and infrequently accessed data
@@ -536,16 +536,16 @@ GCS buckets often persist after applications are retired or data is no longer in
 **Unnecessary Reset Of Long Term Storage Pricing In Bigquery**
 Service: GCP BigQuery | Type: Behavioral Inefficiency
 
-BigQuery incentivizes efficient data retention by cutting storage costs in half for tables or partitions that go 90 days without modification. However, many teams unintentionally forfeit this discount by performing broad or unnecessary updates to long-lived datasets  - for example, touching an entire table when only a few rows need to change.
+BigQuery incentivises efficient data retention by cutting storage costs in half for tables or partitions that go 90 days without modification. However, many teams unintentionally forfeit this discount by performing broad or unnecessary updates to long-lived datasets - for example, touching an entire table when only a few rows need to change.
 
-- Limit write operations to the exact data that requires change  - avoid broad table rewrites
-- Partition large datasets so updates are scoped to specific partitions, minimizing disruption to cold data
+- Limit write operations to the exact data that requires change - avoid broad table rewrites
+- Partition large datasets so updates are scoped to specific partitions, minimising disruption to cold data
 - For static reference tables, use append-only patterns or restructure workflows to avoid unnecessary modification
 
 **Idle Cloud Memorystore Redis Instance**
 Service: GCP Cloud Memorystore | Type: Inactive Resource
 
-Cloud Memorystore instances that remain idle -i.e., not receiving read or write requests -continue to incur full costs based on provisioned size. In test environments, migration scenarios, or deprecated application components, Redis instances are often left running unintentionally.
+Cloud Memorystore instances that remain idle - i.e., not receiving read or write requests - continue to incur full costs based on provisioned size. In test environments, migration scenarios, or deprecated application components, Redis instances are often left running unintentionally.
 
 - Decommission idle Redis instances no longer in use
 - Consider scaling down instance size if usage is expected to remain minimal
@@ -554,7 +554,7 @@ Cloud Memorystore instances that remain idle -i.e., not receiving read or write 
 **Inactive Memorystore Instance**
 Service: GCP Cloud Memorystore | Type: Inactive Resource
 
-Memorystore instances that are provisioned but unused  - whether due to deprecated services, orphaned environments, or development/testing phases ending  - continue to incur memory and infrastructure charges. Because usage-based metrics like client connections or cache hit ratios are not tied to billing, an idle instance costs the same as a heavily used one.
+Memorystore instances that are provisioned but unused - whether due to deprecated services, orphaned environments, or development/testing phases ending - continue to incur memory and infrastructure charges. Because usage-based metrics like client connections or cache hit ratios are not tied to billing, an idle instance costs the same as a heavily used one.
 
 - Decommission inactive or obsolete Memorystore instances
 - Consolidate fragmented caching layers across services or environments
@@ -612,16 +612,16 @@ This inefficiency is especially common in:
 **Inefficient Use Of Reservations In Bigquery**
 Service: GCP BigQuery | Type: Underutilized Commitment
 
-Teams often adopt flat-rate pricing (slot reservations) to stabilize costs or optimize for heavy, recurring workloads. However, if query volumes drop  - due to seasonal cycles, architectural shifts (e.g., workload migration), or inaccurate forecasting  - those reserved slots may sit underused.
+Teams often adopt flat-rate pricing (slot reservations) to stabilise costs or optimise for heavy, recurring workloads. However, if query volumes drop - due to seasonal cycles, architectural shifts (e.g., workload migration), or inaccurate forecasting - those reserved slots may sit underused.
 
 - Reduce reservation size if sustained usage is consistently lower than commitment
-- Consolidate slot reservations across projects to improve pool utilization
+- Consolidate slot reservations across projects to improve pool utilisation
 - Switch low-concurrency or unpredictable workloads back to on-demand or flex slots
 
 **Underutilized Cloud Sql Instance**
 Service: GCP Cloud SQL | Type: Underutilized Resource
 
-Cloud SQL instances are often over-provisioned or left running despite low utilization. Since billing is based on allocated vCPUs, memory, and storage  - not usage  - any misalignment between actual workload needs and provisioned capacity leads to unnecessary spend.
+Cloud SQL instances are often over-provisioned or left running despite low utilisation. Since billing is based on allocated vCPUs, memory, and storage - not usage - any misalignment between actual workload needs and provisioned capacity leads to unnecessary spend.
 
 - Right-size vCPU and memory allocations based on actual performance needs
 - Schedule automatic shutdown for non-production instances during off-hours
@@ -656,7 +656,7 @@ Each Cloud NAT gateway provisioned in GCP incurs hourly charges for each externa
 **Excessive Retention Of Logs In Cloud Logging**
 Service: GCP Cloud Logging | Type: Excessive Retention of Non-Critical Data
 
-By default, Cloud Logging retains logs for 30 days. However, many organizations increase retention to 90 days, 365 days, or longer  - even for non-critical logs such as debug-level messages, transient system logs, or audit logs in dev environments.
+By default, Cloud Logging retains logs for 30 days. However, many organisations increase retention to 90 days, 365 days, or longer - even for non-critical logs such as debug-level messages, transient system logs, or audit logs in dev environments.
 
 - Set log-specific retention policies aligned with usage and compliance requirements
 - Reduce retention on verbose log types such as DEBUG, INFO, or system health logs
@@ -665,7 +665,7 @@ By default, Cloud Logging retains logs for 30 days. However, many organizations 
 **Overprovisioned Throughput In Pub Sub Lite**
 Service: GCP Pub/Sub Lite | Type: Overprovisioned Resource Allocation
 
-Pub/Sub Lite is a cost-effective alternative to standard Pub/Sub, but it requires explicitly provisioning throughput capacity. When publish or subscribe throughput is overestimated, customers continue to pay for unused capacity  - similar to idle virtual machines or overprovisioned IOPS.
+Pub/Sub Lite is a cost-effective alternative to standard Pub/Sub, but it requires explicitly provisioning throughput capacity. When publish or subscribe throughput is overestimated, customers continue to pay for unused capacity - similar to idle virtual machines or overprovisioned IOPS.
 
 - Reduce provisioned throughput to better match actual traffic levels
 - Consider right-sizing both publish and subscribe throughput independently

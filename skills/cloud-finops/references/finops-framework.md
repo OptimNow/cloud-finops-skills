@@ -11,7 +11,7 @@ fcp_maturity_entry: "Crawl"
 
 # FinOps Framework Reference
 
-> Source: FinOps Foundation (finops.org/framework), 2024 version.
+> Source: FinOps Foundation (finops.org/framework), 2024 version with the 2026 refresh applied.
 > This file covers the complete FinOps Framework: principles, phases, maturity model,
 > domains, capabilities, and personas.
 

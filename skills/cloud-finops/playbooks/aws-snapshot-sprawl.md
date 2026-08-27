@@ -15,7 +15,9 @@ snapshots; Archive tier is cheaper at the cost of slower restore). Over
 years of un-curated CI / CD pipelines, broken backup automation, and
 forgotten one-off "before-the-upgrade" snapshots, accounts accumulate tens
 of TB of snapshot storage with no owner and no recovery test in living
-memory. Cost grows linearly forever; nothing prunes it.
+memory. Cost grows linearly forever; nothing prunes it. The per-GB rate
+above is an illustrative us-east-1 list rate as at May 2026 - verify
+against live pricing before sizing a business case.
 
 ## Symptoms
 
@@ -80,8 +82,10 @@ aws ec2 describe-snapshots --owner-ids self \
 
 ## See also
 
-- `references/finops-aws.md` - EBS / RDS billing mechanics, snapshot
-  pricing tiers
+- `references/finops-aws-patterns.md` - Storage Optimization Patterns,
+  including EBS Snapshot Archive tiering and the unaccessed-snapshot pattern
+- `references/finops-aws.md` - RDS backup and snapshot retention discipline
+  in the database cost optimisation section
 - `references/finops-waste-detection-playbooks.md` - "orphaned" category
   rubric
 

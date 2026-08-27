@@ -127,7 +127,7 @@ Typical sources:
 |---|---|---|
 | Unattached EBS volumes (or equivalents) | `Attachment State = available`, `LastAttached > 14 days` | Inventory across regions; cross-reference with snapshot history |
 | Orphaned EBS snapshots | Source volume ID does not exist; AMI reference does not exist | Snapshot age + parent-volume status query |
-| Unassociated Elastic IPs | EIP allocated, no association to running resource | Direct inventory; ~$3.60/month each (all public IPv4 has been charged since February 2024, attached or not - see Category 8) |
+| Unassociated Elastic IPs | EIP allocated, no association to running resource | Direct inventory; ~$3.60/month each (illustrative us-east-1 list rate as at August 2026; all public IPv4 has been charged since February 2024, attached or not - see Category 8) |
 | Empty S3 buckets without lifecycle | Object count = 0, no lifecycle policy, age > 90 days | List buckets, filter by metadata - never enumerate objects |
 | Security groups with no attached interfaces | No ENI references, no ALB/NLB reference, no Lambda VPC config reference | Reverse-lookup query |
 | AMIs with no running instances | AMI ID not referenced by any instance, launch template, or ASG | Cross-reference inventory |
@@ -199,7 +199,7 @@ during the observation window.
 | Stopped EC2 for 7+ days | EC2 state `stopped`, EBS still billed | EC2 inventory + EBS attachment query |
 | Idle load balancer | Zero healthy targets AND zero `RequestCount` over 14 days | CloudWatch metric query |
 | CloudWatch Log Groups with no events | `LastEventTime > 30 days`, no events ingested | Log Group metadata |
-| NAT Gateway low data | < 5 GB processed over 14 days, hourly charge dominates | CloudWatch `BytesOutToDestination` query |
+| NAT Gateway low data | < 5 GB/month processed, averaged over 60 days, hourly charge dominates | CloudWatch `BytesOutToDestination` query |
 | S3 bucket with zero requests | `AllRequests` metric = 0 over 60 days | CloudWatch S3 metrics |
 | Lambda with zero invocations | `Invocations` = 0 over 30 days | CloudWatch Lambda metrics |
 | DynamoDB table with no read/write | `ConsumedRead/WriteCapacity` = 0 over 30 days | CloudWatch DDB metrics |
@@ -208,19 +208,31 @@ during the observation window.
 ### Detection example (NAT Gateway zombies)
 
 ```sql
--- 14-day NAT Gateway hours vs data processed (Athena over CUR 2.0)
+-- NAT Gateway hours vs data processed, last two full months (Athena over
+-- CUR 2.0). The window is deliberately 60 days, not 14: some workloads run
+-- quarterly, and a short quiet window misclassifies them as zombies.
+-- The NatGateway-Bytes usage amount is already reported in GB (the pricing
+-- unit), despite the usage-type name - do not divide it down from bytes.
+-- Dividing by 2 turns the two-month total into a monthly average, so the
+-- < 5 GB/month threshold matches the symptom table above.
 SELECT
   line_item_resource_id AS nat_id,
   line_item_availability_zone AS az,
   SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Hours' THEN line_item_usage_amount END) AS hours,
-  SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END) / 1024.0 / 1024 / 1024 AS gb_processed,
+  COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 2 AS gb_per_month,
   ROUND(SUM(line_item_unblended_cost), 2) AS cost_period
 FROM cur2
-WHERE line_item_usage_start_date >= current_date - interval '14' day
+WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '2' month)
+  AND line_item_usage_start_date <  date_trunc('month', current_date)
   AND product_servicecode = 'AmazonEC2'
   AND line_item_usage_type LIKE '%NatGateway%'
 GROUP BY 1, 2
-HAVING gb_processed < 5
+-- Two things the HAVING clause has to get right. Athena (Presto / Trino)
+-- does not resolve SELECT aliases in HAVING, so the expression is repeated
+-- in full. And COALESCE matters: a NAT with literally zero traffic produces
+-- no NatGateway-Bytes line items at all, so the bare SUM returns NULL and
+-- NULL < 5 filters out exactly the clearest zombies.
+HAVING COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 2 < 5
 ORDER BY cost_period DESC;
 ```
 
@@ -332,7 +344,8 @@ ORDER BY estimated_monthly_savings DESC;
 Reserved Instances, Savings Plans, or Committed Use Discounts that are
 underutilised, expiring soon, locked to the wrong configuration, or
 missing where eligible spend would benefit. Provider-specific commitment
-mechanics live in `finops-aws.md`, `finops-azure.md`, `finops-gcp.md`.
+mechanics live in `finops-aws-commitments.md`,
+`finops-azure-commitments.md`, `finops-gcp.md`.
 
 ### Common patterns
 
@@ -377,8 +390,8 @@ ORDER BY wasted_dollars_per_month DESC;
 4. **Coverage gap analysis**: for stable spend not covered by an SP, build
    a tranche purchase recommendation - never a single large commitment.
 
-See `finops-aws.md`, `finops-azure.md`, `finops-gcp.md` for the
-provider-specific commitment portfolio strategies.
+See `finops-aws-commitments.md`, `finops-azure-commitments.md`,
+`finops-gcp.md` for the provider-specific commitment portfolio strategies.
 
 ### Anti-patterns
 
@@ -387,8 +400,8 @@ provider-specific commitment portfolio strategies.
   intentionally". Expiry calendar surfaced 90 days in advance.
 - **Recommending new commitments while existing commitments are
   underutilised**. Always modify or exchange first.
-- **100% coverage targets**. Always silent waste - see `finops-aws.md`
-  on portfolio liquidity.
+- **100% coverage targets**. Always silent waste - see
+  `finops-aws-commitments.md` on portfolio liquidity.
 
 ---
 
