@@ -3,7 +3,9 @@
 # dependency is how the mcp 2.0 breakage reached a published wheel.
 # hatch-build-scripts is a third-party 0.0.x plugin, so any release could
 # be breaking - pin to the 0.0.x line.
-requires = ["hatchling>=1.18,<2", "hatch-build-scripts>=0.0.4,<0.1"]
+# hatchling floor is 1.27: the first release that understands the PEP 639
+# `license = "<SPDX expression>"` form this project declares.
+requires = ["hatchling>=1.27,<2", "hatch-build-scripts>=0.0.4,<0.1"]
 build-backend = "hatchling.build"
 
 [project]
@@ -11,7 +13,10 @@ name = "cloud-finops-mcp"
 version = "1.33.0"
 description = "MCP server exposing the OptimNow Cloud FinOps skill (reference library + named-pattern playbooks) as queryable tools."
 readme = "README.md"
-license = { text = "CC-BY-SA-4.0" }
+# PEP 639 SPDX expression. The old `License :: OSI Approved` classifier was
+# wrong twice over: CC BY-SA 4.0 is not an OSI-approved licence, and bare
+# License classifiers are deprecated in favour of this field.
+license = "CC-BY-SA-4.0"
 authors = [
   { name = "OptimNow", email = "contact@optimnow.io" }
 ]
@@ -19,12 +24,25 @@ maintainers = [
   { name = "Jean Latière", email = "jean@optimnow.io" }
 ]
 requires-python = ">=3.10"
-keywords = ["finops", "cloud", "cost", "mcp", "claude", "aws", "azure", "gcp"]
+keywords = [
+  "finops",
+  "cloud",
+  "cost",
+  "cost-optimization",
+  "mcp",
+  "model-context-protocol",
+  "claude",
+  "aws",
+  "azure",
+  "gcp",
+  "kubernetes",
+  "llm",
+  "ai-cost",
+]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Intended Audience :: Information Technology",
-  "License :: OSI Approved",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
@@ -51,6 +69,7 @@ Homepage = "https://github.com/OptimNow/cloud-finops-skills"
 Repository = "https://github.com/OptimNow/cloud-finops-skills"
 Issues = "https://github.com/OptimNow/cloud-finops-skills/issues"
 Documentation = "https://github.com/OptimNow/cloud-finops-skills/tree/main/mcp_server"
+Changelog = "https://github.com/OptimNow/cloud-finops-skills/releases"
 
 [project.scripts]
 cloud-finops-mcp = "cloud_finops_mcp.__main__:main"

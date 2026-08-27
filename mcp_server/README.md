@@ -15,12 +15,15 @@ prompt, the agent calls tools to discover, filter, and fetch only what it needs.
 
 Six tools, all read-only, split across two surfaces.
 
-**References** - long-form provider and discipline files (~300-500 lines each):
+**References** - long-form provider and discipline files. They vary by more than
+tenfold, from ~160 lines (roughly 2K tokens) to ~1,800 lines (roughly 26K tokens), so
+budget context per file rather than assuming a uniform size. Every listing entry
+carries an `approx_tokens` hint for exactly that reason.
 
 | Tool | Purpose |
 |---|---|
-| `list_references()` | Browse the knowledge library: what guidance exists, with its FinOps Framework metadata. |
-| `get_reference(name)` | Read the full guide on one topic - mechanics, decision rules, worked examples. |
+| `list_references()` | Browse the knowledge library: what guidance exists, with its FinOps Framework facets and an `approx_tokens` size hint. |
+| `get_reference(name, section?)` | Read one guide - mechanics, decision rules, worked examples. Whole by default, or one H2/H3 section when the question is narrower than the file. |
 | `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | Route a FinOps question (commitment sizing, chargeback design, ...) to the guides that serve it, by FinOps Framework facet. |
 
 The reference faceted query supports any combination of:
@@ -34,11 +37,46 @@ The reference faceted query supports any combination of:
   so the default match barely narrows; the flag is the reading-list cut.
 - `maturity` - `Crawl`, `Walk`, `Run`
 
-**Playbooks** - small named-pattern runbooks (~80-130 lines each):
+The listing prints the primary facets only. Secondary capabilities and
+collaborating personas are still fully filterable through `find_references`;
+they are kept out of the payload because they do not help a caller *choose*
+while costing a sixth of a call that every session makes.
+
+### Section-level retrieval
+
+`get_reference` takes an optional `section`. It exists because the provider
+pattern catalogues (`finops-aws-patterns`, `finops-azure-patterns`) are
+enumerated lists past 25K tokens, and an agent asking about S3 lifecycle wants
+one heading out of them, not the file.
+
+```python
+get_reference("finops-aws-patterns")                        # ~26,600 tokens
+get_reference("finops-aws-patterns", section="storage")     # ~4,800 tokens
+get_reference("finops-aws-patterns", section="networking")  # ~2,600 tokens
+```
+
+- Matches **H2 and H3** headings, case-insensitively and partially, so a natural
+  phrase works. A heading's trailing count is ignored, so `"storage optimization
+  patterns"` finds `"Storage Optimization Patterns (28)"`. H3 is not an extra:
+  the two catalogues carry a single H2 each, so an H2-only splitter would leave
+  the largest files in the library un-sectionable.
+- An H2 span includes its H3 children; an H3 span stops at its sibling. Headings
+  inside fenced code blocks are not boundaries.
+- The returned `content` is prefixed with the reference's H1 so the chunk is
+  self-describing, and the payload carries `partial: true`, `section`,
+  `section_level` and `full_lines`.
+- **A section that matches nothing is a loud failure.** It returns
+  `available_sections` - every heading in the file - plus near-miss suggestions,
+  rather than silently handing back the whole body the caller was trying to
+  avoid. That error is ~140 tokens, so a wrong first guess costs almost nothing.
+- Omitting `section` is unchanged in every respect: `content` is the file
+  verbatim, frontmatter included.
+
+**Playbooks** - small named-pattern runbooks (~90-150 lines, ~3-8 KB each):
 
 | Tool | Purpose |
 |---|---|
-| `list_playbooks()` | Browse the waste runbooks: which patterns of idle, orphaned, overprovisioned or leaking spend have a ready-made runbook. |
+| `list_playbooks()` | Browse the waste runbooks: which patterns of idle, orphaned, overprovisioned or leaking spend have a ready-made runbook. Carries the same `approx_tokens` hint. |
 | `get_playbook(name)` | Read one runbook: symptoms, detection queries, fix, anti-pattern. |
 | `find_playbooks(scope?, service?, waste_category?, confidence?)` | "We are wasting money on X - how do I find and fix it?" - filter runbooks by provider, service, waste category, confidence. |
 
@@ -87,10 +125,15 @@ uvx cloud-finops-mcp
 The server is deployed at:
 
 ```
-https://cloud-finops-skills-590a051d.alpic.live/mcp
+https://cloud-finops-skills-590a051d.alpic.live/
 ```
 
-Add it via **Settings -> Connectors -> Add custom connector** and paste that URL.
+Add it via **Settings -> Connectors -> Add custom connector** and paste exactly that
+URL - trailing slash included, the widget sandbox domain is derived from it. A variant
+form (`/mcp`, or no trailing slash) connects fine but silently disables widget
+rendering, because the MCP Apps host validates the sandbox domain against the URL as
+entered.
+
 Do not wire a remote server through `claude_desktop_config.json`: Desktop silently
 drops `"type": "http"` entries from that file, and the `npx mcp-remote` bridge adds
 enough startup latency to blow Desktop's initialize timeout.
@@ -98,7 +141,7 @@ enough startup latency to blow Desktop's initialize timeout.
 Claude Code can use the same hosted URL without any install:
 
 ```bash
-claude mcp add --transport http cloud-finops https://cloud-finops-skills-590a051d.alpic.live/mcp
+claude mcp add --transport http cloud-finops https://cloud-finops-skills-590a051d.alpic.live/
 ```
 
 For the local clients below, install the package first, then point the client at the
@@ -106,7 +149,7 @@ For the local clients below, install the package first, then point the client at
 
 ### Claude Code
 
-Project-level (`.mcp.json` at the repo root) or user-level (`~/.claude/mcp.json`):
+Project-level, in `.mcp.json` at the repo root:
 
 ```json
 {
@@ -116,6 +159,13 @@ Project-level (`.mcp.json` at the repo root) or user-level (`~/.claude/mcp.json`
     }
   }
 }
+```
+
+For user scope there is no `~/.claude/mcp.json` - Claude Code does not read that
+path. Register the server once for every project with:
+
+```bash
+claude mcp add --scope user cloud-finops -- cloud-finops-mcp
 ```
 
 Restart Claude Code, then run `/mcp` to confirm the server is connected.
@@ -213,7 +263,13 @@ skill into the prompt.
 Agent prompt: *"Pull the AWS reference."*
 
 Calls `get_reference(name="finops-aws")` and gets back the full markdown body
-(~300 lines) instead of the entire knowledge base.
+(~1,000 lines, roughly 13K tokens) instead of the entire knowledge base. That is one
+of the larger references - see the size range noted above before fetching several.
+
+Agent prompt: *"What does the AWS pattern catalogue say about storage?"*
+
+Calls `get_reference(name="finops-aws-patterns", section="storage")` and gets back
+the storage chapter (~4,800 tokens) rather than the whole catalogue (~26,600).
 
 Agent prompt: *"Show me the obvious-confidence AWS waste playbooks."*
 
@@ -257,9 +313,11 @@ repo ships. Versions must be full three-part semver (`v1.27.0`); the workflow
 rejects anything else.
 
 Because a `plugin.json` bump publishes, content PRs never touch it. Version
-bumps live in dedicated release PRs that move `plugin.json`,
-`.claude-plugin/marketplace.json` `metadata.version`, and this package's
-`pyproject.toml` together. See the release-train rule in the repo's CLAUDE.md.
+bumps live in dedicated release PRs that move four files together: `plugin.json`,
+`.claude-plugin/marketplace.json` `metadata.version`, this package's
+`pyproject.toml`, and `server.json` - which carries the version twice, in the
+top-level `version` and in `packages[0].version`, both CI-gated since August 2026.
+See the release-train rule in the repo's CLAUDE.md.
 
 ## License
 

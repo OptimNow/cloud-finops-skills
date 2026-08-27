@@ -11,6 +11,7 @@ Walks the bundled ``data/`` directory at startup, parses frontmatter from each
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -23,18 +24,52 @@ DATA_DIR = Path(__file__).resolve().parent / "data"
 PLAYBOOKS_DIR = DATA_DIR / "playbooks"
 CONTENT_VERSION_FILE = DATA_DIR / "content_version.txt"
 
-# FCP fields we expose. Anything not listed here is ignored by the index.
-FCP_SCALAR_FIELDS = (
-    "fcp_domain",
-    "fcp_capability",
-    "fcp_maturity_entry",
-)
-FCP_LIST_FIELDS = (
-    "fcp_capabilities_secondary",
-    "fcp_phases",
-    "fcp_personas_primary",
-    "fcp_personas_collaborating",
-)
+# The FCP fields the index exposes are the ones named field-by-field in
+# ``Reference`` and ``_parse_reference`` below - there is no registry to edit.
+
+# Frontmatter is delimited by a ``---`` line at the very start of the file and
+# the next ``---`` line on its own. Anchoring both ends matters: a substring
+# match treats a leading markdown horizontal rule as an opening fence, and a
+# value containing ``---`` mid-line as a closing one. The negative lookahead
+# rejects the remaining horizontal-rule case - a rule is followed by a blank
+# line, real frontmatter opens straight onto its first key.
+_FRONTMATTER_RE = re.compile(r"\A---[ \t]*\n(?![ \t]*\n)(.*?)\n---[ \t]*(?:\n|\Z)", re.S)
+
+# Every listing entry is paid for once per discovery call, so the descriptions
+# are summarised rather than shipped whole: the full text runs to a mean of
+# ~350 characters over three sentences, and only the first one discriminates
+# between references. 200 characters is the measured point where every
+# reference's opening sentence still survives intact for the large majority of
+# the library - a harder cap starts cutting the clause that names the tools or
+# providers a file covers, which is precisely the clause an agent chooses on.
+SUMMARY_LIMIT = 200
+
+# Four characters per token is the rough-and-ready estimate the whole repo uses
+# for English markdown. It exists so an agent can tell a 3K-token reference from
+# a 26K-token one BEFORE fetching it, not to be accurate to the token.
+CHARS_PER_TOKEN = 4
+
+_SENTENCE_BREAK_RE = re.compile(r"(?<=[.!?])\s+")
+
+
+def approx_tokens(chars: int) -> int:
+    """Rough token count for a body of ``chars`` characters."""
+    return round(chars / CHARS_PER_TOKEN)
+
+
+def summarise(text: str, limit: int = SUMMARY_LIMIT) -> str:
+    """Shorten a description to its first sentence, hard-capped at ``limit``.
+
+    Whitespace is collapsed first so a description wrapped across source lines
+    does not carry its line breaks into the JSON payload.
+    """
+    text = " ".join(text.split())
+    if len(text) <= limit:
+        return text
+    first = _SENTENCE_BREAK_RE.split(text, maxsplit=1)[0]
+    if len(first) <= limit:
+        return first
+    return text[:limit].rsplit(" ", 1)[0].rstrip(" ,;:-") + "..."
 
 
 @dataclass
@@ -45,6 +80,7 @@ class Reference:
     path: Path
     description: str
     lines: int
+    chars: int = 0
     title: str = ""
     fcp_domain: str | None = None
     fcp_capability: str | None = None
@@ -55,19 +91,30 @@ class Reference:
     fcp_maturity_entry: str | None = None
 
     def to_dict(self) -> dict:
-        """Stable JSON-friendly shape returned by the MCP tools."""
+        """Stable JSON-friendly shape returned by the MCP tools.
+
+        This is a *listing* entry, not the whole record. Two facets are
+        deliberately withheld: ``fcp_capabilities_secondary`` and
+        ``fcp_personas_collaborating``. Both stay fully filterable through
+        ``find_references`` - they are dropped from the payload because they
+        do not help a caller *choose* (a broad persona collaborates on nearly
+        every file, which is why ``persona_primary_only`` exists) while
+        costing ~17% of a discovery call that every session makes.
+
+        ``approx_tokens`` replaces the old ``lines`` field: an agent budgets in
+        tokens, and the whole point of the hint is to let it tell a 3K-token
+        reference from a 26K-token one before paying for the body.
+        """
         return {
             "name": self.name,
             "title": self.title,
-            "description": self.description,
+            "description": summarise(self.description),
             "fcp_domain": self.fcp_domain,
             "fcp_capability": self.fcp_capability,
-            "fcp_capabilities_secondary": self.fcp_capabilities_secondary,
             "fcp_phases": self.fcp_phases,
             "fcp_personas_primary": self.fcp_personas_primary,
-            "fcp_personas_collaborating": self.fcp_personas_collaborating,
             "fcp_maturity_entry": self.fcp_maturity_entry,
-            "lines": self.lines,
+            "approx_tokens": approx_tokens(self.chars),
         }
 
 
@@ -78,14 +125,18 @@ def _split_frontmatter(text: str, source: str = "<unknown>") -> tuple[dict, str]
     is still retrievable by name - but it silently loses every facet, so it
     vanishes from ``find_references`` / ``find_playbooks`` results. Log it at
     WARNING so the failure is visible rather than mysterious.
+
+    Both delimiters are matched as whole lines. Substring matching got this
+    wrong two ways: a file opening with a markdown horizontal rule was read as
+    frontmatter running to the next ``---`` in the document, and a value
+    containing ``---`` mid-line truncated the block, dropping every facet
+    declared after it.
     """
-    if not text.startswith("---"):
-        return {}, text
-    parts = text.split("---", 2)
-    if len(parts) < 3:
+    match = _FRONTMATTER_RE.match(text)
+    if match is None:
         return {}, text
     try:
-        fm = yaml.safe_load(parts[1]) or {}
+        fm = yaml.safe_load(match.group(1)) or {}
     except yaml.YAMLError as exc:
         logger.warning(
             "Malformed YAML frontmatter in %s - facets unavailable, the file will "
@@ -101,7 +152,7 @@ def _split_frontmatter(text: str, source: str = "<unknown>") -> tuple[dict, str]
             type(fm).__name__,
         )
         fm = {}
-    body = parts[2].lstrip("\n")
+    body = text[match.end() :].lstrip("\n")
     return fm, body
 
 
@@ -165,6 +216,7 @@ def _parse_reference(path: Path) -> Reference:
         description=description,
         title=title,
         lines=lines,
+        chars=len(text),
         fcp_domain=fm.get("fcp_domain") if isinstance(fm.get("fcp_domain"), str) else None,
         fcp_capability=fm.get("fcp_capability") if isinstance(fm.get("fcp_capability"), str) else None,
         fcp_capabilities_secondary=_normalize_list(fm.get("fcp_capabilities_secondary")),
@@ -258,8 +310,15 @@ class Playbook:
     waste_category: str | None = None
     confidence: str | None = None
     lines: int = 0
+    chars: int = 0
 
     def to_dict(self) -> dict:
+        """Listing entry. Carries the same ``approx_tokens`` hint as a reference.
+
+        Playbooks are uniformly small, so the hint rarely changes a decision on
+        one of them - it earns its ~8% of the payload when an agent is deciding
+        how many to pull in a single answer.
+        """
         return {
             "name": self.name,
             "title": self.title,
@@ -267,16 +326,21 @@ class Playbook:
             "service": self.service,
             "waste_category": self.waste_category,
             "confidence": self.confidence,
-            "lines": self.lines,
+            "approx_tokens": approx_tokens(self.chars),
         }
 
 
 def _extract_title(body: str, fallback: str) -> str:
-    """Pull the first ``#`` heading as the human-readable title."""
+    """Pull the first ``#`` heading as the human-readable title.
+
+    Only the two-character ``"# "`` marker is removed. ``lstrip("# ")`` strips
+    every leading ``#`` and space, which silently ate the first word of a
+    heading like ``# #1 Top Pattern``.
+    """
     for line in body.splitlines():
         stripped = line.strip()
         if stripped.startswith("# "):
-            return stripped.lstrip("# ").strip()
+            return stripped[2:].strip()
     return fallback
 
 
@@ -301,6 +365,7 @@ def _parse_playbook(path: Path) -> Playbook:
         waste_category=_scalar("waste_category"),
         confidence=_scalar("confidence"),
         lines=lines,
+        chars=len(text),
     )
 
 
@@ -337,6 +402,155 @@ def get_playbook_by_name(name: str) -> Playbook | None:
         if pb.name == name:
             return pb
     return None
+
+
+# --- section splitting ------------------------------------------------------
+#
+# Section-level retrieval exists because the pattern catalogues are enumerated
+# lists: an agent asking about S3 lifecycle wants one of the seven headings in
+# finops-aws-patterns, not all 26K tokens of it.
+#
+# H3 is not optional here, it is the whole point. finops-aws-patterns carries
+# ONE H2 and seven H3s; finops-azure-patterns one H2 and five H3s. An
+# H2-only splitter would leave the two biggest files in the library
+# un-sectionable, which is exactly the case section retrieval was built for.
+
+# ATX headings only. Setext (underlined) headings do not appear in this
+# content set and matching them would need lookahead over the next line.
+_HEADING_RE = re.compile(r"^(#{1,6})[ \t]+(\S.*?)[ \t]*$")
+# Fenced code blocks contain shell comments (``## comment``) and markdown
+# examples. A heading found inside a fence is not a section boundary; missing
+# this splits a section in half at a line the reader never sees as a heading.
+_FENCE_RE = re.compile(r"^[ \t]{0,3}(`{3,}|~{3,})")
+
+_SECTION_LEVELS = (2, 3)
+
+# Headings often end in a count the author maintains by hand ("Compute
+# Optimization Patterns (42)"). An agent will not know the number, so it is
+# stripped before matching.
+_TRAILING_COUNT_RE = re.compile(r"\s*\(\s*\d+\s*\)\s*$")
+_WORD_RE = re.compile(r"[a-z0-9]+")
+
+
+@dataclass(frozen=True)
+class Section:
+    """One H2/H3 span of a reference body, as line offsets into that body."""
+
+    heading: str
+    level: int
+    start: int  # index of the heading line
+    end: int  # exclusive
+
+    @property
+    def label(self) -> str:
+        """``"### Storage Optimization Patterns (28)"`` - heading with its level.
+
+        The level marker is what tells a caller which headings nest inside
+        which, so an error listing them is navigable rather than flat.
+        """
+        return f"{'#' * self.level} {self.heading}"
+
+
+def _normalise_heading(text: str) -> str:
+    """Casefolded, punctuation-free token string used for tolerant matching."""
+    return " ".join(_WORD_RE.findall(_TRAILING_COUNT_RE.sub("", text).lower()))
+
+
+def _atx_headings(lines: list[str]) -> list[tuple[int, int, str]]:
+    """``(line index, level, text)`` for every ATX heading outside a code fence."""
+    found: list[tuple[int, int, str]] = []
+    fence: str | None = None
+    for i, line in enumerate(lines):
+        fence_match = _FENCE_RE.match(line)
+        if fence_match:
+            marker = fence_match.group(1)[0]
+            fence = marker if fence is None else (None if fence == marker else fence)
+            continue
+        if fence is not None:
+            continue
+        heading = _HEADING_RE.match(line)
+        if heading:
+            found.append((i, len(heading.group(1)), heading.group(2).strip()))
+    return found
+
+
+def split_sections(body: str, levels: tuple[int, ...] = _SECTION_LEVELS) -> list[Section]:
+    """Split a reference body into its H2/H3 sections, in document order.
+
+    A section runs from its heading to the next heading of the same or a
+    higher level, so an H2 span contains its H3 children and an H3 span stops
+    at its sibling. Both are offered: an agent that wants the whole storage
+    chapter and one that wants a single pattern group are asking for
+    different-sized chunks of the same file.
+    """
+    lines = body.splitlines()
+    headings = _atx_headings(lines)
+    sections: list[Section] = []
+    for index, (line_no, level, text) in enumerate(headings):
+        if level not in levels:
+            continue
+        end = len(lines)
+        for next_line, next_level, _ in headings[index + 1 :]:
+            if next_level <= level:
+                end = next_line
+                break
+        sections.append(Section(heading=text, level=level, start=line_no, end=end))
+    return sections
+
+
+def section_text(body: str, section: Section) -> str:
+    """The markdown of one section, heading line included."""
+    return "\n".join(body.splitlines()[section.start : section.end]).rstrip() + "\n"
+
+
+def section_labels(body: str, levels: tuple[int, ...] = _SECTION_LEVELS) -> list[str]:
+    """Every section heading, level marker included, in document order."""
+    return [s.label for s in split_sections(body, levels)]
+
+
+def find_sections(
+    body: str, query: str, levels: tuple[int, ...] = _SECTION_LEVELS
+) -> list[Section]:
+    """Sections whose heading matches ``query``, best tier first.
+
+    Matching is deliberately tolerant, because the caller is a model writing a
+    natural phrase from a user's question, not a string it copied out of the
+    file. Four tiers are tried in order and only the first non-empty one is
+    returned, so a exact heading is never buried under loose substring hits:
+
+    1. the normalised heading equals the query
+    2. the heading starts with the query (``"storage"`` -> "Storage
+       Optimization Patterns (28)")
+    3. the query appears anywhere in the heading
+    4. every word of the query appears as a word of the heading, in any order
+
+    Within a tier, shallower headings come first: asking for "storage" when
+    both an H2 chapter and an H3 subsection match should hand back the chapter.
+    """
+    normalised = _normalise_heading(query)
+    if not normalised:
+        return []
+    query_words = normalised.split()
+    tiers: list[list[Section]] = [[], [], [], []]
+    for section in split_sections(body, levels):
+        heading = _normalise_heading(section.heading)
+        if heading == normalised:
+            tiers[0].append(section)
+        elif heading.startswith(normalised):
+            tiers[1].append(section)
+        elif normalised in heading:
+            tiers[2].append(section)
+        elif all(word in heading.split() for word in query_words):
+            tiers[3].append(section)
+    for tier in tiers:
+        if tier:
+            return sorted(tier, key=lambda s: (s.level, s.start))
+    return []
+
+
+def strip_frontmatter(text: str, source: str = "<unknown>") -> str:
+    """The body of a bundled file with any YAML frontmatter block removed."""
+    return _split_frontmatter(text, source=source)[1]
 
 
 def content_version_summary() -> str | None:

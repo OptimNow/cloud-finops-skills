@@ -12,7 +12,7 @@ so the console script sits next to ``sys.executable``::
 
     python smoke_install.py
 
-Two phases:
+Four phases:
 
 1. **Liveness** - launch the binary, hold stdin open, and assert it is still
    running after ``LIVENESS_SECONDS`` with no traceback on stderr. A stdio MCP
@@ -21,6 +21,11 @@ Two phases:
 2. **MCP round-trip** - use the official ``mcp`` SDK stdio client to
    ``initialize`` the server and ``list_tools``, asserting the expected tools
    are present.
+3. **Content bundle** - call ``list_references`` / ``list_playbooks`` and check
+   the totals against a floor, so a wheel built without its data is not
+   mistaken for a healthy server.
+4. **Content stamp** - assert ``data/content_version.txt`` shipped, so a
+   deployment can say which release its content came from.
 
 Exit code 0 = pass. Any failure prints a loud, actionable message (plus a
 GitHub Actions ``::error::`` annotation) and exits 1.
@@ -30,6 +35,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 import subprocess
 import sys
 import time
@@ -37,6 +43,11 @@ from pathlib import Path
 from shutil import which
 
 LIVENESS_SECONDS = 5
+# A startup failure looks like a traceback, or a line that *begins* with an
+# error marker (a bare log level, or "ERROR: ..."). Matching the substring
+# "Error" anywhere failed the build on benign text - "0 errors", a logger name
+# such as ``asyncio.ErrorHandler``, a warning that merely mentions the word.
+_STDERR_FAILURE_RE = re.compile(r"\bTraceback\b|^\s*(error|critical|fatal)\b", re.I)
 ROUNDTRIP_TIMEOUT = 30
 # Floor for the bundled content, deliberately set well below the real counts so
 # it does not need bumping on every content PR. It exists to catch a wheel built
@@ -128,10 +139,12 @@ def phase1_liveness(cmd: str) -> None:
         # break the build).
         print("[phase 1] note: server wrote to stderr during startup:")
         print(text)
-        if "Traceback" in text or "Error" in text:
+        offenders = [line for line in text.splitlines() if _STDERR_FAILURE_RE.search(line)]
+        if offenders:
             _fail(
                 "The server stayed alive but wrote an error/traceback to stderr "
-                "during startup (see above)."
+                "during startup (see above). Offending line(s):\n  "
+                + "\n  ".join(offenders[:5])
             )
     print(f"[phase 1] OK - alive after {LIVENESS_SECONDS}s, no traceback on stderr")
 
@@ -259,6 +272,45 @@ def phase3_content(cmd: str) -> None:
     print("[phase 3] OK - content bundle present")
 
 
+def phase4_content_stamp() -> None:
+    """Assert the installed package carries its content-version stamp.
+
+    ``data/content_version.txt`` is what a running server logs at startup to
+    say which release its bundled content belongs to - the primitive the
+    2026-08-19 audit lacked when it had to fingerprint a stale deployment by
+    per-file line counts. A wheel built without the stamp passes every other
+    phase and just logs the pre-1.32 fallback forever, which reads as "old
+    build" rather than "broken build", so nothing ever chases it.
+    """
+    print("[phase 4] checking the bundled content-version stamp")
+    try:
+        from cloud_finops_mcp import metadata
+    except ImportError as exc:  # pragma: no cover - installed by definition here
+        _fail(
+            "Could not import the installed cloud_finops_mcp package to check "
+            f"its content-version stamp: {exc}"
+        )
+        raise SystemExit(1)  # unreachable
+
+    summary = metadata.content_version_summary()
+    if summary is None:
+        _fail(
+            "The installed package has no content-version stamp at "
+            f"{metadata.CONTENT_VERSION_FILE}.\n"
+            "scripts/sync_references.py writes it on every build, so a missing "
+            "stamp means the hatch-build-scripts hook did not fire (or an older "
+            "pre-1.32 wheel was published). The server would start, serve "
+            "content, and be unable to say which release that content is - "
+            "which is exactly the staleness the stamp exists to expose."
+        )
+    print(f"[phase 4] OK - {summary}")
+    if "version unknown" in summary:
+        print(
+            "[phase 4] WARNING: the stamp records version 'unknown' - built "
+            "without .claude-plugin/plugin.json in reach."
+        )
+
+
 def main() -> None:
     cmd = _console_script()
     print(f"cloud-finops-mcp smoke test - interpreter:    {sys.executable}")
@@ -266,6 +318,7 @@ def main() -> None:
     phase1_liveness(cmd)
     phase2_roundtrip(cmd)
     phase3_content(cmd)
+    phase4_content_stamp()
     print("\nSMOKE TEST PASSED - clean install starts, speaks MCP, and serves content.")
 
 

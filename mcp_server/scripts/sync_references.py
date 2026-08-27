@@ -101,10 +101,14 @@ def _content_version() -> str:
     and everything else follows). It is absent when building from an sdist,
     where the repo is not around - the caller falls back to the stamp that
     travelled with the pre-bundled data.
+
+    A plugin.json that parses to something other than an object raises
+    TypeError on the subscript, so that is caught too: a malformed version
+    holder must degrade to "unknown", never fail the build.
     """
     try:
         return str(json.loads(PLUGIN_JSON.read_text(encoding="utf-8"))["version"])
-    except (OSError, KeyError, ValueError):
+    except (OSError, KeyError, TypeError, ValueError):
         return "unknown"
 
 
