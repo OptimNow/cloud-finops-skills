@@ -125,6 +125,16 @@ maintainer file.
   cannot be assumed to happen on its own. Re-verify with `initialize` plus
   `list_references` after every release; expect the current version and a total of 35.
 
+  **Staleness resolved (2026-08-29).** Redeployed after the 1.34.0 release and verified
+  by calling the hosted connector: `list_references` returns 35 (including
+  `finops-kpis-benchmarking` and `finops-open-weight-vendors`), and
+  `get_reference(name="finops-aws", section="AWS billing hierarchy and separate
+  invoices")` serves the 1.34.0 section through the section parameter shipped in
+  PR #180 - so the deployment carries both of the releases it was behind on. The
+  re-verify-after-every-release rule stands unchanged; this entry records one
+  verified pass of it, not a reason to skip the next one. Lot C in the batch
+  sequence below is no longer gated on this redeploy.
+
   One behavioural difference from the local run, worth knowing before writing a health
   check: **the hosted endpoint is session-based.** A bare `tools/call` returns HTTP 400
   even though `stateless_http = True` is set in the code; Alpic's ingress front-ends the
