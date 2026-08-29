@@ -328,6 +328,20 @@ maintainer file.
   the failure is structural to claude.ai's tool-search gate - document it here and
   stop investing; the loaded-skill surface is the fallback.
 
+  **Cycle 5 ran (2026-08-30, on the 1.35.0 deployment, norms verified live by curl
+  initialize first). Iteration 1: zero conversions, but the failure moved one layer.**
+  P11 control HOLDS (GROUNDED, multi-call) - the fix broke nothing. P13 and P31 now
+  fire the host's tool-search ("Searched available tools" / "Loaded tools"), which
+  never happened in c3/c4 - the service-noun descriptions reached the host index -
+  but no call follows: the remaining gate is the model preferring its parametric
+  answer once tools are loaded. P12 is unchanged at zero calls, and its transcript
+  shows the model claiming "no connector for AWS/Azure billing" without checking -
+  strong evidence claude.ai does not surface the server `instructions` string to the
+  model at all, so norms placed there are inert on this host. Iteration 2, the last
+  before the stop rule: move the two norms INTO the find_playbooks / get_playbook
+  descriptions - the only artefact proven to reach the model - and re-run the same
+  four probes. If that fails too, this entry closes as structural.
+
   Standing incident, third cycle running: every connector call renders "Unable to reach
   AI Cloud FinOps Skill & MCP" while the data arrives intact, and a tool-approval gate
   now appears per call. Full per-probe notes in `pipeline/coverage-probes.md`.
