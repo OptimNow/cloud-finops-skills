@@ -76,7 +76,9 @@ AzureMetrics
    database - only an LTR backup survives the drop.
 3. **Move long-tail dev databases to Basic tier or Serverless** - Basic
    is ~$5/month per DB, Serverless auto-pauses after inactivity (Gen5
-   1-vCore can drop to ~$15/month for idle workloads).
+   1-vCore can drop to ~$15/month for idle workloads). Both figures are
+   illustrative list rates as at May 2026 and vary by region - verify
+   against the Azure pricing page before sizing a business case.
 4. **For permanent decommissions, drop the database AND the parent SQL
    Server** if no other DB lives on it - the server itself has no charge
    but littered server objects multiply your management overhead.

@@ -94,12 +94,17 @@
   var W = window.WidgetCommon;
   var $ = W.$, show = W.show, hide = W.hide;
 
-  /* facet key -> [payload entry fields it matches against] */
+  /* facet key -> [payload entry fields it matches against].
+     The listing payload carries the primary facets only - secondary
+     capabilities and collaborating personas were dropped from it for token
+     cost and stay filterable server-side via find_references. Local filtering
+     therefore reads the primary fields, which is also the sharper cut: a broad
+     persona collaborates on nearly every file. */
   var FACETS = {
     domain: ["fcp_domain"],
-    capability: ["fcp_capability", "fcp_capabilities_secondary"],
+    capability: ["fcp_capability"],
     phase: ["fcp_phases"],
-    persona: ["fcp_personas_primary", "fcp_personas_collaborating"],
+    persona: ["fcp_personas_primary"],
     maturity: ["fcp_maturity_entry"]
   };
 

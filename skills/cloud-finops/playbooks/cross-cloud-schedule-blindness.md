@@ -16,7 +16,10 @@ which is ~30% of a full week. Yet most non-prod compute runs 24/7
 because nobody automated the off-hours shutdown. The 70% of unused time
 is pure waste, and it scales linearly with the number of dev / test
 environments. A team running 30 non-prod EC2 instances at $50/month
-each pays $1,500/month for ~$450/month of actual use.
+each pays $1,500/month for ~$450/month of actual use. The $50/month
+instance is a round illustrative figure used to make the arithmetic
+legible (written May 2026), not a quoted rate - the 70% ratio is the
+durable part.
 
 This is the highest-leverage, lowest-risk optimisation in cloud cost
 work. It is the canonical "obvious" tier waste because the business

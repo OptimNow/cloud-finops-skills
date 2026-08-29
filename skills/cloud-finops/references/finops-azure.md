@@ -54,7 +54,7 @@ implementations, configure scheduled exports to Azure Storage for downstream pro
 - [ ] Select both actual and amortized cost exports
 - [ ] Set daily granularity
 - [ ] Export to Azure Data Lake Storage Gen2 for Power BI integration
-- [ ] Consider FinOps Hubs (Microsoft FinOps Toolkit) for automated ingestion and normalization
+- [ ] Consider FinOps Hubs (Microsoft FinOps Toolkit) for automated ingestion and normalisation
 
 Source for scope rules: https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-improved-exports
 
@@ -87,7 +87,7 @@ Use the Azure Retail Prices API to verify EA discounts against public pricing. U
 Microsoft's open-source FinOps Toolkit provides pre-built solutions including Power BI
 report templates, Azure Workbooks, and FinOps Hubs for automated cost data ingestion.
 
-**FinOps Hubs** normalize cost exports into a consistent schema and feed Power BI reports.
+**FinOps Hubs** normalise cost exports into a consistent schema and feed Power BI reports.
 Recommended for organisations that want production-grade reporting without building custom
 data pipelines. FinOps Hubs (Toolkit v12) ingest the **FOCUS 1.2 preview** from Cost
 Management and provide 1.2-aligned analytics on top, enabling standardised multi-cloud
@@ -1695,7 +1695,7 @@ Ordered by priority: highest savings + lowest risk first.
 ## Case study: 2-tier web app optimisation
 
 **Baseline:** 12 VMs across prod/pre-prod/dev (D4_v5 Windows web + E8_v5 Linux DB),
-all running 24/7. Monthly cost: ~5,071 EUR. Non-prod CPU utilization: 3-5%.
+all running 24/7. Monthly cost: ~5,071 EUR. Non-prod CPU utilisation: 3-5%.
 
 **Optimisation waterfall (compute only):**
 

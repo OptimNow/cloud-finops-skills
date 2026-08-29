@@ -17,7 +17,9 @@ for `g5.48xlarge`, ~$22/hour for `p4d.24xlarge`, ~$55/hour for
 `p5.48xlarge`. When the workload runs on a single GPU and the other seven
 sit idle, the customer is paying 7/8 of the bill for thin air. This is one
 of the highest-confidence waste patterns: per-GPU telemetry shows it
-unambiguously.
+unambiguously. The rates above are illustrative us-east-1 on-demand list
+prices written between May and August 2026 - the 7/8 ratio is the durable
+part; verify the rates against live pricing before quoting.
 
 ## Symptoms
 

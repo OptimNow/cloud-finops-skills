@@ -58,9 +58,12 @@ if [[ -z "$listed" ]]; then
 fi
 
 # Check 1: every reference file appears in the tree.
+# -F on the grep calls below because the needle is a filename: without it the
+# dot before `md` is a regex wildcard, so `finops-aws.md` would be satisfied by
+# a tree entry reading `finops-awsXmd`.
 for f in "$REF_DIR"/*.md; do
   base="$(basename "$f")"
-  if ! grep -qx "$base" <<<"$listed"; then
+  if ! grep -qxF "$base" <<<"$listed"; then
     echo "MISSING: $base exists but is not in the $CLAUDE_MD structure tree" >&2
     errors=$((errors + 1))
   fi
@@ -101,7 +104,7 @@ fi
 for f in "$PB_DIR"/*.md; do
   base="$(basename "$f")"
   [[ "$base" == "README.md" ]] && continue
-  if ! grep -qx "$base" <<<"$catalogued"; then
+  if ! grep -qxF "$base" <<<"$catalogued"; then
     echo "MISSING: $base exists but is not in the $PB_README catalogue" >&2
     errors=$((errors + 1))
   fi

@@ -49,8 +49,10 @@ cloud-finops-skills/
 │                             fcp-coverage.svg heat maps (embedded in
 │                             README.md; both CI-gated)
 ├── docs/
-│   └── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
-│                             (split out of CLAUDE.md, Aug 2026)
+│   ├── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
+│   │                         (split out of CLAUDE.md, Aug 2026)
+│   └── mcp-apps-lessons.md <- Chronological forensic of the MCP Apps widget
+│                             rendering work (split out of CLAUDE.md, Aug 2026)
 ├── skills/cloud-finops/          <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
@@ -94,7 +96,8 @@ cloud-finops-skills/
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
 │       └── finops-waste-detection-playbooks.md  <- Eight-category waste taxonomy + WasteLine
 ├── skills/cloud-finops/playbooks/   <- named-pattern runbooks (`<scope>-<pattern>.md`,
-│                                ~2-3KB each, Problem/Symptoms/Detection/Fix/
+│                                ~3-8 KB each, average ~5 KB;
+│                                Problem/Symptoms/Detection/Fix/
 │                                Anti-pattern/See also format) +
 │                                README.md index. RAG-friendly chunks routed from
 │                                SKILL.md / POWER.md "named waste pattern" rows
@@ -110,16 +113,32 @@ cloud-finops-skills/
 │                             committed files in CI), the heat-map renderers
 │                             `render-coverage-heatmap.py` and
 │                             `render-fcp-heatmap.py` (emit the README SVGs,
+│                             --check gated in CI), `build-llms-full.sh`
+│                             (inlines the whole library into llms-full.txt;
 │                             --check gated in CI) plus the guards:
 │                             check-artefact-size, check-docs-drift,
-│                             check-llms-txt, check-skill-description (run by
-│                             the `CI` workflow) and check-marketplace-version
-│                             (its own `marketplace-version-check` workflow)
+│                             check-footers (every reference and playbook
+│                             ends with the OptimNow / CC BY-SA footer),
+│                             check-llms-txt, check-skill-description,
+│                             check-skill-power-parity (diffs the shared
+│                             SKILL.md / POWER.md body so the routing tables
+│                             cannot drift apart) and check-marketplace-version
+│                             - all twelve run by the `CI` workflow, and
+│                             check-marketplace-version additionally has its
+│                             own path-filtered `marketplace-version-check`
+│                             workflow
 ├── fcp-coverage.md        <- Generated FCP coverage matrix (22 caps; CI-gated)
 ├── playbook-coverage.md   <- Generated waste-playbook matrix (category x
 │                             scope, gaps listed; CI-gated)
-├── .gitattributes         <- Force LF on *.sh and fcp-coverage.md (Windows
-│                             checkouts with core.autocrlf=true)
+├── llms-full.txt          <- Generated: the whole library (entry point + all
+│                             references + all playbooks) inlined for
+│                             one-fetch ingestion, ~1.2MB, CI-gated. Marked
+│                             -diff in .gitattributes so it does not bury the
+│                             real change in a content PR
+├── .gitattributes         <- Force LF on *.sh and on every generated artefact
+│                             (fcp-coverage.md, playbook-coverage.md, the
+│                             SVGs, llms-full.txt) for Windows checkouts with
+│                             core.autocrlf=true
 └── pipeline/              <- Content update pipeline (gitignored, private)
     ├── run_scan.py        <- Fortnightly scan entry point
     ├── run_apply.py.FROZEN <- Review and apply entry point, frozen since the
@@ -150,33 +169,22 @@ of each month at 9:00 AM CET via Windows Task Scheduler) that detects
 FinOps-relevant changes across ~30 sources and proposes updates to the reference
 files. It is gitignored and not part of the public distribution.
 
-**Cadence note (2026-05-15).** The pipeline was originally twice-monthly (1st
-and 15th). After the 2026-05-15 incident-and-recovery session (see Lessons
-learned below) it became clear each run requires 2-4 hours of focused human
-review for a typical 12-item batch. The 15th-of-month task was disabled
-in Task Scheduler and the cadence dropped to monthly, trading some freshness
-for sustainable operating effort.
+**Why fortnightly.** The rhythm matches the scan's 15-day lookback window, so a
+monthly cadence leaves coverage blind spots. It was briefly monthly (May to
+August 2026, when each run needed 2-4 hours of human review) and restored to
+twice-monthly on 2026-08-10 for that reason.
 
-**Cadence update (2026-08-10).** Restored to twice-monthly: the fortnightly
-rhythm matches the scan's 15-day lookback window, closing the coverage blind
-spots a monthly gap creates. The 1st-of-month runs additionally carry a
-rotating **AI-pricing re-verification pass** (one domain cluster per month,
-full surface quarterly) - the scan detects news from sources, but it cannot
-detect silent staleness in figures already sitting in the reference files,
-which is how the June 2025 AWS GPU price cuts went uncorrected for 14 months
-(fixed in PR #129). Procedure and rotation table in
-`pipeline/MONTHLY_WORKFLOW.md`.
-
-**Scope reduction (2026-08-17).** The re-verification pass exists because absolute
-figures sat in the reference files with nothing to correct them. The dated-price
-rule (PR #141) and the figure purge (PR #142) remove most of that surface: LLM
-token rates are now expressed as ratios and multipliers routed to the AI Pricing
-Hub, and the figures that remain (SaaS seat prices, storage and egress rates,
-which the hub does not serve) carry an inline as-of date. The rotation still
-matters for those, but the pass is now a check on a short dated list rather than
-a hunt across every reference. When updating the rotation table, verify the
-*dates* on the remaining banners rather than re-pricing tables that no longer
-carry absolute rates.
+**Rotating AI-pricing re-verification pass.** The 1st-of-month run additionally
+carries a re-verification pass (one domain cluster per month, full surface
+quarterly). It exists because the scan detects news from sources but cannot
+detect silent staleness in figures already sitting in the reference files - which
+is how the June 2025 AWS GPU price cuts went uncorrected for 14 months (fixed in
+PR #129). Since the dated-price rule (PR #141) and the figure purge (PR #142),
+most of that surface is gone: LLM token rates are ratios and multipliers routed
+to the AI Pricing Hub, and the figures that remain (SaaS seat prices, storage and
+egress rates, which the hub does not serve) carry an inline as-of date. So the
+pass is now a *date* check on a short list, not a re-pricing hunt across every
+reference. Procedure and rotation table in `pipeline/MONTHLY_WORKFLOW.md`.
 
 The pipeline is human-in-the-loop: nothing is changed automatically. Every
 proposed update goes through preview, approve/reject, and a guard-railed
@@ -214,6 +222,9 @@ file structure" and "preserve the CC BY-SA 4.0 footer line exactly as it is". On
 files (1500+ lines) the LLM ignored these instructions roughly 5% of the time -
 producing diffs whose "after" state was hundreds or thousands of lines shorter than
 "before". The instructions were prompts, not enforced guarantees.
+*(The "5% of the time" framing was corrected on 2026-05-15 - the real cause was a
+`max_tokens: 4096` cap and it was 100% deterministic on any file >3K tokens. Read the
+2026-05-15 entry below before acting on this paragraph.)*
 
 **Why it was not caught.** The previous recovery (PR #8 -> commit dfab33b) fixed
 symptoms without fixing the pipeline, so the same failure mode recurred 16 days later.
@@ -238,8 +249,9 @@ the only signal was the missing footer at the end, which no automated check veri
 had not kept pace with reference growth (AGENTS.md and llms.txt listed only 17
 references when 28 existed; install.sh ChatGPT/Gemini routing missed the 6-7 newest
 domains; "6 setup options" appeared in 4 files when INSTALLATION.md had moved to
-12 tools). The PR-checklist in this file now requires updating AGENTS.md, llms.txt,
-and the install.sh per-tool routing whenever a reference is added.
+12 tools). The PR-checklist in this file now requires updating llms.txt and the
+install.sh per-tool routing whenever a reference is added. (AGENTS.md stopped
+enumerating references afterwards, which is why it is no longer a checklist item.)
 
 ### When in doubt, validate the baseline before comparing
 
@@ -331,124 +343,31 @@ The pipeline now sits in a sustainable operating shape. Future work is
 about *simplification* (reducing the manual review surface), not adding
 more automation.
 
-### MCP Apps rendering in Claude is allowlisted, not earned by conformance (2026-08-16)
+### MCP Apps rendering in Claude is gated by implementation shape (2026-08-16 to 08-20)
 
-The `ui://cloud-finops/playbook-viewer` MCP App shipped in PR #133 had never
-been opened in a real host - only against a test harness that simulates the
-`postMessage` handshake. The 2026-08-16 session finally validated it, and the
-result reorders the whole "publish a remote MCP server" plan.
+Full chronological forensic, including the two hypotheses that were tested and
+overturned: [`docs/mcp-apps-lessons.md`](docs/mcp-apps-lessons.md). The operational
+rules, which you need before touching `mcp_server/src/cloud_finops_mcp/server.py`:
 
-**What the validation established.** Running MCPJam Inspector against the
-local stdio server (no hosting, no public endpoint, about an hour of work):
-
-- The viewer **works**. It renders in MCPJam's ChatGPT host emulation:
-  frontmatter parsed into badges, the six sections laid out with their
-  colour coding, the footer line present. The prototype is a validated
-  component, not a hypothesis.
-- Two conformance defects were found by auditing the HTML against
-  `modelcontextprotocol/ext-apps` `specification/2026-01-26/apps.mdx`
-  *before* the first live run, and fixed in PR #135: an incomplete
-  `ui/initialize` handshake (missing `protocolVersion` / `clientInfo` /
-  `capabilities`; the spec's reference call passes `protocolVersion:
-  "2026-01-26"`), and `target="_blank"` links, which the host sandbox
-  swallows because it grants `allow-scripts` and `allow-same-origin` but
-  not `allow-popups` - clicks now go through the host's `ui/open-link`.
-- MCPJam's accepted resource mime types, from its own error message:
-  `text/html;profile=mcp-app` (the spec value, which is what the server
-  declares), `text/html+skybridge`, `text/html`. A deliberate experiment
-  substituting the older `text/html+mcp` disproved the mime-type
-  hypothesis cleanly and is *not* retained.
-
-**The finding that changes the plan.** The same server renders as plain
-text in Claude - in MCPJam's Claude emulation, and in real Claude Desktop
-against the local stdio server. The cause is not conformance. Anthropic's
-[Use interactive connectors in Claude](https://support.claude.com/en/articles/13454812-use-interactive-connectors-in-claude)
-names the connectors that may render UI (Amplitude, Asana, Box, Canva,
-Clay, Figma, Hex, Slack) and states that a self-built interactive
-connector "must meet additional design, security, and testing
-requirements", pointing at the Connectors Directory submission and review
-process. `anthropics/claude-ai-mcp#471` reports exactly this failure for a
-spec-correct custom remote connector on Claude Web and was closed as *not
-planned* - consistent with intended behaviour rather than a bug.
-
-**So SEP-1865 conformance is an eligibility condition, not an entry
-ticket.** A custom connector, remote or local, gets the text fallback no
-matter how correct it is. The path to rendering in Claude is: conformant
-server, then publicly reachable remote deployment, then Connectors
-Directory submission, then Anthropic review - the last two outside the
-maintainer's control and on an unpublished timeline.
-
-**Consequences.**
-
-- A remote deployment (Alpic) is **necessary but nowhere near sufficient**
-  for interactive rendering. It must therefore be justified on
-  distribution grounds alone: letting a non-technical user paste a URL
-  into claude.ai instead of installing a PyPI package. That is the
-  decision taken on 2026-08-16, with the interactive viewer explicitly
-  *not* counted as a benefit.
-- Do not treat the "Interactive" badge in the Connectors Directory as
-  reachable by shipping correct code.
-- The transferable discipline: **validate a host-dependent feature in a
-  real host before planning the infrastructure that depends on it.** An
-  hour in MCPJam, costing nothing and requiring no deployment, produced a
-  finding that would otherwise have surfaced at the end of a multi-day
-  hosting project. The prototype had sat unvalidated since PR #133
-  precisely because the only test in place asserted the resource existed,
-  never that it rendered.
-
-**Update (2026-08-19): the gate now has an observable mechanism.** Claude
-Desktop's `mcp-ext-apps-host` attempts to set up MCP Apps for custom
-connectors and validates a `ui.domain` on the widget resource:
-sha256(connector URL exactly as the host displays it in its error log -
-for a root-entered connector that is the ROOT url WITH its trailing
-slash)[:32] + `.claudemcpcontent.com`. (Corrected 2026-08-20: the
-original "no trailing slash" note here was wrong - hashing `/mcp` while
-the host saw `https://.../` reproduced the failure on this repo's own
-connector; Skybridge, which passes, hashes https://<host><pathname> per
-request.) A wrong or missing value logs
-`ui.domain validation failed for connector "<url>"` in the Desktop logs
-(observed live for ai-pricing-hub on 2026-08-19, including the fix-it
-one-liner the error prints). So the 2026-08-16 claim that a custom
-connector "gets the text fallback no matter how correct it is" is no
-longer the whole story - but whether a correct `ui.domain` is *sufficient*
-for rendering is still unproven for this repo's connector: the render test
-needs the connector added to the account and the Alpic deployment current.
-The real render attempt happened on 2026-08-19 (four prompts through the
-connector on claude.ai): tools executed, the host reserved the widget
-iframe, the frame stayed blank - the predicted failure. `ui.domain` was
-therefore applied on 2026-08-20: the three widget resources declare
-`meta={"ui": {"domain": ...}}` where the value is DERIVED in server.py
-from `CANONICAL_CONNECTOR_URL` (sha256 of the ROOT connector URL exactly as
-users enter it, **trailing slash included** - `CANONICAL_CONNECTOR_ORIGIN + "/"`
-in server.py - first 32 hex chars + `.claudemcpcontent.com`) and pinned by
-tests. When touching this, never hash an internal path instead
-of the public URL - that wrong-input variant is exactly what broke
-ai-pricing-hub-mcp. Correction to an earlier note in this entry:
-ai-pricing-hub was NOT fixed on 2026-08-19 - no such fix exists in that
-repo and its failures were still logging at 17:30 that day; it needs the
-same change as this one.
-
-**Update (2026-08-20): rendering for custom connectors IS possible - the
-gate is implementation shape, not the Directory.** Two facts landed the
-same day. First, a Desktop render test on this repo's connector called
-`find_playbooks` (visible as `tool_approval_gate` log entries, MCP Apps
-runtime activating right after), logged NO `ui.domain` error - and still
-showed no widget. Second, and decisive: the Skybridge-built companions
-(`ai-pricing-hub-mcp`, `ai-roi-calculator-mcp`) DO render their widgets
-in Claude as plain custom connectors (user-confirmed with a screenshot of
-`compare-models-side-by-side` rendering in the chat). So the 2026-08-16
-"Directory review is the gate" conclusion is wrong for widgets. What
-Skybridge does that this server does not, in likely order of relevance:
-(a) registers each widget TWICE - an apps-sdk variant (mime
-`text/html+skybridge`, `openai/*` meta, tool `openai/outputTemplate`
-pointing at it) alongside the spec variant (`text/html;profile=mcp-app`,
-`ui.resourceUri`); (b) computes `ui.domain` per request from the URL
-Claude actually calls (sha256 of host+path), instead of a static
-precomputed hash; (c) declares a `ui.csp` block ({resourceDomains,
-connectDomains}) in the resource-read `_meta`. (a) and (c) were mirrored
-in server.py the same day (PR #174), which moved the failure forward to a
-ui.domain mismatch on the ROOT connector URL, fixed by hashing the
-root-with-slash form (PR #175). Keep `ui.domain`; it stays required.
+- **`ui.domain` is required** on every `ui://` widget resource. It is derived in
+  `server.py` from the ROOT connector URL **including its trailing slash**
+  (`CANONICAL_CONNECTOR_ORIGIN + "/"`), sha256'd, first 32 hex chars +
+  `.claudemcpcontent.com`, and pinned by tests. Never hash an internal path such as
+  `/mcp` - that wrong-input variant is what broke `ai-pricing-hub-mcp` and then this
+  server. The constant must stay byte-for-byte identical to the connector URL
+  documented in README.md and INSTALLATION.md.
+- **Keep the Skybridge-parity shape** (PR #174): every widget registered twice - an
+  apps-sdk variant (mime `text/html+skybridge`, `openai/*` meta, tool
+  `openai/outputTemplate`) alongside the SEP-1865 spec variant
+  (`text/html;profile=mcp-app`, `ui.resourceUri`) - plus a `ui.csp` block in the
+  resource `_meta`. Do not delete either while simplifying.
+- **The transferable discipline: validate a host-dependent feature in a real host
+  before building the infrastructure that depends on it.** An hour in MCPJam, costing
+  nothing and requiring no deployment, produced a finding that would otherwise have
+  surfaced at the end of a multi-day hosting project.
+- **Status: rendering for this connector is still unconfirmed** as of the last
+  recorded test. Treat it as unproven, not as shipped, and do not count it as a
+  benefit when justifying the hosted deployment.
 
 ### A packaged artefact cannot own volatile data (2026-08-17)
 
@@ -565,17 +484,29 @@ Follow these six steps whenever you add a new domain:
    - Add the file to the "Directory structure" listing
    - Add usage examples if applicable
 
-5. **Register the file in the three CI-gated places.** Skipping any of these
-   fails the `CI` workflow, so they are not optional tidying:
+5. **Register the file in the three places that enumerate references.**
+   The first two are CI-gated - skipping either fails the `CI` workflow, so they
+   are not optional tidying:
    - `llms.txt` References section (gated by `scripts/check-llms-txt.sh`)
    - The CLAUDE.md "Repository structure" tree above (gated by
      `scripts/check-docs-drift.sh`)
-   - `install.sh` per-tool routing: the ChatGPT inline routing table and the
-     Gemini grouped-knowledge `cat_required` list
 
-   Then regenerate the FCP coverage matrix and its heat map, which change
-   whenever a new file's frontmatter lands: `./scripts/fcp-coverage.sh` and
-   `python scripts/render-fcp-heatmap.py` (both `--check` gated in CI).
+   The third is `install.sh` per-tool routing: the ChatGPT inline routing table
+   and the Gemini grouped-knowledge `cat_required` list. **Do not assume CI
+   catches an omission here.** `scripts/check-artefact-size.sh` builds only the
+   cursor / windsurf / codex / aider / copilot targets, and their reference index
+   is generated by globbing the references directory, so a missing routing entry
+   is invisible to it. Only a CI step that builds the `gemini` (or `chatgpt`)
+   target could detect one, and as of 2026-08-28 `.github/workflows/ci.yml`
+   contains no such step - verified, it never mentions either target. Treat
+   both routing tables as hand-checked.
+
+   Then regenerate the three artefacts that change whenever content lands:
+   `./scripts/fcp-coverage.sh` and `python scripts/render-fcp-heatmap.py` (the
+   FCP coverage matrix and its heat map, which move when frontmatter changes),
+   and `./scripts/build-llms-full.sh` (llms-full.txt, which moves when any
+   reference or playbook body changes at all). All three are `--check` gated
+   in CI.
 
 6. **Do NOT bump versions in the content PR (release-train rule, 2026-08)**
    - Content PRs never touch `.claude-plugin/plugin.json`,
@@ -754,12 +685,15 @@ Two standing rules that follow from the map:
       `scripts/check-docs-drift.sh` - a reference missing from the tree, or a
       tree entry with no file behind it, fails the `CI` workflow. The same
       script also gates the playbook catalogue in `playbooks/README.md`)
-- [ ] AGENTS.md and llms.txt updated to reflect the new reference (the llms.txt
-      References section is CI-gated by `scripts/check-llms-txt.sh` - a missing
-      or stale entry fails the `CI` workflow, so this can't drift silently).
-      AGENTS.md deliberately does not enumerate references - it shows a
-      truncated tree and defers to CLAUDE.md - so there is nothing to update
-      there unless the new file changes what AGENTS.md says about the repo.
+- [ ] llms.txt References section updated (CI-gated by
+      `scripts/check-llms-txt.sh` - a missing or stale entry fails the `CI`
+      workflow, so this can't drift silently). AGENTS.md needs no change: it
+      shows a truncated tree and defers to CLAUDE.md rather than enumerating
+      references.
+- [ ] `llms-full.txt` regenerated (`./scripts/build-llms-full.sh`) if ANY
+      reference or playbook body changed, not just when a file is added. It
+      inlines every body, so a one-word content edit makes it stale and CI
+      fails on the `--check`.
 - [ ] install.sh per-tool routing updated: ChatGPT inline routing table, Gemini
       grouped knowledge, and Cursor description must mention the new domain
 - [ ] File ends with the OptimNow / CC BY-SA footer. References use
@@ -784,9 +718,10 @@ Two standing rules that follow from the map:
       2026-07 precisely so they no longer need hand-bumping - do not reintroduce
       hardcoded "N references / N playbooks" counts; use "the reference library"
       phrasing. `llms.txt` is the one list to keep current.)
-- [ ] **Content PR: no version bump.** `.claude-plugin/plugin.json`,
-      `.claude-plugin/marketplace.json` `metadata.version`, and
-      `mcp_server/pyproject.toml` are untouched (release-train rule - see step 6
+- [ ] **Content PR: no version bump.** All four version-carrying files are
+      untouched: `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`
+      `metadata.version`, `mcp_server/pyproject.toml`, and `server.json` (both of
+      its version fields) - the release-train rule, see step 6
       of "How to add a new reference file"). A `plugin.json` bump reaching main
       publishes to PyPI, so bumps live only in dedicated release PRs.
 - [ ] **Release PR only: bump all four versions together** - `plugin.json`
@@ -806,8 +741,11 @@ Two standing rules that follow from the map:
       at <https://registry.modelcontextprotocol.io/v0/servers?search=finops>.
 - [ ] **Release PR only: redeploy the hosted MCP (Alpic) after the tag, then verify
       by calling it.** The Alpic deployment does not reliably pick up releases on its
-      own - the 2026-08-19 audit found it serving 1.29.0 content (pre price-purge)
-      while PyPI was already at 1.31.0. After the PyPI publish, trigger a redeploy on
+      own, and this has now recurred: the 2026-08-19 audit found it serving 1.29.0
+      content (pre price-purge) while PyPI was at 1.31.0, and the 2026-08-27 review
+      found it *still* on 1.29.0, 33 references, with PyPI at 1.33.0 - four releases
+      behind. Assume the redeploy did not happen unless you called the endpoint and
+      saw otherwise. After the PyPI publish, trigger a redeploy on
       Alpic, then call the hosted endpoint
       (`https://cloud-finops-skills-590a051d.alpic.live/mcp`) and confirm it serves
       the released content: the server's startup log names the bundle stamp

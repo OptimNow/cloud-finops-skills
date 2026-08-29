@@ -30,7 +30,7 @@ fcp_maturity_entry: "Crawl"
 **Underutilized Azure Reserved Instance Due To Workload Drift**
 Service: Azure Reservations | Type: Commitment Misalignment
 
-As workloads evolve, Azure Reserved Instances (RIs) may no longer align with actual usage - due to refactoring, region changes, autoscaling, or instance-type drift. When this happens, the committed usage goes unused, while new workloads run on non-covered SKUs, resulting in both underutilized reservations and full-price on-demand charges elsewhere.
+As workloads evolve, Azure Reserved Instances (RIs) may no longer align with actual usage - due to refactoring, region changes, autoscaling, or instance-type drift. When this happens, the committed usage goes unused, while new workloads run on non-covered SKUs, resulting in both underutilised reservations and full-price on-demand charges elsewhere.
 
 - Evaluate whether any existing workloads could be migrated to match the reservation scope
 - For new workloads, consider provisioning on RI-covered instance types when technically viable
@@ -45,7 +45,7 @@ Teams often choose the Premium or App Service Plan for Azure Functions to avoid 
 
 - Move low-usage or non-critical Function Apps to the Consumption Plan
 - Pilot plan downgrades in non-production or latency-tolerant environments
-- Use cost modeling tools to estimate savings from switching to Consumption Plan
+- Use cost modelling tools to estimate savings from switching to Consumption Plan
 
 **Missing Scheduled Shutdown For Non Production Azure Virtual Machines**
 Service: Azure Virtual Machines | Type: Inefficient Configuration
@@ -63,7 +63,7 @@ Clusters often accumulate unused components when applications are terminated or 
 
 - Delete unused PVCs to release backing Managed Disks
 - Clean up Services that are no longer in use to avoid unnecessary load balancer charges
-- Scale down underutilized node pools
+- Scale down underutilised node pools
 
 **Orphaned Kubernetes Resources**
 Service: Azure AKS | Type: Orphaned Resource
@@ -86,7 +86,7 @@ Applications running on App Service V2 plans may incur higher operational costs 
 **Outdated Virtual Machine Version In Azure**
 Service: Azure Virtual Machines | Type: Outdated Resource
 
-Many organizations choose a VM SKU and version (e.g., `D4s_v3`) during the initial planning phase of a project, often based on availability, compatibility, or early cost estimates. Over time, Microsoft releases newer hardware generations (e.g., `D4s_v4`, `D4s_v5`) that offer equivalent or better performance at the same or reduced cost.
+Many organisations choose a VM SKU and version (e.g., `D4s_v3`) during the initial planning phase of a project, often based on availability, compatibility, or early cost estimates. Over time, Microsoft releases newer hardware generations (e.g., `D4s_v4`, `D4s_v5`) that offer equivalent or better performance at the same or reduced cost.
 
 - Evaluate alternative VM versions (e.g., v4 or v5) within the same family to identify better cost/performance options
 - Plan and schedule VM resizing during maintenance windows to avoid unplanned downtime
@@ -97,26 +97,26 @@ Service: Azure Virtual Machines | Type: Overprovisioned Resource
 
 Azure VMs are frequently provisioned with more vCPU and memory than needed, often based on template defaults or peak demand assumptions. When a VM operates well below its capacity for an extended period, it presents an opportunity to reduce costs through rightsizing.
 
-- Analyze average CPU and memory utilization of running VMs to determine if they are underutilized
+- Analyse average CPU and memory utilisation of running VMs to determine if they are underutilised
 - Review whether application requirements justify the current VM size
 - Evaluate if the workload would perform similarly on a lower SKU within the same VM series
 
 **Inefficient Use Of Photon Engine In Azure Databricks**
 Service: Databricks | Type: Suboptimal Configuration
 
-Photon is optimized for SQL workloads, delivering significant speedups through vectorized execution and native C++ performance. However, Photon only accelerates workloads that use compatible operations and data patterns.
+Photon is optimised for SQL workloads, delivering significant speedups through vectorised execution and native C++ performance. However, Photon only accelerates workloads that use compatible operations and data patterns.
 
-- Ensure that Photon is only enabled for workloads structured to benefit from vectorized execution
-- Refactor SQL logic and data models to align with Photon-optimized patterns (e.g., filter pushdowns, supported UDFs)
+- Ensure that Photon is only enabled for workloads structured to benefit from vectorised execution
+- Refactor SQL logic and data models to align with Photon-optimised patterns (e.g., filter pushdowns, supported UDFs)
 - Use built-in tools such as query plans and job profiles to verify Photon execution
 
 **Missing Shared Scope Configuration For Azure Reservations**
 Service: Azure Reservations | Type: Suboptimal Configuration
 
-When reservations are scoped only to a single subscription, any unused capacity cannot be applied to matching resources in other subscriptions within the same tenant. This leads to underutilization of the committed reservation and continued on-demand charges in other parts of the organization.
+When reservations are scoped only to a single subscription, any unused capacity cannot be applied to matching resources in other subscriptions within the same tenant. This leads to underutilisation of the committed reservation and continued on-demand charges in other parts of the organisation.
 
 - Change reservation scope from *Single* to *Shared* in the Azure Portal or via API
-- Reevaluate periodically to ensure the scope aligns with current organizational structure and usage distribution
+- Reevaluate periodically to ensure the scope aligns with current organisational structure and usage distribution
 
 **Suboptimal Architecture Selection For Azure Virtual Machines**
 Service: Azure Virtual Machines | Type: Suboptimal Pricing Model
@@ -133,7 +133,7 @@ Service: Azure App Service | Type: Unused Resource
 App Service Plans continue to incur charges even when no applications are deployed. This can occur when applications are deleted, migrated, or retired, but the associated App Service Plan remains active.
 
 - Decommission App Service Plans with no active applications unless a future use case is explicitly confirmed
-- In cases with low utilization, consider consolidating multiple lightly used plans into a single plan to reduce spend
+- In cases with low utilisation, consider consolidating multiple lightly used plans into a single plan to reduce spend
 - Establish governance practices to routinely identify and remove orphaned plans after application lifecycle events
 
 **Inactive And Stopped VM**
@@ -159,7 +159,7 @@ This inefficiency occurs when a blob container intended for long-term or infrequ
 **High Transaction Cost Due To Misaligned Tier In Azure Blob Storage**
 Service: Azure Blob Storage | Type: Inefficient Configuration
 
-Azure Blob Storage tiers are designed to optimize cost based on access frequency. However, when frequently accessed data is stored in the Cool or Archive tiers - either due to misconfiguration, default settings, or cost-only optimization - transaction costs can spike.
+Azure Blob Storage tiers are designed to optimise cost based on access frequency. However, when frequently accessed data is stored in the Cool or Archive tiers - either due to misconfiguration, default settings, or cost-only optimisation - transaction costs can spike.
 
 - Move frequently accessed data to the Hot tier, either manually or via lifecycle management policies
 - Evaluate default tiering settings on upload processes to prevent misplacement of active data
@@ -180,7 +180,7 @@ Service: Azure Blob Storage | Type: Inefficient Configuration
 Storage accounts can accumulate blob data that is no longer actively accessed - such as legacy logs, expired backups, outdated exports, or orphaned files. When these blobs remain in the Hot tier, they continue to incur the highest storage cost, even if they have not been read or modified for an extended period.
 
 - Identify storage accounts with large amounts of data in the Hot tier
-- Analyze blob-level access patterns using logs or metrics to confirm that data has not been read or written over a defined lookback period
+- Analyse blob-level access patterns using logs or metrics to confirm that data has not been read or written over a defined lookback period
 - Determine whether the data is still relevant to any active workload, process, or compliance requirement
 
 **SFTP Feature Enabled On Azure Storage Account Without Usage**
@@ -204,11 +204,11 @@ For Premium SSD and Standard SSD disks 513 GiB or larger, Azure now offers the o
 **Outdated And Expensive Premium SSD Disk**
 Service: Azure Managed Disks | Type: Modernization
 
-Workloads using legacy Premium SSD managed disks may be eligible for migration to Premium SSD v2, which delivers equivalent or improved performance characteristics at a lower cost. Premium SSD v2 decouples disk size from performance metrics like IOPS and throughput, enabling more granular cost optimization.
+Workloads using legacy Premium SSD managed disks may be eligible for migration to Premium SSD v2, which delivers equivalent or improved performance characteristics at a lower cost. Premium SSD v2 decouples disk size from performance metrics like IOPS and throughput, enabling more granular cost optimisation.
 
 - Identify Premium SSD managed disks provisioned using the original Premium SSD offering (not v2)
 - Review disk IOPS, throughput, and sizing requirements to ensure compatibility with Premium SSD v2 capabilities
-- Analyze whether the current SKU size (e.g., P30, P40) exceeds actual capacity and performance needs
+- Analyse whether the current SKU size (e.g., P30, P40) exceeds actual capacity and performance needs
 
 **Outdated And Expensive Standard SSD Disk**
 Service: Azure Managed Disks | Type: Modernization
@@ -261,7 +261,7 @@ Service: Azure Blob Storage | Type: Unused Resource
 Files that show no read or write activity over an extended period often indicate redundant or abandoned data. Keeping inactive files in higher-cost storage classes unnecessarily increases monthly spend.
 
 - Identify storage accounts or containers containing blobs with no reads or modifications over a defined lookback period
-- Analyze blob access logs and object metadata to validate inactivity
+- Analyse blob access logs and object metadata to validate inactivity
 - Review creation timestamps, tags, and business ownership metadata to assess ongoing relevance
 
 **Inactive Tables In Storage Account**
@@ -288,7 +288,7 @@ Service: Azure Managed Disks | Type: Unused Resource
 Disks attached to VMs that have been stopped for an extended period, particularly when showing no read or write activity, may indicate abandoned infrastructure or obsolete resources. Retaining these disks without validation leads to unnecessary monthly storage costs.
 
 - Identify Managed Disks attached to virtual machines that have remained in a stopped state over a representative time window
-- Analyze disk activity metrics to detect absence of read/write operations during the lookback period
+- Analyse disk activity metrics to detect absence of read/write operations during the lookback period
 - Review VM metadata, ownership tags, and decommissioning records to assess whether the disk is still required
 
 ### Databases Optimization Patterns (8)
@@ -299,7 +299,7 @@ Service: Azure SQL | Type: Inefficient Configuration
 Non-production environments such as development, testing, or staging often do not require the high availability, failover capabilities, and premium storage performance offered by the Business Critical tier. Running these workloads on Business Critical unnecessarily inflates costs.
 
 - Migrate non-production SQL instances from the Business Critical tier to a lower-cost alternative, such as General Purpose
-- Use downtime windows or database copy strategies to minimize risk during tier transitions, depending on instance size and availability requirements
+- Use downtime windows or database copy strategies to minimise risk during tier transitions, depending on instance size and availability requirements
 - Monitor performance after migration to ensure the workload remains stable and meets operational needs
 
 **Unnecessary Use Of RA-GRS For Azure SQL Backup Storage**
@@ -314,7 +314,7 @@ Azure SQL databases often use the default backup configuration, which stores bac
 **Infrequently Accessed Data Stored In Azure Cosmos DB**
 Service: Azure Cosmos DB | Type: Inefficient Storage Tiering
 
-Azure Cosmos DB is optimized for low-latency, globally distributed workloads - not long-term storage of infrequently accessed data. Yet in many environments, cold data such as logs, telemetry, or historical records is retained in Cosmos DB due to a lack of lifecycle management.
+Azure Cosmos DB is optimised for low-latency, globally distributed workloads - not long-term storage of infrequently accessed data. Yet in many environments, cold data such as logs, telemetry, or historical records is retained in Cosmos DB due to a lack of lifecycle management.
 
 - Export infrequently accessed data to lower-cost storage services
 - Use Blob Storage Cool for rarely accessed but readily retrievable data
@@ -325,14 +325,14 @@ Service: Azure Database for PostgreSQL Flexible Server | Type: Overprovisioned R
 
 Azure Database for PostgreSQL Flexible Server often defaults to general-purpose D-series VMs, which may be oversized for many production or development workloads. PostgreSQL typically does not require sustained high CPU, making it well-suited to memory-optimized (E-series) or burstable (B-series) instances.
 
-- Resize the PostgreSQL Flexible Server to a smaller or more suitable VM family based on actual workload behavior
+- Resize the PostgreSQL Flexible Server to a smaller or more suitable VM family based on actual workload behaviour
 - For low-CPU workloads, consider B-series (burstable) or E-series (memory-optimized) configurations
 - Review usage patterns quarterly to ensure the selected SKU remains aligned with performance needs
 
 **Overprovisioned Compute Tier In Azure SQL Database**
 Service: Azure SQL | Type: Overprovisioned Resource
 
-Azure SQL Database resources are frequently overprovisioned due to default configurations, conservative sizing, or legacy requirements that no longer apply. This inefficiency appears across all deployment models: Single Databases may be assigned more DTUs or vCores than the workload requires; Elastic Pools may be oversized for the actual demand of pooled databases; Managed Instances are often deployed with excess compute capacity that remains underutilized. Because billing is based on provisioned capacity, not actual consumption, organizations incur unnecessary costs when sizing is not aligned with workload behavior.
+Azure SQL Database resources are frequently overprovisioned due to default configurations, conservative sizing, or legacy requirements that no longer apply. This inefficiency appears across all deployment models: Single Databases may be assigned more DTUs or vCores than the workload requires; Elastic Pools may be oversized for the actual demand of pooled databases; Managed Instances are often deployed with excess compute capacity that remains underutilised. Because billing is based on provisioned capacity, not actual consumption, organisations incur unnecessary costs when sizing is not aligned with workload behaviour.
 
 - Downsize the compute tier (DTUs or vCores) to better match observed usage
 - For Elastic Pools, reduce the total eDTUs/vCores and consider consolidating lightly used databases
@@ -352,7 +352,7 @@ Service: Azure SQL | Type: Suboptimal Pricing Model
 
 Workloads that frequently scale up and down within the same day - whether manually, via automation, or platform-managed - can encounter hidden cost amplification under the DTU model. When a database changes tiers (e.g., S7 -> S4), Azure treats each tiered segment as a separate allocation and applies full-hour rounding independently.
 
-- Minimize same-day tier switches unless operationally justified
+- Minimise same-day tier switches unless operationally justified
 - Schedule up/down-scaling during off-peak windows to reduce risk of overlapping billing
 - Move to the vCore or serverless pricing model for more transparent and granular cost control
 
@@ -370,7 +370,7 @@ An Azure SQL Elastic Pool continues to incur costs even if it contains no databa
 **Suboptimal Load Balancer Rule Configuration In Azure Standard Load Balancer**
 Service: Azure Load Balancer | Type: Inefficient Configuration
 
-As organizations migrate from the Basic to the Standard tier of Azure Load Balancer (driven by Microsoft's retirement of the Basic tier), they may unknowingly inherit cost structures they didn't previously face. Specifically, each load balancing rule - both inbound and outbound - can contribute to ongoing charges.
+As organisations migrate from the Basic to the Standard tier of Azure Load Balancer (driven by Microsoft's retirement of the Basic tier), they may unknowingly inherit cost structures they didn't previously face. Specifically, each load balancing rule - both inbound and outbound - can contribute to ongoing charges.
 
 - Audit existing Standard Load Balancer rule sets to identify unused entries
 - Remove unnecessary inbound and outbound rules, especially in non-production environments
@@ -419,9 +419,9 @@ Service: Azure Marketplace | Type: Commitment Misalignment
 
 Azure Marketplace offers two types of listings: transactable and non-transactable. Only transactable purchases contribute toward a customer's MACC commitment. See the "MACC - commercial commitment alignment" section under Commitment discounts for full drawdown mechanics, including what counts and what does not.
 
-- Prefer transactable listings in Azure Marketplace whenever MACC utilization is a priority
+- Prefer transactable listings in Azure Marketplace whenever MACC utilisation is a priority
 - Validate SKU eligibility against Microsoft's Procurement Playbook or MACC eligibility lists
-- Standardize sourcing templates and procurement workflows to explicitly document whether the offer contributes to MACC
+- Standardise sourcing templates and procurement workflows to explicitly document whether the offer contributes to MACC
 - Confirm that the purchase is transacted through the Azure portal under a subscription tied to the enrollment - credit card purchases on the Marketplace website do not count toward MACC even for eligible products
 
 **Lifecycle Visibility Gaps Inflating Renewal Costs In Azure Marketplace**
@@ -440,7 +440,7 @@ Teams often overuse Microsoft-hosted agents by running redundant or low-value jo
 
 - Audit and streamline pipelines to remove redundant or unnecessary stages
 - Use conditional logic to limit execution of non-critical pipelines
-- Prioritize agent capacity for pipelines supporting core or production workloads
+- Prioritise agent capacity for pipelines supporting core or production workloads
 
 **Overly Frequent Querying In Azure Monitor Alerts**
 Service: Azure Monitor | Type: Inefficient Configuration
@@ -463,7 +463,7 @@ In Azure Databricks environments that rely on Private Link for secure networking
 **Suboptimal Table Plan Selection In Log Analytics**
 Service: Azure Monitor | Type: Suboptimal Pricing Model
 
-By default, all Log Analytics tables are created under the Analytics plan, which is optimized for high-performance querying and interactive analysis. However, not all telemetry requires real-time access or frequent querying. (Note: Auxiliary plan availability varies per table - see Log Analytics cost control section above for current eligibility.)
+By default, all Log Analytics tables are created under the Analytics plan, which is optimised for high-performance querying and interactive analysis. However, not all telemetry requires real-time access or frequent querying. (Note: Auxiliary plan availability varies per table - see Log Analytics cost control section above for current eligibility.)
 
 - Assign the Basic plan to tables that are retained for audit, archival, or compliance purposes
 - Split high-volume ingestion sources into separate tables based on access needs

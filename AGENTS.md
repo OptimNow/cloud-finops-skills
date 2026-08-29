@@ -98,9 +98,10 @@ Quick rules:
 - All reference files carry YAML FCP frontmatter mapping the file to the FinOps
   Framework Capability it serves
 - Do NOT bump versions in content PRs. Version bumps (`.claude-plugin/plugin.json`
-  + `marketplace.json` `metadata.version` + `mcp_server/pyproject.toml`, all
-  together) happen only in a dedicated release PR, because every `plugin.json`
-  bump reaching main triggers a PyPI publish. See CLAUDE.md "release-train rule".
+  + `marketplace.json` `metadata.version` + `mcp_server/pyproject.toml` +
+  `server.json`, which carries the version twice, all together) happen only in a
+  dedicated release PR, because every `plugin.json` bump reaching main triggers a
+  PyPI publish. See CLAUDE.md "release-train rule".
 
 ---
 

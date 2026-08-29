@@ -15,7 +15,9 @@ GKE charges a flat **cluster management fee** (~$0.10/cluster/hour =
 workloads run, Autopilot keeps system-managed pods alive (control-plane
 logging, metrics agent, GMP collectors, networking). Dev / test / sandbox
 clusters left running over weekends and abandoned-after-the-PoC clusters
-accumulate this fee silently.
+accumulate this fee silently. The management fee above is an illustrative
+list rate as at August 2026 - verify against live pricing before sizing a
+business case.
 
 Two caveats before you build a business case on the management fee:
 

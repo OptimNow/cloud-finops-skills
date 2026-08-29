@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.OptimNow/cloud-finops",
   "title": "Cloud FinOps Skill & MCP",
-  "description": "Queryable Cloud FinOps knowledge for AI agents: AWS/Azure/GCP cost optimisation, waste playbooks.",
+  "description": "Cloud cost + FinOps knowledge for AI agents: AWS/Azure/GCP optimisation, AI spend, waste playbooks.",
   "repository": {
     "url": "https://github.com/OptimNow/cloud-finops-skills",
     "source": "github"

@@ -61,7 +61,8 @@ gcloud monitoring metrics list --filter="metric.type:cloudfunctions.googleapis.c
 1. **Set minimum instances** for functions where cold-start latency is
    user-visible. `min-instances=1` keeps one instance warm at the cost
    of one always-on billed execution. Trade-off: ~$5-15/month per warm
-   instance, depending on memory tier.
+   instance, depending on memory tier - an illustrative range as at May
+   2026; verify against live pricing before sizing a business case.
 2. **Reduce function size** by minimising dependencies and optimising
    startup code. Each MB of cold-start initialisation translates to
    billed time AND user-visible latency.

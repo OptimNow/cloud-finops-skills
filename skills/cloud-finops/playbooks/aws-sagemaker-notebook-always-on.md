@@ -17,7 +17,9 @@ notebook (`ml.g4dn.xlarge`) is ~$540/month. Data-science teams routinely
 spin notebooks up for a half-day experiment, walk away, and the notebook
 keeps billing for months. Multiply across a 10-person ML team and a Friday
 deadline, and the always-on notebook bill becomes the second-largest line
-in SageMaker spend after endpoints.
+in SageMaker spend after endpoints. The monthly figures are illustrative
+us-east-1 list rates as at May 2026 - verify against live pricing before
+quoting.
 
 ## Symptoms
 
@@ -68,8 +70,9 @@ actually running anything in there".
 1. **Stop** the notebook (do not delete) once confirmed idle:
    `aws sagemaker stop-notebook-instance --notebook-instance-name <name>`.
    Stopping releases the instance charge but preserves the attached ML
-   storage volume (~$0.14/GB/month - SageMaker notebook storage bills above
-   the plain EC2 EBS gp2 rate) and the notebook contents.
+   storage volume (~$0.14/GB/month as at May 2026, illustrative - SageMaker
+   notebook storage bills above the plain EC2 EBS gp2 rate) and the notebook
+   contents.
 2. **Attach an auto-shutdown LCC** so the instance never ends up always-on
    again. AWS publishes a reference script that runs every 5 minutes,
    detects kernel idle time, and stops the instance after N hours of

@@ -75,6 +75,40 @@ async def test_e2e_get_reference(server_params: StdioServerParameters) -> None:
 
 
 @pytest.mark.asyncio
+async def test_e2e_get_reference_section(server_params: StdioServerParameters) -> None:
+    """The section parameter has to survive the real transport, not just a unit call.
+
+    An optional parameter is where schema-generation defects show up: the
+    pricing hub's tools passed their own tests and then failed in Claude Code
+    on a JSON Schema dialect mismatch. So the round trip is exercised here -
+    the full body, a section of it, and the miss - through a real client.
+    """
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+
+            schema = {t.name: t.inputSchema for t in (await session.list_tools()).tools}
+            assert "section" in schema["get_reference"]["properties"]
+            assert "section" not in schema["get_reference"].get("required", [])
+
+            whole = _payload(await session.call_tool("get_reference", {"name": "finops-aws-patterns"}))
+            part = _payload(
+                await session.call_tool(
+                    "get_reference", {"name": "finops-aws-patterns", "section": "storage"}
+                )
+            )
+            assert part["partial"] is True
+            assert len(part["content"]) < len(whole["content"]) / 4
+
+            miss = _payload(
+                await session.call_tool(
+                    "get_reference", {"name": "finops-aws-patterns", "section": "kubernetes"}
+                )
+            )
+            assert "error" in miss and miss["available_sections"]
+
+
+@pytest.mark.asyncio
 async def test_e2e_find_references(server_params: StdioServerParameters) -> None:
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:

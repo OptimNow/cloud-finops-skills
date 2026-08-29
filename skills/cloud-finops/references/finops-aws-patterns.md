@@ -25,7 +25,7 @@ fcp_maturity_entry: "Crawl"
 
 > 128 cloud inefficiency patterns covering compute, storage, databases, networking,
 > and other AWS services. Use to diagnose waste, validate architecture, or build
-> optimization roadmaps. Source: PointFive Cloud Efficiency Hub.
+> optimisation roadmaps. Source: PointFive Cloud Efficiency Hub.
 
 ---
 
@@ -34,7 +34,7 @@ fcp_maturity_entry: "Crawl"
 **Idle Emr Cluster Without Auto Termination Policy**
 Service: AWS EMR | Type: Inactive Resource
 
-Amazon EMR clusters often run on large, multi-node EC2 fleets, making them costly to leave running unnecessarily. If a cluster becomes idle -no longer processing jobs -but is not terminated, it continues accruing EC2 and EMR service charges.
+Amazon EMR clusters often run on large, multi-node EC2 fleets, making them costly to leave running unnecessarily. If a cluster becomes idle - no longer processing jobs - but is not terminated, it continues accruing EC2 and EMR service charges.
 
 - Enable an auto-termination policy on EMR clusters that are intended to be short-lived or batch-oriented
 - Review and shut down idle clusters that are no longer actively running jobs
@@ -43,7 +43,7 @@ Amazon EMR clusters often run on large, multi-node EC2 fleets, making them costl
 **Inactive Aws Workspace**
 Service: AWS WorkSpaces | Type: Inactive Resource
 
-If an AWS WorkSpace has been provisioned but not accessed in a meaningful timeframe, it may represent waste -particularly if it is set to monthly billing. Many organizations leave WorkSpaces active for users who no longer need them or have shifted roles, leading to persistent charges without corresponding business value.
+If an AWS WorkSpace has been provisioned but not accessed in a meaningful timeframe, it may represent waste - particularly if it is set to monthly billing. Many organisations leave WorkSpaces active for users who no longer need them or have shifted roles, leading to persistent charges without corresponding business value.
 
 - Decommission WorkSpaces that are no longer needed
 - Switch billing mode from monthly to auto-stop for WorkSpaces with intermittent usage
@@ -83,7 +83,7 @@ Some Lambda functions perform synchronous calls to other services, APIs, or inte
 
 - Redesign functions to offload synchronous calls using asynchronous patterns (e.g., queues, event buses, Step Functions)
 - Break apart long-running workflows into smaller chained or event-driven Lambdas
-- Optimize memory allocation to minimize idle cost when waiting cannot be avoided
+- Optimise memory allocation to minimise idle cost when waiting cannot be avoided
 
 **Idle Ecs Container Instances Due To Asg Minimum Capacity**
 Service: AWS ECS | Type: Inefficient Configuration
@@ -92,7 +92,7 @@ When ECS clusters are configured with an Auto Scaling Group that maintains a min
 
 - Configure an ECS Capacity Provider for the cluster and attach a target tracking scaling policy
 - Set the ASG minimum capacity to 0 to allow scale-down during idle periods
-- Ensure ECS services are configured with appropriate scaling triggers (e.g., CPU or memory utilization)
+- Ensure ECS services are configured with appropriate scaling triggers (e.g., CPU or memory utilisation)
 
 **Missing Scheduled Shutdown For Non Production Ec2 Instances**
 Service: AWS EC2 | Type: Inefficient Configuration
@@ -101,7 +101,7 @@ Non-production EC2 instances are often provisioned for daytime-only usage but re
 
 - Implement scheduled shutdowns using AWS Instance Scheduler or EventBridge rules
 - Ensure stateful data is retained via attached EBS volumes or AMIs
-- Set start/stop windows aligned to working hours (e.g., 8 a.m.–6 p.m. weekdays)
+- Set start/stop windows aligned to working hours (e.g., 8 a.m.-6 p.m. weekdays)
 
 **Orphaned And Overprovisioned Resources In Eks Clusters**
 Service: AWS EKS | Type: Inefficient Configuration
@@ -124,7 +124,7 @@ When an EKS cluster remains on a Kubernetes version that has reached the end of 
 **Suboptimal Appstream Fleet Auto Scaling Policies**
 Service: AWS AppStream 2.0 | Type: Inefficient Configuration
 
-When fleet auto scaling policies maintain more active instances than are required to support current usage -particularly during off-peak hours -organizations incur unnecessary compute costs. Fleets often remain oversized due to conservative default configurations or lack of schedule-based scaling.
+When fleet auto scaling policies maintain more active instances than are required to support current usage - particularly during off-peak hours - organisations incur unnecessary compute costs. Fleets often remain oversized due to conservative default configurations or lack of schedule-based scaling.
 
 - Adjust minimum instance counts in auto scaling policies to reflect observed demand
 - Implement schedule-based scaling to reduce instance counts during predictable low-usage periods and increase during peak hours
@@ -136,7 +136,7 @@ Service: AWS EKS | Type: Inefficient Configuration
 When the EC2 instance types used for EKS node groups have a memory-to-CPU ratio that doesn’t match the workload profile, the result is poor bin-packing efficiency. For example, if memory-intensive containers are scheduled on compute-optimized nodes, memory may run out first while CPU remains unused.
 
 - Review container-level memory and CPU requests and limits across the cluster
-- Assess node-level resource utilization to detect fragmentation (e.g., memory maxed out while CPU remains idle)
+- Assess node-level resource utilisation to detect fragmentation (e.g., memory maxed out while CPU remains idle)
 - Compare the vCPU-to-memory ratio of node types to the average resource profile of scheduled workloads
 
 **Inefficient Workflow Design In Aws Step Functions**
@@ -163,7 +163,7 @@ Service: AWS Lambda | Type: Misconfigured Performance Optimization
 SnapStart reduces cold-start latency, but when configured inefficiently, it can increase costs. High-traffic workloads can trigger frequent snapshot restorations, multiplying costs.
 
 - Implement concurrency controls to reduce excess restorations during high traffic bursts
-- Optimize function initialization to minimize Init phase duration by loading only essential dependencies
+- Optimise function initialisation to minimise Init phase duration by loading only essential dependencies
 - Use pre-snapshot hooks (for Java) to prepare code execution and reduce overhead before the snapshot is taken
 
 **Unnecessary Multi Az Deployment For Non Production Ec2 Instances**
@@ -178,7 +178,7 @@ Multi-AZ deployment is often essential for production workloads, but its use in 
 **Unconverted Convertible Ec2 Reserved Instances**
 Service: AWS EC2 | Type: Misconfigured Reservation
 
-Convertible Reserved Instances provide valuable pricing flexibility  - but that flexibility is often underused. When EC2 workloads shift across instance families or OS types, the original RI may no longer apply to active usage.
+Convertible Reserved Instances provide valuable pricing flexibility - but that flexibility is often underused. When EC2 workloads shift across instance families or OS types, the original RI may no longer apply to active usage.
 
 - Use the AWS Management Console or CLI to convert unused Convertible RIs to match current EC2 instance usage
 - Ensure the new reservation configuration has equal or greater value, as required by AWS
@@ -200,7 +200,8 @@ In Kubernetes environments, resources such as ConfigMaps, Secrets, Services, and
 
 - Delete orphaned Persistent Volume Claims to release underlying storage (e.g., EBS volumes)
 - Remove unused Services, especially those of type LoadBalancer, to eliminate unnecessary networking charges
-- Clean up ConfigMaps and Secrets that are no longer referenced by any active workloadImplement tagging/labeling standards for all workloads to simplify orphan detection.
+- Clean up ConfigMaps and Secrets that are no longer referenced by any active workload
+- Implement tagging/labelling standards for all workloads to simplify orphan detection
 
 **Stale Dedicated Hosts For Stopped Ec2 Mac Instances**
 Service: AWS EC2 | Type: Orphaned Resource
@@ -214,18 +215,18 @@ When an EC2 Mac instance is stopped or terminated, its associated dedicated host
 **Underutilized Ec2 Commitment Due To Workload Drift**
 Service: AWS EC2 | Type: Overcommitted Reservation
 
-When EC2 usage declines, shifts to different instance families, or moves to other services (e.g., containers or serverless), organizations may find that previously purchased Standard Reserved Instances or Savings Plans no longer match current workload patterns. This misalignment results in underutilized commitments -where costs are still incurred, but no usage is benefiting from the associated discounts.
+When EC2 usage declines, shifts to different instance families, or moves to other services (e.g., containers or serverless), organisations may find that previously purchased Standard Reserved Instances or Savings Plans no longer match current workload patterns. This misalignment results in underutilised commitments - where costs are still incurred, but no usage is benefiting from the associated discounts.
 
-- Review existing workloads to identify candidates that could migrate to the underutilized instance families
-- For new or scaling workloads, prioritize launching on instance types that align with unused commitments
-- Where possible, upgrade existing workloads to fit larger reserved types  - while tracking the change to avoid overcommitment in future renewals
+- Review existing workloads to identify candidates that could migrate to the underutilised instance families
+- For new or scaling workloads, prioritise launching on instance types that align with unused commitments
+- Where possible, upgrade existing workloads to fit larger reserved types - while tracking the change to avoid overcommitment in future renewals
 
 **Overprovisioned Memory Allocation For Lambda Functions**
 Service: AWS Lambda | Type: Overprovisioned Resource
 
 Each Lambda function must be configured with a memory setting, which indirectly controls the amount of CPU and networking performance allocated. In many environments, memory settings are defined arbitrarily or left unchanged as functions evolve.
 
-- Use tools like AWS Lambda Power Tuning to benchmark and optimize memory and vCPU settings
+- Use tools like AWS Lambda Power Tuning to benchmark and optimise memory and vCPU settings
 - Incorporate right-sizing into CI/CD workflows to evaluate configuration during deployment
 - Apply consistent tagging or governance to track functions requiring periodic review
 
@@ -234,7 +235,7 @@ Service: AWS EC2 | Type: Overprovisioned Resource
 
 EC2 instances are often overprovisioned based on rough estimates, legacy patterns, or performance buffer assumptions. If an instance consistently uses only a small fraction of its provisioned CPU or memory, it likely represents an opportunity for rightsizing.
 
-- Review average CPU and memory utilization of running EC2 instances.
+- Review average CPU and memory utilisation of running EC2 instances.
 - Determine whether actual usage justifies the selected instance type or size
 - Confirm whether performance buffers, licensing rules, or other constraints require overprovisioning
 
@@ -250,7 +251,7 @@ Many teams run workloads on standard Fargate pricing even when the workload is f
 **Recursive Lambda Function Invocation**
 Service: AWS Lambda | Type: Recursive Invocation Misconfiguration
 
-Recursive invocation occurs when a Lambda function triggers itself directly or indirectly, often through an event source like SQS, SNS, or another Lambda. This loop can be unintentional  - for example, when the function writes output to a queue it also consumes.
+Recursive invocation occurs when a Lambda function triggers itself directly or indirectly, often through an event source like SQS, SNS, or another Lambda. This loop can be unintentional - for example, when the function writes output to a queue it also consumes.
 
 - Refactor logic to prevent self-invocation or recursive event loops
 - Avoid writing to the same queue or stream that triggers the function
@@ -259,7 +260,7 @@ Recursive invocation occurs when a Lambda function triggers itself directly or i
 **Excessive Lambda Retries Retry Storms**
 Service: AWS Lambda | Type: Retry Misconfiguration
 
-Retry storms occur when a function fails and is automatically retried repeatedly due to default retry behavior for asynchronous events (e.g., SQS, EventBridge). If the error is persistent and unhandled, retries can accumulate rapidly  - often invisibly  - creating a large volume of billable executions with no successful outcome.
+Retry storms occur when a function fails and is automatically retried repeatedly due to default retry behaviour for asynchronous events (e.g., SQS, EventBridge). If the error is persistent and unhandled, retries can accumulate rapidly - often invisibly - creating a large volume of billable executions with no successful outcome.
 
 - Configure DLQs to isolate and inspect failed invocations
 - Implement exponential backoff or circuit breaker patterns in retry logic
@@ -277,7 +278,7 @@ AWS Fargate supports both x86 and Graviton2 (ARM64) CPU architectures, but by de
 **Suboptimal Architecture Configuration For Lambda Functions**
 Service: AWS Lambda | Type: Suboptimal Configuration
 
-While many AWS customers have migrated EC2 workloads to Graviton to reduce costs, Lambda functions often remain on the default x86 architecture. AWS Graviton2 (ARM) offers lower pricing and equal or better performance for most supported runtimes  - yet adoption remains uneven due to legacy defaults or lack of awareness.
+While many AWS customers have migrated EC2 workloads to Graviton to reduce costs, Lambda functions often remain on the default x86 architecture. AWS Graviton2 (ARM) offers lower pricing and equal or better performance for most supported runtimes - yet adoption remains uneven due to legacy defaults or lack of awareness.
 
 - Update Lambda function configurations to use ARM/Graviton2 where compatible
 - Benchmark function performance and duration to validate equal or improved performance
@@ -295,7 +296,7 @@ Lambda functions default to the x86\_64 architecture, which is more expensive th
 **Inefficient File Format And Layout For Athena Queries**
 Service: AWS Athena | Type: Suboptimal Data Layout or Format
 
-Storing raw JSON or CSV files in S3 -especially when written frequently in small batches -leads to excessive scan costs in Athena. These formats are row-based and verbose, requiring Athena to scan and parse the full content even when only a few fields are queried.
+Storing raw JSON or CSV files in S3 - especially when written frequently in small batches - leads to excessive scan costs in Athena. These formats are row-based and verbose, requiring Athena to scan and parse the full content even when only a few fields are queried.
 
 - Convert raw data to columnar formats such as Parquet or ORC to reduce scan size
 - Partition data based on common query dimensions (e.g., date, tenant ID)
@@ -304,7 +305,7 @@ Storing raw JSON or CSV files in S3 -especially when written frequently in small
 **Inefficient Processor Selection In Ec2 Instances**
 Service: AWS EC2 | Type: Suboptimal Instance Family Selection
 
-Many organizations default to Intel-based EC2 instances due to familiarity or assumptions about workload compatibility. However, AWS offers AMD and Graviton-based alternatives that often deliver significantly better price-performance for general-purpose and compute-optimized workloads.
+Many organisations default to Intel-based EC2 instances due to familiarity or assumptions about workload compatibility. However, AWS offers AMD and Graviton-based alternatives that often deliver significantly better price-performance for general-purpose and compute-optimized workloads.
 
 - Check for architecture-specific performance issues or compatibility blockers before switching
 - Benchmark representative workloads on Intel, AMD, and Graviton instance types
@@ -317,21 +318,21 @@ Lambda is designed for simplicity and elasticity, but its pricing model becomes 
 
 - Establish thresholds for Lambda usage that trigger cost-efficiency reviews
 - Evaluate total Lambda cost versus equivalent EC2/ECS/EKS workloads
-- Consider replatforming long-running or consistently triggered workloads to containerized or instance-based compute
+- Consider replatforming long-running or consistently triggered workloads to containerised or instance-based compute
 
 **Suboptimal Use Of Compute Savings Plans For Specialized Instances**
 Service: AWS EC2 | Type: Suboptimal Pricing Model
 
-Accelerated EC2 instance types such as `p5.48xlarge` and `p5en.48xlarge (often used for ML/AI workloads)` are eligible for Compute Savings Plans, but the discount rates offered are modest compared to more common instance families. When organizations rely solely on CSPs, these lower priority instances are typically the last to benefit from the plan, especially if other instance types consume most of the discounted hours.
+Accelerated EC2 instance types such as `p5.48xlarge` and `p5en.48xlarge (often used for ML/AI workloads)` are eligible for Compute Savings Plans, but the discount rates offered are modest compared to more common instance families. When organisations rely solely on CSPs, these lower priority instances are typically the last to benefit from the plan, especially if other instance types consume most of the discounted hours.
 
-- Consider using dedicated EC2 Instance Savings Plans instead of CSPs for predictable, high-utilization p5 workloads
+- Consider using dedicated EC2 Instance Savings Plans instead of CSPs for predictable, high-utilisation p5 workloads
 - Model CSP allocation on actual discount percentages in order to determine whether p-type instances are likely to be left uncovered
 - Compare total cost of ownership between CSPs and dedicated instance savings plans for your specific usage patterns
 
 **Suboptimal Use Of On Demand Instances In Fault Tolerant Ec2 Workloads**
 Service: AWS EC2 | Type: Suboptimal Pricing Model
 
-Many EC2 workloads -such as development environments, test jobs, stateless services, and data processing pipelines -can tolerate interruptions and do not require the reliability of On-Demand pricing. Using On-Demand instances in these scenarios drives up cost without adding value.
+Many EC2 workloads - such as development environments, test jobs, stateless services, and data processing pipelines - can tolerate interruptions and do not require the reliability of On-Demand pricing. Using On-Demand instances in these scenarios drives up cost without adding value.
 
 - Reconfigure eligible workloads to use Spot Instances via launch templates or Auto Scaling policies
 - Use mixed-instance and capacity-optimized allocation strategies for better availability
@@ -343,17 +344,17 @@ Service: AWS EKS | Type: Underutilization
 When Kubernetes workloads request more CPU and memory than they actually consume, nodes must reserve capacity that remains unused. This leads to lower node density, forcing the cluster to maintain more instances than necessary.
 
 - Identify workloads where average CPU and memory usage are consistently much lower than requested values
-- Analyze container-level metrics to assess request-to-usage ratios over time
+- Analyse container-level metrics to assess request-to-usage ratios over time
 - Leverage Vertical Pod Autoscaler recommendations, if available, to identify right-sizing opportunities
 
 **Underutilized Or Overprovisioned Appstream Instances**
 Service: AWS AppStream 2.0 | Type: Underutilization
 
-AppStream fleets often default to instance types designed for worst-case or peak usage scenarios, even when average workloads are significantly lighter. This leads to consistently low utilization of CPU, memory, or GPU resources and inflated infrastructure costs.
+AppStream fleets often default to instance types designed for worst-case or peak usage scenarios, even when average workloads are significantly lighter. This leads to consistently low utilisation of CPU, memory, or GPU resources and inflated infrastructure costs.
 
-- Right-size AppStream fleets by selecting smaller or less specialized instance types that meet current workload demands
+- Right-size AppStream fleets by selecting smaller or less specialised instance types that meet current workload demands
 - Conduct performance testing after downgrading to ensure that application responsiveness and user experience are preserved
-- Update provisioning templates or fleet configurations to reflect optimized instance types going forward
+- Update provisioning templates or fleet configurations to reflect optimised instance types going forward
 
 **Underutilized Instances In Ec2 Auto Scaling Group**
 Service: AWS EC2 | Type: Underutilized Resource
@@ -370,16 +371,16 @@ Service: AWS AppStream 2.0 | Type: Unused Resource
 When AppStream builder instances are left running but unused, they continue to generate compute charges without delivering any value. These instances are commonly left active after configuration or image creation is completed but can be safely stopped or terminated when not in use.
 
 - Stop or decommission builder instances that are no longer required.
-- Implement an automated workflow -such as a scheduled Lambda function -that stops builder instances after a defined period of inactivity.
+- Implement an automated workflow - such as a scheduled Lambda function - that stops builder instances after a defined period of inactivity.
 - Establish operational guidelines to ensure builder instances are shut down after image creation or testing tasks are completed.
 
 **Inactive Ec2 Instance**
 Service: AWS EC2 | Type: Unused Resource
 
-This inefficiency occurs when an EC2 instance remains in a running state but is not actively utilized. These instances may be remnants of past projects, forgotten development environments, or temporarily created for testing and never decommissioned.
+This inefficiency occurs when an EC2 instance remains in a running state but is not actively utilised. These instances may be remnants of past projects, forgotten development environments, or temporarily created for testing and never decommissioned.
 
 - Identify EC2 instances that have been running throughout the lookback period
-- Review CPU utilization, network throughput, and disk activity for sustained inactivity
+- Review CPU utilisation, network throughput, and disk activity for sustained inactivity
 - Check for the absence of inbound or outbound connections over the same period
 
 **Inactive Eks Cluster**
@@ -389,7 +390,7 @@ Clusters that no longer run active workloads but remain provisioned continue inc
 
 - Identify EKS clusters with no active Deployments, StatefulSets, DaemonSets, CronJobs, or running pods over a representative time window
 - Review node group activity and verify whether any EC2 instances or Fargate tasks are currently attached to the cluster
-- Analyze cluster API server logs or CloudWatch metrics to confirm minimal API usage and cluster activity
+- Analyse cluster API server logs or CloudWatch metrics to confirm minimal API usage and cluster activity
 
 **Inactive Kubernetes Workload**
 Service: AWS EKS | Type: Unused Resource
@@ -416,7 +417,7 @@ Many teams publish new Lambda versions frequently (e.g., through CI/CD pipelines
 **Overprovisioned Throughput In Efs**
 Service: AWS EFS | Type: Explanation
 
-When file systems are launched with Provisioned Throughput, teams often overestimate future demand  - especially in environments cloned from production or sized “just to be safe.” Over time, many workloads consume far less throughput than allocated, especially in dev/test environments or during periods of reduced usage. These overprovisioned settings can silently accrue substantial monthly charges that go unnoticed without intentional review.
+When file systems are launched with Provisioned Throughput, teams often overestimate future demand - especially in environments cloned from production or sized “just to be safe.” Over time, many workloads consume far less throughput than allocated, especially in dev/test environments or during periods of reduced usage. These overprovisioned settings can silently accrue substantial monthly charges that go unnoticed without intentional review.
 
 - Reconfigure overprovisioned file systems with a reduced Provisioned Throughput value
 - For workloads with low and predictable throughput, consider switching to Elastic Throughput
@@ -437,7 +438,7 @@ Service: AWS S3 | Type: Inefficient Configuration
 Some S3 lifecycle policies are configured to transition objects from Standard storage to Intelligent-Tiering after a fixed number of days (e.g., 30 days). This creates a delay where objects reside in S3 Standard, incurring higher storage costs without benefit.
 
 - Identify buckets where Intelligent-Tiering is the intended or primary storage class
-- Review how new objects are placed into those buckets -determine whether they are uploaded directly into Intelligent-Tiering or initially stored in S3 Standard and later moved to Intelligent-Tiering via a Lifecycle Policy
+- Review how new objects are placed into those buckets - determine whether they are uploaded directly into Intelligent-Tiering or initially stored in S3 Standard and later moved to Intelligent-Tiering via a Lifecycle Policy
 - Evaluate whether the delay provides any functional or operational benefit, or if it is a legacy configuration
 
 **Infrequently Accessed Objects Stored In S3 Standard Tier**
@@ -452,7 +453,7 @@ S3 Standard is the default storage class and is often used by default even for d
 **Missing S3 Gateway Endpoint For Intra Region Ec2 Access**
 Service: AWS S3 | Type: Inefficient Configuration
 
-When EC2 instances within a VPC access Amazon S3 in the same region without a Gateway VPC Endpoint, traffic is routed through the public S3 endpoint and incurs standard internet egress charges  - even though it remains within the AWS network. This results in unnecessary egress charges, as AWS treats this traffic as data transfer out to the internet, billed under the S3 service.
+When EC2 instances within a VPC access Amazon S3 in the same region without a Gateway VPC Endpoint, traffic is routed through the public S3 endpoint and incurs standard internet egress charges - even though it remains within the AWS network. This results in unnecessary egress charges, as AWS treats this traffic as data transfer out to the internet, billed under the S3 service.
 
 - Deploy a Gateway VPC Endpoint for S3 in VPCs that generate large intra-region S3 traffic
 - Update route tables and access policies to route S3 traffic through the endpoint
@@ -461,7 +462,7 @@ When EC2 instances within a VPC access Amazon S3 in the same region without a Ga
 **Missing S3 Lifecycle Policy For Incomplete Multipart Uploads**
 Service: AWS S3 | Type: Inefficient Configuration
 
-Multipart upload allows large files to be uploaded in segments. Each part is stored individually until the upload is finalized by a “CompleteMultipartUpload” request.
+Multipart upload allows large files to be uploaded in segments. Each part is stored individually until the upload is finalised by a “CompleteMultipartUpload” request.
 
 - Identify S3 buckets that are used for large file uploads or automation-driven data ingestion
 - Review whether an S3 Lifecycle rule exists to abort incomplete multipart uploads
@@ -470,7 +471,7 @@ Multipart upload allows large files to be uploaded in segments. Each part is sto
 **Overprovisioned Ebs Volume**
 Service: AWS EBS | Type: Inefficient Configuration
 
-EBS volumes often remain significantly overprovisioned compared to the actual data stored on them. Because billing is based on the total provisioned capacity -not actual usage -this creates ongoing waste when large volumes are only partially used.
+EBS volumes often remain significantly overprovisioned compared to the actual data stored on them. Because billing is based on the total provisioned capacity - not actual usage - this creates ongoing waste when large volumes are only partially used.
 
 - If the volume is attached to a running EC2 instance and can tolerate replacement, create a smaller volume of the same type and migrate the data
 - For volumes that cannot be replaced easily, plan to adjust provisioning defaults in AMIs, launch templates, or infrastructure-as-code going forward
@@ -488,7 +489,7 @@ This inefficiency occurs when small files are stored in S3 storage classes that 
 **Suboptimal Use Of Efs Storage Classes**
 Service: AWS EFS | Type: Misaligned Storage Tiering
 
-Many organizations default to storing all EFS data in the Standard class, regardless of how frequently data is accessed. This results in inefficient spend for workloads with significant portions of data that are rarely read.
+Many organisations default to storing all EFS data in the Standard class, regardless of how frequently data is accessed. This results in inefficient spend for workloads with significant portions of data that are rarely read.
 
 - Transition infrequently accessed data to EFS IA or Archive storage classes to reduce cost
 - Enable Intelligent Tiering for workloads where access frequency is variable or difficult to predict
@@ -497,7 +498,7 @@ Many organizations default to storing all EFS data in the Standard class, regard
 **Excessive Kms Charges From Missing S3 Bucket Key Configuration**
 Service: AWS S3 | Type: Misconfiguration
 
-S3 buckets configured with SSE-KMS but without Bucket Keys generate a separate KMS request for each object operation. This behavior results in disproportionately high KMS request costs for data-intensive workloads such as analytics, backups, or frequently accessed objects.
+S3 buckets configured with SSE-KMS but without Bucket Keys generate a separate KMS request for each object operation. This behaviour results in disproportionately high KMS request costs for data-intensive workloads such as analytics, backups, or frequently accessed objects.
 
 - https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html
 - https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingBucketKeys.html
@@ -514,7 +515,7 @@ When replicating an EFS file system across AWS regions (e.g., for disaster recov
 **Delete On Termination Disabled For Ebs Volume**
 Service: AWS EBS | Type: Misconfiguration Leading to Future Orphaned Resource
 
-When EC2 instances are provisioned, each attached EBS volume has a `DeleteOnTermination` flag that determines whether it will be deleted when the instance is terminated. If this flag is set to `false`  - often unintentionally in custom launch templates, AMIs, or older automation scripts  - volumes persist after termination, resulting in orphaned storage.
+When EC2 instances are provisioned, each attached EBS volume has a `DeleteOnTermination` flag that determines whether it will be deleted when the instance is terminated. If this flag is set to `false` - often unintentionally in custom launch templates, AMIs, or older automation scripts - volumes persist after termination, resulting in orphaned storage.
 
 - Update the instance configuration to set `DeleteOnTermination=true` for non-persistent volumes
 - Modify infrastructure-as-code templates and launch configurations to use the correct flag by default
@@ -523,7 +524,7 @@ When EC2 instances are provisioned, each attached EBS volume has a `DeleteOnTerm
 **Excessive Cloudtrail Charges From Bulk S3 Deletes**
 Service: AWS S3 | Type: Misconfigured Logging
 
-When large numbers of objects are deleted from S3 -such as during cleanup or lifecycle transitions -CloudTrail can log every individual delete operation if data event logging is enabled. This is especially costly when deleting millions of objects from buckets configured with CloudTrail data event logging at the object level.
+When large numbers of objects are deleted from S3 - such as during cleanup or lifecycle transitions - CloudTrail can log every individual delete operation if data event logging is enabled. This is especially costly when deleting millions of objects from buckets configured with CloudTrail data event logging at the object level.
 
 - Temporarily disable S3 data event logging before initiating bulk deletes where logging is unnecessary
 - Scope CloudTrail data event logging to only include relevant prefixes or buckets requiring detailed auditability
@@ -531,9 +532,9 @@ When large numbers of objects are deleted from S3 -such as during cleanup or lif
 **Misaligned S3 Storage Tier Selection Based On Access Patterns**
 Service: AWS S3 | Type: Misconfigured Storage Tier
 
-While moving objects to colder storage classes like Glacier or Infrequent Access (IA) can reduce storage costs, premature transitions without analyzing historical access patterns can lead to unintended expenses. Retrieval charges, restore time delays, and early delete penalties often go unaccounted for in simplistic tiering decisions.
+While moving objects to colder storage classes like Glacier or Infrequent Access (IA) can reduce storage costs, premature transitions without analysing historical access patterns can lead to unintended expenses. Retrieval charges, restore time delays, and early delete penalties often go unaccounted for in simplistic tiering decisions.
 
-- Use S3 Storage Lens or CUR data to analyze per-object or per-prefix access frequency before applying lifecycle transitions
+- Use S3 Storage Lens or CUR data to analyse per-object or per-prefix access frequency before applying lifecycle transitions
 - Apply intelligent-tiering selectively where access patterns are unpredictable
 - Avoid bulk transitions to IA or Glacier for data with unclear or variable access characteristics
 
@@ -549,7 +550,7 @@ When S3 versioning is enabled but no lifecycle rules are defined for non-current
 **Outdated And Expensive Ebs Volume Type**
 Service: AWS EBS | Type: Modernization
 
-This inefficiency occurs when legacy volume types such as gp2 or io1 remain in use, even though AWS has released newer types -like gp3 and io2 -that offer better performance at lower cost. Gp3 allows users to configure IOPS and throughput independently of volume size, while io2 provides higher durability and more predictable performance than io1.
+This inefficiency occurs when legacy volume types such as gp2 or io1 remain in use, even though AWS has released newer types - like gp3 and io2 - that offer better performance at lower cost. Gp3 allows users to configure IOPS and throughput independently of volume size, while io2 provides higher durability and more predictable performance than io1.
 
 - Identify volumes using gp2, io1, or other legacy types
 - Compare current performance needs (IOPS, throughput) with the default capabilities of newer alternatives
@@ -569,7 +570,7 @@ Service: AWS EBS | Type: Overprovisioned Resource
 
 This inefficiency occurs when an EBS volume has provisioned IOPS levels that consistently exceed the actual I/O requirements of the workload it supports. This can happen when performance buffers are estimated too high, usage patterns change over time, or default settings are left unadjusted.
 
-- Review actual IOPS usage over a representative time window (e.g., 14–30 days)
+- Review actual IOPS usage over a representative time window (e.g., 14-30 days)
 - Compare provisioned IOPS to peak and average demand to assess excess capacity
 - Confirm whether performance requirements or bursty workloads justify the current configuration
 
@@ -597,7 +598,7 @@ Service: AWS EBS | Type: Suboptimal Storage Tier
 EBS Snapshot Archive is a lower-cost storage tier for rarely accessed snapshots retained for compliance, regulatory, or long-term backup purposes. Archiving snapshots that do not require frequent or fast retrieval can reduce snapshot storage costs by up to 75%.
 
 - Archive eligible snapshots using the `ModifySnapshotTier` API, AWS CLI, or console
-- Confirm organizational retention policies before archiving
+- Confirm organisational retention policies before archiving
 - Ensure teams understand how to restore archived snapshots and the longer retrieval times involved
 
 **Lack Of Deduplication And Change Block Tracking In Aws Backup**
@@ -621,7 +622,7 @@ EBS volumes frequently remain detached after EC2 instances are terminated, repla
 **Inactive And Unmounted Efs File System**
 Service: AWS EFS | Type: Unused Resource
 
-EFS file systems that are no longer attached to any running services  - such as EC2 instances or Lambda functions  - continue to incur storage charges. This often occurs after workloads are decommissioned but the file system is left behind.
+EFS file systems that are no longer attached to any running services - such as EC2 instances or Lambda functions - continue to incur storage charges. This often occurs after workloads are decommissioned but the file system is left behind.
 
 - Delete EFS file systems that are no longer in use and have no attached mount targets
 - If data must be retained, consider exporting it to a lower-cost storage service (e.g., S3 Glacier) before deletion
@@ -630,7 +631,7 @@ EFS file systems that are no longer attached to any running services  - such as 
 **Inactive S3 Bucket**
 Service: AWS S3 | Type: Unused Resource
 
-S3 buckets often persist after projects complete or when the associated workloads have been retired. If a bucket is no longer being read from or written to -and its contents are not required for compliance, backup, or retention purposes -it represents ongoing cost without delivering value.
+S3 buckets often persist after projects complete or when the associated workloads have been retired. If a bucket is no longer being read from or written to - and its contents are not required for compliance, backup, or retention purposes - it represents ongoing cost without delivering value.
 
 - Identify S3 buckets with no read or write activity during the defined lookback period
 - Review object access patterns to confirm that stored data is not being queried or updated
@@ -639,7 +640,7 @@ S3 buckets often persist after projects complete or when the associated workload
 **Unaccessed Ebs Snapshot**
 Service: AWS EBS | Type: Unused Resource
 
-This inefficiency arises when snapshots are retained long after they’ve served their purpose. Snapshots may have been created for backups, migrations, or disaster recovery plans but were never deleted -even after the related workload or volume was decommissioned.
+This inefficiency arises when snapshots are retained long after they’ve served their purpose. Snapshots may have been created for backups, migrations, or disaster recovery plans but were never deleted - even after the related workload or volume was decommissioned.
 
 - EBS Snapshot Pricing
 - Working with Snapshots
@@ -656,10 +657,10 @@ This inefficiency occurs when an EC2 instance is stopped but still has one or mo
 **Unused S3 Storage Lens Advanced**
 Service: AWS S3 | Type: Unused Resource
 
-S3 Storage Lens Advanced provides valuable insights into storage usage and trends, but it incurs a recurring cost. Organisations often enable it during an optimization initiative but fail to turn it off afterwards.
+S3 Storage Lens Advanced provides valuable insights into storage usage and trends, but it incurs a recurring cost. Organisations often enable it during an optimisation initiative but fail to turn it off afterwards.
 
 - Disable S3 Storage Lens Advanced when not actively needed
-- Use the free tier for basic visibility and re-enable Advanced only during optimization cycles
+- Use the free tier for basic visibility and re-enable Advanced only during optimisation cycles
 - Set a periodic review of observability tools to ensure paid features still deliver value
 
 ---
@@ -931,7 +932,7 @@ flexibility. The decision is rarely purely financial.
 **Inefficient Use Of On Demand Capacity In Dynamodb**
 Service: AWS DynamoDB | Type: Inefficient Configuration
 
-While On-Demand mode is well-suited for unpredictable or bursty workloads, it is often cost-inefficient for applications with consistent throughput. In these cases, shifting to Provisioned mode with Auto Scaling allows teams to set a baseline level of capacity and scale incrementally as needed -often yielding substantial cost savings without compromising performance.
+While On-Demand mode is well-suited for unpredictable or bursty workloads, it is often cost-inefficient for applications with consistent throughput. In these cases, shifting to Provisioned mode with Auto Scaling allows teams to set a baseline level of capacity and scale incrementally as needed - often yielding substantial cost savings without compromising performance.
 
 - Identify DynamoDB tables configured to use On-Demand capacity mode
 - Review historical read/write activity for patterns of consistent or gradually increasing traffic
@@ -940,7 +941,7 @@ While On-Demand mode is well-suited for unpredictable or bursty workloads, it is
 **Outdated Elasticsearch Version Triggering Extended Support Charges**
 Service: AWS ElasticSearch | Type: Inefficient Configuration
 
-Many legacy workloads still run on older Elasticsearch versions  - particularly 5.x, 6.x, or 7.x  - due to inertia, compatibility constraints, or lack of ownership. Once these versions exceed their standard support window, AWS begins charging an hourly Extended Support fee for each domain.
+Many legacy workloads still run on older Elasticsearch versions - particularly 5.x, 6.x, or 7.x - due to inertia, compatibility constraints, or lack of ownership. Once these versions exceed their standard support window, AWS begins charging an hourly Extended Support fee for each domain.
 
 - Upgrade to a supported version of OpenSearch
 - Be aware that upgrading from Elasticsearch 7.x may require reindexing or application compatibility changes
@@ -959,7 +960,7 @@ When an OpenSearch or Elasticsearch domain remains on a version past its standar
 **Outdated Opensearch Version Triggering Extended Support Charges**
 Service: AWS OpenSearch | Type: Inefficient Configuration
 
-Domains running outdated OpenSearch versions  - particularly OpenSearch 1.x  - begin to incur AWS Extended Support charges once they fall outside of the standard support period. These charges are persistent and apply even if the domain is inactive or lightly used.
+Domains running outdated OpenSearch versions - particularly OpenSearch 1.x - begin to incur AWS Extended Support charges once they fall outside of the standard support period. These charges are persistent and apply even if the domain is inactive or lightly used.
 
 - Upgrade OpenSearch domains to a supported version
 - Test upgrade compatibility in lower environments before applying in production
@@ -980,7 +981,7 @@ Service: AWS RDS | Type: Inefficient Configuration
 This inefficiency occurs when an RDS instance uses a high-cost storage type such as io1 or io2 but does not require the performance benefits it provides. In many cases, provisioned IOPS are set at or below the free baseline included with gp3 (3,000 IOPS and 125 MB/s).
 
 - Identify RDS instances using high-cost storage types (e.g., io1, io2)
-- Review IOPS and throughput metrics to assess whether provisioned performance is being fully utilized
+- Review IOPS and throughput metrics to assess whether provisioned performance is being fully utilised
 - Evaluate whether current workloads would meet SLAs with a general-purpose alternative like gp3
 
 **Suboptimal Storage Type For Dynamodb Table**
@@ -999,7 +1000,7 @@ Many Aurora clusters default to using the Standard configuration, which charges 
 
 - Identify Aurora clusters currently using the Standard storage configuration
 - Review historical cost breakdowns to evaluate the portion of spend attributed to I/O charges
-- Determine whether the workload exhibits high read/write activity or transactional behavior
+- Determine whether the workload exhibits high read/write activity or transactional behaviour
 
 **Unnecessary Multi Az Configuration For Non Production Rds Instances**
 Service: AWS RDS | Type: Misconfigured Redundancy
@@ -1027,7 +1028,7 @@ Non-production OpenSearch domains often inherit Multi-AZ configurations from pro
 **Outdated Rds Cluster Incurring Extended Support Charges**
 Service: AWS RDS | Type: Modernization
 
-When an RDS cluster is not upgraded in time, it can fall out of standard support and incur Extended Support charges. This often happens when upgrade cycles are delayed, blocked by compatibility issues, or deprioritized due to competing initiatives.
+When an RDS cluster is not upgraded in time, it can fall out of standard support and incur Extended Support charges. This often happens when upgrade cycles are delayed, blocked by compatibility issues, or deprioritised due to competing initiatives.
 
 - Identify RDS clusters running database engine versions past their standard support window
 - Confirm whether the cluster is currently accruing Extended Support charges
@@ -1054,7 +1055,7 @@ Customers often delay upgrading Aurora clusters due to compatibility concerns or
 **Outdated Rds Versions Triggering Extended Support Charges**
 Service: AWS RDS | Type: Outdated Engine Version
 
-Many organizations continue to run outdated database engines, such as MySQL 5.7 or PostgreSQL 11, beyond their support windows. Beginning in 2024, AWS automatically enrolls these into Extended Support to maintain security updates, adding incremental charges that scale with vCPU count.
+Many organisations continue to run outdated database engines, such as MySQL 5.7 or PostgreSQL 11, beyond their support windows. Beginning in 2024, AWS automatically enrolls these into Extended Support to maintain security updates, adding incremental charges that scale with vCPU count.
 
 - Upgrade RDS instances to currently supported major versions to avoid Extended Support fees
 - Plan upgrades in non-production first to validate compatibility before applying in production
@@ -1063,10 +1064,10 @@ Many organizations continue to run outdated database engines, such as MySQL 5.7 
 **Underutilized Rds Commitment Due To Workload Drift**
 Service: AWS RDS | Type: Overcommitted Reservation
 
-RDS workloads often evolve  - changing engine types, rightsizing instances, or shifting to Aurora or serverless models. When these changes occur after Reserved Instances have been purchased, the existing commitments may no longer match active usage.
+RDS workloads often evolve - changing engine types, rightsizing instances, or shifting to Aurora or serverless models. When these changes occur after Reserved Instances have been purchased, the existing commitments may no longer match active usage.
 
 - Evaluate whether current or new workloads can run on the reserved instance types
-- Prioritize launching new RDS instances that align with the unused commitment
+- Prioritise launching new RDS instances that align with the unused commitment
 - Where feasible, upgrade or shift workloads to covered instance classes while monitoring performance and future fit
 
 **Outdated Elasticache Node Type**
@@ -1084,7 +1085,7 @@ Service: AWS RDS | Type: Overprovisioned Resource
 This inefficiency occurs when an RDS instance is allocated significantly more storage than it consumes. For example, a 2TB volume might contain only 150GB of actual data.
 
 - Identify RDS instances where provisioned storage significantly exceeds actual usage
-- Review storage metrics to validate consistent underutilization (e.g., <25% usage over time)
+- Review storage metrics to validate consistent underutilisation (e.g., <25% usage over time)
 - Evaluate whether storage needs have declined due to archival, data aging, or workload changes
 
 **Underutilized Elasticache Node**
@@ -1093,13 +1094,13 @@ Service: AWS ElastiCache | Type: Overprovisioned Resource
 ElastiCache clusters are often sized for peak performance or reliability assumptions that no longer reflect current workload needs. When memory and CPU usage remain consistently low, the node is likely overprovisioned.
 
 - Rightsize nodes to smaller instance types that align with observed usage
-- Modernize to newer instance families when possible to improve price-performance
+- Modernise to newer instance families when possible to improve price-performance
 - Remove idle or redundant nodes in dev, staging, or non-HA environments
 
 **Underutilized Rds Instance**
 Service: AWS RDS | Type: Overprovisioned Resource
 
-This inefficiency occurs when an RDS instance is consistently operating below its provisioned capacity -for example, showing low CPU, or memory utilization over an extended period. This often results from conservative initial sizing, decreased workload demand, or failure to review and adjust after deployment.
+This inefficiency occurs when an RDS instance is consistently operating below its provisioned capacity - for example, showing low CPU, or memory utilisation over an extended period. This often results from conservative initial sizing, decreased workload demand, or failure to review and adjust after deployment.
 
 - Identify RDS instances with consistently low CPU and memory usage over a representative time window
 - Compare observed performance to the instance class’s capabilities to assess overprovisioning
@@ -1112,7 +1113,7 @@ Many workloads default to using Redis or Memcached without evaluating whether a 
 
 - For Redis-compatible but non-persistent workloads, consider migrating to Valkey
 - If using Memcached, reevaluate whether Redis or Valkey offers better price-performance
-- Note that engine migration typically requires cluster recreation and data migration  - plan accordingly
+- Note that engine migration typically requires cluster recreation and data migration - plan accordingly
 
 **Non Graviton Elasticache Node On Eligible Workload**
 Service: AWS ElastiCache | Type: Suboptimal Instance Family Selection
@@ -1121,7 +1122,7 @@ Many Redis and Memcached clusters still use legacy x86-based node types (e.g., c
 
 - Switch node types to cache.r6g, cache.m6g, or cache.t4g equivalents
 - Update provisioning logic to default to Graviton families for new clusters
-- Pilot in non-prod or lower-tier environments to validate behavior and latency
+- Pilot in non-prod or lower-tier environments to validate behaviour and latency
 
 **Non Graviton Rds Instance On Eligible Workload**
 Service: AWS RDS | Type: Suboptimal Instance Family Selection
@@ -1135,11 +1136,11 @@ Many RDS workloads continue to run on older x86 instance types (e.g., db.m5, db.
 **Inefficient Use Of Rds Reader Nodes**
 Service: AWS RDS | Type: Suboptimal Workload Distribution
 
-RDS reader nodes are intended to handle read-only workloads, allowing for traffic offloading from the primary (writer) node. However, in many environments, services are misconfigured or hardcoded to send all traffic -including reads -to the writer node.
+RDS reader nodes are intended to handle read-only workloads, allowing for traffic offloading from the primary (writer) node. However, in many environments, services are misconfigured or hardcoded to send all traffic - including reads - to the writer node.
 
 - Refactor application logic or database client configurations to route read traffic to reader endpoints
 - Introduce or enhance query routing layers (e.g., using database drivers with read/write splitting support)
-- Remove reader nodes if there is no realistic path to utilizing them efficiently
+- Remove reader nodes if there is no realistic path to utilising them efficiently
 
 **Underutilized Read Capacity On A Dynamodb Table**
 Service: AWS DynamoDB | Type: Underutilization
@@ -1147,7 +1148,7 @@ Service: AWS DynamoDB | Type: Underutilization
 Provisioned capacity mode is appropriate for workloads with consistent or predictable throughput. However, when read capacity is significantly over-provisioned relative to actual usage, it results in wasted spend.
 
 - Identify DynamoDB tables using Provisioned capacity mode
-- Review utilization history to assess average read throughput
+- Review utilisation history to assess average read throughput
 - Determine whether actual read usage is consistently below the provisioned capacity
 
 **Underutilized Write Capacity On A Dynamodb Table**
@@ -1156,7 +1157,7 @@ Service: AWS DynamoDB | Type: Underutilization
 Provisioned capacity mode is appropriate for workloads with consistent or predictable throughput. However, when write capacity is significantly over-provisioned relative to actual usage, it results in wasted spend.
 
 - Identify DynamoDB tables using Provisioned capacity mode
-- Review utilization history over a 14-day or longer period to assess average write throughput
+- Review utilisation history over a 14-day or longer period to assess average write throughput
 - Determine whether actual write usage is consistently below the provisioned capacity
 
 **Inactive Dynamodb Table**
@@ -1171,11 +1172,11 @@ This inefficiency occurs when a DynamoDB table is no longer accessed by any acti
 **Inactive Rds Cluster**
 Service: AWS RDS | Type: Unused Resource
 
-This inefficiency occurs when an RDS cluster remains provisioned but is no longer serving any workloads and has no active database connections. Unlike underutilized resources, these clusters are completely idle -showing no query activity, background processing, or usage over time.
+This inefficiency occurs when an RDS cluster remains provisioned but is no longer serving any workloads and has no active database connections. Unlike underutilised resources, these clusters are completely idle - showing no query activity, background processing, or usage over time.
 
 - Identify RDS clusters with no active connections or query activity during the lookback period
 - Confirm whether the cluster is receiving any traffic from applications or internal services
-- Check for sustained low or zero CPU utilization, network throughput, and read/write IOPS
+- Check for sustained low or zero CPU utilisation, network throughput, and read/write IOPS
 
 **Inactive Rds Instance**
 Service: AWS RDS | Type: Unused Resource
@@ -1207,7 +1208,7 @@ Manual snapshots are often created for operational tasks like upgrades, migratio
 **No Lifecycle Management For Temporarily Stopped Rds Instances**
 Service: AWS RDS | Type: Unused Resource
 
-While stopping an RDS instance reduces runtime cost, AWS enforces a 7-day limit on stopped state. After this period, the instance is automatically restarted and resumes incurring compute charges  - even if the database is still not needed.
+While stopping an RDS instance reduces runtime cost, AWS enforces a 7-day limit on stopped state. After this period, the instance is automatically restarted and resumes incurring compute charges - even if the database is still not needed.
 
 - Take a snapshot and delete the RDS instance to avoid all runtime charges
 - Restore from snapshot only when the environment is needed again
@@ -1219,7 +1220,7 @@ While stopping an RDS instance reduces runtime cost, AWS enforces a 7-day limit 
 **Elastic Load Balancer With Only One Ec2 Instance**
 Service: AWS ELB | Type: Inefficient Architecture
 
-An ELB with only one registered EC2 instance does not achieve its core purpose -distributing traffic across multiple backends. In this configuration, the ELB adds complexity and cost without improving availability, scalability, or fault tolerance.
+An ELB with only one registered EC2 instance does not achieve its core purpose - distributing traffic across multiple backends. In this configuration, the ELB adds complexity and cost without improving availability, scalability, or fault tolerance.
 
 - If no scaling is planned or needed, remove the ELB and route traffic directly to the EC2 instance using a static IP or DNS entry
 - If future scaling is expected, consider retaining the ELB but update documentation and monitoring to ensure it doesn't remain in this state long-term
@@ -1228,20 +1229,20 @@ An ELB with only one registered EC2 instance does not achieve its core purpose -
 **Imbalanced Data Transfer Between Availability Zones**
 Service: AWS Data Transfer | Type: Inefficient Architecture
 
-Some architectures unintentionally route large volumes of traffic between resources that reside in different Availability Zones -such as database queries, service calls, replication, or logging. While these patterns may be functionally correct, they can lead to unnecessary data transfer charges when the traffic could be contained within a single AZ.
+Some architectures unintentionally route large volumes of traffic between resources that reside in different Availability Zones - such as database queries, service calls, replication, or logging. While these patterns may be functionally correct, they can lead to unnecessary data transfer charges when the traffic could be contained within a single AZ.
 
 - Identify resources that receive or send high volumes of traffic to other Availability Zones within the same region
 - Review VPC flow logs, CloudWatch metrics, or billing data to assess regional data transfer patterns
-- Determine whether the resource acts as a centralized destination for data aggregation, storage, or processing
+- Determine whether the resource acts as a centralised destination for data aggregation, storage, or processing
 
 **Managed Nat Gateway With Excessive Data Transfer**
 Service: AWS NAT Gateway | Type: Inefficient Architecture
 
-NAT Gateways are convenient for enabling outbound access from private subnets, but in data-intensive environments, they can quietly become a major cost driver. When large volumes of traffic flow through the gateway -particularly during batch processing, frequent software updates, or hybrid cloud integrations -the per-GB charges accumulate rapidly.
+NAT Gateways are convenient for enabling outbound access from private subnets, but in data-intensive environments, they can quietly become a major cost driver. When large volumes of traffic flow through the gateway - particularly during batch processing, frequent software updates, or hybrid cloud integrations - the per-GB charges accumulate rapidly.
 
 - Identify NAT Gateways with consistently high data processing volumes over the lookback period
 - Review per-GB transfer charges to assess whether NAT Gateway usage represents a significant portion of total networking costs
-- Determine whether traffic patterns are driven by expected workload behavior or architectural inefficiencies
+- Determine whether traffic patterns are driven by expected workload behaviour or architectural inefficiencies
 
 **Suboptimal Configuration Of A Cloudfront Distribution**
 Service: AWS CloudFront | Type: Inefficient Configuration
@@ -1273,7 +1274,7 @@ Workloads in private subnets often access AWS services like S3 or DynamoDB. If t
 **Missing Vpc Endpoints For High Volume Aws Service Access**
 Service: AWS VPC | Type: Inefficient Network Configuration
 
-When EC2 instances, Lambda functions, or containerized workloads access AWS-managed services without VPC Endpoints, that traffic exits the VPC through a NAT Gateway or Internet Gateway. This introduces unnecessary egress charges and NAT processing costs, especially for data-intensive or high-frequency workloads.
+When EC2 instances, Lambda functions, or containerised workloads access AWS-managed services without VPC Endpoints, that traffic exits the VPC through a NAT Gateway or Internet Gateway. This introduces unnecessary egress charges and NAT processing costs, especially for data-intensive or high-frequency workloads.
 
 - Provision Gateway Endpoints for S3 and DynamoDB in each VPC that accesses those services
 - Create Interface Endpoints (via AWS PrivateLink) for services with frequent or latency-sensitive access (e.g., Secrets Manager, CloudWatch Logs)
@@ -1350,16 +1351,16 @@ Elastic IPs are often provisioned but forgotten - left unassociated, or still at
 **Double Counting On Edp Commitments**
 Service: AWS Marketplace | Type: Commitment Misalignment
 
-Many organizations mistakenly believe that all AWS Marketplace spend automatically contributes to their EDP commitment. In reality, only certain Marketplace transactions, those involving EDP-eligible vendors and transactable SKUs, will count towards a portion of their EDP commitment.
+Many organisations mistakenly believe that all AWS Marketplace spend automatically contributes to their EDP commitment. In reality, only certain Marketplace transactions, those involving EDP-eligible vendors and transactable SKUs, will count towards a portion of their EDP commitment.
 
 - Request explicit confirmation of EDP eligibility for key Marketplace vendors and SKUs before purchase
 - Negotiate drawdown terms into enterprise contracts when possible
-- Maintain a list of verified EDP-eligible SKUs used in cost modeling
+- Maintain a list of verified EDP-eligible SKUs used in cost modelling
 
 **Hidden Marketplace Spend Preventing Commitment Optimization**
 Service: AWS Marketplace | Type: Commitment Misalignment
 
-In many organizations, AWS Marketplace purchases are lumped into a single consolidated billing line without visibility into individual vendors. This lack of transparency makes it difficult to identify which Marketplace spend is eligible to count toward the EDP cap.
+In many organisations, AWS Marketplace purchases are lumped into a single consolidated billing line without visibility into individual vendors. This lack of transparency makes it difficult to identify which Marketplace spend is eligible to count toward the EDP cap.
 
 - Enable detailed cost allocation and tagging to isolate Marketplace spend by vendor
 - Cross-reference vendor eligibility with AWS to determine which purchases count toward the 25% Marketplace cap
@@ -1377,7 +1378,7 @@ By default, AWS Config is enabled in continuous recording mode. While this may b
 **Overly Permissive Vpc Flow Log Filters Sent To Cloudwatch Logs**
 Service: AWS CloudWatch | Type: Explanation
 
-VPC Flow Logs configured with the ALL filter and delivered to CloudWatch Logs often result in unnecessarily high log ingestion volumes  - especially in high-traffic environments. This setup is rarely required for day-to-day monitoring or security use cases but is commonly enabled by default or for temporary debugging and then left in place.
+VPC Flow Logs configured with the ALL filter and delivered to CloudWatch Logs often result in unnecessarily high log ingestion volumes - especially in high-traffic environments. This setup is rarely required for day-to-day monitoring or security use cases but is commonly enabled by default or for temporary debugging and then left in place.
 
 - Update the VPC Flow Log filter to ACCEPT or REJECT where appropriate
 - Consider redirecting logs to S3 for lower-cost storage if detailed analysis is not required in CloudWatch
@@ -1386,7 +1387,7 @@ VPC Flow Logs configured with the ALL filter and delivered to CloudWatch Logs of
 **Unfiltered Recording Of High Churn Resource Types In Aws Config**
 Service: AWS Config | Type: Inefficient Configuration
 
-By default, AWS Config can be set to record changes across all supported resource types, including those that change frequently, such as security group rules, IAM role policies, route tables, or network interfaces - frequent ephemeral resources in containerized or auto-scaling setups. These high-churn resources can generate an outsized number of configuration items and inflate costs - especially in dynamic or large-scale environments. This inefficiency arises when recording is enabled indiscriminately across all resources without evaluating whether the data is necessary.
+By default, AWS Config can be set to record changes across all supported resource types, including those that change frequently, such as security group rules, IAM role policies, route tables, or network interfaces - frequent ephemeral resources in containerised or auto-scaling setups. These high-churn resources can generate an outsized number of configuration items and inflate costs - especially in dynamic or large-scale environments. This inefficiency arises when recording is enabled indiscriminately across all resources without evaluating whether the data is necessary.
 
 - Limit AWS Config recording to only essential resource types using resource recording groups
 - Exclude high-churn resource types that provide minimal compliance or operational value
@@ -1395,7 +1396,7 @@ By default, AWS Config can be set to record changes across all supported resourc
 **Excessive Cloudwatch Log Volume From Persistently Enabled Debugging**
 Service: AWS CloudWatch | Type: Inefficient Configuration
 
-Engineers often enable verbose logging (e.g., debug or trace-level) during development or troubleshooting, then forget to disable it after deployment. This results in elevated log ingestion rates  - and therefore costs  - even when the detailed logs are no longer needed.
+Engineers often enable verbose logging (e.g., debug or trace-level) during development or troubleshooting, then forget to disable it after deployment. This results in elevated log ingestion rates - and therefore costs - even when the detailed logs are no longer needed.
 
 - Reduce log verbosity from debug/trace to info or warn levels where appropriate
 - Implement logging configuration standards across environments, with production defaults
@@ -1413,7 +1414,7 @@ By default, EventBridge includes retry mechanisms for delivery failures, particu
 **Suboptimal Log Class Configuration In Cloudwatch**
 Service: AWS CloudWatch | Type: Misconfiguration
 
-By default, CloudWatch Log Groups use the Standard log class, which applies higher rates for both ingestion and storage. AWS also offers an Infrequent Access (IA) log class designed for logs that are rarely queried  - such as audit trails, debugging output, or compliance records.
+By default, CloudWatch Log Groups use the Standard log class, which applies higher rates for both ingestion and storage. AWS also offers an Infrequent Access (IA) log class designed for logs that are rarely queried - such as audit trails, debugging output, or compliance records.
 
 - Create new log groups using the Infrequent Access class for applicable use cases
 - Update application and service configurations to route logs to the new log groups
@@ -1425,7 +1426,7 @@ Service: AWS Config | Type: Over-Recording of Ephemeral Resources
 Spot Instances are designed to be short-lived, with frequent interruptions and replacements. When AWS Config continuously records every lifecycle change for these instances, it produces a large number of CIRs.
 
 - Use tag-based exclusions to prevent AWS Config from recording ephemeral Spot Instances and other transient resources
-- Apply standardized tagging (e.g., `finops:config-exclude:true`) and configure AWS Config to filter them out
+- Apply standardised tagging (e.g., `finops:config-exclude:true`) and configure AWS Config to filter them out
 - If some visibility is required, switch Config from continuous to periodic recording to reduce event volume
 
 **Duplicate Or Overlapping Aws Cloudtrail Trails**
@@ -1435,21 +1436,21 @@ AWS CloudTrail enables event logging across AWS services, but when multiple trai
 
 - Delete or disable redundant trails that provide no unique audit or compliance value
 - Consolidate overlapping trails into a single unified configuration where feasible
-- Use centralized log destinations (e.g., one S3 bucket) to reduce storage and ingestion cost
+- Use centralised log destinations (e.g., one S3 bucket) to reduce storage and ingestion cost
 
 **Suboptimal Use Of Intel Based Instances In Opensearch**
 Service: AWS OpenSearch | Type: Suboptimal Instance Selection
 
-AWS Graviton processors are designed to deliver better price-performance than comparable Intel-based instances, often reducing cost by 20–30% at equivalent workload performance. OpenSearch domains running on older Intel-based families consume more spend without providing additional capability.
+AWS Graviton processors are designed to deliver better price-performance than comparable Intel-based instances, often reducing cost by 20-30% at equivalent workload performance. OpenSearch domains running on older Intel-based families consume more spend without providing additional capability.
 
 - Migrate OpenSearch domains from Intel-based instances (e.g., `m5`, `r5`, `i4i`) to equivalent Graviton families (`m6g`, `c6g`, `r6g`, `i4g`)
-- Leverage in-place instance type updates for clusters where supported to minimize downtime
+- Leverage in-place instance type updates for clusters where supported to minimise downtime
 - Benchmark performance after migration to validate expected cost-performance improvements
 
 **Unnecessarily High Recording Granularity In Aws Config**
 Service: AWS Config | Type: Suboptimal Recording Configuration
 
-Organizations frequently inherit continuous recording by default (e.g., through landing zones) without validating the business need for per-change granularity across all resource types and environments. In change-heavy accounts (ephemeral resources, CI/CD churn, autoscaling), continuous mode drives very high CIR volumes with limited additional operational value.
+Organisations frequently inherit continuous recording by default (e.g., through landing zones) without validating the business need for per-change granularity across all resource types and environments. In change-heavy accounts (ephemeral resources, CI/CD churn, autoscaling), continuous mode drives very high CIR volumes with limited additional operational value.
 
 - Shift suitable resource types and/or non-production environments from continuous to periodic recording where real-time change tracking isn’t required.
 - Scope recording frequency by environment: continuous for production or high-risk resources; periodic for development/test or low-risk resources.

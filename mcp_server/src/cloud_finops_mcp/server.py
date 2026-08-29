@@ -150,8 +150,16 @@ mcp = FastMCP(
         "(small named-pattern runbooks for specific waste patterns). "
         "REFERENCES: list_references() to discover, find_references(domain=, "
         "capability=, phase=, persona=, maturity=, persona_primary_only=) to "
-        "narrow by FinOps Capability/Phase facets, get_reference(name=) to "
-        "fetch one body. "
+        "narrow by FinOps Capability/Phase facets, get_reference(name=, "
+        "section=) to fetch one body. "
+        "Every listing entry carries approx_tokens. Read it before fetching: "
+        "references run from about 3,000 to over 25,000 tokens. Above roughly "
+        "10,000, call get_reference(name=, section=\"<heading phrase>\") and "
+        "take the section you need - section matches H2 and H3 headings "
+        "case-insensitively and partially, and a miss returns the file's "
+        "available_sections rather than the whole body. The provider pattern "
+        "catalogues (finops-aws-patterns, finops-azure-patterns) are "
+        "enumerated lists and should almost always be read by section. "
         "PLAYBOOKS: list_playbooks() to discover, find_playbooks(scope=, "
         "service=, waste_category=, confidence=) to narrow by pattern facets, "
         "get_playbook(name=) to fetch one body. "
@@ -190,16 +198,23 @@ def list_references() -> dict[str, Any]:
     list.
 
     Returns a dict shaped ``{"references": [...], "total": N}`` where each
-    entry includes ``name``, ``description``, FCP fields (``fcp_domain``,
-    ``fcp_capability``, ``fcp_phases`` etc.) and ``lines``.
+    entry includes ``name``, ``title``, a one-line ``description``, the
+    discriminating FCP facets (``fcp_domain``, ``fcp_capability``,
+    ``fcp_phases``, ``fcp_personas_primary``, ``fcp_maturity_entry``) and
+    ``approx_tokens``.
+
+    Read ``approx_tokens`` before fetching: the library runs from about 3,000
+    to over 25,000 tokens per file. Above roughly 10,000, prefer
+    ``get_reference(name, section=...)`` and pull the part you need.
     """
     return _tools.list_references()
 
 
 @mcp.tool(title="Read one FinOps guide", annotations=_READ_ONLY)
-def get_reference(name: str) -> dict[str, Any]:
-    """Fetch the full guidance on one FinOps topic - the billing mechanics,
-    decision rules and worked examples behind a defensible answer.
+def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
+    """Fetch the guidance on one FinOps topic - the billing mechanics,
+    decision rules and worked examples behind a defensible answer - either
+    whole or one section at a time.
 
     Use this when you need the actual content of one known reference -
     after ``list_references`` or ``find_references`` told you which one
@@ -207,16 +222,38 @@ def get_reference(name: str) -> dict[str, Any]:
     (commitment sizing, chargeback design, allocation methodology) the
     library covers.
 
+    Pass ``section`` when the question is narrower than the file. The
+    ``approx_tokens`` hint in the listing tells you when this matters: the
+    provider pattern catalogues run past 25,000 tokens and are enumerated
+    lists, so a question about S3 lifecycle wants one section of
+    ``finops-aws-patterns``, not all of it. Omit ``section`` for the whole
+    file when you need the cross-cutting reasoning.
+
     Args:
         name: Reference name as returned by ``list_references`` (e.g.
             ``"finops-aws"``, ``"finops-genai-capacity"``,
             ``"optimnow-methodology"``).
+        section: Optional H2 or H3 heading to return on its own. Matched
+            case-insensitively and partially against the headings, so a
+            natural phrase works - ``"storage"``, ``"commitment decision
+            tree"``. A heading's trailing count is ignored, so
+            ``"storage optimization patterns"`` matches
+            ``"Storage Optimization Patterns (28)"``. If it matches nothing
+            you get the list of available headings back, not the whole file.
 
-    Returns the dict ``{"name": ..., "content": "...", "lines": N}``. On miss,
-    returns ``{"error": ..., "suggestions": [...]}`` with up to three
-    string-distance matches so the caller can self-correct.
+    Without ``section``, returns ``{"name": ..., "content": "...",
+    "lines": N}`` where ``content`` is the file verbatim. With ``section``,
+    returns ``{"name", "title", "section", "section_level", "partial": true,
+    "content", "lines", "full_lines"}`` where ``content`` is that section
+    prefixed by the reference's title, plus ``other_matching_sections`` when
+    the phrase matched more than one heading.
+
+    On a miss, returns ``{"error": ..., "suggestions": [...]}``. An unknown
+    name gives up to three string-distance matches; an unmatched ``section``
+    gives ``available_sections`` - every heading in the file - so the retry
+    is exact.
     """
-    return _tools.get_reference(name)
+    return _tools.get_reference(name, section=section)
 
 
 @mcp.tool(
@@ -300,7 +337,8 @@ def list_playbooks() -> dict[str, Any]:
     ``{"playbooks": [...], "total": N}`` where each entry includes ``name``,
     ``title``, ``scope`` (aws/azure/gcp/cross-cloud), ``service``,
     ``waste_category``, ``confidence`` (obvious/likely/possible), and
-    ``lines``.
+    ``approx_tokens`` - the same size hint the reference listing carries, so a
+    multi-playbook answer can be budgeted before fetching.
     """
     return _tools.list_playbooks()
 

@@ -158,8 +158,8 @@ Then manually:
 4. Set name (`Cloud FinOps`), category, visibility per preference
 
 **Public Custom GPT on the Roadmap.** A maintained public Cloud FinOps GPT is tracked
-in the `Roadmap > In-flight` section of `CLAUDE.md`; until it ships, the self-host
-path above is the supported install.
+in the `In-flight` section of [`docs/ROADMAP.md`](./docs/ROADMAP.md); until it ships,
+the self-host path above is the supported install.
 
 **Trade-off:** ChatGPT's 8K Instructions limit means routing + response contract live
 inline, but the reference content is RAG-retrieved from Knowledge files. Compared to
@@ -182,8 +182,8 @@ section inside it.
 Manual upload at https://gemini.google.com/gems/. Same trade-off as ChatGPT applies.
 
 **Public Gemini Gem on the Roadmap.** A maintained public Cloud FinOps Gem is
-tracked in the `Roadmap > In-flight` section of `CLAUDE.md`; until it ships, the
-self-host path above is the supported install.
+tracked in the `In-flight` section of [`docs/ROADMAP.md`](./docs/ROADMAP.md); until it
+ships, the self-host path above is the supported install.
 
 ### Gemini CLI
 
@@ -303,8 +303,10 @@ a variant form (`/mcp`, no slash) connects fine but silently disables widget ren
 Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry pointing at the
 same URL.
 
-This is the same code as the package below, deployed on Alpic and tracking `main`. Prefer
-it unless you need the server to run offline or pinned to a version.
+This is the same code as the package below, deployed on Alpic and redeployed on each
+release - not a live mirror of `main`. The content version it is actually serving is
+named in the server's startup stamp, so you can confirm it rather than assume it.
+Prefer the hosted server unless you need it to run offline or pinned to a version.
 
 #### Local package
 
@@ -533,8 +535,8 @@ system_prompt = load_cloud_finops_skill("./cloud-finops")
 
 For token efficiency, load only the references relevant to your use case. For most
 single-domain queries, one reference file plus `optimnow-methodology.md` is sufficient.
-Playbooks average ~5 KB each and the full set is ~120 KB (roughly 30K tokens), so do
-not load them all by default: load the one playbook matching the named pattern, or
+Playbooks run ~3-8 KB each, average ~5 KB, and the full set is ~150 KB (roughly 38K
+tokens), so do not load them all by default: load the one matching the named pattern, or
 filter by frontmatter facet (scope, service, waste_category) first. Loading the full
 set only makes sense for a deliberate whole-taxonomy review.
 

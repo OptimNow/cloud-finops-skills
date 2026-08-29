@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from cloud_finops_mcp import metadata, tools
 
 
@@ -12,12 +14,102 @@ def setup_function() -> None:
 # --- list_references --------------------------------------------------------
 
 
+LISTING_KEYS = {
+    "name",
+    "title",
+    "description",
+    "fcp_domain",
+    "fcp_capability",
+    "fcp_phases",
+    "fcp_personas_primary",
+    "fcp_maturity_entry",
+    "approx_tokens",
+}
+
+
 def test_list_returns_all_references(expected_references: int) -> None:
     result = tools.list_references()
     assert result["total"] == expected_references
     assert len(result["references"]) == expected_references
     sample = result["references"][0]
-    assert {"name", "description", "fcp_domain", "fcp_phases", "lines"}.issubset(sample)
+    assert {"name", "description", "fcp_domain", "fcp_phases"}.issubset(sample)
+
+
+def test_listing_entry_carries_exactly_the_discriminating_facets() -> None:
+    """The listing shape is a token budget, so it is pinned exactly.
+
+    Every key here is something a caller chooses a reference ON. Anything
+    added back costs ~35x its own size on a call every session makes, so a
+    new field has to argue for itself against this assertion.
+    """
+    for entry in tools.list_references()["references"]:
+        assert set(entry) == LISTING_KEYS, f"{entry['name']} has an unexpected shape"
+
+
+def test_listing_omits_the_non_discriminating_facets() -> None:
+    """Collaborating personas and secondary capabilities are not in the payload.
+
+    Both are descriptive rather than discriminating (a broad persona
+    collaborates on nearly every file) and together they were ~17% of the
+    discovery payload.
+    """
+    entry = tools.list_references()["references"][0]
+    assert "fcp_personas_collaborating" not in entry
+    assert "fcp_capabilities_secondary" not in entry
+
+
+def test_dropped_facets_are_still_filterable() -> None:
+    """Trimming the listing must not trim the index behind it.
+
+    finops-aws carries Finance only as a collaborating persona and Usage
+    Optimization only as a secondary capability. Neither is printed any more;
+    both must still select the file.
+    """
+    by_collaborating = {
+        r["name"] for r in tools.find_references(persona="Finance")["references"]
+    }
+    assert "finops-aws" in by_collaborating
+    by_secondary = {
+        r["name"] for r in tools.find_references(capability="Usage Optimization")["references"]
+    }
+    assert "finops-aws" in by_secondary
+
+
+def test_listing_descriptions_are_summarised() -> None:
+    """Descriptions were 46% of the payload; the listing carries one sentence."""
+    entries = tools.list_references()["references"]
+    for entry in entries:
+        assert len(entry["description"]) <= metadata.SUMMARY_LIMIT + 3  # "..."
+    full = {r.name: r.description for r in metadata.get_index()}
+    assert any(len(full[e["name"]]) > len(e["description"]) for e in entries), (
+        "no description was actually shortened - the summariser is inert"
+    )
+
+
+def test_size_hint_is_present_and_plausible() -> None:
+    """approx_tokens must track the real body size, not be a constant."""
+    entries = {e["name"]: e["approx_tokens"] for e in tools.list_references()["references"]}
+    biggest = max(entries, key=entries.get)
+    assert entries[biggest] > 15_000, "the largest reference should look large"
+    assert min(entries.values()) < entries[biggest] / 3, "the hint does not discriminate"
+    for ref in metadata.get_index():
+        assert entries[ref.name] == round(len(ref.path.read_text(encoding="utf-8")) / 4)
+
+
+def test_slimming_beats_the_size_hint_it_pays_for() -> None:
+    """Task 3 must not undo task 2: the listing has to be materially smaller.
+
+    Measured against the pre-change payload (28,180 chars / ~7,045 tokens on
+    the 2026-08-27 bundle). The ceiling is set well above the measured 16.3K
+    so content growth does not fail the build, but a regression that put the
+    dropped facets or the full descriptions back would blow straight through
+    it.
+    """
+    payload = json.dumps(tools.list_references())
+    assert len(payload) < 20_000, (
+        f"list_references payload is {len(payload)} chars - the slimming has "
+        "regressed or a costly field was added back"
+    )
 
 
 # --- get_reference ----------------------------------------------------------
@@ -28,6 +120,139 @@ def test_get_reference_returns_full_content() -> None:
     assert result["name"] == "finops-aws"
     assert "fcp_domain" in result["content"]  # frontmatter included for provenance
     assert "# FinOps on AWS" in result["content"]
+
+
+# --- get_reference(section=...) ---------------------------------------------
+#
+# The catalogue files are the reason this exists: finops-aws-patterns is
+# ~26,600 tokens of enumerated patterns behind a single H2 and seven H3s.
+
+CATALOGUE = "finops-aws-patterns"
+
+
+def test_omitted_section_is_byte_identical_to_the_file() -> None:
+    """The compatibility guarantee: no section, no change. Ever.
+
+    ``content`` must be the file verbatim, frontmatter included, and the
+    payload must carry no extra keys - a heading list bolted onto the
+    full-body response would be pure duplication of content the caller has
+    just paid for.
+    """
+    ref = metadata.get_by_name(CATALOGUE)
+    assert ref is not None
+    on_disk = ref.path.read_text(encoding="utf-8")
+
+    result = tools.get_reference(CATALOGUE)
+    assert result == {"name": CATALOGUE, "content": on_disk, "lines": ref.lines}
+
+
+def test_blank_section_takes_the_full_body_path() -> None:
+    """An empty string is a model filling in a field, not a failed query."""
+    full = tools.get_reference(CATALOGUE)
+    for blank in ("", "   ", None):
+        assert tools.get_reference(CATALOGUE, section=blank) == full
+
+
+def test_section_returns_only_that_section() -> None:
+    result = tools.get_reference(CATALOGUE, section="Storage Optimization Patterns")
+    assert result["partial"] is True
+    assert result["section"] == "Storage Optimization Patterns (28)"
+    assert result["section_level"] == 3
+    assert "### Storage Optimization Patterns (28)" in result["content"]
+    # The neighbouring sections must not come along.
+    assert "### Compute Optimization Patterns" not in result["content"]
+    assert "### Networking Optimization Patterns" not in result["content"]
+    assert result["lines"] < result["full_lines"]
+
+
+def test_section_chunk_is_self_describing() -> None:
+    """The chunk carries the reference's H1 so it stands on its own."""
+    ref = metadata.get_by_name(CATALOGUE)
+    assert ref is not None
+    result = tools.get_reference(CATALOGUE, section="networking")
+    assert result["content"].startswith(f"# {ref.title}\n")
+    assert result["title"] == ref.title
+    assert "not the full reference" in result["note"]
+
+
+def test_section_is_materially_cheaper_than_the_whole_file() -> None:
+    """The point of the feature, asserted as a number."""
+    whole = len(json.dumps(tools.get_reference(CATALOGUE)))
+    part = len(json.dumps(tools.get_reference(CATALOGUE, section="networking")))
+    assert part < whole / 5, f"section fetch is {part} of {whole} chars"
+
+
+def test_section_match_is_case_insensitive_and_partial() -> None:
+    """A model writes a phrase from the user's question, not a copied heading."""
+    canonical = tools.get_reference(CATALOGUE, section="Storage Optimization Patterns (28)")
+    for phrase in (
+        "storage",
+        "STORAGE OPTIMIZATION",
+        "storage optimization patterns",  # the count is not known to the caller
+        "  Storage  ",
+    ):
+        result = tools.get_reference(CATALOGUE, section=phrase)
+        assert result.get("section") == canonical["section"], phrase
+        assert result["content"] == canonical["content"], phrase
+
+
+def test_section_match_tolerates_word_order() -> None:
+    """Tier 4: every word of the query appears in the heading, order-free."""
+    result = tools.get_reference(CATALOGUE, section="patterns networking")
+    assert result["section"] == "Networking Optimization Patterns (14)"
+
+
+def test_h2_sections_are_selectable_too() -> None:
+    """H3 is essential for the catalogues, but H2 must work on normal files."""
+    result = tools.get_reference("finops-aws", section="Cost allocation")
+    assert result["partial"] is True
+    assert result["section_level"] in (2, 3)
+
+
+def test_section_miss_lists_the_available_headings() -> None:
+    """Loud failure: not the whole file, not an empty result - the vocabulary.
+
+    Silently returning the body would hand back exactly the 26K tokens the
+    caller asked to avoid, which is the silent-degradation failure this repo
+    keeps re-learning.
+    """
+    result = tools.get_reference(CATALOGUE, section="kubernetes cost allocation")
+    assert "content" not in result
+    assert "error" in result
+    assert CATALOGUE in result["error"]
+    headings = result["available_sections"]
+    assert "### Storage Optimization Patterns (28)" in headings
+    assert "## AWS Optimization Patterns" in headings
+    # Every entry carries its level marker, so the listing is navigable.
+    assert all(h.startswith("## ") or h.startswith("### ") for h in headings)
+
+
+def test_section_miss_is_far_cheaper_than_the_body_it_refuses() -> None:
+    miss = len(json.dumps(tools.get_reference(CATALOGUE, section="nope")))
+    whole = len(json.dumps(tools.get_reference(CATALOGUE)))
+    assert miss < whole / 50, f"the error costs {miss} chars"
+
+
+def test_section_miss_offers_near_misses() -> None:
+    """A typo should come back with the heading it nearly named."""
+    result = tools.get_reference(CATALOGUE, section="Storag Optimizaton Paterns")
+    assert "error" in result
+    assert result["suggestions"][0] == "Storage Optimization Patterns (28)"
+
+
+def test_ambiguous_section_reports_the_runners_up() -> None:
+    """Several headings can match one phrase; the caller is told, not guessed at."""
+    result = tools.get_reference(CATALOGUE, section="optimization patterns")
+    assert result["partial"] is True
+    others = result.get("other_matching_sections", [])
+    assert others, "an ambiguous phrase should surface the alternatives"
+    assert all(o.startswith("#") for o in others)
+
+
+def test_section_on_unknown_reference_still_reports_the_name() -> None:
+    """The name miss is checked first - a section query cannot mask it."""
+    result = tools.get_reference("finops-aw", section="storage")
+    assert "finops-aws" in result["suggestions"]
 
 
 def test_get_reference_unknown_returns_suggestions() -> None:
@@ -111,7 +336,21 @@ def test_list_playbooks_returns_all(expected_playbooks: int) -> None:
     assert result["total"] == expected_playbooks
     assert len(result["playbooks"]) == expected_playbooks
     sample = result["playbooks"][0]
-    assert {"name", "title", "scope", "waste_category", "confidence", "lines"}.issubset(sample)
+    assert {
+        "name",
+        "title",
+        "scope",
+        "waste_category",
+        "confidence",
+        "approx_tokens",
+    }.issubset(sample)
+
+
+def test_playbook_listing_carries_the_same_size_hint() -> None:
+    """One size unit across both listings, so a mixed fetch can be budgeted."""
+    for entry in tools.list_playbooks()["playbooks"]:
+        assert isinstance(entry["approx_tokens"], int)
+        assert entry["approx_tokens"] > 0
 
 
 # --- get_playbook -----------------------------------------------------------

@@ -118,7 +118,8 @@ post-migration spend usually locks in waste.
   workload to grow or shrink as production behaviour reveals itself.
 - **Day 90+:** treat the workload as an existing workload for commitment
   purposes; reassess quarterly under the normal commitment portfolio
-  cadence (see `finops-aws.md`, `finops-azure.md`, `finops-gcp.md`).
+  cadence (see `finops-aws-commitments.md`, `finops-azure-commitments.md`,
+  `finops-gcp.md`).
 
 ### Why 60-90 days, not 30
 
@@ -191,7 +192,9 @@ A workload that runs cleanly on-premises with chatty inter-service traffic
 because the network was free at the margin (paid-for pipe) becomes expensive
 in cloud where every cross-zone byte costs $0.01/GB and every inter-region
 byte costs $0.02-0.09/GB. The cost difference can be 2-5x the original
-estimate.
+estimate. Those per-GB rates are illustrative list rates as at May 2026 and
+vary by provider and region - verify against live pricing before using them
+in a migration business case.
 
 Specific patterns to watch for:
 
@@ -242,7 +245,8 @@ not 6 weeks. Plan accordingly.
    acquired estate's RIs, Savings Plans, and CUDs. Identify overlaps,
    under-utilised commitments, and expiry-date clusters. Plan exchanges or
    modifications under the existing liquidity rules
-   (see `finops-aws.md`, `finops-azure.md`, `finops-gcp.md`).
+   (see `finops-aws-commitments.md`, `finops-azure-commitments.md`,
+   `finops-gcp.md`).
 4. **Tooling and process integration (months 4-9).** Decide whether to
    migrate the acquired estate to the parent's FinOps tooling or run dual
    for a period. Either choice has trade-offs; document the rationale.

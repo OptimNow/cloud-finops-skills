@@ -9,10 +9,11 @@ checkout.
 from __future__ import annotations
 
 import shutil
-import sys
 from pathlib import Path
 
 import pytest
+
+from cloud_finops_mcp import metadata
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = Path(__file__).resolve().parents[1] / "src" / "cloud_finops_mcp" / "data"
@@ -37,9 +38,11 @@ def _ensure_dir(dest: Path, source: Path, *, skip: set[str]) -> None:
 def _populate_data() -> None:
     _ensure_dir(DATA_DIR, REFERENCES_SOURCE, skip=set())
     _ensure_dir(PLAYBOOKS_DIR, PLAYBOOKS_SOURCE, skip={"README.md"})
-    # Ensure a fresh import picks up data/ — important when the tree was
-    # populated mid-session.
-    sys.modules.pop("cloud_finops_mcp.metadata", None)
+    # Drop the lru_cached indexes so a tree populated just above is picked up.
+    # (Popping the module from sys.modules cannot do this: the test modules
+    # imported metadata at collection time and hold the module object itself,
+    # so a re-import would produce a second module nothing looks at.)
+    metadata.reset_cache()
 
 
 # Authoritative reference/playbook counts read from disk at collection

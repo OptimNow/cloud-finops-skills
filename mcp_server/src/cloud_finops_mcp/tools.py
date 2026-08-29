@@ -19,13 +19,29 @@ from typing import Any
 from .metadata import (
     Playbook,
     Reference,
+    find_sections,
     get_by_name,
     get_index,
     get_playbook_by_name,
     get_playbook_index,
+    section_labels,
+    section_text,
+    split_sections,
+    strip_frontmatter,
 )
 
 logger = logging.getLogger(__name__)
+
+# Cap on the headings listed back after a section miss. finops-azure has 100
+# H2+H3 headings; listing them all is ~900 tokens, still an order of magnitude
+# below the 21K-token body the caller is trying not to fetch, so the cap is
+# generous on purpose and only exists to bound a pathological file.
+SECTION_LIST_LIMIT = 120
+
+# Ambiguity is reported, not resolved by silence: the caller gets the best
+# match plus a short list of the runners-up so a wrong pick is one cheap,
+# correctly-spelled retry away.
+OTHER_MATCH_LIMIT = 5
 
 
 def _log_zero_result(tool: str, active: dict[str, Any]) -> None:
@@ -41,20 +57,68 @@ def _log_zero_result(tool: str, active: dict[str, Any]) -> None:
 
 
 def list_references() -> dict[str, Any]:
-    """Return all bundled references with their FCP metadata.
+    """Return all bundled references with their discriminating FCP facets.
 
     Useful as a discovery call: the agent inspects the result and decides which
     reference(s) to fetch via ``get_reference``.
+
+    Each entry is a summary, not the full record - see ``Reference.to_dict``
+    for what is withheld and why. ``approx_tokens`` is the size hint: the
+    library spans roughly 3K to 26K tokens per file, so it is the difference
+    between one cheap fetch and a fifth of a context window.
     """
     refs = [r.to_dict() for r in get_index()]
     return {"references": refs, "total": len(refs)}
 
 
-def get_reference(name: str) -> dict[str, Any]:
-    """Return the full markdown content of one reference.
+def _section_miss(ref: Reference, section: str, body: str) -> dict[str, Any]:
+    """Loud failure for a section query that matched no heading.
 
-    On miss, returns ``{"error": ..., "suggestions": [...]}`` so the agent can
-    self-correct.
+    Silently returning the whole body would hand back the 26K tokens the
+    caller was explicitly trying to avoid, and an empty result would leave it
+    unable to tell a typo from a file with no sections. So the miss returns
+    the vocabulary instead: every available heading, plus difflib's nearest
+    guesses, which is everything needed to get the second call right.
+    """
+    labels = section_labels(body)
+    if not labels:
+        detail = (
+            f"Reference '{ref.name}' has no H2 or H3 sections to select from. "
+            "Call get_reference without 'section' to read it whole."
+        )
+    else:
+        detail = (
+            f"No section of '{ref.name}' matches {section!r}. Retry with one of "
+            "the headings in 'available_sections', or call get_reference "
+            "without 'section' for the full body."
+        )
+    _log_zero_result("get_reference", {"name": ref.name, "section": section})
+    result: dict[str, Any] = {
+        "error": detail,
+        "available_sections": labels[:SECTION_LIST_LIMIT],
+        "suggestions": difflib.get_close_matches(
+            section, [s.heading for s in split_sections(body)], n=3, cutoff=0.4
+        ),
+    }
+    if len(labels) > SECTION_LIST_LIMIT:
+        result["available_sections_truncated"] = len(labels) - SECTION_LIST_LIMIT
+    return result
+
+
+def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
+    """Return one reference: the whole body, or a single section of it.
+
+    With ``section`` omitted the payload is exactly what it has always been -
+    ``{"name", "content", "lines"}`` with ``content`` the file verbatim,
+    frontmatter included. Callers and the reference-browser widget depend on
+    that, so it is pinned by a test.
+
+    With ``section`` set, ``content`` is the matched H2/H3 span prefixed by the
+    reference's H1 so the chunk is self-describing, and ``partial: True`` says
+    plainly that this is not the whole file.
+
+    On either kind of miss - unknown name, or a section that matches no
+    heading - returns an error carrying enough vocabulary to retry.
     """
     if not isinstance(name, str) or not name.strip():
         return {
@@ -76,11 +140,42 @@ def get_reference(name: str) -> dict[str, Any]:
     except OSError as exc:
         return {"error": f"Failed to read '{name}': {exc}", "suggestions": []}
 
-    return {
+    # An absent, empty, or whitespace-only section is the full-body path. A
+    # model that fills the parameter in with "" should get the document, not
+    # an error about a heading it never meant to ask for.
+    if not isinstance(section, str) or not section.strip():
+        return {
+            "name": ref.name,
+            "content": content,
+            "lines": ref.lines,
+        }
+
+    body = strip_frontmatter(content, source=ref.path.name)
+    matches = find_sections(body, section)
+    if not matches:
+        return _section_miss(ref, section, body)
+
+    best = matches[0]
+    chunk = f"# {ref.title}\n\n{section_text(body, best)}"
+    result: dict[str, Any] = {
         "name": ref.name,
-        "content": content,
-        "lines": ref.lines,
+        "title": ref.title,
+        "section": best.heading,
+        "section_level": best.level,
+        "partial": True,
+        "note": (
+            f"Section extract of '{ref.name}', not the full reference. Call "
+            "get_reference without 'section' for the whole body."
+        ),
+        "content": chunk,
+        "lines": chunk.count("\n"),
+        "full_lines": ref.lines,
     }
+    if len(matches) > 1:
+        result["other_matching_sections"] = [
+            s.label for s in matches[1 : 1 + OTHER_MATCH_LIMIT]
+        ]
+    return result
 
 
 def _matches_scalar(value: str | None, filter_value: str) -> bool:
@@ -222,6 +317,10 @@ def find_references(
     the full index. A query that matches nothing returns ``hint`` and
     ``valid_values`` alongside ``total: 0``, so a typo is distinguishable from a
     genuine coverage gap.
+
+    ``capability`` and ``persona`` filter over the secondary and collaborating
+    declarations too, even though the returned entries no longer print them -
+    the listing shape is trimmed for tokens, the filtering is not.
 
     Args:
         domain: one of the four FinOps Framework domains, e.g.

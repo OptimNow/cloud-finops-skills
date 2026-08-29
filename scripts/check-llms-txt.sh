@@ -28,9 +28,12 @@ LLMS="llms.txt"
 errors=0
 
 # Check 1: every reference file appears in llms.txt.
+# -F because the needle is a filename: the dot before `md` is a regex wildcard
+# otherwise, so `finops-aws.md` would also be satisfied by a listing of
+# `finops-awsXmd`. Fixed-string matching is what was always meant here.
 for f in "$REF_DIR"/*.md; do
   base="$(basename "$f")"
-  if ! grep -q "references/$base" "$LLMS"; then
+  if ! grep -qF "references/$base" "$LLMS"; then
     echo "MISSING: $base exists but is not listed in $LLMS" >&2
     errors=$((errors + 1))
   fi

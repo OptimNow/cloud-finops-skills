@@ -1,12 +1,27 @@
 #!/usr/bin/env python3
 """Render the waste-playbook coverage heat map as a committed SVG.
 
-Companion to playbook-coverage.sh: same source of truth (the playbook
-frontmatter), same CI discipline (--check fails when the committed SVG
-drifts), different audience - the SVG is embedded in README.md so users see
+Downstream of playbook-coverage.sh: that script is the source of truth (it
+parses the playbook frontmatter and emits playbook-coverage.md, CI-gated),
+this one renders the committed matrix as assets/playbook-coverage.svg for the
+README. The audience differs - the SVG is embedded in README.md so users see
 the coverage shape, including the gaps, before installing. A zero cell is
 shown as an explicit dashed gap, not hidden: the deliberate-scope decisions
 live publicly in docs/ROADMAP.md.
+
+Parsing playbook-coverage.md rather than the frontmatter is deliberate, and it
+is the same chain render-fcp-heatmap.py already uses for the FCP pair:
+
+    frontmatter -> playbook-coverage.md (--check) -> SVG (--check)
+
+Until August 2026 this script re-derived the counts from the frontmatter and
+carried its own copy of the SCOPES / CATEGORIES vocabularies, kept in step with
+playbook-coverage.sh by a comment asking the next editor to remember. That is a
+sync contract with no enforcement: adding a ninth waste category to one file and
+not the other would have left the .md and the .svg describing different
+taxonomies while both --check modes passed, because each compared its own
+artefact against its own generator. Reading the .md removes the second
+vocabulary entirely - there is nothing left to keep in step.
 
 Usage:
     python scripts/render-coverage-heatmap.py           Write assets/playbook-coverage.svg
@@ -20,16 +35,8 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PB_DIR = REPO_ROOT / "skills" / "cloud-finops" / "playbooks"
+SRC_FILE = REPO_ROOT / "playbook-coverage.md"
 OUT_FILE = REPO_ROOT / "assets" / "playbook-coverage.svg"
-
-# Canonical vocabularies - kept in step with find_playbooks and
-# playbook-coverage.sh (tests/test_conformance.py pins the tool side).
-SCOPES = ["aws", "azure", "gcp", "cross-cloud"]
-CATEGORIES = [
-    "orphaned", "idle", "overprovisioned", "commitment-mismatch",
-    "schedule-blindness", "modernization", "ai-ml-inefficiency", "egress",
-]
 
 # OptimNow chartreuse ramp on a white card (readable on GitHub light and
 # dark, which renders the SVG on its own background).
@@ -45,48 +52,82 @@ PAD = 14
 FOOTER_H = 46
 
 
-def frontmatter(path: Path) -> dict[str, str]:
-    fm: dict[str, str] = {}
-    fence = 0
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if line.strip() == "---":
-            fence += 1
-            if fence == 2:
-                break
-            continue
-        if fence == 1 and ":" in line:
-            key, _, value = line.partition(":")
-            fm[key.strip()] = value.strip()
-    return fm
+def _cells(line: str) -> list[str]:
+    """Split a markdown table row into its cells."""
+    return [c.strip() for c in line.strip().strip("|").split("|")]
 
 
-def build_counts() -> tuple[dict[tuple[str, str], int], int]:
+def parse_matrix() -> tuple[list[str], list[str], dict[tuple[str, str], int], int]:
+    """Return (scopes, categories, counts, total) from playbook-coverage.md.
+
+    The scope columns and category rows come from the table itself, so this
+    script has no vocabulary of its own to drift from playbook-coverage.sh's.
+    """
+    scopes: list[str] = []
+    categories: list[str] = []
     counts: dict[tuple[str, str], int] = {}
-    total = 0
-    for f in sorted(PB_DIR.glob("*.md")):
-        if f.name == "README.md":
-            continue
-        fm = frontmatter(f)
-        scope, cat = fm.get("scope", ""), fm.get("waste_category", "")
-        if scope not in SCOPES or cat not in CATEGORIES:
-            print(f"ERROR: {f.name} has non-canonical scope/waste_category "
-                  f"({scope!r}, {cat!r})", file=sys.stderr)
+    total: int | None = None
+
+    lines = SRC_FILE.read_text(encoding="utf-8").splitlines()
+    for i, line in enumerate(lines):
+        if line.startswith("| waste_category |"):
+            # Header row: strip the leading label and the trailing "total".
+            scopes = _cells(line)[1:-1]
+            body = lines[i + 2:]  # skip the |---|---| divider
+            break
+    else:
+        print(f"ERROR: no '| waste_category |' header found in {SRC_FILE.name} - "
+              f"the matrix format changed, update this script.", file=sys.stderr)
+        raise SystemExit(1)
+
+    for line in body:
+        if not line.startswith("|"):
+            break
+        cells = _cells(line)
+        label = cells[0]
+        if label.startswith("**"):  # the totals row closes the table
+            total = int(cells[-1])
+            break
+        if len(cells) != len(scopes) + 2:
+            print(f"ERROR: row {label!r} in {SRC_FILE.name} has {len(cells)} cells, "
+                  f"expected {len(scopes) + 2}", file=sys.stderr)
             raise SystemExit(1)
-        counts[(cat, scope)] = counts.get((cat, scope), 0) + 1
-        total += 1
-    return counts, total
+        categories.append(label)
+        for scope, cell in zip(scopes, cells[1:-1]):
+            counts[(label, scope)] = 0 if cell == "-" else int(cell)
+
+    if not scopes or not categories or total is None:
+        print(f"ERROR: could not parse the coverage matrix out of {SRC_FILE.name} "
+              f"({len(scopes)} scopes, {len(categories)} categories, total={total})",
+              file=sys.stderr)
+        raise SystemExit(1)
+
+    # The table states its own total; if the cells do not add up to it, the .md
+    # is internally inconsistent and the SVG would quietly disagree with it.
+    summed = sum(counts.values())
+    if summed != total:
+        print(f"ERROR: {SRC_FILE.name} cells sum to {summed} but the totals row "
+              f"says {total}", file=sys.stderr)
+        raise SystemExit(1)
+
+    return scopes, categories, counts, total
 
 
-def render(counts: dict[tuple[str, str], int], total: int) -> str:
+def render(
+    scopes: list[str],
+    categories: list[str],
+    counts: dict[tuple[str, str], int],
+    total: int,
+) -> str:
     max_count = max(counts.values(), default=1)
-    width = PAD * 2 + LABEL_W + CELL_W * len(SCOPES)
-    height = PAD * 2 + HEADER_H + CELL_H * len(CATEGORIES) + FOOTER_H
+    width = PAD * 2 + LABEL_W + CELL_W * len(scopes)
+    height = PAD * 2 + HEADER_H + CELL_H * len(categories) + FOOTER_H
 
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}" role="img" '
         f'aria-label="Waste playbook coverage: {total} playbooks across '
-        f'{len(CATEGORIES)} categories and {len(SCOPES)} providers">',
+        f'{len(categories)} categories and {len(scopes)} providers">',
         f'<rect width="{width}" height="{height}" rx="10" fill="#ffffff" stroke="{GAP_STROKE}"/>',
         f'<text x="{PAD + 2}" y="{PAD + 14}" font-family="Segoe UI, Helvetica, Arial, sans-serif" '
         f'font-size="13" font-weight="600" fill="{TEXT}">Named waste-pattern '
@@ -96,20 +137,20 @@ def render(counts: dict[tuple[str, str], int], total: int) -> str:
     font = 'font-family="Segoe UI, Helvetica, Arial, sans-serif"'
     grid_x, grid_y = PAD + LABEL_W, PAD + HEADER_H
 
-    for j, scope in enumerate(SCOPES):
+    for j, scope in enumerate(scopes):
         cx = grid_x + j * CELL_W + CELL_W / 2
         parts.append(
             f'<text x="{cx:.0f}" y="{grid_y - 6}" {font} font-size="11" '
             f'font-weight="600" fill="{MUTED}" text-anchor="middle">{scope}</text>'
         )
 
-    for i, cat in enumerate(CATEGORIES):
+    for i, cat in enumerate(categories):
         cy = grid_y + i * CELL_H + CELL_H / 2
         parts.append(
             f'<text x="{grid_x - 8}" y="{cy + 4:.0f}" {font} font-size="11" '
             f'fill="{TEXT}" text-anchor="end">{cat}</text>'
         )
-        for j, scope in enumerate(SCOPES):
+        for j, scope in enumerate(scopes):
             n = counts.get((cat, scope), 0)
             x, y = grid_x + j * CELL_W + 3, grid_y + i * CELL_H + 3
             w, h = CELL_W - 6, CELL_H - 6
@@ -133,7 +174,7 @@ def render(counts: dict[tuple[str, str], int], total: int) -> str:
                     f'text-anchor="middle">{n}</text>'
                 )
 
-    fy = grid_y + len(CATEGORIES) * CELL_H + 20
+    fy = grid_y + len(categories) * CELL_H + 20
     parts.append(
         f'<text x="{PAD + 2}" y="{fy}" {font} font-size="10.5" fill="{MUTED}">'
         f'Runbook coverage only - the reference library covers these themes even '
@@ -150,8 +191,8 @@ def render(counts: dict[tuple[str, str], int], total: int) -> str:
 
 def main() -> int:
     check = "--check" in sys.argv[1:]
-    counts, total = build_counts()
-    fresh = render(counts, total)
+    scopes, categories, counts, total = parse_matrix()
+    fresh = render(scopes, categories, counts, total)
     if check:
         if not OUT_FILE.exists():
             print(f"heatmap: {OUT_FILE.name} missing - run the script and commit it.",
@@ -162,9 +203,15 @@ def main() -> int:
                   f"scripts/render-coverage-heatmap.py and commit the result.",
                   file=sys.stderr)
             return 1
-        print(f"OK: {OUT_FILE.name} matches the playbook frontmatter ({total} playbooks).")
+        print(f"OK: {OUT_FILE.name} matches {SRC_FILE.name} ({total} playbooks).")
         return 0
-    OUT_FILE.write_text(fresh, encoding="utf-8")
+    # newline="\n" so the artefact is byte-identical wherever it is generated.
+    # Without it Python's text mode translates every \n to \r\n on Windows, and
+    # the committed SVG then differs from a CI (Linux) render by every line
+    # ending - invisible in review, and a diff that .gitattributes has to clean
+    # up after. The --check above reads with universal newlines and so never
+    # noticed.
+    OUT_FILE.write_text(fresh, encoding="utf-8", newline="\n")
     print(f"Wrote {OUT_FILE.relative_to(REPO_ROOT)} ({total} playbooks).")
     return 0
 

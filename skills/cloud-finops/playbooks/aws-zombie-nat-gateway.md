@@ -17,7 +17,10 @@ double - so estimate savings per region, never from one rate). The hourly
 charge alone is about $32/month per gateway, accrued whether traffic flows
 or not. A NAT Gateway processing near-zero data still pays the full hourly.
 Multiply across accounts, AZs, and forgotten migration leftovers and the
-waste compounds quickly.
+waste compounds quickly. Every dollar figure in this playbook is an
+illustrative list rate written between May and August 2026 - verify
+against live pricing for the regions in scope before sizing a business
+case.
 
 ## Symptoms
 
@@ -34,13 +37,16 @@ waste compounds quickly.
 -- Athena over CUR 2.0: NAT Gateway hours vs data processed, last two full
 -- months. The window is deliberately 60 days, not one month: some workloads
 -- run quarterly, and a single quiet month would misclassify them.
--- gb_per_month is the monthly average over the window, so the < 5 GB/month
--- threshold reads the same as the CloudWatch symptom above.
+-- The NatGateway-Bytes usage amount is already reported in GB (the pricing
+-- unit), despite the usage-type name - do not divide it down from bytes.
+-- gb_per_month is that GB figure divided by 2, i.e. the monthly average over
+-- the two-month window, so the < 5 GB/month threshold reads the same as the
+-- CloudWatch symptom above.
 SELECT
   line_item_resource_id           AS nat_id,
   line_item_availability_zone     AS az,
   SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Hours' THEN line_item_usage_amount END) AS hours,
-  COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 1024 / 1024 / 1024 / 2 AS gb_per_month,
+  COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 2 AS gb_per_month,
   SUM(line_item_unblended_cost)   AS cost_period
 FROM cur2
 WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '2' month)
@@ -51,7 +57,7 @@ GROUP BY 1, 2
 -- COALESCE matters: a NAT with literally zero traffic produces no
 -- NatGateway-Bytes line items at all, so the bare SUM returns NULL and
 -- NULL < 5 filters out exactly the clearest zombies.
-HAVING COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 1024 / 1024 / 1024 / 2 < 5
+HAVING COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%NatGateway-Bytes' THEN line_item_usage_amount END), 0) / 2 < 5
 ORDER BY cost_period DESC;
 ```
 

@@ -2,17 +2,18 @@
 name: cloud-finops
 displayName: "Cloud FinOps by OptimNow"
 description: >
-  Expert FinOps guidance covering cloud, AI, and SaaS technology spend. Includes AI cost
-  management, GenAI capacity planning, self-hosted vs managed AI inference decisioning,
-  Anthropic billing, AWS (EC2, Bedrock, SageMaker, GPU rightsizing, Savings Plans,
-  CUR, commitment strategy), Azure (reservations, Savings Plans, AHB, OpenAI PTUs, portfolio
-  liquidity), GCP (Vertex AI, Compute Engine, BigQuery), tagging governance, SaaS management
-  (SAM, licence optimisation, SMPs, shadow IT), AI coding tools (Cursor, Claude Code,
-  Copilot, Windsurf, Codex), ITAM, data platforms (Databricks allocation and governance with
-  DBCU commitments, Microsoft Fabric capacity FinOps with F-SKUs, CU smoothing, reservations,
-  pause/resume, Pro-to-Fabric migration governance), Snowflake, OCI, and GreenOps. Use for any
-  query about technology cost, commitment portfolio management, rightsizing, cost allocation,
-  SaaS sprawl, AI dev tool spend, or connecting spend to business value. Built by OptimNow.
+  Expert FinOps guidance for cloud, AI, and SaaS technology spend. Covers AI cost
+  management, agentic FinOps, GenAI capacity planning, self-hosted vs managed inference,
+  Anthropic billing, open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM), AWS (EC2,
+  Bedrock, SageMaker, GPU rightsizing, Savings Plans, CUR), Azure (reservations, AHB,
+  OpenAI PTUs), GCP (Vertex AI, BigQuery), OCI, Kubernetes cost allocation, data
+  platforms (Databricks, Fabric F-SKUs, Snowflake), tagging governance, SaaS management
+  (SAM, licence optimisation, shadow IT), AI coding tools (Cursor, Claude Code, Copilot,
+  Windsurf, Codex), ITAM, allocation, showback and chargeback, anomaly management, KPIs
+  and benchmarking, waste detection playbooks, workload onboarding and M&A, and GreenOps
+  (cloud carbon, CSRD). Use for any query about technology cost, commitment portfolio
+  management, rightsizing, cost allocation, SaaS sprawl, AI dev tool spend, or connecting
+  spend to business value. Built by OptimNow.
 keywords:
   - finops
   - cloud cost
@@ -271,7 +272,7 @@ methodology questions - not for routine billing-mechanics queries.
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | Self-hosted vs managed AI inference, build vs buy LLM, vLLM, SGLang, llama.cpp, GPU rental, RunPod, CoreWeave, Lambda, hidden cost surface, ML-Ops maturity rubric, hybrid routing (LiteLLM, Portkey) | `references/finops-ai-self-hosted-vs-managed.md` |
 | Open-weight model vendors on their own hosted APIs, DeepSeek, Qwen, Kimi, Moonshot, GLM, Z.ai, Chinese model APIs, open-weight pricing, time-based pricing, peak and off-peak token rates, vendor API vs third-party host channel choice, open-weight model licensing, GLM Coding Plan | `references/finops-open-weight-vendors.md` |
-| AWS billing data, CUR, Data Exports for FOCUS 1.2, Cost Explorer, EC2/compute rightsizing, SageMaker operational FinOps, cost allocation, governance, CloudFront flat-rate plans, S3 Files, multi-org billing | `references/finops-aws.md` |
+| AWS billing data, CUR, Data Exports for FOCUS 1.2, Cost Explorer, EC2/compute rightsizing, SageMaker operational FinOps, cost allocation, governance, CloudFront flat-rate plans, S3 Files, multi-org billing, expensive IAM actions, cost-preventive SCPs, deny high-cost actions, sandbox account guardrails | `references/finops-aws.md` |
 | AWS Savings Plans, Reserved Instances, Spot, commitment decision tree, commitment portfolio liquidity, phased purchasing, EDP negotiation, Convertible RI exchange | `references/finops-aws-commitments.md` |
 | AWS per-service inefficiency catalogue, enumerated AWS optimisation patterns | `references/finops-aws-patterns.md` |
 | AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference, Application Inference Profiles, Bedrock Projects, prompt caching, IAM Principal Cost Allocation | `references/finops-bedrock.md` |

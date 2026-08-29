@@ -16,7 +16,9 @@ for gp3, more for io2). They accumulate after EC2 instance termination
 when the volume's `DeleteOnTermination` flag is `false`, after migrations
 that left source disks behind, and after manual snapshot-and-detach
 workflows. Unlike snapshots, there is no recovery utility for orphaned
-volumes - they just bleed money.
+volumes - they just bleed money. The per-GB range above is an illustrative
+us-east-1 list rate as at May 2026 - verify against live pricing before
+sizing a business case.
 
 ## Symptoms
 
@@ -40,9 +42,11 @@ aws ec2 describe-volumes \
 ```
 
 ```sql
--- Athena over CUR 2.0: detached EBS spend by account
--- (CUR exposes "Storage" usage type for detached volumes the same as attached;
---  cross-reference with the API above)
+-- Athena over CUR 2.0: EBS spend by volume, to rank the API-detected orphans
+-- (CUR carries no attachment state - it bills a detached volume under the same
+--  "Storage" usage type as an attached one - so this returns ALL EBS volume
+--  spend. The orphan list comes from the describe-volumes call above; this
+--  query only tells you which of those volumes are worth acting on first.)
 SELECT
   line_item_resource_id           AS volume_id,
   line_item_usage_account_id      AS account,
@@ -86,7 +90,9 @@ ORDER BY cost_30d DESC;
 
 ## See also
 
-- `references/finops-aws.md` - EBS volume types and pricing
+- `references/finops-aws-patterns.md` - Storage Optimization Patterns,
+  including EBS volume-type modernisation (gp2 / io1 to gp3 / io2) and the
+  unattached-volume pattern
 - `playbooks/aws-snapshot-sprawl.md` - related snapshot accumulation
 - `references/finops-waste-detection-playbooks.md` - "orphaned" category
   rubric

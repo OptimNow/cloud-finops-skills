@@ -4,6 +4,9 @@
 # required checks pass. Major bumps are deliberately skipped: those still wait for a
 # human review.
 #
+# So is a short deny-list of actions that hold publishing credentials - see the
+# comment on the auto-merge step. Those are excluded regardless of bump size.
+#
 # Two repository settings must stay enabled for this to work:
 #   - General -> Allow auto-merge
 #   - Actions -> General -> Workflow permissions -> "Allow GitHub Actions to create and
@@ -21,18 +24,56 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]' && github.repository == 'OptimNow/cloud-finops-skills'
     steps:
+      # Pinned to a release commit SHA, like every other action in this repo.
+      # It was the one left on a floating tag, which is the wrong one to leave
+      # floating: it runs in a job holding contents:write + pull-requests:write,
+      # and its output is what decides whether the next step merges without a
+      # human. v2 is a moving tag - re-pointing it is a supply-chain step, not
+      # a release. SHA verified 2026-08-27 against the v2.5.0 tag via the GitHub
+      # API (v2 and v2.5.0 resolve to the same commit). v3 exists upstream; the
+      # move to it is a major bump and so is a deliberate human decision, which
+      # is also why fetch-metadata is on the deny-list below.
       - name: Fetch dependabot metadata
         id: meta
-        uses: dependabot/fetch-metadata@v2
+        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a  # v2.5.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Approve and queue auto-merge (patch/minor only)
-        if: steps.meta.outputs.update-type != 'version-update:semver-major'
+      # The deny-list is not about trusting these projects less. It is about
+      # what a bad patch release of one of them would reach:
+      #
+      #   pypa/gh-action-pypi-publish   runs in a job with id-token: write and
+      #                                 mints the PyPI OIDC token
+      #   softprops/action-gh-release   creates the release with contents:write
+      #   dependabot/fetch-metadata     is the step that gates this very merge
+      #
+      # A patch bump to any of them, auto-approved and auto-merged, would sit on
+      # main unreviewed and then execute against a publishing credential at the
+      # next release. Every other dependency here fails loudly and locally if it
+      # misbehaves; these three fail by publishing something. They cost one
+      # human review each, a few times a year.
+      - name: Approve and queue auto-merge (patch/minor, non-publishing deps)
+        id: automerge
+        if: >-
+          steps.meta.outputs.update-type != 'version-update:semver-major' &&
+          !contains(steps.meta.outputs.dependency-names, 'pypa/gh-action-pypi-publish') &&
+          !contains(steps.meta.outputs.dependency-names, 'softprops/action-gh-release') &&
+          !contains(steps.meta.outputs.dependency-names, 'dependabot/fetch-metadata')
         run: |
-          gh pr review "$PR_URL" --approve --body "Auto-approved dependabot ${UPDATE_TYPE#version-update:semver-} bump. Majors still wait for a human."
+          gh pr review "$PR_URL" --approve --body "Auto-approved dependabot ${UPDATE_TYPE#version-update:semver-} bump. Majors, and bumps to the publishing actions, still wait for a human."
           gh pr merge "$PR_URL" --squash --auto
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Without this the PR just sits there with a green, silent workflow and
+      # nothing saying why it was not merged. An annotation on the run is the
+      # cheapest way to make the skip legible.
+      - name: Explain why this PR was not auto-merged
+        if: steps.automerge.outcome == 'skipped'
+        env:
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DEP_NAMES: ${{ steps.meta.outputs.dependency-names }}
+        run: |
+          echo "::notice::Not auto-merged - needs a human review. dependencies=${DEP_NAMES} update-type=${UPDATE_TYPE}. Majors and bumps to the publishing actions (pypa/gh-action-pypi-publish, softprops/action-gh-release, dependabot/fetch-metadata) are excluded by design."
