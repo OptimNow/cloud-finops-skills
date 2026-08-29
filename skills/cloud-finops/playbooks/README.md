@@ -23,11 +23,14 @@ set with its facets.
 |---|---|---|---|
 | [aws-cross-az-egress](aws-cross-az-egress.md) | Cross-AZ Egress Chatterbox | egress | likely |
 | [aws-expiring-commitment-no-decision](aws-expiring-commitment-no-decision.md) | Expiring Commitment Without a Renewal Decision | commitment-mismatch | obvious |
+| [aws-gp2-to-gp3](aws-gp2-to-gp3.md) | gp2-to-gp3 Volume Migration | modernization | obvious |
 | [aws-gpu-for-cpu-bound-workload](aws-gpu-for-cpu-bound-workload.md) | GPU Instance for a CPU-Bound Workload | overprovisioned | likely |
+| [aws-graviton-candidate](aws-graviton-candidate.md) | Graviton Candidate | modernization | likely |
 | [aws-gpu-instance-oversized](aws-gpu-instance-oversized.md) | Oversized GPU Instance | overprovisioned | likely |
 | [aws-idle-load-balancer](aws-idle-load-balancer.md) | Idle Load Balancer | idle | obvious |
 | [aws-mig-candidate](aws-mig-candidate.md) | MIG (Multi-Instance GPU) Candidate | overprovisioned | possible |
 | [aws-multi-gpu-underutilized](aws-multi-gpu-underutilized.md) | Multi-GPU Instance with Single-GPU Workload | overprovisioned | obvious |
+| [aws-nat-gateway-endpoint-substitution](aws-nat-gateway-endpoint-substitution.md) | NAT-to-Gateway-Endpoint Substitution | egress | obvious |
 | [aws-orphaned-ebs-volumes](aws-orphaned-ebs-volumes.md) | Orphaned EBS Volumes | orphaned | obvious |
 | [aws-outdated-gpu-generation](aws-outdated-gpu-generation.md) | Outdated GPU Generation | modernization | possible |
 | [aws-oversized-rds](aws-oversized-rds.md) | Oversized RDS Instance | overprovisioned | likely |
@@ -46,8 +49,11 @@ set with its facets.
 |---|---|---|---|
 | [azure-app-service-overprovisioned](azure-app-service-overprovisioned.md) | App Service Plan Overprovisioned | overprovisioned | likely |
 | [azure-idle-sql-database](azure-idle-sql-database.md) | Idle SQL Database | idle | likely |
+| [azure-idle-vm](azure-idle-vm.md) | Idle VM (Stopped but Not Deallocated) | idle | obvious |
 | [azure-log-analytics-sprawl](azure-log-analytics-sprawl.md) | Log Analytics Ingestion Sprawl | overprovisioned | likely |
 | [azure-orphan-disks](azure-orphan-disks.md) | Orphan Managed Disks | orphaned | obvious |
+| [azure-orphaned-public-ips-and-nics](azure-orphaned-public-ips-and-nics.md) | Orphaned Public IPs and NICs | orphaned | obvious |
+| [azure-snapshot-sprawl](azure-snapshot-sprawl.md) | Snapshot Sprawl | orphaned | likely |
 | [azure-unused-reservation](azure-unused-reservation.md) | Unused Azure Reservation | commitment-mismatch | obvious |
 
 ### GCP

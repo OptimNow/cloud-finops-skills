@@ -18827,6 +18827,119 @@ automatically buying a replacement.
 
 ---
 
+## Playbook: aws-gp2-to-gp3.md
+
+Source: skills/cloud-finops/playbooks/aws-gp2-to-gp3.md
+Pattern facets: scope aws; service Amazon EBS; waste category modernization; classification confidence obvious
+
+
+# AWS gp2-to-gp3 Volume Migration
+
+## Problem
+
+gp3 is the successor to gp2 at a ~20% lower per-GB rate ($0.08 vs
+$0.10/GB-month in us-east-1; illustrative list rates, written August
+2026), and it decouples performance from size: every gp3 volume gets
+3,000 IOPS and 125 MB/s baseline regardless of capacity, where gp2 ties
+IOPS to size (3 IOPS per GB) and relies on burst credits below 1,000 GB.
+For the bulk of the fleet - volumes at or under 1,000 GB - gp3 is equal
+or better on every performance dimension at a lower price, and the
+conversion is a **live, in-place modification with no downtime**. gp2
+volumes persist purely because nothing forces the migration: new volumes
+default to whatever the IaC template says, and templates written before
+gp3 existed (December 2020) still say gp2.
+
+## Symptoms
+
+- CUR shows material spend on usage type `EBS:VolumeUsage.gp2`
+- IaC modules and launch templates with `volume_type = "gp2"` hardcoded
+  or defaulted
+- Small gp2 volumes (< 334 GB) suffering burst-credit exhaustion under
+  sustained IO - on gp3 the same workload would sit under the 3,000
+  IOPS baseline
+- AMI-launched instances inheriting gp2 root volumes from old images
+
+## Detection
+
+Single signal - a gp2 volume at or under 1,000 GB converts to gp3 at
+equal-or-better performance for less money, no further analysis needed:
+
+```sql
+-- Athena over CUR 2.0: gp2 spend by account, last full month
+SELECT
+  line_item_usage_account_id    AS account_id,
+  SUM(line_item_usage_amount)   AS gb_months,
+  SUM(line_item_unblended_cost) AS gp2_cost
+FROM cur2
+WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '1' month)
+  AND line_item_usage_start_date <  date_trunc('month', current_date)
+  AND line_item_usage_type LIKE '%EBS:VolumeUsage.gp2'
+GROUP BY 1
+ORDER BY gp2_cost DESC;
+```
+
+Volume-level inventory with the size split that decides the treatment:
+
+```bash
+# gp2 volumes; those <= 1000 GiB are the no-analysis-needed cohort
+aws ec2 describe-volumes \
+  --filters "Name=volume-type,Values=gp2" \
+  --query "Volumes[].{id:VolumeId,size:Size,az:AvailabilityZone,state:State}" \
+  --output table
+```
+
+## Fix
+
+1. Convert every gp2 volume at or under 1,000 GB:
+   `aws ec2 modify-volume --volume-id vol-XXXX --volume-type gp3`.
+   The volume stays attached and serving IO throughout; the state is
+   visible in `describe-volumes-modifications`. One modification per
+   volume per 6 hours, so batch scripts should tolerate the cooldown.
+2. For gp2 volumes **over 1,000 GB**, match performance before
+   converting: their gp2 baseline exceeds 3,000 IOPS (3 IOPS/GB), so
+   set `--iops` to the current baseline and `--throughput` if the
+   workload is sequential (gp2 reaches 250 MB/s on large volumes; gp3
+   defaults to 125). Provisioned extra IOPS and throughput carry their
+   own small per-unit rates - the conversion usually still wins, but
+   compute it rather than assume it.
+3. Fix the source: change `gp2` to `gp3` in launch templates,
+   CloudFormation/Terraform defaults, and AMI build pipelines, or the
+   fleet regrows.
+4. Track the residual with the CUR query monthly until
+   `EBS:VolumeUsage.gp2` reads zero.
+
+## Anti-pattern
+
+- Blind-converting > 1,000 GB volumes without setting IOPS and
+  throughput. The volume lands on gp3 baseline (3,000 / 125) and a
+  database that was quietly using its 9,000-IOPS gp2 baseline slows
+  down - the saving gets blamed for an incident it did not need to
+  cause.
+- Converting io1/io2 volumes with the same script "while at it".
+  Provisioned-IOPS volumes exist for latency-sensitive workloads;
+  their migration is a rightsizing decision, not a default.
+- Waiting to bundle the conversion into a maintenance window. The
+  modification is online by design; treating it as risky delays a pure
+  saving for months.
+
+## See also
+
+- `playbooks/aws-graviton-candidate.md` - the compute-side
+  modernization pattern, same "newer generation, lower rate" shape
+- `playbooks/aws-orphaned-ebs-volumes.md` - run the orphan sweep first
+  so you do not migrate volumes that should simply be deleted
+- `references/finops-aws-patterns.md` - the enumerated EBS pattern
+  catalogue
+- `references/finops-waste-detection-playbooks.md` - "modernization"
+  category rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+
+
+---
+
 ## Playbook: aws-gpu-for-cpu-bound-workload.md
 
 Source: skills/cloud-finops/playbooks/aws-gpu-for-cpu-bound-workload.md
@@ -19081,6 +19194,125 @@ rightsize candidate.
 - `playbooks/aws-outdated-gpu-generation.md` - related modernisation move
 - `references/finops-waste-detection-playbooks.md` - Category 7 (AI/ML
   inefficiency) taxonomy
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+
+
+---
+
+## Playbook: aws-graviton-candidate.md
+
+Source: skills/cloud-finops/playbooks/aws-graviton-candidate.md
+Pattern facets: scope aws; service Amazon EC2 / RDS / ElastiCache / OpenSearch / Lambda; waste category modernization; classification confidence likely
+
+
+# AWS Graviton Candidate
+
+## Problem
+
+Graviton (ARM64) instances price roughly 10-20% below the equivalent
+x86 size within the same family generation, and AWS positions them at up
+to 40% better price-performance on top - a mechanics claim that holds
+for many workloads but must be benchmarked, not assumed. The pattern is
+`likely`, not `obvious`, because the price signal alone does not decide:
+the workload must actually run on ARM64. The decisive split is
+**managed vs self-managed**. On RDS, Aurora, ElastiCache, OpenSearch and
+Lambda, AWS owns the OS and runtime, so switching is an instance-class
+or architecture flag change with no application port. On self-managed
+EC2, the team owns AMIs, container images, and every binary agent - the
+saving is the same but the migration is a project.
+
+## Symptoms
+
+- Sustained spend on x86 families (m5/m6i/m7i, c5/c6i/c7i, r5/r6i/r7i,
+  t3) for workloads that are Linux plus interpreted or JIT runtimes
+  (Java, Python, Node, Go, .NET Core)
+- Managed databases and caches still on x86 instance classes
+  (`db.m6i`, `cache.m6i`) where the Graviton class (`db.m7g`,
+  `cache.m7g`) is available in-region
+- Lambda functions defaulted to `x86_64` architecture
+- Container fleets already building multi-arch images but pinned to
+  x86 node groups
+
+## Detection
+
+Two signals: material x86 spend (query below), then a compatibility
+read per workload (managed service, or Linux with no x86-only binary
+dependency).
+
+```sql
+-- Athena over CUR 2.0: spend on current-generation x86 families, by
+-- service - the managed-service rows are the low-friction candidates
+SELECT
+  product_servicecode,
+  product_instance_type,
+  SUM(line_item_unblended_cost) AS monthly_cost
+FROM cur2
+WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '1' month)
+  AND line_item_usage_start_date <  date_trunc('month', current_date)
+  AND regexp_like(product_instance_type, '^(db\.|cache\.)?(m|c|r|t)[5-7](i|a|d|ad|id)?\.')
+  AND NOT regexp_like(product_instance_type, 'g[d]?\.')   -- exclude already-Graviton (m7g, c7gd, ...)
+GROUP BY 1, 2
+ORDER BY monthly_cost DESC;
+```
+
+The regex is a coarse first pass over family naming, not an oracle -
+review the output rather than piping it into automation. For the
+compatibility signal on EC2 workloads, the checklist is: Linux (Graviton
+runs no Windows), no closed-source x86-only binaries, and every agent in
+the image (APM, security, backup) available for ARM64 - vendor agent
+support is the most common blocker in practice.
+
+## Fix
+
+Ordered by effort, cheapest first:
+
+1. **Lambda**: switch eligible functions to `arm64` (pure-Python/Node
+   functions with no compiled x86 dependencies switch cleanly; anything
+   with native wheels needs a rebuild against ARM). Lambda ARM also
+   bills a lower per-GB-second rate.
+2. **Managed services**: modify RDS / ElastiCache / OpenSearch instance
+   classes to the `g` variant in a maintenance window. Test in
+   pre-production first, but the engine is AWS's problem, not yours.
+3. **Containerised EC2/EKS**: add ARM node groups, build multi-arch
+   images, shift stateless workloads first, and let the scheduler prove
+   compatibility service by service.
+4. **Bare EC2**: rebuild AMIs on ARM64, benchmark the actual workload
+   (price-performance claims are workload-dependent), then migrate.
+5. Check commitment coverage **before** each wave: instance-family RIs
+   (m6i) do not cover the Graviton family (m7g); Compute Savings Plans
+   cover both. Migrating a fleet out from under standard RIs strands
+   the commitment - see the liquidity reasoning in
+   `references/finops-aws-commitments.md`.
+
+## Anti-pattern
+
+- Fleet-wide migration mandates before a single agent-compatibility
+  pass. One x86-only security agent discovered mid-wave stalls the
+  whole programme and discredits the saving.
+- Benchmarking on a micro-instance and extrapolating. Graviton's
+  price-performance is workload-shaped; measure the real service under
+  real load in pre-production.
+- Migrating workloads pinned by standard instance-family RIs and
+  leaving the RIs to burn unused. Sequence commitments and migration
+  together, or use the exchange window on Convertibles.
+- Treating Windows workloads as candidates. Graviton is Linux-only;
+  the Windows saving conversation is licence-shaped (see
+  `references/finops-itam.md`), not architecture-shaped.
+
+## See also
+
+- `playbooks/aws-gp2-to-gp3.md` - the storage-side modernization twin,
+  where the conversion carries none of this pattern's compatibility
+  caveats
+- `playbooks/aws-outdated-gpu-generation.md` - the GPU-side generation
+  refresh, same category
+- `references/finops-aws-commitments.md` - RI/SP liquidity mechanics
+  that gate migration sequencing
+- `references/finops-waste-detection-playbooks.md` - "modernization"
+  category rubric
 
 ---
 
@@ -19392,6 +19624,128 @@ near zero.
   attribution
 - `references/finops-waste-detection-playbooks.md` - Category 7 (AI/ML
   inefficiency) taxonomy
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+
+
+---
+
+## Playbook: aws-nat-gateway-endpoint-substitution.md
+
+Source: skills/cloud-finops/playbooks/aws-nat-gateway-endpoint-substitution.md
+Pattern facets: scope aws; service AWS NAT Gateway; waste category egress; classification confidence obvious
+
+
+# AWS NAT-to-Gateway-Endpoint Substitution
+
+## Problem
+
+A NAT Gateway charges a per-GB data-processing fee (~$0.045/GB in
+us-east-1; illustrative list rate, written August 2026) on every byte it
+moves. When the traffic behind that fee is destined for **S3 or DynamoDB
+in the same region**, the entire charge is avoidable: a **gateway VPC
+endpoint** carries that traffic for free - no hourly charge, no per-GB
+fee - and keeps it on the AWS network instead of hairpinning through the
+NAT. This is the high-traffic end of the NAT cost distribution; the idle
+end is `aws-zombie-nat-gateway`. A data pipeline writing a few TB a month
+to S3 through a NAT pays hundreds of dollars for routing it could have
+had for nothing.
+
+## Symptoms
+
+- NAT Gateway data-processing cost is a top line in the VPC's bill and
+  the VPC hosts workloads that read from or write to S3 or DynamoDB
+- The VPC has no gateway endpoints configured (very common in VPCs
+  created by hand or by older IaC templates)
+- Batch, analytics, backup, or container-image traffic peaks line up
+  with NAT `BytesOutToDestination` peaks
+- ECS/EKS clusters pulling images from ECR (ECR layer storage sits in
+  S3, so image pulls transit the NAT without an S3 gateway endpoint)
+
+## Detection
+
+Two config-level signals are enough to act, because adding a gateway
+endpoint costs nothing and can only remove NAT processing fees.
+
+Step 1 - rank NAT gateways by data-processing spend (Athena over CUR 2.0):
+
+```sql
+-- NAT data-processing cost per gateway, last full month.
+-- NatGateway-Bytes usage amount is already reported in GB.
+SELECT
+  line_item_resource_id         AS nat_id,
+  SUM(line_item_usage_amount)   AS gb_processed,
+  SUM(line_item_unblended_cost) AS processing_cost
+FROM cur2
+WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '1' month)
+  AND line_item_usage_start_date <  date_trunc('month', current_date)
+  AND line_item_usage_type LIKE '%NatGateway-Bytes'
+GROUP BY 1
+ORDER BY processing_cost DESC;
+```
+
+Step 2 - for each VPC behind a high-cost NAT, check whether gateway
+endpoints already exist:
+
+```bash
+# Empty output = no gateway endpoints in the VPC = candidate confirmed.
+aws ec2 describe-vpc-endpoints \
+  --filters "Name=vpc-id,Values=vpc-XXXXXXXX" "Name=vpc-endpoint-type,Values=Gateway" \
+  --query "VpcEndpoints[].{service:ServiceName,state:State}" --output table
+```
+
+Optional precision step - sizing exactly what share of NAT traffic is
+S3/DynamoDB-destined requires **VPC Flow Logs delivered to S3 and queried
+via Athena** (matching `dstaddr` against the regional S3 prefix list). If
+flow logs are not enabled, skip it: the fix below is safe without the
+sizing, and the next month's CUR shows the realised delta.
+
+## Fix
+
+1. Create a gateway endpoint for S3 (`com.amazonaws.<region>.s3`) and,
+   if DynamoDB is used, a second one for DynamoDB. Attach them to the
+   route tables of the private subnets that currently route through the
+   NAT. AWS inserts prefix-list routes automatically; more-specific
+   prefix-list routes win over the NAT default route, so traffic shifts
+   without touching the 0.0.0.0/0 entry.
+2. Verify S3 bucket policies and IAM conditions: policies that pin
+   `aws:SourceIp` to the NAT's public IP will start failing, because
+   endpoint traffic arrives with a private source. Replace them with
+   `aws:SourceVpce` / `aws:SourceVpc` conditions.
+3. Re-run the Step 1 query after one full month: NatGateway-Bytes on the
+   affected gateways should drop by the S3/DynamoDB share.
+4. If the remaining NAT traffic is now near zero, the gateway itself may
+   have become a zombie - hand over to `aws-zombie-nat-gateway`.
+
+## Anti-pattern
+
+- Using an **interface endpoint** for S3 where a gateway endpoint
+  suffices. Interface endpoints bill per hour per AZ plus per GB; for
+  bulk S3 traffic they reintroduce the very fee the gateway endpoint
+  removes. Interface endpoints for S3 exist for on-premises and
+  cross-VPC access - cases a gateway endpoint cannot serve.
+- Expecting the endpoint to serve traffic from peered VPCs, VPN, or
+  Direct Connect. Gateway endpoints only serve traffic originating in
+  their own VPC; hybrid paths need an interface endpoint or a different
+  design.
+- Deleting the NAT Gateway in the same change. Other traffic (package
+  mirrors, external APIs, webhooks) still needs it; remove it only after
+  the post-change CUR shows it idle.
+- Forgetting cross-region: a gateway endpoint reaches same-region S3
+  only. Traffic to a bucket in another region still transits the NAT.
+
+## See also
+
+- `playbooks/aws-zombie-nat-gateway.md` - the idle end of the same NAT
+  distribution, which this pattern deliberately complements
+- `playbooks/aws-cross-az-egress.md` - the other avoidable-transfer
+  pattern inside a VPC
+- `references/finops-aws.md` - CUR / Data Exports setup behind the
+  detection query
+- `references/finops-waste-detection-playbooks.md` - "egress / data
+  transfer" category rubric
 
 ---
 
@@ -20916,6 +21270,118 @@ AzureMetrics
 
 ---
 
+## Playbook: azure-idle-vm.md
+
+Source: skills/cloud-finops/playbooks/azure-idle-vm.md
+Pattern facets: scope azure; service Azure Virtual Machines; waste category idle; classification confidence obvious
+
+
+# Azure Idle VM (Stopped but Not Deallocated)
+
+## Problem
+
+Azure bills VM compute by allocation, not by activity, and it
+distinguishes two "off" states that look identical from inside the OS.
+A VM shut down **from within the guest OS** (or via a bare `az vm stop`)
+lands in the **stopped** state: the hardware stays reserved and **compute
+billing continues at the full rate**. Only the **deallocated** state
+(portal Stop button, `az vm deallocate`) releases the hardware and stops
+compute charges. Teams that "switched the server off" from inside Windows
+or Linux routinely pay months of full compute for machines doing nothing.
+Managed disks and static public IPs keep billing in both states - that is
+expected and separate.
+
+## Symptoms
+
+- VMs whose power state reads `PowerState/stopped` rather than
+  `PowerState/deallocated` for days or weeks
+- A cost report showing full compute spend on machines the owning team
+  believes are "turned off"
+- Shutdown schedules implemented as in-guest cron/Task Scheduler jobs
+  (they can only reach the stopped state, never deallocated)
+- RDP/SSH unreachable but the VM still accrues compute cost
+
+## Detection
+
+Single signal, straight from Azure Resource Graph - a VM sitting in
+`stopped` is billing for nothing, full stop:
+
+```kusto
+// Azure Resource Graph - VMs stopped but NOT deallocated (still billed)
+resources
+| where type =~ "microsoft.compute/virtualmachines"
+| extend powerState = tostring(properties.extended.instanceView.powerState.code)
+| where powerState == "PowerState/stopped"
+| extend vmSize = tostring(properties.hardwareProfile.vmSize)
+| project subscriptionId, resourceGroup, name, vmSize, powerState, location
+| order by vmSize desc
+```
+
+`properties.extended` is populated by Resource Graph for VMs; if the
+column comes back empty across the board, the tenant may not yet surface
+extended properties in ARG - fall back to
+`az vm list -d --query "[?powerState=='VM stopped']"` which reads the
+same instance view per VM.
+
+Resource Graph carries inventory, not cost: to price the finding, join
+the VM list to the Cost Management / FOCUS export on the lowercased
+resource ID, or simply read the `vmSize` column - the on-demand rate of
+the size is what each machine burns per hour while stopped.
+
+The neighbouring pattern - a **running** VM with near-zero CPU and
+network - is a real but separate finding: it needs Azure Monitor metrics
+(two signals, `likely` tier) and rightsizing judgement. See
+`references/finops-azure.md` for that methodology; do not classify
+running VMs from this playbook.
+
+## Fix
+
+1. Deallocate every VM the query returns:
+   `az vm deallocate -g <rg> -n <name>`. Data on managed disks is
+   preserved; only the ephemeral temp disk is lost, plus dynamic public
+   IPs and the hardware placement.
+2. Replace in-guest shutdown jobs with mechanisms that deallocate:
+   the DevTest Labs **auto-shutdown** setting on the VM, an Automation
+   runbook, or Azure Functions on a schedule.
+3. For dev/test estates, pair deallocation with a start schedule -
+   the full pattern is in `cross-cloud-schedule-blindness.md`.
+4. Re-run the Detection query weekly; a machine that keeps reappearing
+   has an owner who needs the stopped-vs-deallocated explanation, not
+   another deallocation.
+
+## Anti-pattern
+
+- Deallocating a VM that holds a **dynamic** public IP or relies on its
+  placement: the IP is released and a different one is assigned on
+  restart, breaking DNS records and firewall allowlists. Check the IP
+  allocation method first; convert to static if the address matters.
+- Treating deallocation as free: managed disks, static public IPs, and
+  any reservation covering the size keep billing. A deallocated VM
+  covered by a reservation wastes the reservation instead - if the
+  machine stays down, the reservation needs re-scoping
+  (`azure-unused-reservation`).
+- Deleting stopped VMs outright on the theory they are abandoned. The
+  stopped state is often a mistaken shutdown of something that matters;
+  deallocate first, delete only after an ownership check.
+
+## See also
+
+- `playbooks/cross-cloud-schedule-blindness.md` - the scheduling
+  discipline that prevents the pattern recurring
+- `playbooks/azure-unused-reservation.md` - where the waste moves if a
+  reserved VM stays deallocated
+- `references/finops-azure.md` - Azure compute billing mechanics and
+  rightsizing methodology (the metrics-based idle-VM variant)
+- `references/finops-waste-detection-playbooks.md` - "idle" category
+  rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+
+
+---
+
 ## Playbook: azure-log-analytics-sprawl.md
 
 Source: skills/cloud-finops/playbooks/azure-log-analytics-sprawl.md
@@ -21104,6 +21570,241 @@ per GB, so tier dominates the ordering.
   tiers, MCA contractual mechanics
 - `references/finops-waste-detection-playbooks.md` - "orphaned" category
   rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+
+
+---
+
+## Playbook: azure-orphaned-public-ips-and-nics.md
+
+Source: skills/cloud-finops/playbooks/azure-orphaned-public-ips-and-nics.md
+Pattern facets: scope azure; service Azure Public IP / Network Interface; waste category orphaned; classification confidence obvious
+
+
+# Azure Orphaned Public IPs and NICs
+
+## Problem
+
+A Standard SKU public IP address bills every hour it exists (~$0.005/hr,
+roughly $3.65/month; illustrative list rate, written August 2026) whether
+or not it is attached to anything. Deleting a VM does not delete its
+public IP or its network interface - both survive as free-floating
+resources, and every deleted VM, torn-down load balancer, or abandoned
+migration leaves a few behind. The NIC itself is not billed, but orphaned
+NICs matter twice over: they frequently hold the orphaned public IP (so
+the IP cannot be released until the NIC goes), and they block subnet and
+VNet deletion during cleanup. Since the Basic SKU retirement (September
+2025), every remaining public IP is a billed Standard SKU one.
+
+## Symptoms
+
+- Public IPs whose `ipConfiguration` is empty in the portal's
+  "Associated to" column
+- NICs left behind by deleted VMs, recognisable by the dead VM's name
+  in their own
+- Subnet or VNet deletions failing with "in use" errors caused by
+  resources nobody can name
+- Public IP count in a subscription far exceeding the running VM +
+  load balancer + firewall count
+
+## Detection
+
+Single signal - an unassociated public IP is pure spend:
+
+```kusto
+// Azure Resource Graph - public IPs attached to nothing
+resources
+| where type =~ "microsoft.network/publicipaddresses"
+| where isempty(properties.ipConfiguration) and isempty(properties.natGateway)
+| extend allocation = tostring(properties.publicIPAllocationMethod)
+| extend skuName    = tostring(sku.name)
+| project subscriptionId, resourceGroup, name, skuName, allocation, location
+| order by name asc
+```
+
+Both emptiness checks matter: a load balancer, firewall, or VM NIC
+association fills `ipConfiguration`, while a NAT Gateway association
+fills `natGateway` - an IP is only orphaned when both are empty.
+
+The companion query for orphaned NICs:
+
+```kusto
+// Azure Resource Graph - NICs attached to no VM and owned by no
+// platform service (private endpoints and Private Link services
+// create NICs that legitimately have no VM - exclude them)
+resources
+| where type =~ "microsoft.network/networkinterfaces"
+| where isempty(properties.virtualMachine)
+| where isempty(properties.privateEndpoint)
+| where isempty(properties.privateLinkService)
+| extend hasPublicIp = tostring(properties.ipConfigurations[0].properties.publicIPAddress.id)
+| project subscriptionId, resourceGroup, name, hasPublicIp, location
+```
+
+## Fix
+
+Ordered safest-first, because a released public IP address returns to
+the Azure pool and **cannot be recovered**:
+
+1. For each orphaned IP, search DNS zones, firewall rules, and partner
+   allowlists for the literal address before touching it. An address
+   that external parties have pinned is a coordination task, not a
+   cleanup task.
+2. Delete orphaned NICs first (`az network nic delete`) - this detaches
+   any public IP they hold and unblocks subnet cleanup. NICs bill
+   nothing, so this step is pure hygiene with no rollback concern
+   beyond step 1's check.
+3. Delete the now-unassociated public IPs
+   (`az network public-ip delete`).
+4. Prevent recurrence: create VMs with the NIC and public IP deletion
+   options set to delete-with-VM (`--nic-delete-option Delete` and the
+   public IP equivalent on the ipconfig), and put an Azure Policy audit
+   on unassociated public IPs so the estate stays clean.
+
+## Anti-pattern
+
+- Releasing a static public IP that a partner firewall or an external
+  DNS record still points at. The address is gone for good; the
+  breakage surfaces days later as a third party's connectivity ticket.
+- Deleting NICs by name pattern without the private-endpoint exclusion
+  above. A private endpoint's NIC has no VM by design; deleting it
+  severs the private endpoint.
+- Skipping the orphan sweep during VM deletion "to save time" and
+  planning a quarterly cleanup instead. The IPs bill daily; the
+  delete-with-VM options in Fix step 4 cost nothing to set.
+
+## See also
+
+- `playbooks/azure-orphan-disks.md` - the same abandonment pattern one
+  resource type over; run the two sweeps together
+- `playbooks/azure-idle-vm.md` - the deallocation state where public
+  IP allocation methods start to matter
+- `references/finops-azure.md` - Azure networking cost mechanics
+- `references/finops-waste-detection-playbooks.md` - "orphaned"
+  category rubric
+
+---
+
+> *Cloud FinOps Playbook by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+
+
+---
+
+## Playbook: azure-snapshot-sprawl.md
+
+Source: skills/cloud-finops/playbooks/azure-snapshot-sprawl.md
+Pattern facets: scope azure; service Azure Managed Disk Snapshots; waste category orphaned; classification confidence likely
+
+
+# Azure Snapshot Sprawl
+
+## Problem
+
+Managed disk snapshots bill per GB-month for as long as they exist, and
+nothing in Azure expires them: there is no native retention setting on a
+manually created snapshot. They accumulate through three channels -
+pre-change safety copies nobody deletes afterwards, scripted snapshot
+jobs whose cleanup half was never written, and snapshots orphaned when
+their source disk (or the whole VM) was deleted. A **full** snapshot
+bills the used size of the disk on every copy; **incremental** snapshots
+bill only the delta since the previous one, so a full-snapshot job on a
+schedule is the expensive variant of the pattern. Two signals are needed
+before deleting - age plus a gone source disk, or age plus a superseding
+backup - because an old snapshot can be the only restore point something
+still depends on.
+
+## Symptoms
+
+- Snapshot count grows month over month while the VM count does not
+- Snapshots named `pre-upgrade`, `before-migration`, `temp`, or
+  date-stamped by a script that clearly ran on a schedule
+- Snapshots whose source disk no longer exists
+- Storage cost in the subscription rising with no matching data growth
+  on live disks
+- Full (non-incremental) snapshots of large disks recurring daily
+
+## Detection
+
+Two signals in one query - age, and whether the source disk still
+exists:
+
+```kusto
+// Azure Resource Graph - snapshots older than 90 days, flagging those
+// whose source disk is gone (sourceGone == true is the strongest signal)
+resources
+| where type =~ "microsoft.compute/snapshots"
+| extend sourceId    = tolower(tostring(properties.creationData.sourceResourceId))
+| extend sizeGB      = toint(properties.diskSizeGB)
+| extend incremental = tobool(properties.incremental)
+| extend created     = todatetime(properties.timeCreated)
+| extend ageDays     = datetime_diff('day', now(), created)
+| where ageDays > 90
+| join kind=leftouter (
+    resources
+    | where type =~ "microsoft.compute/disks"
+    | extend diskId = tolower(id)
+    | project diskId
+  ) on $left.sourceId == $right.diskId
+| extend sourceGone = isempty(diskId)
+| project subscriptionId, resourceGroup, name, sizeGB, incremental, ageDays, sourceGone
+| order by sourceGone desc, sizeGB desc
+```
+
+Resource Graph carries inventory, not cost: `sizeGB` ranks full
+snapshots correctly, but an incremental snapshot's billed size is its
+delta, which ARG does not expose - price incrementals through the Cost
+Management / FOCUS export joined on the lowercased resource ID.
+
+Before deleting anything, check the snapshot is not a restore point a
+backup system counts on: Azure Backup keeps its own recovery points in
+the vault (not as standalone snapshots you would see here), but
+third-party backup tools often do their work through exactly these
+snapshot objects. `az snapshot show` and the creating identity in the
+activity log tell you which tool made it.
+
+## Fix
+
+1. Delete snapshots where `sourceGone == true` and no backup tool claims
+   them - the disk they would restore no longer exists, so their only
+   remaining value is as a template, which is rare and identifiable by
+   name.
+2. For aged snapshots with a living source, confirm with the owner that
+   a newer restore point supersedes them, then delete beyond an agreed
+   retention window.
+3. Replace scripted snapshot jobs with **Azure Backup** policies, which
+   carry retention and expiry natively - the job that creates without
+   deleting is the root cause, not the snapshots themselves.
+4. Where snapshot jobs must remain, switch them to **incremental**
+   (`az snapshot create --incremental`) - the recurring cost drops from
+   full disk size to daily delta.
+5. Add an Azure Policy audit on snapshot age so the estate does not
+   regrow silently.
+
+## Anti-pattern
+
+- Deleting the only restore point of a disk that still exists because
+  "it is old". Age alone is one signal; this pattern is `likely`, not
+  `obvious`, precisely because an old snapshot can still be the backup.
+- Deleting snapshots created by a backup product from underneath it.
+  The product's catalogue now references a recovery point that is gone,
+  and the failure surfaces at restore time - the worst possible moment.
+- Keeping full-snapshot schedules "because incremental sounds riskier".
+  An incremental chain restores identically; Azure resolves the chain
+  server-side, and the first incremental of a disk is a full copy
+  anyway.
+
+## See also
+
+- `playbooks/aws-snapshot-sprawl.md` - the AWS twin of this pattern,
+  same two-signal logic over EBS
+- `playbooks/azure-orphan-disks.md` - the upstream orphan: a deleted
+  VM's disk today is an orphaned snapshot's gone source next quarter
+- `references/finops-azure.md` - Azure storage billing mechanics
+- `references/finops-waste-detection-playbooks.md` - "orphaned"
+  category rubric
 
 ---
 
