@@ -33,6 +33,7 @@ cloud-finops-skills/
 ├── AGENTS.md              <- Agent-facing repo brief (truncated tree, defers to CLAUDE.md)
 ├── INSTALLATION.md        <- Setup instructions (12 tool integrations) + response contract
 ├── LICENSE.md             <- CC BY-SA 4.0
+├── CONTRIBUTING.md        <- Contribution guide (types, process, push-backs)
 ├── llms.txt               <- llmstxt.org-format index (linked sections; CI-gated)
 ├── DEPENDENCIES.md        <- Cross-repo dependency map for the five OptimNow repos,
 │                             plus the "if I change X, what else needs review" table
@@ -481,10 +482,12 @@ Follow these six steps whenever you add a new domain:
    - Add a row to the "Domain routing" table (same format as SKILL.md)
    - Add relevant keywords to the `keywords` list in the YAML frontmatter
 
-4. **Update README.md**
-   - Add a bullet under "What this skill covers"
-   - Add the file to the "Directory structure" listing
-   - Add usage examples if applicable
+4. **Update README.md only if the domain changes a family**
+   - The README no longer lists individual reference files: "What this skill
+     covers" is a table of domain families, and "Directory structure" shows
+     folders only (the per-file catalogue is SKILL.md's routing table). Touch
+     the README only when the new file adds a domain family or a keyword worth
+     naming in its family's row - not for every added reference.
 
 5. **Register the file in the three places that enumerate references.**
    The first two are CI-gated - skipping either fails the `CI` workflow, so they
@@ -682,7 +685,9 @@ Two standing rules that follow from the map:
 - [ ] New reference file follows the `finops-{domain}.md` naming convention
 - [ ] YAML FCP frontmatter included on the new file (see "Reference-file frontmatter")
 - [ ] Routing table updated in both SKILL.md and POWER.md
-- [ ] README directory listing and "What this skill covers" section updated
+- [ ] README "What this skill covers" family table updated only if the PR adds
+      a new domain family or a keyword worth naming (the README no longer
+      lists individual files)
 - [ ] CLAUDE.md "Repository structure" directory listing updated (CI-gated by
       `scripts/check-docs-drift.sh` - a reference missing from the tree, or a
       tree entry with no file behind it, fails the `CI` workflow. The same
