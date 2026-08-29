@@ -77,7 +77,7 @@ organisation has left "Inform" for another.
 - Rightsize compute resources (EC2, VMs, containers, databases)
 - Implement commitment discounts (Reserved Instances, Savings Plans, CUDs)
 - Eliminate waste - unattached volumes, idle resources, zombie features
-- Schedule non-production environments (60–70% savings on dev/test)
+- Schedule non-production environments (60-70% savings on dev/test)
 - Implement lifecycle policies for storage and data
 
 **Crawl targets:** Obvious waste eliminated, basic rightsizing started

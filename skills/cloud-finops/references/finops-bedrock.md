@@ -59,8 +59,8 @@ against current AWS pricing documentation):
 |---|---|---|
 | Amazon Nova Micro / Lite | Low | Classification, summarization, lightweight tasks |
 | Amazon Nova Pro | Mid | General purpose, RAG, moderate reasoning |
-| Meta Llama 3 (8B–70B) | Low–Mid | Open-weight, cost-sensitive workloads |
-| Mistral (7B–Large) | Low–Mid | EU data residency, general purpose |
+| Meta Llama 3 (8B-70B) | Low-Mid | Open-weight, cost-sensitive workloads |
+| Mistral (7B-Large) | Low-Mid | EU data residency, general purpose |
 | Anthropic Claude Haiku | Low | High-volume, latency-tolerant tasks |
 | Anthropic Claude Sonnet | Mid | Balanced capability and cost |
 | Anthropic Claude Opus | High | Complex reasoning, agentic workflows |

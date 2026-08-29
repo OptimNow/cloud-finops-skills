@@ -101,7 +101,7 @@ Non-production EC2 instances are often provisioned for daytime-only usage but re
 
 - Implement scheduled shutdowns using AWS Instance Scheduler or EventBridge rules
 - Ensure stateful data is retained via attached EBS volumes or AMIs
-- Set start/stop windows aligned to working hours (e.g., 8 a.m.–6 p.m. weekdays)
+- Set start/stop windows aligned to working hours (e.g., 8 a.m.-6 p.m. weekdays)
 
 **Orphaned And Overprovisioned Resources In Eks Clusters**
 Service: AWS EKS | Type: Inefficient Configuration
@@ -569,7 +569,7 @@ Service: AWS EBS | Type: Overprovisioned Resource
 
 This inefficiency occurs when an EBS volume has provisioned IOPS levels that consistently exceed the actual I/O requirements of the workload it supports. This can happen when performance buffers are estimated too high, usage patterns change over time, or default settings are left unadjusted.
 
-- Review actual IOPS usage over a representative time window (e.g., 14–30 days)
+- Review actual IOPS usage over a representative time window (e.g., 14-30 days)
 - Compare provisioned IOPS to peak and average demand to assess excess capacity
 - Confirm whether performance requirements or bursty workloads justify the current configuration
 
@@ -1440,7 +1440,7 @@ AWS CloudTrail enables event logging across AWS services, but when multiple trai
 **Suboptimal Use Of Intel Based Instances In Opensearch**
 Service: AWS OpenSearch | Type: Suboptimal Instance Selection
 
-AWS Graviton processors are designed to deliver better price-performance than comparable Intel-based instances, often reducing cost by 20–30% at equivalent workload performance. OpenSearch domains running on older Intel-based families consume more spend without providing additional capability.
+AWS Graviton processors are designed to deliver better price-performance than comparable Intel-based instances, often reducing cost by 20-30% at equivalent workload performance. OpenSearch domains running on older Intel-based families consume more spend without providing additional capability.
 
 - Migrate OpenSearch domains from Intel-based instances (e.g., `m5`, `r5`, `i4i`) to equivalent Graviton families (`m6g`, `c6g`, `r6g`, `i4g`)
 - Leverage in-place instance type updates for clusters where supported to minimize downtime

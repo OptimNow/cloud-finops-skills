@@ -327,7 +327,7 @@ highest ROI for the effort.
 - Use the lowest-cost model that meets your quality threshold
 - **Model modernisation is an optimisation lever in its own right:** newer models within
   the same capability tier are often faster and cheaper than the models they replace.
-  Replacing o1 with o3 can deliver up to 80–90% cost reduction on reasoning workloads.
+  Replacing o1 with o3 can deliver up to 80-90% cost reduction on reasoning workloads.
   Treat model refresh as a recurring FinOps activity, not a one-time migration.
 - Scan deployments periodically for outdated models - paying a higher per-token rate
   for a superseded model generation is pure waste

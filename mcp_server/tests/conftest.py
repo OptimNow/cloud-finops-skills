@@ -37,7 +37,7 @@ def _ensure_dir(dest: Path, source: Path, *, skip: set[str]) -> None:
 def _populate_data() -> None:
     _ensure_dir(DATA_DIR, REFERENCES_SOURCE, skip=set())
     _ensure_dir(PLAYBOOKS_DIR, PLAYBOOKS_SOURCE, skip={"README.md"})
-    # Ensure a fresh import picks up data/ — important when the tree was
+    # Ensure a fresh import picks up data/, important when the tree was
     # populated mid-session.
     sys.modules.pop("cloud_finops_mcp.metadata", None)
 

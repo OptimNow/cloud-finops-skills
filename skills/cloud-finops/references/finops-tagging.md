@@ -221,7 +221,7 @@ See `finops-azure.md` ("Agentic FinOps on Azure") for the full treatment.
 - No enforcement - violations are flagged but not blocked
 
 **Quick win:** Run a one-time tag audit, identify the top 10 untagged resources by spend,
-tag them manually. This typically achieves 15–20% allocation improvement in one session.
+tag them manually. This typically achieves 15-20% allocation improvement in one session.
 
 ### Walk
 - Tags enforced at IaC layer for new resources
