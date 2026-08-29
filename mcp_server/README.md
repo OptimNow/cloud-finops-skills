@@ -78,7 +78,7 @@ get_reference("finops-aws-patterns", section="networking")  # ~2,600 tokens
 |---|---|
 | `list_playbooks()` | Browse the waste runbooks: which patterns of idle, orphaned, overprovisioned or leaking spend have a ready-made runbook. Carries the same `approx_tokens` hint. |
 | `get_playbook(name)` | Read one runbook: symptoms, detection queries, fix, anti-pattern. |
-| `find_playbooks(scope?, service?, waste_category?, confidence?)` | "We are wasting money on X - how do I find and fix it?" - filter runbooks by provider, service, waste category, confidence. |
+| `find_playbooks(scope?, service?, waste_category?, confidence?)` | "We are wasting money on X - how do I find and fix it?" - filter runbooks by provider, service, waste category, confidence. Also the route for questions about your own estate ("which of my RIs are about to expire"): the server cannot see your account, so the runbook's detection query is the answer it hands over. |
 
 The playbook faceted query supports:
 

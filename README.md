@@ -260,7 +260,7 @@ for "how do I detect and fix this specific thing".
 |---|---|
 | `list_playbooks()` | What cloud waste can we hunt with a ready-made runbook? |
 | `get_playbook(name)` | The step-by-step runbook: symptoms, detection queries, fix, anti-pattern |
-| `find_playbooks(scope?, service?, waste_category?, confidence?)` | "Which VMs run for nothing?" "Why is the NAT bill so high?" - finds the runbook for a specific waste suspicion |
+| `find_playbooks(scope?, service?, waste_category?, confidence?)` | "Which VMs run for nothing?" "Why is the NAT bill so high?" "Which of my RIs are about to expire?" - finds the runbook for a specific waste suspicion. The server cannot see your account; the runbook's detection query is the answer it hands over |
 
 Both listings carry `approx_tokens` per entry, because the references vary by more
 than tenfold - roughly 2K tokens for the smallest, over 25K for the provider pattern

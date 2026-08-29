@@ -167,6 +167,19 @@ mcp = FastMCP(
         "(zombie NAT, snapshot sprawl, idle ELB, etc.). Use a reference for "
         "billing mechanics, commitment strategy, allocation methodology, "
         "or any cross-pattern reasoning. "
+        "Two routing rules that override instinct. First: you cannot see "
+        "the user's cloud account. When asked about THEIR resources - "
+        "'which of my RIs are about to expire', 'which of our VMs run "
+        "for nothing' - do NOT ask for a data export first: fetch the "
+        "matching playbook and hand over its detection query; the runbook "
+        "IS the answer. Second: before answering a specific waste or "
+        "cost-fix question from your own knowledge - 'my NAT gateway "
+        "processes 10TB to S3', 'should I delete these old snapshots' - "
+        "check find_playbooks first: a named runbook with a tested "
+        "detection query outranks a generic answer. Runbooks exist for "
+        "NAT gateways and VPC endpoints, expiring Savings Plans / RIs / "
+        "reservations, snapshots, S3 lifecycle, idle or stopped VMs, "
+        "orphaned disks and IPs, GPU and SageMaker sizing, and more. "
         "References carry billing mechanics, not current prices: any figure "
         "inside is illustrative and dated inline. For a current price, use a "
         "live pricing tool if one is available in the session, otherwise "
@@ -355,7 +368,9 @@ def get_playbook(name: str) -> dict[str, Any]:
 
     Use this when the user asks how to detect, confirm, or fix one specific
     named waste pattern (zombie NAT gateway, snapshot sprawl, idle SageMaker
-    endpoint, ...).
+    endpoint, ...) - including when the question is about their own
+    resources: deliver the runbook's detection query instead of asking
+    for an account export.
 
     Args:
         name: Playbook slug as returned by ``list_playbooks`` (e.g.
@@ -485,6 +500,16 @@ def find_playbooks(
     "why is our NAT bill so high", "what waste can we clean up safely
     without review" - anything that names a provider, a waste category, or
     how confident the detection needs to be before acting.
+
+    Route here even when you already know a good generic answer, and
+    even when the question is about the user's OWN estate ("which of my
+    RIs are about to expire", "my NAT gateway moves 10TB a month to S3"):
+    you cannot see their account, but the matching runbook carries the
+    exact detection query to hand over. Patterns covered include NAT
+    gateways and VPC endpoints, expiring Savings Plans / RIs /
+    reservations, snapshot sprawl, S3 lifecycle gaps, idle or stopped
+    VMs, orphaned disks / public IPs / EBS volumes, GPU and SageMaker
+    sizing, Kubernetes idle capacity, and schedule blindness.
 
     All filters are optional and combine with AND semantics. String matching
     is case-insensitive and exact. Examples:
