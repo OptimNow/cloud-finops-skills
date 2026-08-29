@@ -104,14 +104,26 @@ maintainer file.
   INSTALLATION.md and the `remotes` block of `server.json`. The decision to deploy
   remotely was taken on 2026-08-16 on distribution grounds alone (let a non-technical
   user paste a URL into claude.ai instead of installing a PyPI package), explicitly
-  *not* on interactive rendering - see the MCP Apps lesson in `CLAUDE.md` for why that is
-  allowlisted rather than earned.
+  *not* on interactive rendering - see [`mcp-apps-lessons.md`](./mcp-apps-lessons.md) for
+  the full record of what actually gates widget rendering. (The 2026-08-16 reading, that
+  the Connectors Directory is the gate, was overturned on 2026-08-20: the gate is
+  implementation shape, and a remote deployment is neither necessary nor sufficient for
+  rendering. The distribution argument for hosting stands regardless.)
 
   **Verified against the deployed endpoint**, not just against a build log:
   `initialize` returns `serverInfo {"name":"cloud-finops","version":"1.29.0"}` and
   `tools/call list_references` returns `"total":33`. The reference count is the check
   that matters - see constraint 1 below for why a deployment can come up healthy with
   an empty catalogue.
+
+  **Staleness confirmed (2026-08-27).** The same two calls still return 1.29.0 and 33
+  references, so the deployment has not effectively picked up a release since
+  2026-08-17 - four releases and two new references (`finops-kpis-benchmarking`,
+  `finops-open-weight-vendors`) behind PyPI, and serving pre-price-purge content. This
+  is what the release-checklist item "redeploy the hosted MCP (Alpic) after the tag,
+  then verify by calling it" exists to prevent, and it is evidence that the redeploy
+  cannot be assumed to happen on its own. Re-verify with `initialize` plus
+  `list_references` after every release; expect the current version and a total of 35.
 
   One behavioural difference from the local run, worth knowing before writing a health
   check: **the hosted endpoint is session-based.** A bare `tools/call` returns HTTP 400

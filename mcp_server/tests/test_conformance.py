@@ -30,16 +30,10 @@ from cloud_finops_mcp import metadata, server, tools
 # any future enum-without-content regression.
 KNOWN_EMPTY_FACET_VALUES: set[str] = set()
 
-
-FACET_ORDER = ("scope", "service", "waste_category", "confidence")
-
-# The vocabulary is written out twice: in tools.py (the implementation) and in
-# server.py (the docstring FastMCP actually publishes to the agent). server.py
-# is the one a model reads, so both are pinned and required to agree.
-DOCSTRING_SOURCES = {
-    "tools": tools.find_playbooks,
-    "server": server.find_playbooks,
-}
+# The eight waste categories are defined in the taxonomy reference as
+# ``## Category N: <phrase>`` headings; the facet vocabulary is a kebab-case
+# shortening of those phrases.
+CATEGORY_HEADING_RE = re.compile(r"^## Category \d+: (.+?)\s*$", re.M)
 
 
 def _advertised_in(fn, facet: str) -> set[str]:
@@ -71,8 +65,10 @@ def _advertised(facet: str) -> set[str]:
 def test_tools_and_server_docstrings_agree(facet: str) -> None:
     """The two copies of the facet vocabulary must not drift apart.
 
-    server.py's docstring is what FastMCP publishes; tools.py's is what a
-    developer reads. A fix applied to one and not the other is silent.
+    The vocabulary is written out twice: in tools.py (the implementation) and
+    in server.py (the docstring FastMCP actually publishes to the agent).
+    server.py's is what a model reads; tools.py's is what a developer reads.
+    A fix applied to one and not the other is silent.
     """
     in_tools = _advertised_in(tools.find_playbooks, facet)
     in_server = _advertised_in(server.find_playbooks, facet)
@@ -192,8 +188,35 @@ def test_known_empty_values_are_still_empty() -> None:
     )
 
 
+def _words(text: str) -> list[str]:
+    return [w for w in re.split(r"[^a-z0-9]+", text.lower()) if w]
+
+
+def _names_heading(value: str, heading: str) -> bool:
+    """True when a kebab facet value names the taxonomy heading it came from.
+
+    The facet value is a shortened kebab form of the human-readable heading
+    (``commitment-mismatch`` for "Commitment mismatches", ``egress`` for
+    "Egress / data transfer"), so every word of the value must line up with the
+    heading's leading words, the last one allowed to differ by an inflection.
+    """
+    v, h = _words(value), _words(heading)
+    if not v or len(v) > len(h):
+        return False
+    if v[:-1] != h[: len(v) - 1]:
+        return False
+    return h[len(v) - 1].startswith(v[-1])
+
+
 def test_waste_categories_match_the_taxonomy_file() -> None:
-    """The eight categories are defined in the reference, not in the code."""
+    """The eight categories are defined in the reference, not in the code.
+
+    The advertised vocabulary and the taxonomy's own ``## Category N:``
+    headings must pair up one-to-one. The previous version of this check only
+    looked for the value's first word somewhere in the file, which let
+    ``ai-ml-inefficiency`` pass on any text containing "ai" - and would have
+    passed just as happily on a category the reference no longer defines.
+    """
     ref = metadata.get_by_name("finops-waste-detection-playbooks")
     assert ref is not None
     text = ref.path.read_text(encoding="utf-8")
@@ -201,12 +224,32 @@ def test_waste_categories_match_the_taxonomy_file() -> None:
         "the waste taxonomy heading changed - the facet vocabulary in "
         "find_playbooks must be re-checked against it"
     )
-    for advertised in _advertised("waste_category"):
-        # Frontmatter uses kebab-case; the reference prose uses words.
-        assert advertised.replace("-", " ").split()[0].lower() in text.lower(), (
-            f"advertised waste_category {advertised!r} has no counterpart in "
-            "finops-waste-detection-playbooks.md"
+    headings = CATEGORY_HEADING_RE.findall(text)
+    assert len(headings) == 8, (
+        "expected eight '## Category N: ...' headings in "
+        f"finops-waste-detection-playbooks.md, found {len(headings)}: {headings}"
+    )
+
+    claimed: dict[str, str] = {}
+    for value in sorted(_advertised("waste_category")):
+        hits = [h for h in headings if _names_heading(value, h)]
+        assert len(hits) == 1, (
+            f"advertised waste_category {value!r} matches {len(hits)} of the "
+            f"eight taxonomy categories {headings} - it should name exactly one"
         )
+        already = claimed.get(hits[0])
+        assert already is None, (
+            f"waste_category {value!r} and {already!r} both name the taxonomy "
+            f"category {hits[0]!r}"
+        )
+        claimed[hits[0]] = value
+
+    unclaimed = [h for h in headings if h not in claimed]
+    assert not unclaimed, (
+        f"taxonomy categories with no advertised waste_category: {unclaimed}. "
+        "Either add the facet value to the find_playbooks docstrings or drop "
+        "the category from the reference."
+    )
 
 
 def test_facet_values_are_lowercase_and_consistent() -> None:

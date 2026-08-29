@@ -9,8 +9,15 @@
 # Framework (https://www.finops.org/framework/).
 #
 # Output: writes fcp-coverage.md at the repo root and prints a summary to
-# stdout. Exit code is 0 if the matrix can be built, 1 if a reference declares
-# a non-canonical Capability (typo / convention drift).
+# stdout. Both modes exit 1 on a frontmatter error - a missing fcp_domain /
+# fcp_capability, a non-canonical value, or a block-style
+# fcp_capabilities_secondary. The generator used to collect those errors and
+# then exit 0 anyway, writing a matrix with a silently-missing reference in it;
+# the header has always claimed otherwise, so the header was the honest half
+# and the code was fixed to match it.
+#
+# A generate run that fails still writes nothing: the render goes to a temp
+# file and is only moved over fcp-coverage.md once the frontmatter is clean.
 #
 # Usage:
 #   ./scripts/fcp-coverage.sh           Generate fcp-coverage.md
@@ -93,6 +100,7 @@ while IFS= read -r f; do
   domain=""
   capability=""
   secondary_line=""
+  secondary_present=0
   while IFS= read -r line; do
     # Strip trailing \r in case the file has CRLF line endings (common on
     # Windows checkouts).
@@ -112,6 +120,7 @@ while IFS= read -r f; do
         capability=$(strip_quotes "$(printf '%s' "${line#fcp_capability:}" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')")
         ;;
       "fcp_capabilities_secondary:"*)
+        secondary_present=1
         secondary_line="${line#fcp_capabilities_secondary:}"
         ;;
     esac
@@ -142,8 +151,28 @@ while IFS= read -r f; do
     PRIMARY[$pkey]="${fname}"
   fi
 
+  # A declared-but-empty `fcp_capabilities_secondary:` is almost always the
+  # block-style YAML list:
+  #
+  #   fcp_capabilities_secondary:
+  #     - "Allocation"
+  #     - "Anomaly Management"
+  #
+  # which is valid YAML and completely invisible to this parser - it only reads
+  # the remainder of the key's own line. The declared capabilities were silently
+  # dropped, the `[~]` marker degraded to `[ ]`, and CI stayed green because
+  # nothing warned. Only the inline form is supported, so say so loudly rather
+  # than losing the coverage.
+  secondary_trimmed="$(printf '%s' "$secondary_line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+  if [[ $secondary_present -eq 1 && -z "$secondary_trimmed" ]]; then
+    echo "ERROR: $fname declares fcp_capabilities_secondary with no value on the same line." >&2
+    echo "       Use the inline form - fcp_capabilities_secondary: [\"Cap A\", \"Cap B\"] -" >&2
+    echo "       a block-style list is parsed as empty and its coverage is lost." >&2
+    ERRORS=$((ERRORS + 1))
+  fi
+
   # Secondary capabilities (YAML inline list: ["Cap A", "Cap B"])
-  if [[ -n "$secondary_line" ]]; then
+  if [[ -n "$secondary_trimmed" ]]; then
     # Split YAML inline list ["A", "B, C", "D"] on `","` (quote-comma-quote)
     # rather than bare comma so capability names that contain commas
     # (e.g. "Governance, Policy & Risk") stay intact.
@@ -243,12 +272,26 @@ covered_caps=0
   echo "**Any-coverage** (primary OR secondary): $((covered_caps + secondary_only_caps)) / ${total_caps} (${pct_any}%) - includes ${secondary_only_caps} capabilities marked \`[~]\` that are touched by another reference's \`fcp_capabilities_secondary\` but have no primary owner yet."
   echo
   echo "**True gaps** (no primary AND no secondary): ${gap_caps}. These are tracked in docs/ROADMAP.md with rationale and trigger-to-revisit."
-  # Keep the legacy single-number for any caller that greps for it
-  echo
-  echo "_Legacy summary line (do not rely on this for scripting): **Coverage: ${covered_caps} / ${total_caps} Framework Capabilities (${pct_primary}%)**_"
+  # A "Legacy summary line" restating covered/total used to be emitted here for
+  # "any caller that greps for it". A grep across the tracked tree found no such
+  # caller: the only two hits were this echo and the line it produced in
+  # fcp-coverage.md, and render-fcp-heatmap.py parses the `- [x] **Cap**` rows,
+  # not the summary. Removed rather than carried - a line that says "do not rely
+  # on this" and that nothing relies on is pure maintenance surface.
 } > "$RENDER_FILE"
 
 if [[ -z "$CHECK_MODE" ]]; then
+  # The generator refuses to commit a matrix built from broken frontmatter.
+  # Previously ERRORS was only consulted in --check, so a run that had already
+  # printed "WARN: X missing fcp_domain" went on to write and report success -
+  # and the file it wrote was quietly missing that reference's coverage.
+  if [[ $ERRORS -gt 0 ]]; then
+    echo "" >&2
+    echo "FAIL: $ERRORS frontmatter error(s) - see the warnings above." >&2
+    echo "      $OUT_FILE was NOT written: it would have recorded a coverage gap" >&2
+    echo "      that is really a frontmatter bug. Fix the frontmatter and re-run." >&2
+    exit 1
+  fi
   mv "$RENDER_FILE" "$OUT_FILE"
   trap - EXIT
   echo "Generated $OUT_FILE: ${covered_caps}/${total_caps} capabilities covered"

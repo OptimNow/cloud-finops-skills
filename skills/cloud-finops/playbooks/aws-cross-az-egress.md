@@ -15,7 +15,9 @@ inbound (so $0.02/GB round-trip). For latency-sensitive microservice
 meshes that gossip across AZs, or for Kafka / database clusters that
 replicate across AZs, this can become the single largest line item on
 the AWS bill - often dwarfing the EC2 compute cost itself. The cost is
-invisible at design time and only surfaces after weeks of CUR review.
+invisible at design time and only surfaces after weeks of CUR review. The
+per-GB rates above are illustrative list rates as at May 2026 and vary by
+region - verify against live pricing before sizing a business case.
 
 ## Symptoms
 
@@ -45,16 +47,36 @@ ORDER BY cost_30d DESC
 LIMIT 20;
 ```
 
-For attribution, VPC Flow Logs + Athena partition queries can pinpoint
-the source / destination ENIs:
+For attribution, VPC Flow Logs + Athena partition queries can pinpoint the
+source / destination ENIs - but only after enrichment. A v5 flow record
+carries a single `az-id` and `vpc-id`, both describing the interface that
+captured the flow; there is no source-AZ / destination-AZ pair in the log.
+So the prerequisite is an ENI inventory table mapping private IP to AZ and
+VPC, refreshed at least daily from `aws ec2 describe-network-interfaces`.
+Without it, no Flow Logs query can answer the cross-AZ question.
 
 ```sql
-SELECT srcaddr, dstaddr, SUM(bytes) AS bytes_total
-FROM vpc_flow_logs
-WHERE start >= ... 
-  AND srcaz <> dstaz
-  AND srcvpc = dstvpc
-GROUP BY 1, 2
+-- Cross-AZ talkers, VPC Flow Logs (v5) joined twice against the ENI
+-- inventory: once for the source address, once for the destination.
+-- flow_direction = 'egress' keeps each flow counted once - both the sending
+-- and the receiving ENI log the same conversation. Drop that predicate only
+-- if your log format predates v5, and halve the totals if you do.
+-- Unmatched addresses (internet endpoints, ENIs deleted since the last
+-- inventory refresh) fall out of the inner joins by design.
+SELECT
+  f.srcaddr,
+  f.dstaddr,
+  src.availability_zone AS src_az,
+  dst.availability_zone AS dst_az,
+  SUM(f.bytes)          AS bytes_total
+FROM vpc_flow_logs f
+JOIN eni_inventory src ON f.srcaddr = src.private_ip
+JOIN eni_inventory dst ON f.dstaddr = dst.private_ip
+WHERE f.start >= to_unixtime(current_timestamp - interval '7' day)
+  AND f.flow_direction = 'egress'
+  AND src.vpc_id = dst.vpc_id
+  AND src.availability_zone <> dst.availability_zone
+GROUP BY 1, 2, 3, 4
 ORDER BY bytes_total DESC
 LIMIT 50;
 ```
@@ -86,7 +108,10 @@ LIMIT 50;
 
 ## See also
 
-- `references/finops-aws.md` - networking cost section, CUR usage types
+- `references/finops-aws-patterns.md` - Networking Optimization Patterns,
+  including cross-AZ transfer and the AZ-misaligned NAT Gateway pattern
+- `references/finops-aws.md` - CUR and Data Exports setup, where the
+  usage-type breakdown comes from
 - `references/finops-kubernetes.md` - Karpenter and AZ-aware node
   scheduling
 - `playbooks/aws-zombie-nat-gateway.md` - related egress pattern

@@ -14,8 +14,9 @@ Azure App Service plans are billed by SKU (P1v3, P2v3, etc.) and instance
 count, regardless of how many web apps actually run on them. Teams
 default to **Premium v3** plans for production apps and never revisit -
 even when the app handles low traffic that **Standard** or **Basic**
-would serve fine. As an anchor (verify against the current Azure
-pricing page in your region before sizing): in US East, a P1v3
+would serve fine. As an illustrative anchor, list rates as at May 2026
+(verify against the current Azure pricing page in your region before
+sizing): in US East, a P1v3
 instance is roughly $130-160/month (2 vCPUs, 8 GB RAM) versus roughly
 $70/month for S1 (1 vCPU, 1.75 GB RAM). The two are not feature-
 equivalent, but for many low-traffic workloads S1 fits, so the per-

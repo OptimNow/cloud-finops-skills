@@ -19,6 +19,9 @@ combined; six cost ~$1,020/month; nine cost ~$1,530/month - and most of
 that is the per-endpoint hourly base, not the actual inference work. The
 fix is to consolidate compatible models onto a single endpoint using either
 **Multi-Model Endpoints (MME)** or the newer **Inference Components (IC)**.
+The monthly figures are illustrative us-east-1 list rates as at May 2026 -
+they show how the cost scales per endpoint, not today's bill; verify
+against live pricing before quoting.
 
 ## Symptoms
 

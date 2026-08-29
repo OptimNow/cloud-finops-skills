@@ -1,17 +1,18 @@
 ---
 name: cloud-finops
 description: >
-  Expert FinOps guidance covering cloud, AI, and SaaS technology spend. Covers AI cost
+  Expert FinOps guidance for cloud, AI, and SaaS technology spend. Covers AI cost
   management, agentic FinOps, GenAI capacity planning, self-hosted vs managed inference,
-  Anthropic billing, AWS (EC2, Bedrock, SageMaker, GPU rightsizing, Savings Plans, CUR),
-  Azure (reservations, AHB, OpenAI PTUs), GCP (Vertex AI, BigQuery), OCI, Kubernetes cost
-  allocation, data platforms (Databricks, Microsoft Fabric F-SKUs, Snowflake), tagging
-  governance, SaaS management (SAM, licence optimisation, shadow IT), AI coding tools
-  (Cursor, Claude Code, Copilot, Windsurf, Codex), ITAM, allocation, showback and
-  chargeback, anomaly management, waste detection playbooks, workload onboarding and M&A,
-  and GreenOps (cloud carbon, CSRD). Use for any query about technology cost, commitment
-  portfolio management, rightsizing, cost allocation, SaaS sprawl, AI dev tool spend, or
-  connecting spend to business value. Built by OptimNow.
+  Anthropic billing, open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM), AWS (EC2,
+  Bedrock, SageMaker, GPU rightsizing, Savings Plans, CUR), Azure (reservations, AHB,
+  OpenAI PTUs), GCP (Vertex AI, BigQuery), OCI, Kubernetes cost allocation, data
+  platforms (Databricks, Fabric F-SKUs, Snowflake), tagging governance, SaaS management
+  (SAM, licence optimisation, shadow IT), AI coding tools (Cursor, Claude Code, Copilot,
+  Windsurf, Codex), ITAM, allocation, showback and chargeback, anomaly management, KPIs
+  and benchmarking, waste detection playbooks, workload onboarding and M&A, and GreenOps
+  (cloud carbon, CSRD). Use for any query about technology cost, commitment portfolio
+  management, rightsizing, cost allocation, SaaS sprawl, AI dev tool spend, or connecting
+  spend to business value. Built by OptimNow.
 ---
 
 # FinOps - Expert Guidance
@@ -158,4 +159,4 @@ premature - they risk committing to waste.
 
 ---
 
-> *FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+> *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

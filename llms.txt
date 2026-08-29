@@ -23,7 +23,7 @@ Hub at https://optimtoken.optimnow.io.
 
 ## References
 
-- [optimnow-methodology.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/optimnow-methodology.md): Reasoning philosophy (read first on every query)
+- [optimnow-methodology.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/optimnow-methodology.md): Reasoning philosophy (load in full for strategy and engagement-design questions)
 - [finops-for-ai.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-for-ai.md): AI cost management, token economics, agentic patterns
 - [finops-agentic.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-agentic.md): Agentic FinOps - agent cost anatomy, cost-safe architecture, agent-initiated payments (x402/MPP)
 - [finops-ai-value-management.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-ai-value-management.md): AI investment governance, stage gates
@@ -32,11 +32,11 @@ Hub at https://optimtoken.optimnow.io.
 - [finops-open-weight-vendors.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-open-weight-vendors.md): Open-weight vendor hosted APIs (DeepSeek, Qwen, Kimi, GLM) - channels, rate mechanics, licensing
 - [finops-ai-dev-tools.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-ai-dev-tools.md): AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf)
 - [finops-anthropic.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-anthropic.md): Anthropic/Claude billing and governance
-- [finops-aws.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-aws.md): AWS FinOps (EC2, CUR, Savings Plans, cost allocation)
+- [finops-aws.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-aws.md): AWS FinOps core (EC2 rightsizing, CUR and Data Exports, SageMaker, cost allocation, governance)
 - [finops-aws-commitments.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-aws-commitments.md): AWS Savings Plans, Reserved Instances, Spot, commitment decision tree, portfolio liquidity, EDP negotiation
 - [finops-aws-patterns.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-aws-patterns.md): AWS enumerated per-service optimisation pattern catalogue
 - [finops-bedrock.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-bedrock.md): AWS Bedrock billing and optimisation
-- [finops-azure.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure.md): Azure FinOps (reservations, policies, hybrid benefit)
+- [finops-azure.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure.md): Azure FinOps core (Cost Management exports, rightsizing, AKS, Log Analytics, storage, networking, Azure Policy)
 - [finops-azure-commitments.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure-commitments.md): Azure Reservations, Savings Plans, AHB, commitment decision trees, portfolio liquidity, phased purchasing, MACC
 - [finops-azure-patterns.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure-patterns.md): Azure enumerated per-service optimisation pattern catalogue
 - [finops-azure-openai.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure-openai.md): Azure OpenAI Service (PTUs, spillover, costs)
@@ -61,9 +61,12 @@ Hub at https://optimtoken.optimnow.io.
 
 ## Playbooks
 
-- [playbooks/](https://github.com/OptimNow/cloud-finops-skills/blob/main/skills/cloud-finops/playbooks/): RAG-friendly named-pattern runbooks (~2-4 KB each, Problem/Symptoms/Detection/Fix/Anti-pattern/See also format) covering AWS, Azure, GCP, and cross-cloud waste patterns. See `skills/cloud-finops/playbooks/README.md` for the full index.
+- [playbooks/README.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/playbooks/README.md): index of the named-pattern runbooks, with the frontmatter schema and the full catalogue table
+- [playbooks/](https://github.com/OptimNow/cloud-finops-skills/blob/main/skills/cloud-finops/playbooks/): RAG-friendly named-pattern runbooks (~3-8 KB each, average ~5 KB, Problem/Symptoms/Detection/Fix/Anti-pattern/See also format) covering AWS, Azure, GCP, and cross-cloud waste patterns
 
 ## Optional
+
+- [llms-full.txt](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/llms-full.txt): the entire library (entry point, all references, all playbooks) inlined in one file, for ingesting everything in a single fetch instead of following every link above
 
 - [DEPENDENCIES.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/DEPENDENCIES.md): cross-repo dependency map for the five OptimNow repos, and which repos a change ripples into
 - [Repository](https://github.com/OptimNow/cloud-finops-skills): source, installer, and MCP server

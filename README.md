@@ -2,8 +2,9 @@
 
 > Open-source FinOps knowledge skill and MCP server for AI agents - Claude, ChatGPT,
 > Gemini, Cursor, and any MCP-compatible client. Cloud cost optimisation across AWS,
-> Azure, GCP and OCI, AI inference economics, Kubernetes, data platforms, allocation,
-> chargeback, anomaly management, and named-pattern waste detection playbooks.
+> Azure, GCP and OCI, AI cost management and inference economics, Kubernetes, data
+> platforms, allocation, chargeback, anomaly management, and named-pattern waste
+> detection playbooks.
 > Built by [OptimNow](https://optimnow.io), grounded in enterprise delivery experience.
 
 [![GitHub Stars](https://img.shields.io/github/stars/OptimNow/cloud-finops-skills?style=flat)](https://github.com/OptimNow/cloud-finops-skills/stargazers)
@@ -177,7 +178,7 @@ The skill provides accurate, framework-aligned guidance across the following dom
   cost attribution with LiteLLM proxy, seat + usage vs BYOK architecture comparison,
   optimisation levers, cross-tool spend overlap audit
 - **OCI** - compute, storage, networking optimisation
-- **SaaS asset management (SAM)** - SaaS discovery, license optimization, renewal
+- **SaaS asset management (SAM)** - SaaS discovery, licence optimisation, renewal
   governance, SaaS Management Platforms (SMPs), shadow IT detection, sprawl patterns,
   and the connection to AI transition readiness
 - **ITAM collaboration** - FinOps-ITAM joint operating model, BYOL cost mechanics,
@@ -222,7 +223,7 @@ provider-specific behaviour.
     <p>Cloud FinOps skill - Watch Video</p>
   </a>
   <a href="https://www.loom.com/share/cc76d419adc64b1784e58621d6934d3e">
-    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/cc76d419adc64b1784e58621d6934d3e-906aded8593a48f3-full-play.gif#t=0.1">
+    <img style="max-width:300px;" alt="Demo video: the Cloud FinOps skill answering practitioner questions in Claude" src="https://cdn.loom.com/sessions/thumbnails/cc76d419adc64b1784e58621d6934d3e-906aded8593a48f3-full-play.gif#t=0.1">
   </a>
 </div>
 
@@ -337,7 +338,7 @@ cloud-finops-skills/
     │   ├── finops-ai-value-management.md       ← AI investment governance
     │   ├── finops-genai-capacity.md            ← GenAI capacity models (cross-provider)
     │   ├── finops-ai-self-hosted-vs-managed.md ← Self-hosted vs managed AI inference decision
-    │   ├── finops-open-weight-vendors.md    ← Open-weight vendor hosted APIs (DeepSeek, Qwen, Kimi, GLM)
+    │   ├── finops-open-weight-vendors.md       ← Open-weight vendor hosted APIs (DeepSeek, Qwen, Kimi, GLM)
     │   ├── finops-anthropic.md                 ← Anthropic billing + governance
     │   ├── finops-aws.md                       ← AWS FinOps core
     │   ├── finops-aws-commitments.md           ← AWS SPs / RIs / Spot, liquidity, EDP
@@ -366,7 +367,7 @@ cloud-finops-skills/
     │   ├── finops-onboarding-workloads.md      ← Migration-time cost hygiene + M&A integration
     │   ├── finops-kubernetes.md                ← Kubernetes cross-cluster discipline (EKS/GKE/AKS)
     │   └── finops-waste-detection-playbooks.md ← Eight-category waste taxonomy + WasteLine
-    └── playbooks/                              ← RAG-friendly named-pattern runbooks (~2-4 KB each)
+    └── playbooks/                              ← RAG-friendly named-pattern runbooks (~3-8 KB each, average ~5 KB)
 ```
 
 The `SKILL.md` file is the entry point for Claude Code and generic agents. `POWER.md` is
@@ -427,6 +428,9 @@ pip install cloud-finops-mcp
 ./install.sh --tool mcp     # prints config snippets for every MCP-aware client
 ```
 
+Also listed on the [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=finops)
+as `io.github.OptimNow/cloud-finops`, and on [PyPI](https://pypi.org/project/cloud-finops-mcp/).
+
 Six read-only tools across two surfaces. The split is deliberate: the two content types
 have different shapes, and different questions attached to them.
 
@@ -436,8 +440,8 @@ patterns.
 
 | Tool | What it answers |
 |---|---|
-| `list_references()` | What guidance exists? The full catalogue with its FinOps Framework metadata |
-| `get_reference(name)` | The full guide on one topic - mechanics, decision rules, worked examples |
+| `list_references()` | What guidance exists? The catalogue with its FinOps Framework facets and an `approx_tokens` size hint per file |
+| `get_reference(name, section?)` | One guide - mechanics, decision rules, worked examples. Whole, or a single H2/H3 section when the question is narrower than the file |
 | `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | "How should we size Savings Plans?" "What must be true before chargeback?" - routes a FinOps question to the guides that serve it (`persona_primary_only` cuts to the primary audience) |
 
 **Playbooks** - small named-pattern runbooks, one waste pattern each. Reach for these for
@@ -448,6 +452,14 @@ patterns.
 | `list_playbooks()` | What cloud waste can we hunt with a ready-made runbook? |
 | `get_playbook(name)` | The step-by-step runbook: symptoms, detection queries, fix, anti-pattern |
 | `find_playbooks(scope?, service?, waste_category?, confidence?)` | "Which VMs run for nothing?" "Why is the NAT bill so high?" - finds the runbook for a specific waste suspicion |
+
+Both listings carry `approx_tokens` per entry, because the references vary by more
+than tenfold - roughly 2K tokens for the smallest, over 25K for the provider pattern
+catalogues. The catalogues are enumerated lists, so an agent that wants one pattern
+family passes `section` (`get_reference("finops-aws-patterns", section="storage")`)
+and pays for that section instead of the whole file. Matching is case-insensitive and
+partial, so a natural phrase works; a phrase that matches no heading returns the file's
+available headings rather than silently falling back to the full body.
 
 ### Coverage, published deliberately
 
@@ -557,7 +569,7 @@ in any of the layers below.
 - **New named playbook.** A waste pattern you see in the field that is not yet in
   `skills/cloud-finops/playbooks/`. Follow the format documented in
   [`playbooks/README.md`](./skills/cloud-finops/playbooks/README.md): symptoms / detection
-  query / fix / anti-pattern / sources, ~2-4 KB. Examples we'd love: Lambda
+  query / fix / anti-pattern / sources, ~3-8 KB. Examples we'd love: Lambda
   cold-start sprawl, Bedrock model proliferation, Snowflake warehouse fragmentation,
   Databricks all-purpose-cluster default-on, Cloud Run min-instance creep.
 - **Fix or enrich an existing playbook.** A detection query that returns

@@ -110,7 +110,7 @@ ORDER BY cost DESC;
 
 ### AWS Cost Explorer
 
-Cost Explorer provides pre-built visualizations and the Cost Explorer API for
+Cost Explorer provides pre-built visualisations and the Cost Explorer API for
 programmatic access. It is the right tool for quick analysis and reporting; CUR is the
 right tool for detailed attribution and custom tooling.
 
@@ -128,7 +128,7 @@ right tool for detailed attribution and custom tooling.
   Explorer is for visualisation and pre-built recommendations
 
 **Useful Cost Explorer features:**
-- **Rightsizing recommendations** - EC2 rightsizing based on CloudWatch utilization
+- **Rightsizing recommendations** - EC2 rightsizing based on CloudWatch utilisation
 - **Savings Plans recommendations** - commitment purchase recommendations based on usage
 - **Cost anomaly detection** - ML-based anomaly alerts (set up before you need them)
 - **Cost categories** - virtual tags for billing-layer cost allocation
@@ -182,10 +182,10 @@ Rightsizing is the highest-ROI optimisation for most AWS environments at Crawl/W
 
 **Rightsizing process:**
 1. Enable Compute Optimizer in all accounts (free for EC2 recommendations)
-2. Wait 14 days minimum for sufficient utilization data
+2. Wait 14 days minimum for sufficient utilisation data
 3. Export recommendations and filter for "Over-provisioned" findings
-4. Prioritize by potential monthly savings
-5. Validate recommendations with workload owners - check peak utilization, not average
+4. Prioritise by potential monthly savings
+5. Validate recommendations with workload owners - check peak utilisation, not average
 6. Apply changes in non-production first, then production with monitoring period
 
 **Common rightsizing mistakes:**
@@ -367,11 +367,11 @@ See `finops-tagging.md` for the full tagging strategy. AWS-specific notes:
 - Tag propagation is not instant - allow 24 hours for new tags to appear in billing
 - Some services do not support tagging (AWS Support, Route 53 Hosted Zones, some
   data transfer charges) - use Cost Categories for virtual allocation of untaggable costs
-- Enable "Tag policies" in AWS Organizations to enforce tag key capitalization consistency
+- Enable "Tag policies" in AWS Organizations to enforce tag key capitalisation consistency
 - **IAM Principal Cost Allocation (2026):** tags applied to IAM users and roles can be
   propagated to CUR 2.0 and Cost Explorer with an `iamPrincipal/` prefix, enabling
   caller-based attribution when resource-level tags are not sufficient. Primary use case
-  today is Amazon Bedrock  - see `finops-bedrock.md` for setup, CUR size implications,
+  today is Amazon Bedrock - see `finops-bedrock.md` for setup, CUR size implications,
   and when to use it vs. account separation
 
 ### Cost Categories
@@ -1085,9 +1085,19 @@ of them belong to Finance rather than to the FinOps or platform team:
 
 ## AWS Multi-Organisation Billing Features
 
-*Added: March 2026. Source: AWS Keys to AWS Optimization podcast, S16E5.*
+*Added: March 2026. Original lead: AWS Keys to AWS Optimization podcast, S16E5. The
+mechanics below were re-verified against AWS documentation in August 2026 and the
+primary sources are linked inline; anything the AWS pages do not state is marked
+"unconfirmed" rather than dropped.*
 
-Two features released at re:Invent 2024 allow FinOps teams to centralise cost visibility and billing operations across multiple AWS organisations. They are related but solve different problems and should not be conflated.
+Two features allow FinOps teams to centralise cost visibility and billing operations
+across multiple AWS organisations. They are related but solve different problems and
+should not be conflated. Multi-source custom billing views reached general availability
+on [25 September 2025](https://aws.amazon.com/about-aws/whats-new/2025/09/billing-view-cost-management-multiple-organizations/);
+Billing Transfer reached general availability on
+[19 November 2025](https://aws.amazon.com/about-aws/whats-new/2025/11/billing-transfer-multi-organization-billing-cost-management/).
+(The podcast lead placed both at re:Invent 2024; the AWS What's New pages do not
+support that date, so it has been corrected here.)
 
 ---
 
@@ -1095,18 +1105,41 @@ Two features released at re:Invent 2024 allow FinOps teams to centralise cost vi
 
 A billing view is an AWS resource that controls which accounts' cost and usage data a given account can access in Cost Explorer, budgets, and dashboards.
 
-**What changed at re:Invent 2024:**
+**What multi-source views added:**
 
-- A payer account can now share a billing view with a payer account in a *different* AWS organisation (previously limited to member accounts within the same org).
-- A recipient account can combine multiple billing views -- including views received from other organisations -- into a single aggregated view, giving a unified Cost Explorer experience across several payer accounts.
-- Budgets can now be scoped to a billing view, including cross-organisation views.
+- A payer account can share a billing view with an account in a *different* AWS
+  organisation. AWS documents both scopes on the sharing page: "Within AWS
+  organization" and "With any account", where an out-of-organisation recipient must
+  accept the invitation
+  ([Sharing custom billing views](https://docs.aws.amazon.com/cost-management/latest/userguide/share-custom-billing-views.html)).
+- A recipient account can combine multiple billing views, including views received from
+  other organisations, into a single aggregated view
+  ([multi-source custom billing views announcement](https://aws.amazon.com/blogs/aws-cloud-financial-management/introducing-multi-source-custom-billing-views-unified-cost-management-across-multiple-organizations-on-aws/)).
+- Budgets can be scoped to a billing view, including a multi-source view (same
+  announcement).
 
 **Key behaviours:**
 
-- The owner of a billing view retains full control and can modify or revoke it at any time. Changes are reflected in the recipient account and in any combined view that uses it as a source.
-- Sharing outside an org requires the `billing-view:full-access` permission level for the recipient to use a view as a source in a combined view.
-- Supported tools: Cost Explorer, dashboards, reports, budgets, and forecasts. Amazon Q integration is not yet supported (as of early 2026).
-- Creating, sharing, and combining billing views is free. Cost Explorer API calls against a multi-organisation billing view are charged at $0.01 per organisation queried per API call (vs. the standard $0.01 per call for a single org).
+- The owner retains control of the share. AWS states you "have the flexibility to edit
+  the sharing permissions of a custom billing view at any time"
+  ([Managing shared access to custom billing views](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-shared-access-custom-billing-views.html)).
+  Sharing runs on AWS RAM, so a share can also be edited or deleted from the RAM
+  console. *Unconfirmed:* that a revocation immediately propagates into a downstream
+  combined view built on that source. No AWS page states this either way, so treat it as
+  a design assumption to test, not a documented guarantee.
+- The recipient needs the `AWSRAMPermissionBillingViewFullAccess` managed permission to
+  use a shared view as a source for another view (same announcement). Note the earlier
+  edition of this section named a `billing-view:full-access` permission level; that
+  string does not appear in AWS documentation and has been corrected.
+- Supported tools, per the AWS announcement: Cost Explorer, Budgets, and the Billing and
+  Cost Management dashboards. *Unconfirmed:* reports, forecasts, and the claim that
+  Amazon Q integration is not yet supported. The AWS pages consulted do not mention any
+  of the three, so the podcast lead is the only source for them.
+- Creating, sharing, and combining billing views is free, and there is no fee for Cost
+  Explorer console or Budgets access. Cost Explorer **API** calls are charged at $0.01
+  per source in the view per API request, so a view built on several sources costs a
+  multiple of a single-source call (same announcement). Note the unit: AWS prices this
+  per *source*, not per organisation queried.
 
 **Typical use cases:** enterprises managing multiple AWS organisations after M&A; FinOps teams giving an external consultant read access to cost data without console access; business unit owners needing a budget that spans accounts across multiple payers.
 
@@ -1118,17 +1151,51 @@ Billing transfer is a delegation mechanism that allows one payer account (the "b
 
 **What this enables:**
 
-- Decouples billing from governance. The bill source organisation retains full control of its AWS environment, IAM, governance, and security. It simply delegates invoice responsibility to the bill transfer account.
-- The bill transfer account receives the invoice and can view cost and usage data for the bill source organisation centrally, without logging into the source account.
-- Integrates with AWS Billing Conductor so the bill transfer account can control what pricing data the bill source account sees (e.g. to protect negotiated rates or to model a reseller margin).
+- Decouples billing from governance. AWS lists "Separate billing and administration" as
+  a key benefit: the management account that accepted the invitation keeps full
+  administration of its own organisation while the bill transfer account manages and
+  pays the consolidated bill
+  ([Transfer billing management to external accounts](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/orgs_transfer_billing.html)).
+- The bill transfer account receives distinct invoices for the source organisation's
+  charges and can read that organisation's data in Cost Explorer, the Cost and Usage
+  Report, Budgets, and the Bills page, without logging into the source account (same
+  page).
+- Integrates with AWS Billing Conductor: when sending the invitation the bill transfer
+  account selects the pricing configuration that determines what the bill source account
+  sees, which is how negotiated rates stay private or a reseller margin gets modelled
+  (same page).
 
 **Key behaviours:**
 
-- The invite process is unidirectional: only the account *taking over* the bill can initiate the transfer. The bill source cannot push its bill to another account.
-- Savings plans and credits remain bounded at the organisation level. They do not share across the transfer relationship.
-- The bill transfer account sees two distinct views: (1) what it pays AWS for the source org's consumption (net of its own discounts); (2) what the source org sees in its own account -- the "showback view", gross of discounts. These amounts will differ if the bill transfer account has negotiated rates.
-- Tax settings and contractual obligations require careful review before enabling billing transfer.
-- A basic (public pricing) showback plan is free. A customised pricing plan (e.g. to apply a managed service fee) is charged at $50 per bill source organisation per month, effective June 2025.
+- The invite process is unidirectional, and AWS states it under an "Invitations are
+  unidirectional" consideration: only the account that will manage and pay the
+  consolidated bill can send an invitation, and a bill source cannot ask another account
+  to take its bill (same page). Either account can withdraw the transfer afterwards.
+- Commitments stay bounded at the organisation level: "Volume discount tiers, Reserved
+  Instances, and Savings Plans continue to be calculated and applied at the individual
+  AWS Organizations level" (same page). Credits behave differently rather than simply
+  transferring: AWS documents credit-tracking restrictions for the bill source account,
+  which loses the Credits page balance view, and credits do not appear in pro forma
+  artefacts unless the bill transfer account models them through Billing Conductor.
+- The bill transfer account sees two distinct views per bill source, which AWS names
+  "My view" (the billing data it is financially responsible for) and the
+  "Showback/chargeback view" (the data as configured through Billing Conductor). The two
+  differ whenever the bill transfer account has non-public rates.
+- *Unconfirmed:* that tax settings and contractual obligations need review before
+  enabling billing transfer. This came from the podcast lead and no AWS page consulted
+  states it. What AWS does document, and what should be read before opting in, is the
+  "Important impacts" list on the same page: loss of historical Cost Explorer, Budgets
+  and Anomaly Detection data for the bill source, CUR configurations going `Unhealthy`
+  and needing reconfiguration, no Cost Anomaly Detection for bill source accounts, and
+  no hourly granularity on pro forma data in Cost Explorer.
+- An AWS managed pricing plan is free: "There is no cost to use AWS Billing Conductor,
+  when you choose an AWS managed pricing plan." A customer managed (custom) pricing plan
+  is charged at $50 per AWS organisation per month, and AWS states the charge starts on
+  1 June 2026, after a free trial through 31 May 2026, with two months of free usage for
+  customers newly opting in after that date
+  ([AWS Billing Conductor pricing](https://aws.amazon.com/aws-cost-management/aws-billing-conductor/pricing/)).
+  The earlier edition of this section dated the charge to June 2025; that is not what the
+  pricing page says and has been corrected.
 
 **Typical use cases:** AWS channel partners managing resale relationships; enterprises consolidating invoicing after acquisitions; large organisations that want subsidiaries to retain governance autonomy while centralising finance operations.
 
@@ -1143,8 +1210,8 @@ Billing transfer is a delegation mechanism that allows one payer account (the "b
 | Governance boundary | Unchanged | Unchanged |
 | Savings plans shared | No | No |
 | Credits shared | No | No |
-| Supported tools | Cost Explorer, budgets, dashboards, reports | Cost Explorer, budgets, bills page |
-| Pricing | Free (API surcharge for multi-org) | Free (basic) / $50/org/month (custom pricing plan) |
+| Supported tools | Cost Explorer, budgets, dashboards | Cost Explorer, CUR, budgets, bills page |
+| Pricing | Free to create and share; Cost Explorer API charged per source per request | Free (AWS managed plan) / $50/org/month (customer managed pricing plan, from 1 June 2026) |
 
 ---
 

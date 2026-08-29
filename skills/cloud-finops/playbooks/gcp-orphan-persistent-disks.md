@@ -15,7 +15,9 @@ provisioned capacity regardless of attachment. A 1 TB SSD persistent
 disk accrues ~$170/month whether or not a VM mounts it. Orphans
 accumulate from: deleted VMs whose disks were not in `auto-delete` mode,
 GKE PVCs with `reclaimPolicy: Retain` after pod / namespace deletion,
-and one-off snapshot-and-detach workflows during migrations.
+and one-off snapshot-and-detach workflows during migrations. The monthly
+figure is an illustrative list rate as at May 2026 and varies by region -
+verify against live pricing before sizing a business case.
 
 ## Symptoms
 
@@ -36,18 +38,29 @@ gcloud compute disks list --filter="-users:*" --format="value(name,zone,sizeGb,t
 ```sql
 -- BigQuery billing export: PD spend, joined to gcloud orphan list
 -- (run gcloud command above first, save orphan disk names to a temp BQ table)
+--
+-- The join key is `resource.name`, a field inside the resource STRUCT. There
+-- is no top-level `name` column on the billing export, so USING (name) does
+-- not compile - the join has to be explicit and both sides aliased.
+--
+-- Units: usage.amount for Persistent Disk is byte-seconds, not GB-month.
+-- usage.amount_in_pricing_units is the figure billed against the SKU, whose
+-- pricing unit for PD is gibibyte month - that is the one to sum. Check
+-- usage.pricing_unit on a sample row before trusting the alias below.
 WITH orphans AS (
   SELECT name FROM `<project>.tmp.orphan_disks`
 )
 SELECT
-  resource.name           AS disk,
-  SUM(cost)               AS cost_30d,
-  SUM(usage.amount)       AS gb_month
-FROM `<project>.<dataset>.gcp_billing_export_resource_v1_<account>`
-JOIN orphans USING (name)
-WHERE _PARTITIONTIME >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)
-  AND service.description = 'Compute Engine'
-  AND sku.description LIKE '%Storage%'
+  b.resource.name                      AS disk,
+  SUM(b.cost)                          AS cost_30d,
+  SUM(b.usage.amount_in_pricing_units) AS gib_month,
+  ANY_VALUE(b.usage.pricing_unit)      AS pricing_unit
+FROM `<project>.<dataset>.gcp_billing_export_resource_v1_<account>` AS b
+JOIN orphans AS o
+  ON b.resource.name = o.name
+WHERE b._PARTITIONTIME >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)
+  AND b.service.description = 'Compute Engine'
+  AND b.sku.description LIKE '%Storage%'
 GROUP BY 1
 ORDER BY cost_30d DESC;
 ```
