@@ -314,6 +314,20 @@ maintainer file.
   c3 IMPROVISED probes (P06, P23 provider-billing-news; P25 finops-itam orphaned) were
   not re-run: nothing shipped for them, so their verdict stands unchanged.
 
+  **The routing work ships in the same PR as this entry**, in three places: two norms
+  in the server `instructions` string (you cannot see the user's account - hand over
+  the playbook's detection query instead of asking for a data export; check
+  find_playbooks before answering a waste question from model knowledge), service-noun
+  vocabulary in the find_playbooks / get_playbook descriptions (NAT gateways, expiring
+  RIs, snapshots, S3 lifecycle... - the words symptom phrasings actually contain, for
+  the host's tool-search layer), and an estate-phrasing trigger in the SKILL.md /
+  POWER.md descriptions. Precedent that this class of fix works on this surface: P05
+  and P14 both flipped after the PR #176 priority lines. Measurement: cycle 5 re-runs
+  P12, P13 and P31 with P11 as the do-not-regress control, after the next release
+  reaches Alpic. Stop rule: if two description iterations fail to convert P12/P13,
+  the failure is structural to claude.ai's tool-search gate - document it here and
+  stop investing; the loaded-skill surface is the fallback.
+
   Standing incident, third cycle running: every connector call renders "Unable to reach
   AI Cloud FinOps Skill & MCP" while the data arrives intact, and a tool-approval gate
   now appears per call. Full per-probe notes in `pipeline/coverage-probes.md`.

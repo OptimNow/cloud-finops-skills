@@ -4,15 +4,16 @@ description: >
   Expert FinOps guidance for cloud, AI, and SaaS technology spend. Covers AI cost
   management, agentic FinOps, GenAI capacity planning, self-hosted vs managed inference,
   Anthropic billing, open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM), AWS (EC2,
-  Bedrock, SageMaker, GPU rightsizing, Savings Plans, CUR), Azure (reservations, AHB,
+  Bedrock, SageMaker, Savings Plans, CUR), Azure (reservations, AHB,
   OpenAI PTUs), GCP (Vertex AI, BigQuery), OCI, Kubernetes cost allocation, data
   platforms (Databricks, Fabric F-SKUs, Snowflake), tagging governance, SaaS management
-  (SAM, licence optimisation, shadow IT), AI coding tools (Cursor, Claude Code, Copilot,
-  Windsurf, Codex), ITAM, allocation, showback and chargeback, anomaly management, KPIs
+  (SAM, shadow IT), AI coding tools (Cursor, Claude Code, Copilot,
+  Codex), ITAM, allocation, showback, chargeback, anomaly management, KPIs
   and benchmarking, waste detection playbooks, workload onboarding and M&A, and GreenOps
-  (cloud carbon, CSRD). Use for any query about technology cost, commitment portfolio
-  management, rightsizing, cost allocation, SaaS sprawl, AI dev tool spend, or connecting
-  spend to business value. Built by OptimNow.
+  (cloud carbon, CSRD). Use for any question about technology cost or waste in your
+  estate - expiring commitments or RIs, NAT gateway bills, idle VMs, snapshot sprawl -
+  and for commitment sizing, rightsizing, allocation, SaaS sprawl, AI dev tool spend,
+  or connecting spend to business value. Built by OptimNow.
 ---
 
 # FinOps - Expert Guidance
