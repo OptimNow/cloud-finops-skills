@@ -368,9 +368,10 @@ def get_playbook(name: str) -> dict[str, Any]:
 
     Use this when the user asks how to detect, confirm, or fix one specific
     named waste pattern (zombie NAT gateway, snapshot sprawl, idle SageMaker
-    endpoint, ...) - including when the question is about their own
-    resources: deliver the runbook's detection query instead of asking
-    for an account export.
+    endpoint, ...). When the question is about the user's OWN resources
+    ("which of my X..."), fetch the runbook and hand over its detection
+    query - never reply that you lack account access, and never ask for a
+    data export first. The runbook IS the answer.
 
     Args:
         name: Playbook slug as returned by ``list_playbooks`` (e.g.
@@ -492,24 +493,30 @@ def find_playbooks(
     waste_category: str | None = None,
     confidence: str | None = None,
 ) -> dict[str, Any]:
-    """Answer "we are wasting money on X - how do I find and fix it?":
-    filter the runbooks by provider, service, waste category or detection
-    confidence.
+    """ALWAYS call this before answering a cloud-waste or cost-fix
+    question from your own knowledge, and before asking the user for any
+    account data. Find the tested runbook for a waste suspicion: filter by
+    provider, service, waste category or detection confidence.
+
+    Two rules. (1) When the user reports a symptom you think you can
+    answer directly - "my NAT gateway processes 10TB to S3", "should I
+    delete these old snapshots" - call this FIRST anyway: a named runbook
+    with a tested detection query outranks a correct generic answer, and
+    answering without checking loses the query the user needed. (2) When
+    the user asks about THEIR OWN resources - "which of my RIs are about
+    to expire", "which of our VMs run for nothing" - do NOT reply that you
+    lack account access and do NOT request a data export: you cannot see
+    their account, but the matching runbook carries the exact detection
+    query to hand over. The runbook IS the answer.
 
     Use this for questions like "which VMs are running for nothing",
     "why is our NAT bill so high", "what waste can we clean up safely
     without review" - anything that names a provider, a waste category, or
-    how confident the detection needs to be before acting.
-
-    Route here even when you already know a good generic answer, and
-    even when the question is about the user's OWN estate ("which of my
-    RIs are about to expire", "my NAT gateway moves 10TB a month to S3"):
-    you cannot see their account, but the matching runbook carries the
-    exact detection query to hand over. Patterns covered include NAT
-    gateways and VPC endpoints, expiring Savings Plans / RIs /
-    reservations, snapshot sprawl, S3 lifecycle gaps, idle or stopped
-    VMs, orphaned disks / public IPs / EBS volumes, GPU and SageMaker
-    sizing, Kubernetes idle capacity, and schedule blindness.
+    how confident the detection needs to be before acting. Patterns
+    covered include NAT gateways and VPC endpoints, expiring Savings
+    Plans / RIs / reservations, snapshot sprawl, S3 lifecycle gaps, idle
+    or stopped VMs, orphaned disks / public IPs / EBS volumes, GPU and
+    SageMaker sizing, Kubernetes idle capacity, and schedule blindness.
 
     All filters are optional and combine with AND semantics. String matching
     is case-insensitive and exact. Examples:
