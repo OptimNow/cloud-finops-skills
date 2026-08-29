@@ -101,7 +101,7 @@ attaches metadata before requests execute. Options by complexity:
 | Custom application middleware | Direct SDK instrumentation | Low-Medium | Full control |
 
 **Real-time cost ingestion** - token counts must be captured as model responses are
-returned, not retrieved from billing exports. Cost Explorer lags 24–48 hours - acceptable
+returned, not retrieved from billing exports. Cost Explorer lags 24-48 hours - acceptable
 for EC2, not for workloads where a misconfigured agent can generate thousands of dollars
 within hours.
 
@@ -374,7 +374,7 @@ Payback period = fixed_costs / monthly_profit (months)
 - Month 6+: Positive ROI - learning effects compound, volume absorbs fixed costs
 
 Tolerating early losses is rational if the weekly trajectory toward breakeven is positive.
-Systems showing no improvement after 8–12 weeks warrant scrutiny.
+Systems showing no improvement after 8-12 weeks warrant scrutiny.
 
 #### The agent deployment inequality (go/no-go economics)
 
@@ -579,7 +579,7 @@ Actual value delivered: negligible.
 ### 2. Technology churn debt
 Each AI provider or framework migration leaves behind infrastructure that continues
 incurring charges: API keys, Lambda functions, S3 buckets, committed capacity reservations.
-Organisations running 3+ AI providers simultaneously often find 30–40% of AI spend
+Organisations running 3+ AI providers simultaneously often find 30-40% of AI spend
 supports abandoned experiments rather than production features.
 
 *Detection signal:* Active resources in accounts or regions with no recent deployments;
@@ -588,7 +588,7 @@ committed capacity with low utilization.
 ### 3. Agentic loops
 AI agents calling other agents create multiplicative cost patterns. Retry logic, recursive
 calls, validation loops, or agents that invoke themselves multiply token consumption by
-5–50× per user request. This compounds when agents interact with SaaS APIs that charge
+5-50× per user request. This compounds when agents interact with SaaS APIs that charge
 per query - each retry or validation loop triggers additional SaaS charges alongside
 model costs.
 
@@ -605,7 +605,7 @@ in SaaS API usage charges.
 ### 4. Data egress in AI pipelines
 RAG systems that store data in one region, generate embeddings in another, and run
 inference in a third create multi-directional transfer costs invisible in model-level
-reporting. For high-volume applications, data movement can represent 15–25% of total
+reporting. For high-volume applications, data movement can represent 15-25% of total
 AI costs.
 
 *Detection signal:* S3 or network costs rising in proportion with AI feature usage;
@@ -632,7 +632,7 @@ Use this to diagnose an organisation's current state before recommending solutio
 **Visibility (prerequisite - assess first):**
 - [ ] Token counts captured per feature, not just per account or model
 - [ ] Request-level cost attribution with application metadata at invocation time
-- [ ] Cost data available within minutes, not 24–48 hours
+- [ ] Cost data available within minutes, not 24-48 hours
 
 **Unit economics:**
 - [ ] Cost per unit defined and tracked (conversation / task / document)
@@ -653,9 +653,9 @@ Use this to diagnose an organisation's current state before recommending solutio
 - [ ] Monitoring for agent-driven SaaS consumption spikes
 
 **Scoring:**
-- 0–4 ✓: Crawl - start with visibility. Nothing else is meaningful without it.
-- 5–8 ✓: Walk - focus on unit economics and model optimisation.
-- 9–14 ✓: Run - focus on governance automation and agentic FinOps patterns.
+- 0-4 ✓: Crawl - start with visibility. Nothing else is meaningful without it.
+- 5-8 ✓: Walk - focus on unit economics and model optimisation.
+- 9-14 ✓: Run - focus on governance automation and agentic FinOps patterns.
 
 ---
 

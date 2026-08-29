@@ -21,7 +21,7 @@ def test_index_is_sorted_by_name() -> None:
 
 
 def test_known_reference_has_expected_fcp_fields() -> None:
-    """finops-aws is a stable anchor — its FCP frontmatter is locked in main."""
+    """finops-aws is a stable anchor: its FCP frontmatter is locked in main."""
     aws = metadata.get_by_name("finops-aws")
     assert aws is not None
     assert aws.fcp_domain == "Optimize Usage & Cost"

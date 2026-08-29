@@ -208,7 +208,7 @@ Service: Snowflake Virtual Warehouse | Type: Suboptimal Configuration
 
 If no appropriate query timeout is configured, inefficient or runaway queries can execute for extended periods (up to the default 2-day system limit). For as long as the query is running, the warehouse will remain active and accrue costs.
 
-- Configure a conservative account-level query timeout policy to limit maximum query execution times (e.g., 4–12 hours based on environment needs).
+- Configure a conservative account-level query timeout policy to limit maximum query execution times (e.g., 4-12 hours based on environment needs).
 - Apply customized warehouse-level or user-level timeout policies for workloads that genuinely require longer execution windows.
 - Regularly review and adjust query timeout settings as workload patterns evolve.
 

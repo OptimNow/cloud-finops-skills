@@ -18,7 +18,7 @@ fcp_maturity_entry: "Walk"
 >
 > Distilled from: Forrester, Thoughtworks, Green Software Foundation, AWS Sustainability Console docs,
 > CloudCarbonFootprint.org, North.Cloud, Climatiq, and Microsoft/UBS Carbon Aware SDK
-> case study (2023–2025).
+> case study (2023-2025).
 
 ---
 
@@ -554,7 +554,7 @@ tools. Target: CPU utilization consistently below 20% is a rightsizing candidate
 
 **3. Schedule non-production resources**
 Dev, test, and staging environments do not need to run 24/7. Implement automatic
-shutdown outside business hours. Typical saving: 65–70% of compute hours for non-prod.
+shutdown outside business hours. Typical saving: 65-70% of compute hours for non-prod.
 Use AWS Instance Scheduler, Azure Automation, or GCP resource policies.
 
 **4. Move cold data to lower-carbon storage tiers**
@@ -566,8 +566,8 @@ and the energy required to maintain it.
 Running identical workloads across multiple clouds for redundancy purposes often creates
 carbon waste. Audit cross-cloud replication to confirm it is operationally justified.
 
-**Expected impact:** Optimisations typically reduce cloud carbon footprint by 20–40%
-and generate cost savings of 15–40% simultaneously.
+**Expected impact:** Optimisations typically reduce cloud carbon footprint by 20-40%
+and generate cost savings of 15-40% simultaneously.
 
 ---
 
@@ -633,7 +633,7 @@ location-based data when making workload placement or shifting decisions.
 **Committing to waste.**
 The same rule applies as in FinOps: rightsize and shut down idle resources before
 making any commitment. A Reserved Instance on an overprovisioned VM is still waste  -
-now locked in for 1–3 years.
+now locked in for 1-3 years.
 
 **Treating GreenOps as a separate program.**
 Organisations that create a separate sustainability team disconnected from FinOps

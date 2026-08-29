@@ -56,7 +56,7 @@ methodology questions - not for routine billing-mechanics queries.
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | Self-hosted vs managed AI inference, build vs buy LLM, vLLM, SGLang, llama.cpp, GPU rental, RunPod, CoreWeave, Lambda, hidden cost surface, ML-Ops maturity rubric, hybrid routing (LiteLLM, Portkey) | `references/finops-ai-self-hosted-vs-managed.md` |
 | Open-weight model vendors on their own hosted APIs, DeepSeek, Qwen, Kimi, Moonshot, GLM, Z.ai, Chinese model APIs, open-weight pricing, time-based pricing, peak and off-peak token rates, vendor API vs third-party host channel choice, open-weight model licensing, GLM Coding Plan | `references/finops-open-weight-vendors.md` |
-| AWS billing data, CUR, Data Exports for FOCUS 1.2, Cost Explorer, EC2/compute rightsizing, SageMaker operational FinOps, cost allocation, governance, CloudFront flat-rate plans, S3 Files, multi-org billing, expensive IAM actions, cost-preventive SCPs, deny high-cost actions, sandbox account guardrails | `references/finops-aws.md` |
+| AWS billing data, CUR, Data Exports for FOCUS 1.2, Cost Explorer, EC2/compute rightsizing, SageMaker operational FinOps, cost allocation, governance, CloudFront flat-rate plans, S3 Files, multi-org billing, AWS billing hierarchy, separate invoices per BU, Invoice Configuration, invoice units, Billing Conductor, pro forma billing, Cost Categories vs invoice, expensive IAM actions, cost-preventive SCPs, deny high-cost actions, sandbox account guardrails | `references/finops-aws.md` |
 | AWS Savings Plans, Reserved Instances, Spot, commitment decision tree, commitment portfolio liquidity, phased purchasing, EDP negotiation, Convertible RI exchange | `references/finops-aws-commitments.md` |
 | AWS per-service inefficiency catalogue, enumerated AWS optimisation patterns | `references/finops-aws-patterns.md` |
 | AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference, Application Inference Profiles, Bedrock Projects, prompt caching, IAM Principal Cost Allocation | `references/finops-bedrock.md` |
@@ -80,7 +80,7 @@ methodology questions - not for routine billing-mechanics queries.
 | Cost anomaly management, anomaly detection, masked anomalies, layered detection, threshold tuning, AWS Cost Anomaly Detection config, Azure anomaly detection, GCP budget anomaly alerts, new-region detection, security integration | `references/finops-anomaly-management.md` |
 | FinOps KPIs, KPI portfolio by maturity, unit economics denominators, cost per customer / order / transaction, realised vs potential savings reporting, forecast variance, benchmarking (internal and external, data-quality caveats), executive reporting, CFO / CIO narrative, executive strategy alignment, maturity scorecard | `references/finops-kpis-benchmarking.md` |
 | Cost allocation methodology, showback, EffectiveCost vs BilledCost (FOCUS), amortised vs unblended (AWS legacy), blended-cost trap, defensible allocation keys, shared-services allocation (network, observability, security, ingress), InvoiceId reconciliation, unallocated spend signal, showback report design and routing | `references/finops-allocation-showback.md` |
-| Chargeback, soft chargeback, hard chargeback, financial accountability, Finance and accounting prerequisites for chargeback, ERP readiness (SAP CO, Oracle, Workday, NetSuite), inter-BU P&L impact, CFO sponsorship, transfer pricing for intercompany cloud recharge, cross-border tax (VAT, withholding, permanent establishment, Pillar 2, GILTI / FDII / BEAT), SOX-equivalent controls, methodology dispute process, chargeback-revolt anti-pattern | `references/finops-chargeback.md` |
+| Chargeback, soft chargeback, hard chargeback, financial accountability, Finance and accounting prerequisites for chargeback, ERP readiness (SAP CO, Oracle, Workday, NetSuite), inter-BU P&L impact, CFO sponsorship, transfer pricing for intercompany cloud recharge, cross-border tax (VAT, withholding, permanent establishment, Pillar 2, GILTI / FDII / BEAT), SOX-equivalent controls, separate provider invoices per business unit, invoice units vs internal recharge, methodology dispute process, chargeback-revolt anti-pattern | `references/finops-chargeback.md` |
 | Onboarding workloads, migration-time cost hygiene, intake gate, mandatory tags at go-live, 60-90 day forecast-then-commit rule, double-bubble cost (parallel-run source and target), migration cost estimate vs actuals, network-cost trap (data-centre to cloud), M&A integration patterns, FOCUS-during-migration, architecture review integration, post-migration FinOps owner | `references/finops-onboarding-workloads.md` |
 | Kubernetes FinOps, K8s cost allocation, OpenCost, Kubecost, GKE Cost Allocation, EKS Split Cost Allocation, AKS Cost Analysis, FOCUS-emitting K8s allocation, container rightsizing (VPA, p95/p99 with safety margins), node-level autoscaling (Karpenter, Cluster Autoscaler), Pod Disruption Budgets, Spot diversification, idle node cost, node efficiency KPI | `references/finops-kubernetes.md` |
 | Waste detection playbooks, orphaned resources, idle resources, overprovisioned resources, commitment mismatches, schedule blindness, modernization opportunities, AI/ML inefficiency, egress / data transfer waste, cross-AZ egress cost, two-signal classification, classification confidence (obvious / likely / possible), realised vs potential savings, WasteLine appliance, OptimNow waste taxonomy | `references/finops-waste-detection-playbooks.md` |
@@ -5454,11 +5454,16 @@ See `finops-tagging.md` for the full tagging strategy. AWS-specific notes:
 
 ### Cost Categories
 
-AWS Cost Categories create billing-layer allocation rules without requiring physical tags.
+AWS Cost Categories create allocation rules without requiring physical tags.
 Use them for:
 - Shared service allocation (split NAT Gateway cost by team account usage)
 - Account-level allocation when resource-level tagging is incomplete
 - Retroactive allocation adjustments
+
+**Cost Categories are a reporting layer only.** They group cost in Cost Explorer,
+Budgets, CUR / Data Exports and Cost Anomaly Detection, and they have no effect on the
+AWS invoice. If the requirement is a separate invoice per business unit, the mechanism
+is Invoice Configuration - see "AWS billing hierarchy and separate invoices" below.
 
 ---
 
@@ -6037,6 +6042,124 @@ design - free large-file reads straight from S3, pay-only-for-hot-slice
 storage, and free Intelligent-Tiering transitions underneath. For workloads
 with meaningful cold storage and large-file reads, this is a structurally
 cheaper filesystem than EFS.
+
+---
+
+## AWS billing hierarchy and separate invoices
+
+*Added: August 2026. Sources (read 29 August 2026): [Invoice Configuration](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/invoice-configuration.html), [Creating an invoice unit](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/invoice-configuration-create.html), [Invoicing quotas](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-limits.html#limits-invoicing), [What's New - AWS Invoice Configuration, December 2024](https://aws.amazon.com/about-aws/whats-new/2024/12/aws-invoice-configuration), [AWS CFM blog - Configuring your AWS invoices](https://aws.amazon.com/blogs/aws-cloud-financial-management/configuring-your-aws-invoices-using-invoice-configuration/), [re:Post - controlling credits and reservations with Invoice Configuration](https://repost.aws/articles/ARY4wopLJsQoKXASXOEIfxFw/how-to-control-credits-and-reservations-with-the-new-invoice-configuration), [What is AWS Billing Conductor](https://docs.aws.amazon.com/billingconductor/latest/userguide/what-is-billingconductor.html), [Managing Cost Categories](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-cost-categories.html).*
+
+On AWS the **account is the atomic unit of invoicing**. Nothing splits an invoice
+inside an account - two teams sharing one account appear on the same invoice whatever
+tagging, Cost Category or allocation logic sits on top. Account structure is therefore
+an invoicing decision, not only a governance one: if a business unit has to receive its
+own invoice, its workloads must live in accounts that belong to it, and that has to be
+decided before the workloads land.
+
+The most common error in this area is treating **Cost Categories as an invoicing
+mechanism**. They are not. A Cost Category named "R&D" creates a Cost Explorer
+dimension, a CUR column and a Budgets filter. It creates no invoice, changes no invoice,
+and is invisible to Accounts Payable. The mechanism that produces separate invoice
+documents is **Invoice Configuration** (invoice units), launched December 2024.
+
+### The four mechanisms
+
+| Mechanism | What it changes | Membership model | Effect on the AWS invoice | Commitments and credits | Cost |
+|---|---|---|---|---|---|
+| **Cost Categories** | Reporting groupings in Cost Explorer, Budgets, CUR / Data Exports, Cost Anomaly Detection | Rules matching linked accounts (explicit list, most reliable) or cost allocation tags on resources. Split charge rules spread shared-cost accounts proportionally, evenly or by fixed percentage | **None** | Unchanged. Can present an amortised view, cannot change who receives the discount | See the AWS Cost Management pricing page |
+| **Invoice Configuration (invoice units)** | Produces a separate invoice document per unit, inside one AWS Organization and one contract | Explicit list of member accounts plus one invoice receiver account. No OU selection, no account-tag selection. Maintained by hand or via the `invoicing` API (`CreateInvoiceUnit`, `UpdateInvoiceUnit`, `ListInvoiceUnits`) | **One invoice per unit**, issued to the receiver. Consolidated billing and volume tiering across the org are preserved | Not controlled here. Sharing is set **per account in Billing Preferences** | See the AWS Billing pricing page |
+| **Billing Conductor** | A **pro forma** version of costs per billing group, with custom pricing plans, custom line items and credits | Billing groups holding explicit account lists, each with a primary account | **None.** Billing Conductor configurations do not affect the customer's existing invoices from AWS, nor credit and commitment sharing | Real sharing unchanged. The pro forma view can model a different rate, a margin or an EDP the receiving entity should not see | Standard billing groups are charged, billing-transfer billing groups are free. See the AWS Billing Conductor pricing page for the current rate |
+| **Separate AWS Organizations (one payer per BU)** | A separate payer, contract and invoice per business unit | Accounts are moved between organisations (leave then invite) | **One invoice per organisation**, natively | Not shared across the boundary. Volume tiering restarts per org; Savings Plans and RI sharing stop at the org edge | No AWS fee. The cost is the lost consolidation |
+| *(multi-org case)* **Custom billing views / billing transfer** | Cost visibility and payment responsibility across several organisations | See "AWS Multi-Organisation Billing Features" below | Billing transfer moves who pays; billing views do not touch the invoice | See that section | See that section |
+
+### Three sentences that anchor the hierarchy
+
+1. **Invoices happen at the invoice unit level**, or at the payer level if no invoice
+   unit is defined. There is no third option.
+2. **Cost Categories and tags are reporting groupings.** They never change what is on an
+   invoice, only what a cost report can group by.
+3. **Savings Plans, RIs and credits are shared org-wide by default.** Isolation is done
+   **per account in Billing Preferences**, not per invoice unit - an invoice unit does
+   not build a commitment fence around itself.
+
+### Decision rule
+
+- **Separate invoice documents inside one contract** -> Invoice Configuration.
+- **Internal re-billing at a rate different from the AWS rate** (margin, managed-service
+  fee, an EDP the receiving entity should not see) -> Billing Conductor, on top of
+  whatever the invoice layer does.
+- **Reporting, showback, shared-cost allocation** -> Cost Categories with split charge
+  rules. No invoice change, and none needed.
+- **Separate legal entities that cannot share a contract** -> separate AWS
+  Organizations, accepting the loss of volume consolidation and Savings Plan sharing.
+  Do not reach for this until the first three have been ruled out.
+
+### Invoice unit constraints that shape the design
+
+- **An account can only be part of one invoice unit's rule at a time.** There is no
+  overlapping membership and no partial split of an account across two units.
+- **A given account can be a receiver for multiple invoice units.** An account cannot be
+  a member of one unit and receiver of another unless it is the receiver of both.
+- **If the payer account is a member of an invoice unit, the payer must be that unit's
+  receiver.** The receiver is not a member of its own unit by default.
+- **Name and invoice receiver cannot be changed after creation.** Getting either wrong
+  means deleting the unit and recreating it, so agree naming with Finance first.
+- **A purchase order can be associated with each invoice unit** - previously a PO could
+  only sit at management account level. This is often the real reason a client asks for
+  invoice units in the first place.
+- **Tax settings are inherited, not set per unit.** If the payer has tax inheritance
+  enabled, members inherit the payer's tax settings. If the invoice issuer is not Amazon
+  Web Services, Inc., members inherit the receiver's tax settings.
+- **Assignment changes take effect on the next billing cycle**, never retroactively.
+- **Commitment and credit isolation is a Billing Preferences job.** Credit sharing and
+  RI / Savings Plans discount sharing are set per account, and must be changed **before
+  the last day of the month** to apply to that month's invoices. This is the only way to
+  stop an invoice unit absorbing discounts bought elsewhere in the org.
+- **Quotas** on invoice units and their members exist - read the
+  [AWS Billing limits page](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-limits.html#limits-invoicing)
+  rather than assuming a number.
+
+**Not verified - confirm with the AWS account team before relying on it:** whether an
+invoice receiver can carry **its own payment method** and **its own legal entity / VAT
+number** distinct from the payer's. Everything above is documented; this is not, and it
+is usually the decisive question when a business unit wants to pay AWS directly. Do not
+answer it from inference.
+
+### OU synchronisation
+
+Neither Cost Categories nor invoice units follow the AWS Organizations OU hierarchy.
+Both take explicit account lists, so both drift the moment a new account is created in
+an OU. Tagging the accounts in Organizations does not solve it either: **Organizations
+account tags are not a Cost Explorer dimension**, and a Cost Category tag rule matches
+cost allocation tags on resources, not tags on the account object.
+
+One scheduled Lambda can maintain both: walk the OU tree with
+`ListAccountsForParent` recursively, then push the resolved account lists into
+`UpdateCostCategoryDefinition` and `UpdateInvoiceUnit`.
+
+Run it **before month end**. Invoice unit assignment changes only take effect on the
+next billing cycle, so an account created on the 28th and synced on the 2nd sits on the
+wrong invoice for a full month, and correcting that is a credit-note conversation with
+AWS rather than a configuration change.
+
+### Questions to settle before configuring
+
+Configuration is the easy part. These are the questions that decide the design, and most
+of them belong to Finance rather than to the FinOps or platform team:
+
+1. **Who pays AWS?** A business unit with its own payment method and legal entity, or
+   central IT paying one bill and Finance reallocating internally? This is the fork
+   between an invoicing problem and an allocation problem.
+2. **Which legal entity and VAT number sits behind each receiver?** Tax settings are
+   inherited (see above), so a receiver in a different entity is not a configuration
+   detail.
+3. **Is a purchase order needed per invoice unit?** If yes, who raises and owns each PO.
+4. **Who buys commitments, and which invoice units benefit?** Decide before the first
+   Savings Plan is bought, then set Billing Preferences per account to match.
+5. **How is shared cost inside a business unit's account treated?** Invoice units cannot
+   split an account, so anything genuinely shared has to live in its own account or be
+   handled in the reporting layer with Cost Category split charge rules - and then it is
+   a showback number, not an invoice line.
 
 ## AWS Multi-Organisation Billing Features
 
@@ -9953,8 +10076,8 @@ against current AWS pricing documentation):
 |---|---|---|
 | Amazon Nova Micro / Lite | Low | Classification, summarization, lightweight tasks |
 | Amazon Nova Pro | Mid | General purpose, RAG, moderate reasoning |
-| Meta Llama 3 (8B–70B) | Low–Mid | Open-weight, cost-sensitive workloads |
-| Mistral (7B–Large) | Low–Mid | EU data residency, general purpose |
+| Meta Llama 3 (8B-70B) | Low-Mid | Open-weight, cost-sensitive workloads |
+| Mistral (7B-Large) | Low-Mid | EU data residency, general purpose |
 | Anthropic Claude Haiku | Low | High-volume, latency-tolerant tasks |
 | Anthropic Claude Sonnet | Mid | Balanced capability and cost |
 | Anthropic Claude Opus | High | Complex reasoning, agentic workflows |
@@ -10487,6 +10610,42 @@ burned six to nine months. Surface these questions early - ideally during
 soft chargeback - so the hard-chargeback go-live date is set against real
 operational constraints rather than aspiration.
 
+### Provider invoicing mechanisms
+
+Some clients do not want an internal journal at all. They want the cloud provider to
+issue a separate invoice per business unit. That is a different request, and it has to
+be mapped to the provider's own invoicing construct before any chargeback design work
+starts - an allocation model cannot produce an invoice.
+
+- **AWS** - the construct is an **invoice unit** (Invoice Configuration). It produces a
+  genuinely separate invoice document per unit while keeping one AWS Organization,
+  consolidated billing and volume tiering. Cost Categories do not do this; they are a
+  reporting layer with no effect on the invoice. See "AWS billing hierarchy and separate
+  invoices" in `finops-aws.md`.
+- **Azure** - the construct is a **Billing Profile** under MCA. One Billing Profile
+  generates one monthly invoice, and the payment method attaches there. **Invoice
+  Sections are lines inside one invoice, not separate invoices**, and **reservations sit
+  on the Billing Profile**, not on the Invoice Section - so a BU mapped to an Invoice
+  Section cannot be given its own invoice or its own reservation attribution natively.
+  See "MCA hierarchy (four billing levels)" in `finops-azure.md`.
+
+Two cases, and they are not the same problem:
+
+1. **Separate invoice documents, same paying entity.** Central IT still pays the
+   provider; the business units receive their own invoice document for internal
+   visibility and PO matching. This is mostly an allocation problem with a presentation
+   layer on top. Finance involvement is real but bounded: cost centres, PO ownership,
+   and who reconciles the documents against the payment.
+2. **Distinct paying entities.** Each business unit is a separate legal entity that pays
+   the provider itself, or is recharged across an entity boundary. This is a contractual
+   and tax problem before it is a FinOps one - transfer pricing applies (see below),
+   the entity and VAT number behind each invoice recipient has to be confirmed, and the
+   provider's account team has to validate the arrangement.
+
+Establish which of the two the client actually means at the first meeting. Case 1 is
+weeks of configuration; case 2 is months, and most of the elapsed time is Tax and Legal
+rather than anything a FinOps practitioner controls.
+
 ### Accounting system readiness
 
 Hard chargeback is an accounting transaction. The receiving cost centre's P&L
@@ -10780,6 +10939,10 @@ that the team is being unreasonable.
   span cloud-marketplace purchases.
 - `finops-framework.md` - Invoicing & Chargeback capability in the FinOps
   Framework, plus the Manage the FinOps Practice domain context.
+- `finops-aws.md` - "AWS billing hierarchy and separate invoices": invoice
+  units, Billing Conductor, and why Cost Categories never change an invoice.
+- `finops-azure.md` - "MCA hierarchy (four billing levels)": Billing Profile as
+  the invoice boundary, and the Invoice Section reservation trap.
 
 ---
 
@@ -11011,7 +11174,7 @@ In many environments, users launch Databricks clusters for development or analys
 
 - Enable auto-termination for all clusters that do not require persistent runtime
 - Set cluster policies to require auto-termination configuration for new clusters
-- Establish reasonable inactivity thresholds based on workload type (e.g., 30–60 minutes for interactive)
+- Establish reasonable inactivity thresholds based on workload type (e.g., 30-60 minutes for interactive)
 
 **Oversized Worker Or Driver Nodes In Databricks Clusters**
 Service: Databricks Clusters | Type: Overprovisioned Resource
@@ -11664,7 +11827,7 @@ attaches metadata before requests execute. Options by complexity:
 | Custom application middleware | Direct SDK instrumentation | Low-Medium | Full control |
 
 **Real-time cost ingestion** - token counts must be captured as model responses are
-returned, not retrieved from billing exports. Cost Explorer lags 24–48 hours - acceptable
+returned, not retrieved from billing exports. Cost Explorer lags 24-48 hours - acceptable
 for EC2, not for workloads where a misconfigured agent can generate thousands of dollars
 within hours.
 
@@ -11937,7 +12100,7 @@ Payback period = fixed_costs / monthly_profit (months)
 - Month 6+: Positive ROI - learning effects compound, volume absorbs fixed costs
 
 Tolerating early losses is rational if the weekly trajectory toward breakeven is positive.
-Systems showing no improvement after 8–12 weeks warrant scrutiny.
+Systems showing no improvement after 8-12 weeks warrant scrutiny.
 
 #### The agent deployment inequality (go/no-go economics)
 
@@ -12142,7 +12305,7 @@ Actual value delivered: negligible.
 ### 2. Technology churn debt
 Each AI provider or framework migration leaves behind infrastructure that continues
 incurring charges: API keys, Lambda functions, S3 buckets, committed capacity reservations.
-Organisations running 3+ AI providers simultaneously often find 30–40% of AI spend
+Organisations running 3+ AI providers simultaneously often find 30-40% of AI spend
 supports abandoned experiments rather than production features.
 
 *Detection signal:* Active resources in accounts or regions with no recent deployments;
@@ -12151,7 +12314,7 @@ committed capacity with low utilization.
 ### 3. Agentic loops
 AI agents calling other agents create multiplicative cost patterns. Retry logic, recursive
 calls, validation loops, or agents that invoke themselves multiply token consumption by
-5–50× per user request. This compounds when agents interact with SaaS APIs that charge
+5-50× per user request. This compounds when agents interact with SaaS APIs that charge
 per query - each retry or validation loop triggers additional SaaS charges alongside
 model costs.
 
@@ -12168,7 +12331,7 @@ in SaaS API usage charges.
 ### 4. Data egress in AI pipelines
 RAG systems that store data in one region, generate embeddings in another, and run
 inference in a third create multi-directional transfer costs invisible in model-level
-reporting. For high-volume applications, data movement can represent 15–25% of total
+reporting. For high-volume applications, data movement can represent 15-25% of total
 AI costs.
 
 *Detection signal:* S3 or network costs rising in proportion with AI feature usage;
@@ -12195,7 +12358,7 @@ Use this to diagnose an organisation's current state before recommending solutio
 **Visibility (prerequisite - assess first):**
 - [ ] Token counts captured per feature, not just per account or model
 - [ ] Request-level cost attribution with application metadata at invocation time
-- [ ] Cost data available within minutes, not 24–48 hours
+- [ ] Cost data available within minutes, not 24-48 hours
 
 **Unit economics:**
 - [ ] Cost per unit defined and tracked (conversation / task / document)
@@ -12216,9 +12379,9 @@ Use this to diagnose an organisation's current state before recommending solutio
 - [ ] Monitoring for agent-driven SaaS consumption spikes
 
 **Scoring:**
-- 0–4 ✓: Crawl - start with visibility. Nothing else is meaningful without it.
-- 5–8 ✓: Walk - focus on unit economics and model optimisation.
-- 9–14 ✓: Run - focus on governance automation and agentic FinOps patterns.
+- 0-4 ✓: Crawl - start with visibility. Nothing else is meaningful without it.
+- 5-8 ✓: Walk - focus on unit economics and model optimisation.
+- 9-14 ✓: Run - focus on governance automation and agentic FinOps patterns.
 
 ---
 
@@ -12321,7 +12484,7 @@ organisation has left "Inform" for another.
 - Rightsize compute resources (EC2, VMs, containers, databases)
 - Implement commitment discounts (Reserved Instances, Savings Plans, CUDs)
 - Eliminate waste - unattached volumes, idle resources, zombie features
-- Schedule non-production environments (60–70% savings on dev/test)
+- Schedule non-production environments (60-70% savings on dev/test)
 - Implement lifecycle policies for storage and data
 
 **Crawl targets:** Obvious waste eliminated, basic rightsizing started
@@ -16138,7 +16301,7 @@ Service: Snowflake Virtual Warehouse | Type: Suboptimal Configuration
 
 If no appropriate query timeout is configured, inefficient or runaway queries can execute for extended periods (up to the default 2-day system limit). For as long as the query is running, the warehouse will remain active and accrue costs.
 
-- Configure a conservative account-level query timeout policy to limit maximum query execution times (e.g., 4–12 hours based on environment needs).
+- Configure a conservative account-level query timeout policy to limit maximum query execution times (e.g., 4-12 hours based on environment needs).
 - Apply customized warehouse-level or user-level timeout policies for workloads that genuinely require longer execution windows.
 - Regularly review and adjust query timeout settings as workload patterns evolve.
 
@@ -16479,7 +16642,7 @@ See `finops-azure.md` ("Agentic FinOps on Azure") for the full treatment.
 - No enforcement - violations are flagged but not blocked
 
 **Quick win:** Run a one-time tag audit, identify the top 10 untagged resources by spend,
-tag them manually. This typically achieves 15–20% allocation improvement in one session.
+tag them manually. This typically achieves 15-20% allocation improvement in one session.
 
 ### Walk
 - Tags enforced at IaC layer for new resources
@@ -16597,7 +16760,7 @@ No minimum spend, no upfront commitment.
 | Anthropic Claude Haiku | Low | Available via Vertex Model Garden |
 | Anthropic Claude Sonnet | Mid | Available via Vertex Model Garden |
 | Anthropic Claude Opus | High | Available via Vertex Model Garden |
-| Meta Llama (various) | Low–Mid | Open-weight, available in Model Garden |
+| Meta Llama (various) | Low-Mid | Open-weight, available in Model Garden |
 
 **FinOps principle:** model selection is the single highest-leverage cost decision.
 Benchmark task quality across model tiers before defaulting to the most capable model.
@@ -17634,7 +17797,7 @@ FinOps Framework: domain Optimize Usage & Cost; capability Sustainability; phase
 >
 > Distilled from: Forrester, Thoughtworks, Green Software Foundation, AWS Sustainability Console docs,
 > CloudCarbonFootprint.org, North.Cloud, Climatiq, and Microsoft/UBS Carbon Aware SDK
-> case study (2023–2025).
+> case study (2023-2025).
 
 ---
 
@@ -18170,7 +18333,7 @@ tools. Target: CPU utilization consistently below 20% is a rightsizing candidate
 
 **3. Schedule non-production resources**
 Dev, test, and staging environments do not need to run 24/7. Implement automatic
-shutdown outside business hours. Typical saving: 65–70% of compute hours for non-prod.
+shutdown outside business hours. Typical saving: 65-70% of compute hours for non-prod.
 Use AWS Instance Scheduler, Azure Automation, or GCP resource policies.
 
 **4. Move cold data to lower-carbon storage tiers**
@@ -18182,8 +18345,8 @@ and the energy required to maintain it.
 Running identical workloads across multiple clouds for redundancy purposes often creates
 carbon waste. Audit cross-cloud replication to confirm it is operationally justified.
 
-**Expected impact:** Optimisations typically reduce cloud carbon footprint by 20–40%
-and generate cost savings of 15–40% simultaneously.
+**Expected impact:** Optimisations typically reduce cloud carbon footprint by 20-40%
+and generate cost savings of 15-40% simultaneously.
 
 ---
 
@@ -18249,7 +18412,7 @@ location-based data when making workload placement or shifting decisions.
 **Committing to waste.**
 The same rule applies as in FinOps: rightsize and shut down idle resources before
 making any commitment. A Reserved Instance on an overprovisioned VM is still waste  -
-now locked in for 1–3 years.
+now locked in for 1-3 years.
 
 **Treating GreenOps as a separate program.**
 Organisations that create a separate sustainability team disconnected from FinOps

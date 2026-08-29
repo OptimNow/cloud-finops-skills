@@ -226,7 +226,7 @@ In many environments, users launch Databricks clusters for development or analys
 
 - Enable auto-termination for all clusters that do not require persistent runtime
 - Set cluster policies to require auto-termination configuration for new clusters
-- Establish reasonable inactivity thresholds based on workload type (e.g., 30–60 minutes for interactive)
+- Establish reasonable inactivity thresholds based on workload type (e.g., 30-60 minutes for interactive)
 
 **Oversized Worker Or Driver Nodes In Databricks Clusters**
 Service: Databricks Clusters | Type: Overprovisioned Resource

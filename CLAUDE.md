@@ -69,7 +69,8 @@ cloud-finops-skills/
 │       ├── finops-ai-dev-tools.md          <- Cursor / Claude Code / Copilot / Windsurf / Codex
 │       ├── finops-anthropic.md             <- Anthropic billing
 │       ├── finops-aws.md                   <- AWS FinOps core (billing data, rightsizing,
-│       │                                     SageMaker, allocation, CloudFront, S3 Files)
+│       │                                     SageMaker, allocation, CloudFront, S3 Files,
+│       │                                     billing hierarchy and invoice units, multi-org)
 │       ├── finops-aws-commitments.md       <- AWS SPs / RIs / Spot, portfolio liquidity, EDP
 │       ├── finops-aws-patterns.md          <- AWS enumerated pattern catalogue
 │       ├── finops-bedrock.md               <- AWS Bedrock
@@ -333,7 +334,8 @@ What the session established:
 - **Big files are at the edge of the auto-edit envelope.** At the time this
   meant `finops-aws.md` (2,657 lines) and `finops-azure.md` (~3,000 lines),
   which routinely produced guard-rail rejections or anchor failures for
-  non-additive changes. The August 2026 split (see Closed gaps) removed both
+  non-additive changes. The August 2026 split (see "Closed gaps" in
+  [`docs/ROADMAP.md`](docs/ROADMAP.md)) removed both
   from that band; the largest files are now `finops-azure.md` (~1,800 lines)
   and `finops-aws-patterns.md` (~1,470). Treat roughly 1,500 lines as the
   threshold above which structural changes need manual integration. Additive
