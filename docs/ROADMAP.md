@@ -280,12 +280,43 @@ maintainer file.
   file covers their useful parts and their Walk-to-Run engagement triggers have not
   fired.
 
-  **Lot C - measurement, once, to arbitrate the next lots.** After the Alpic redeploy
-  that follows #177: run the 24 never-played probes (P06-P07, P09-P10, P13, P15-P28,
-  naive twins P29-P32) with Sonnet. P21-P28 cover the twelve references nobody has
-  probed - where silent staleness settles - and every IMPROVISED verdict becomes a
-  content item with demand evidence. The connector-routing weakness seen on P05/P14
-  is *measured* by this cycle, not invested in; it may be structural to claude.ai web.
+  **Lot C - measurement: DONE 2026-08-29, and it changes the ordering rule.**
+
+  The original wording of this item ("run the 24 never-played probes ... with Sonnet")
+  was already stale when it was written: cycle 3 ran the FULL battery P01-P32 on
+  2026-08-20, one day earlier. What was actually needed, and what ran, is a *regression*
+  cycle - only the probes whose content shipped since c3, plus one new probe for the
+  #181 invoice-unit material. Deployment was verified first by calling the connector.
+
+  Result (c4, Sonnet 5 Medium, 4 probes): **content closes a gap only where the phrasing
+  already routed.**
+
+  - **P11** (S3 lifecycle, "how do I *detect*...") - 2 empty library calls in c3, now
+    GROUNDED: `find_playbooks` then `get_playbook(aws-s3-cold-data-in-standard)`, and the
+    answer carries the prerequisite-first rule, expire-don't-transition, the 128 KiB
+    threshold and weight-by-bytes. **PR #177 closed the trap.**
+  - **P12** ("which of *my* RIs are about to expire...") and **P13** ("*my* NAT processes
+    10TB/month...") - **unchanged, zero library calls each**, even though
+    `aws-expiring-commitment-no-decision` (#177) and
+    `aws-nat-gateway-endpoint-substitution` (#182) are both live on Alpic and the
+    connector toggle was verified ON. This is routing, not availability.
+  - **P33** (new, the real client question behind #181: "their AWS contact suggested Cost
+    Categories - is that right?") - GROUNDED via the claude.ai skill surface; the
+    anti-confusion framing holds ("they change how spend is sliced in reports, not how
+    AWS bills") and anchor sentence 3 comes back near-verbatim.
+
+  **Consequence for how this backlog is ordered.** The rule "every IMPROVISED verdict
+  becomes a content item with demand evidence" is now known to be wrong for one class:
+  account-data phrasing ("which of MY x") and symptom phrasing ("my NAT does X") do not
+  route, so shipping their playbook does not convert them. Those two probes are demand
+  evidence for **routing work** - tool descriptions, SKILL.md phrasing - not for more
+  playbooks. Only discovery- and advisory-phrased gaps are content items. The remaining
+  c3 IMPROVISED probes (P06, P23 provider-billing-news; P25 finops-itam orphaned) were
+  not re-run: nothing shipped for them, so their verdict stands unchanged.
+
+  Standing incident, third cycle running: every connector call renders "Unable to reach
+  AI Cloud FinOps Skill & MCP" while the data arrives intact, and a tool-approval gate
+  now appears per call. Full per-probe notes in `pipeline/coverage-probes.md`.
 
   Two composition notes from the same test, recorded as positioning decisions rather than
   defects until decided otherwise: (a) the library reads AI-workload-heavy (8 of 14 AWS
