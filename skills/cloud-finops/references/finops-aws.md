@@ -376,11 +376,16 @@ See `finops-tagging.md` for the full tagging strategy. AWS-specific notes:
 
 ### Cost Categories
 
-AWS Cost Categories create billing-layer allocation rules without requiring physical tags.
+AWS Cost Categories create allocation rules without requiring physical tags.
 Use them for:
 - Shared service allocation (split NAT Gateway cost by team account usage)
 - Account-level allocation when resource-level tagging is incomplete
 - Retroactive allocation adjustments
+
+**Cost Categories are a reporting layer only.** They group cost in Cost Explorer,
+Budgets, CUR / Data Exports and Cost Anomaly Detection, and they have no effect on the
+AWS invoice. If the requirement is a separate invoice per business unit, the mechanism
+is Invoice Configuration - see "AWS billing hierarchy and separate invoices" below.
 
 ---
 
@@ -513,7 +518,7 @@ implementing, and treat it as a starting point, not an exhaustive catalogue.
 
 Configure at minimum:
 - Account-level monthly cost budget with 80% and 100% alerts
-- Service-level budgets for top 3–5 cost drivers
+- Service-level budgets for top 3-5 cost drivers
 - Anomaly detection monitor linked to cost anomaly detection
 
 **Recommended alert recipients:** Both the FinOps practitioner and the engineering team
@@ -551,9 +556,9 @@ These actions typically deliver savings within 30 days with low risk.
 | Delete unattached EBS volumes | 100% of volume cost | None | Low |
 | Release unneeded Elastic IPs | ~$3.60/IP/month | None | Low |
 | Delete unused snapshots (>90 days old) | Variable | Low (verify no restore needed) | Low |
-| Schedule dev/test EC2 stop outside business hours | 60–70% of instance cost | Low | Low |
+| Schedule dev/test EC2 stop outside business hours | 60-70% of instance cost | Low | Low |
 | Move S3 infrequently accessed data to Infrequent Access | 40% storage cost | Low | Low |
-| Right-size over-provisioned RDS instances | 20–50% RDS cost | Medium (test first) | Medium |
+| Right-size over-provisioned RDS instances | 20-50% RDS cost | Medium (test first) | Medium |
 | Convert gp2 EBS volumes to gp3 | 20% EBS cost (same IOPS baseline) | Low | Low |
 | Review and right-size NAT Gateway usage | Variable | Medium | Medium |
 
@@ -959,6 +964,124 @@ design - free large-file reads straight from S3, pay-only-for-hot-slice
 storage, and free Intelligent-Tiering transitions underneath. For workloads
 with meaningful cold storage and large-file reads, this is a structurally
 cheaper filesystem than EFS.
+
+---
+
+## AWS billing hierarchy and separate invoices
+
+*Added: August 2026. Sources (read 29 August 2026): [Invoice Configuration](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/invoice-configuration.html), [Creating an invoice unit](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/invoice-configuration-create.html), [Invoicing quotas](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-limits.html#limits-invoicing), [What's New - AWS Invoice Configuration, December 2024](https://aws.amazon.com/about-aws/whats-new/2024/12/aws-invoice-configuration), [AWS CFM blog - Configuring your AWS invoices](https://aws.amazon.com/blogs/aws-cloud-financial-management/configuring-your-aws-invoices-using-invoice-configuration/), [re:Post - controlling credits and reservations with Invoice Configuration](https://repost.aws/articles/ARY4wopLJsQoKXASXOEIfxFw/how-to-control-credits-and-reservations-with-the-new-invoice-configuration), [What is AWS Billing Conductor](https://docs.aws.amazon.com/billingconductor/latest/userguide/what-is-billingconductor.html), [Managing Cost Categories](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-cost-categories.html).*
+
+On AWS the **account is the atomic unit of invoicing**. Nothing splits an invoice
+inside an account - two teams sharing one account appear on the same invoice whatever
+tagging, Cost Category or allocation logic sits on top. Account structure is therefore
+an invoicing decision, not only a governance one: if a business unit has to receive its
+own invoice, its workloads must live in accounts that belong to it, and that has to be
+decided before the workloads land.
+
+The most common error in this area is treating **Cost Categories as an invoicing
+mechanism**. They are not. A Cost Category named "R&D" creates a Cost Explorer
+dimension, a CUR column and a Budgets filter. It creates no invoice, changes no invoice,
+and is invisible to Accounts Payable. The mechanism that produces separate invoice
+documents is **Invoice Configuration** (invoice units), launched December 2024.
+
+### The four mechanisms
+
+| Mechanism | What it changes | Membership model | Effect on the AWS invoice | Commitments and credits | Cost |
+|---|---|---|---|---|---|
+| **Cost Categories** | Reporting groupings in Cost Explorer, Budgets, CUR / Data Exports, Cost Anomaly Detection | Rules matching linked accounts (explicit list, most reliable) or cost allocation tags on resources. Split charge rules spread shared-cost accounts proportionally, evenly or by fixed percentage | **None** | Unchanged. Can present an amortised view, cannot change who receives the discount | See the AWS Cost Management pricing page |
+| **Invoice Configuration (invoice units)** | Produces a separate invoice document per unit, inside one AWS Organization and one contract | Explicit list of member accounts plus one invoice receiver account. No OU selection, no account-tag selection. Maintained by hand or via the `invoicing` API (`CreateInvoiceUnit`, `UpdateInvoiceUnit`, `ListInvoiceUnits`) | **One invoice per unit**, issued to the receiver. Consolidated billing and volume tiering across the org are preserved | Not controlled here. Sharing is set **per account in Billing Preferences** | See the AWS Billing pricing page |
+| **Billing Conductor** | A **pro forma** version of costs per billing group, with custom pricing plans, custom line items and credits | Billing groups holding explicit account lists, each with a primary account | **None.** Billing Conductor configurations do not affect the customer's existing invoices from AWS, nor credit and commitment sharing | Real sharing unchanged. The pro forma view can model a different rate, a margin or an EDP the receiving entity should not see | Standard billing groups are charged, billing-transfer billing groups are free. See the AWS Billing Conductor pricing page for the current rate |
+| **Separate AWS Organizations (one payer per BU)** | A separate payer, contract and invoice per business unit | Accounts are moved between organisations (leave then invite) | **One invoice per organisation**, natively | Not shared across the boundary. Volume tiering restarts per org; Savings Plans and RI sharing stop at the org edge | No AWS fee. The cost is the lost consolidation |
+| *(multi-org case)* **Custom billing views / billing transfer** | Cost visibility and payment responsibility across several organisations | See "AWS Multi-Organisation Billing Features" below | Billing transfer moves who pays; billing views do not touch the invoice | See that section | See that section |
+
+### Three sentences that anchor the hierarchy
+
+1. **Invoices happen at the invoice unit level**, or at the payer level if no invoice
+   unit is defined. There is no third option.
+2. **Cost Categories and tags are reporting groupings.** They never change what is on an
+   invoice, only what a cost report can group by.
+3. **Savings Plans, RIs and credits are shared org-wide by default.** Isolation is done
+   **per account in Billing Preferences**, not per invoice unit - an invoice unit does
+   not build a commitment fence around itself.
+
+### Decision rule
+
+- **Separate invoice documents inside one contract** -> Invoice Configuration.
+- **Internal re-billing at a rate different from the AWS rate** (margin, managed-service
+  fee, an EDP the receiving entity should not see) -> Billing Conductor, on top of
+  whatever the invoice layer does.
+- **Reporting, showback, shared-cost allocation** -> Cost Categories with split charge
+  rules. No invoice change, and none needed.
+- **Separate legal entities that cannot share a contract** -> separate AWS
+  Organizations, accepting the loss of volume consolidation and Savings Plan sharing.
+  Do not reach for this until the first three have been ruled out.
+
+### Invoice unit constraints that shape the design
+
+- **An account can only be part of one invoice unit's rule at a time.** There is no
+  overlapping membership and no partial split of an account across two units.
+- **A given account can be a receiver for multiple invoice units.** An account cannot be
+  a member of one unit and receiver of another unless it is the receiver of both.
+- **If the payer account is a member of an invoice unit, the payer must be that unit's
+  receiver.** The receiver is not a member of its own unit by default.
+- **Name and invoice receiver cannot be changed after creation.** Getting either wrong
+  means deleting the unit and recreating it, so agree naming with Finance first.
+- **A purchase order can be associated with each invoice unit** - previously a PO could
+  only sit at management account level. This is often the real reason a client asks for
+  invoice units in the first place.
+- **Tax settings are inherited, not set per unit.** If the payer has tax inheritance
+  enabled, members inherit the payer's tax settings. If the invoice issuer is not Amazon
+  Web Services, Inc., members inherit the receiver's tax settings.
+- **Assignment changes take effect on the next billing cycle**, never retroactively.
+- **Commitment and credit isolation is a Billing Preferences job.** Credit sharing and
+  RI / Savings Plans discount sharing are set per account, and must be changed **before
+  the last day of the month** to apply to that month's invoices. This is the only way to
+  stop an invoice unit absorbing discounts bought elsewhere in the org.
+- **Quotas** on invoice units and their members exist - read the
+  [AWS Billing limits page](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-limits.html#limits-invoicing)
+  rather than assuming a number.
+
+**Not verified - confirm with the AWS account team before relying on it:** whether an
+invoice receiver can carry **its own payment method** and **its own legal entity / VAT
+number** distinct from the payer's. Everything above is documented; this is not, and it
+is usually the decisive question when a business unit wants to pay AWS directly. Do not
+answer it from inference.
+
+### OU synchronisation
+
+Neither Cost Categories nor invoice units follow the AWS Organizations OU hierarchy.
+Both take explicit account lists, so both drift the moment a new account is created in
+an OU. Tagging the accounts in Organizations does not solve it either: **Organizations
+account tags are not a Cost Explorer dimension**, and a Cost Category tag rule matches
+cost allocation tags on resources, not tags on the account object.
+
+One scheduled Lambda can maintain both: walk the OU tree with
+`ListAccountsForParent` recursively, then push the resolved account lists into
+`UpdateCostCategoryDefinition` and `UpdateInvoiceUnit`.
+
+Run it **before month end**. Invoice unit assignment changes only take effect on the
+next billing cycle, so an account created on the 28th and synced on the 2nd sits on the
+wrong invoice for a full month, and correcting that is a credit-note conversation with
+AWS rather than a configuration change.
+
+### Questions to settle before configuring
+
+Configuration is the easy part. These are the questions that decide the design, and most
+of them belong to Finance rather than to the FinOps or platform team:
+
+1. **Who pays AWS?** A business unit with its own payment method and legal entity, or
+   central IT paying one bill and Finance reallocating internally? This is the fork
+   between an invoicing problem and an allocation problem.
+2. **Which legal entity and VAT number sits behind each receiver?** Tax settings are
+   inherited (see above), so a receiver in a different entity is not a configuration
+   detail.
+3. **Is a purchase order needed per invoice unit?** If yes, who raises and owns each PO.
+4. **Who buys commitments, and which invoice units benefit?** Decide before the first
+   Savings Plan is bought, then set Billing Preferences per account to match.
+5. **How is shared cost inside a business unit's account treated?** Invoice units cannot
+   split an account, so anything genuinely shared has to live in its own account or be
+   handled in the reporting layer with Cost Category split charge rules - and then it is
+   a showback number, not an invoice line.
 
 ## AWS Multi-Organisation Billing Features
 

@@ -128,6 +128,12 @@ keywords:
   - pillar 2 minimum tax
   - sox chargeback controls
   - methodology dispute
+  - invoice configuration
+  - invoice unit
+  - separate invoices per business unit
+  - billing conductor
+  - pro forma billing
+  - aws billing hierarchy
   - chargeback revolt
   - onboarding workloads
   - migration cost hygiene
@@ -271,7 +277,7 @@ methodology questions - not for routine billing-mechanics queries.
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | Self-hosted vs managed AI inference, build vs buy LLM, vLLM, SGLang, llama.cpp, GPU rental, RunPod, CoreWeave, Lambda, hidden cost surface, ML-Ops maturity rubric, hybrid routing (LiteLLM, Portkey) | `references/finops-ai-self-hosted-vs-managed.md` |
 | Open-weight model vendors on their own hosted APIs, DeepSeek, Qwen, Kimi, Moonshot, GLM, Z.ai, Chinese model APIs, open-weight pricing, time-based pricing, peak and off-peak token rates, vendor API vs third-party host channel choice, open-weight model licensing, GLM Coding Plan | `references/finops-open-weight-vendors.md` |
-| AWS billing data, CUR, Data Exports for FOCUS 1.2, Cost Explorer, EC2/compute rightsizing, SageMaker operational FinOps, cost allocation, governance, CloudFront flat-rate plans, S3 Files, multi-org billing | `references/finops-aws.md` |
+| AWS billing data, CUR, Data Exports for FOCUS 1.2, Cost Explorer, EC2/compute rightsizing, SageMaker operational FinOps, cost allocation, governance, CloudFront flat-rate plans, S3 Files, multi-org billing, AWS billing hierarchy, separate invoices per BU, Invoice Configuration, invoice units, Billing Conductor, pro forma billing, Cost Categories vs invoice | `references/finops-aws.md` |
 | AWS Savings Plans, Reserved Instances, Spot, commitment decision tree, commitment portfolio liquidity, phased purchasing, EDP negotiation, Convertible RI exchange | `references/finops-aws-commitments.md` |
 | AWS per-service inefficiency catalogue, enumerated AWS optimisation patterns | `references/finops-aws-patterns.md` |
 | AWS Bedrock billing, Bedrock provisioned throughput, model unit pricing, Bedrock batch inference, Application Inference Profiles, Bedrock Projects, prompt caching, IAM Principal Cost Allocation | `references/finops-bedrock.md` |
@@ -295,7 +301,7 @@ methodology questions - not for routine billing-mechanics queries.
 | Cost anomaly management, anomaly detection, masked anomalies, layered detection, threshold tuning, AWS Cost Anomaly Detection config, Azure anomaly detection, GCP budget anomaly alerts, new-region detection, security integration | `references/finops-anomaly-management.md` |
 | FinOps KPIs, KPI portfolio by maturity, unit economics denominators, cost per customer / order / transaction, realised vs potential savings reporting, forecast variance, benchmarking (internal and external, data-quality caveats), executive reporting, CFO / CIO narrative, executive strategy alignment, maturity scorecard | `references/finops-kpis-benchmarking.md` |
 | Cost allocation methodology, showback, EffectiveCost vs BilledCost (FOCUS), amortised vs unblended (AWS legacy), blended-cost trap, defensible allocation keys, shared-services allocation (network, observability, security, ingress), InvoiceId reconciliation, unallocated spend signal, showback report design and routing | `references/finops-allocation-showback.md` |
-| Chargeback, soft chargeback, hard chargeback, financial accountability, Finance and accounting prerequisites for chargeback, ERP readiness (SAP CO, Oracle, Workday, NetSuite), inter-BU P&L impact, CFO sponsorship, transfer pricing for intercompany cloud recharge, cross-border tax (VAT, withholding, permanent establishment, Pillar 2, GILTI / FDII / BEAT), SOX-equivalent controls, methodology dispute process, chargeback-revolt anti-pattern | `references/finops-chargeback.md` |
+| Chargeback, soft chargeback, hard chargeback, financial accountability, Finance and accounting prerequisites for chargeback, ERP readiness (SAP CO, Oracle, Workday, NetSuite), inter-BU P&L impact, CFO sponsorship, transfer pricing for intercompany cloud recharge, cross-border tax (VAT, withholding, permanent establishment, Pillar 2, GILTI / FDII / BEAT), SOX-equivalent controls, separate provider invoices per business unit, invoice units vs internal recharge, methodology dispute process, chargeback-revolt anti-pattern | `references/finops-chargeback.md` |
 | Onboarding workloads, migration-time cost hygiene, intake gate, mandatory tags at go-live, 60-90 day forecast-then-commit rule, double-bubble cost (parallel-run source and target), migration cost estimate vs actuals, network-cost trap (data-centre to cloud), M&A integration patterns, FOCUS-during-migration, architecture review integration, post-migration FinOps owner | `references/finops-onboarding-workloads.md` |
 | Kubernetes FinOps, K8s cost allocation, OpenCost, Kubecost, GKE Cost Allocation, EKS Split Cost Allocation, AKS Cost Analysis, FOCUS-emitting K8s allocation, container rightsizing (VPA, p95/p99 with safety margins), node-level autoscaling (Karpenter, Cluster Autoscaler), Pod Disruption Budgets, Spot diversification, idle node cost, node efficiency KPI | `references/finops-kubernetes.md` |
 | Waste detection playbooks, orphaned resources, idle resources, overprovisioned resources, commitment mismatches, schedule blindness, modernization opportunities, AI/ML inefficiency, egress / data transfer waste, cross-AZ egress cost, two-signal classification, classification confidence (obvious / likely / possible), realised vs potential savings, WasteLine appliance, OptimNow waste taxonomy | `references/finops-waste-detection-playbooks.md` |

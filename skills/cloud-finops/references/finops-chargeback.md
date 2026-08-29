@@ -102,6 +102,42 @@ burned six to nine months. Surface these questions early - ideally during
 soft chargeback - so the hard-chargeback go-live date is set against real
 operational constraints rather than aspiration.
 
+### Provider invoicing mechanisms
+
+Some clients do not want an internal journal at all. They want the cloud provider to
+issue a separate invoice per business unit. That is a different request, and it has to
+be mapped to the provider's own invoicing construct before any chargeback design work
+starts - an allocation model cannot produce an invoice.
+
+- **AWS** - the construct is an **invoice unit** (Invoice Configuration). It produces a
+  genuinely separate invoice document per unit while keeping one AWS Organization,
+  consolidated billing and volume tiering. Cost Categories do not do this; they are a
+  reporting layer with no effect on the invoice. See "AWS billing hierarchy and separate
+  invoices" in `finops-aws.md`.
+- **Azure** - the construct is a **Billing Profile** under MCA. One Billing Profile
+  generates one monthly invoice, and the payment method attaches there. **Invoice
+  Sections are lines inside one invoice, not separate invoices**, and **reservations sit
+  on the Billing Profile**, not on the Invoice Section - so a BU mapped to an Invoice
+  Section cannot be given its own invoice or its own reservation attribution natively.
+  See "MCA hierarchy (four billing levels)" in `finops-azure.md`.
+
+Two cases, and they are not the same problem:
+
+1. **Separate invoice documents, same paying entity.** Central IT still pays the
+   provider; the business units receive their own invoice document for internal
+   visibility and PO matching. This is mostly an allocation problem with a presentation
+   layer on top. Finance involvement is real but bounded: cost centres, PO ownership,
+   and who reconciles the documents against the payment.
+2. **Distinct paying entities.** Each business unit is a separate legal entity that pays
+   the provider itself, or is recharged across an entity boundary. This is a contractual
+   and tax problem before it is a FinOps one - transfer pricing applies (see below),
+   the entity and VAT number behind each invoice recipient has to be confirmed, and the
+   provider's account team has to validate the arrangement.
+
+Establish which of the two the client actually means at the first meeting. Case 1 is
+weeks of configuration; case 2 is months, and most of the elapsed time is Tax and Legal
+rather than anything a FinOps practitioner controls.
+
 ### Accounting system readiness
 
 Hard chargeback is an accounting transaction. The receiving cost centre's P&L
@@ -395,6 +431,10 @@ that the team is being unreasonable.
   span cloud-marketplace purchases.
 - `finops-framework.md` - Invoicing & Chargeback capability in the FinOps
   Framework, plus the Manage the FinOps Practice domain context.
+- `finops-aws.md` - "AWS billing hierarchy and separate invoices": invoice
+  units, Billing Conductor, and why Cost Categories never change an invoice.
+- `finops-azure.md` - "MCA hierarchy (four billing levels)": Billing Profile as
+  the invoice boundary, and the Invoice Section reservation trap.
 
 ---
 
