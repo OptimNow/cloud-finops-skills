@@ -342,6 +342,30 @@ maintainer file.
   descriptions - the only artefact proven to reach the model - and re-run the same
   four probes. If that fails too, this entry closes as structural.
 
+  **Cycle 6 (2026-08-30, on the #187 deployment, verified by SDK tools/list first):
+  iteration 2 converts P13, closes P12, and the entry closes with a three-way verdict.**
+
+  - **P13 GROUNDED - CONVERTED.** Tool-search fired, the connector was called, and the
+    answer carried the NAT-endpoint playbook near-verbatim (the describe-vpc-endpoints
+    command, the aws:SourceVpce policy caveat, the interface-endpoint anti-pattern).
+    Specific-symptom phrasing routes when imperative norms open the tool description.
+  - **P12 CLOSED AS STRUCTURAL** per the stop rule: zero spontaneous calls across four
+    cycles and three interventions. One softening in c6: the model now offers "I can
+    check the Cloud FinOps skill library for the standard playbook" instead of denying
+    capability - so a user who says yes gets routed, one turn late. Account-data
+    phrasing does not spontaneously route on claude.ai; stop investing here.
+  - **P31 shows naive-symptom routing is stochastic.** Same class as P13, opposite
+    outcome in the same cycle (search did not fire). The description work moves the
+    conversion probability, not a switch. Track it in regular cycles, do not iterate
+    further on it specifically.
+  - **P11 control held across all three fix cycles** - none of the routing work
+    regressed what already routed.
+
+  The durable rules this arc leaves behind: norms only work where the host actually
+  surfaces them (tool descriptions on claude.ai, never server instructions); imperative
+  placement at the top of the description is what converts; and the claude.ai memory
+  feature can interfere with account-phrased questions in ways no repo change reaches.
+
   Standing incident, third cycle running: every connector call renders "Unable to reach
   AI Cloud FinOps Skill & MCP" while the data arrives intact, and a tool-approval gate
   now appears per call. Full per-probe notes in `pipeline/coverage-probes.md`.
