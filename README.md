@@ -68,18 +68,31 @@ use them (field-tested with the same battery of practitioner questions through b
 - **Pushed into context** - as a native skill (Claude Code, Claude.ai / Desktop, Kiro),
   or as rules files written by `install.sh` for tools without skill support (Cursor,
   Windsurf, Codex, Aider, Copilot, Gemini). The guidance is already there when the
-  model reasons, which is what grounds *advisory* answers - commitment sizing,
-  chargeback design, allocation methodology - without the model having to decide
-  anything.
-- **Fetched on demand** - the MCP server. The model must decide to call a tool, which
-  it reliably does for lookup questions ("show me the idle waste runbooks") and much
-  less for advisory ones. Its strengths: distribution (paste one URL - the right path
-  for non-technical users and for hosts with neither skill support nor an installer
-  target), faceted queries over the library's metadata, and interactive widgets on
-  hosts that render MCP Apps.
+  model reasons, with no per-question decision to make - which is why this surface
+  grounds both *advisory* answers (commitment sizing, chargeback design, allocation
+  methodology) and *symptom* questions ("my NAT gateway processes 10TB/month to S3"),
+  where the measured probe runs show it handing over the matching runbook first try.
+- **Fetched on demand** - the MCP server. The model must decide to call a tool per
+  question, and that decision is this surface's real limit. Measured behaviour
+  (August 2026 probe cycles): lookup and discovery questions ("show me the idle waste
+  runbooks") route reliably; advisory and specific-symptom questions route since the
+  tool descriptions carry imperative routing rules, though not on every phrasing.
+  Its strengths: distribution (paste one URL - the right path for non-technical users
+  and for hosts with neither skill support nor an installer target), faceted queries
+  over the library's metadata, and interactive widgets on hosts that render MCP Apps.
 - **Both is legitimate.** Skill loaded for the doctrine, connector added for the
   widgets or for hosts where the skill is not loaded. Details on the six tools:
   [MCP server](#mcp-server-cross-tool-search-style-retrieval) below.
+
+**What to expect in practice, on either surface.** Neither the skill nor the server
+can see your cloud account. For "which of *my* X" questions ("which of my RIs are
+about to expire?") the deliverable is the playbook's detection query, which you run
+yourself - and the measured behaviour is that models tend to ask you for a data
+export instead of volunteering that runbook. The reliable way to get it is to ask
+explicitly: "check the playbook library" or "show me the runbook for this". Routing
+is also probabilistic, not guaranteed - the same question phrased two ways can ground
+differently - so when an answer arrives without a visible tool call or file read,
+asking for the library by name is the one-turn fix.
 
 Using a non-Claude model through an API? Add the **response contract** from
 [INSTALLATION.md](./INSTALLATION.md) ("API integration / Recommended response
