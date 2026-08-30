@@ -366,6 +366,31 @@ maintainer file.
   placement at the top of the description is what converts; and the claude.ai memory
   feature can interfere with account-phrased questions in ways no repo change reaches.
 
+  **Cycle 7 (2026-08-30): skill-isolation counterpart, run to attribute surfaces.**
+  Same probes with the connector toggled off (the toggle is account-global - restore
+  it after). Result, against the connector surface's best outcomes:
+
+  | Probe | Connector (best, c4-c6) | Skill alone (c7) |
+  |---|---|---|
+  | P11 detect-phrasing | GROUNDED | GROUNDED via skill |
+  | P13 symptom | GROUNDED only after two routing iterations | GROUNDED first try |
+  | P31 naive symptom | never converted | GROUNDED first try, playbook verbatim |
+  | P12 account-data | never | never - no surface triggers |
+
+  Three conclusions. First, **the skill in isolation routes symptom phrasings better
+  than the connector after two iterations of routing work** - pushed-into-context
+  needs no tool-choice decision, which was the whole failure surface. Second, **P12 is
+  confirmed trans-surface**: neither skill, connector, nor web picks up account-data
+  phrasing; the structural closure holds at the model-behaviour level, and the
+  playbook's value there is delivered when the user accepts the model's offer to
+  check the library. Third, an **interaction-effect hypothesis worth one future
+  cycle**: with the connector enabled (c4-c6), the skill never triggered on these
+  probes - the connector appears to pre-empt the skill and then, pre-#187, declined
+  to call. If both-enabled grounds worse than skill-alone on symptom questions, the
+  README's "add the connector too" default for Claude users deserves a caveat.
+  Controls: P10 grounded via skill (the skill loads fine); P33 went to web this
+  cycle - skill-vs-web pre-emption is itself stochastic.
+
   Standing incident, third cycle running: every connector call renders "Unable to reach
   AI Cloud FinOps Skill & MCP" while the data arrives intact, and a tool-approval gate
   now appears per call. Full per-probe notes in `pipeline/coverage-probes.md`.
