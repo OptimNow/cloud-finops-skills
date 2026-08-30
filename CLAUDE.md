@@ -434,6 +434,60 @@ rename look expensive. 36 of them were the CC BY-SA attribution footer, which mu
 change - it is the string third-party reusers carry. The real surface was 8 occurrences
 in 5 files. Count the *kind* of hit before estimating effort from a grep total.
 
+### Skills inject, MCP tools decide: what the probe cycles taught about the two surfaces (2026-08-30)
+
+Probe cycles 4-7 (per-probe record in the maintainer-local
+`pipeline/coverage-probes.md`; the arc's public summary in the
+`docs/ROADMAP.md` routing entry) measured how the same library grounds
+answers through the MCP connector versus the uploaded skill on claude.ai,
+across three interventions: new playbooks (PRs #177, #182) and two rounds
+of routing work (PRs #184, #187). The mechanics that emerged are durable
+and generalise to any repo shipping both surfaces:
+
+1. **The two surfaces fail differently, because one decides and one does
+   not.** MCP grounding hangs on a per-question tool-choice the model makes;
+   the skill, once loaded, has no decision to make. The connector's weakness
+   therefore concentrates exactly where the model feels confident (symptom
+   questions it can answer from memory) or misreads the ask (account-data
+   questions). In isolation the skill grounded, first try and near-verbatim,
+   a symptom probe the connector never converted across four cycles.
+2. **Content closes a gap only where the phrasing already routes.** Shipping
+   the playbook a failing probe needed did not convert it - twice, on two
+   different playbooks. A coverage gap and a routing gap are different
+   defects with different fixes; classify before writing content.
+3. **On claude.ai, the MCP server `instructions` string is inert.** A norm
+   sitting in the served instructions was flatly contradicted by the model's
+   behaviour. Norms must live in the tool descriptions - the only artefact
+   proven to reach the model - and they convert only when placed imperatively
+   at the top ("ALWAYS call this before..."); the same norms mid-docstring
+   did nothing.
+4. **Tool descriptions feed two consumers.** claude.ai runs a host-side
+   tool-search layer that decides whether tools are even surfaced; concrete
+   service nouns (NAT gateway, expiring RIs, snapshots) made that layer fire
+   on symptom questions. The imperative rules then govern the model's actual
+   call. Optimise descriptions for both audiences at once.
+5. **Account-data phrasing ("which of my X") is trans-surface.** Neither
+   connector, skill, nor web triggers on it; the model asks for a data
+   export instead. The reachable ceiling is the model *offering* the
+   library; the practical answer is user education - ask for the playbook
+   explicitly - not more engineering.
+6. **Routing is stochastic, not binary.** Twin probes of the same class
+   grounded and failed in the same cycle; the same probe grounded via skill
+   one day and web the next. One run is a sample: verdicts need the
+   visible-evidence discipline (tool-call block, "Viewed N files" marker)
+   and re-runs before any conclusion.
+7. **Verify the surface you measure, by calling it, on content.** The hosted
+   server's `serverInfo` version stayed at an old value while serving
+   current content - it is not a deployment check; `tools/list` description
+   text and listing totals are. And the claude.ai connector toggle is
+   account-global, not per-chat: restore it after any isolation test.
+8. **claude.ai memory is a confounder no repo change reaches.** It recalled
+   a client file into an account-phrased probe and answered from there, and
+   twice made a failed call look grounded. Fresh chats are not clean-room.
+
+The user-facing version of the behavioural expectations lives in the README
+("Skill + installer, or MCP?" and its "What to expect in practice" note).
+
 ---
 
 ## Roadmap
