@@ -125,14 +125,14 @@ uvx cloud-finops-mcp
 The server is deployed at:
 
 ```
-https://cloud-finops-skills-590a051d.alpic.live/
+https://cloud-finops-mcp.fly.dev/mcp
 ```
 
 Add it via **Settings -> Connectors -> Add custom connector** and paste exactly that
-URL - trailing slash included, the widget sandbox domain is derived from it. A variant
-form (`/mcp`, or no trailing slash) connects fine but silently disables widget
-rendering, because the MCP Apps host validates the sandbox domain against the URL as
-entered.
+URL - the `/mcp` path, no trailing slash; the widget sandbox domain is derived from it.
+A variant form (the bare origin, or a trailing slash) connects fine but silently
+disables widget rendering, because the MCP Apps host validates the sandbox domain
+against the URL as entered.
 
 Do not wire a remote server through `claude_desktop_config.json`: Desktop silently
 drops `"type": "http"` entries from that file, and the `npx mcp-remote` bridge adds
@@ -141,7 +141,7 @@ enough startup latency to blow Desktop's initialize timeout.
 Claude Code can use the same hosted URL without any install:
 
 ```bash
-claude mcp add --transport http cloud-finops https://cloud-finops-skills-590a051d.alpic.live/
+claude mcp add --transport http cloud-finops https://cloud-finops-mcp.fly.dev/mcp
 ```
 
 For the local clients below, install the package first, then point the client at the

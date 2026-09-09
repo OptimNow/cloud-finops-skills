@@ -21,7 +21,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://cloud-finops-skills-590a051d.alpic.live/mcp"
+      "url": "https://cloud-finops-mcp.fly.dev/mcp"
     }
   ]
 }

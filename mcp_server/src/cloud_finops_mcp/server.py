@@ -54,22 +54,21 @@ REFERENCE_BROWSER_URI = "ui://cloud-finops/reference-browser"
 
 # The claude.ai / Claude Desktop MCP Apps host only mounts a widget iframe
 # when the ui:// resource declares the sandbox domain it will be served from:
-# sha256(<connector URL exactly as the host displays it in its error log,
-# trailing slash included>)[:32] + ".claudemcpcontent.com". A wrong or
-# missing value logs 'ui.domain validation failed for connector "<url>"'
-# in the Desktop log (mcp-ext-apps-host) and leaves a dead blank frame.
-# Observed live on 2026-08-20 for THIS server: the host quoted the
-# connector as "https://cloud-finops-skills-590a051d.alpic.live/" - the
-# ROOT url with its trailing slash - while the hash here was computed over
-# "/mcp". Skybridge, whose connectors render, hashes
-# https://<host><request-pathname> per request, which for a root-entered
-# connector is exactly the root-with-slash form. Alpic serves the MCP at
-# the root as well as /mcp, so the documented connector URL (README,
-# INSTALLATION.md) is the root form and this constant must match it
-# byte-for-byte; hashing an internal path or the wrong variant is exactly
+# sha256(<connector URL exactly as the host displays it in its error log>)
+# [:32] + ".claudemcpcontent.com". A wrong or missing value logs
+# 'ui.domain validation failed for connector "<url>"' in the Desktop log
+# (mcp-ext-apps-host) and leaves a dead blank frame. Observed live on
+# 2026-08-20 for THIS server, then on Alpic: the host quoted the connector
+# exactly as the user had entered it (the root URL with its trailing slash)
+# while the hash here was computed over "/mcp". Skybridge, whose connectors
+# render, hashes https://<host><request-pathname> per request - the URL as
+# entered. Since 2026-09-09 the server runs on Fly.io, where the MCP is
+# served at /mcp only, so the documented connector URL (README,
+# INSTALLATION.md) is the /mcp form without a trailing slash and this
+# constant must match it byte-for-byte; hashing another variant is exactly
 # the mistake that broke ai-pricing-hub and then this server.
-CANONICAL_CONNECTOR_ORIGIN = "https://cloud-finops-skills-590a051d.alpic.live"
-CANONICAL_CONNECTOR_URL = CANONICAL_CONNECTOR_ORIGIN + "/"
+CANONICAL_CONNECTOR_ORIGIN = "https://cloud-finops-mcp.fly.dev"
+CANONICAL_CONNECTOR_URL = CANONICAL_CONNECTOR_ORIGIN + "/mcp"
 UI_DOMAIN = (
     hashlib.sha256(CANONICAL_CONNECTOR_URL.encode("utf-8")).hexdigest()[:32]
     + ".claudemcpcontent.com"

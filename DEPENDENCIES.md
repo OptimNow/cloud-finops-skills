@@ -17,7 +17,7 @@ what else do I need to look at?**
 | [`ai-pricing-hub-mcp`](https://github.com/OptimNow/ai-pricing-hub-mcp) | OptimToken as MCP tools | Node / Skybridge | Alpic |
 | [`ai-roi-calculator`](https://github.com/OptimNow/ai-roi-calculator) | AI ROI calculator web app, and the **engine + METHODOLOGY.md** | Node / React | [airoicalculator.optimnow.io](https://airoicalculator.optimnow.io) |
 | [`ai-roi-calculator-mcp`](https://github.com/OptimNow/ai-roi-calculator-mcp) | The ROI calculator as MCP tools | Node / Skybridge | Alpic |
-| [`cloud-finops-skills`](https://github.com/OptimNow/cloud-finops-skills) | This repo. FinOps knowledge, and `cloud-finops-mcp` | Python | PyPI + Alpic |
+| [`cloud-finops-skills`](https://github.com/OptimNow/cloud-finops-skills) | This repo. FinOps knowledge, and `cloud-finops-mcp` | Python | PyPI + Fly.io |
 
 Two of them are **sources of truth**. Everything else consumes them:
 
