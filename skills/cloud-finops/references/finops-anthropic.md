@@ -42,7 +42,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 | Performance tier | Standard vs Fast mode - 2x price multiplier, and only on the models that offer it |
 | Context length | **Per-model**: the current generation prices flat across a 1M-token window with no long-context premium. Older models applied premium rates above 200K input tokens. Verify per model rather than assuming either behaviour. |
 | Data residency | US-only inference adds a 1.1× multiplier |
-| Prompt caching | Writes are priced (1.25× or 2×), reads are discounted (0.1×) |
+| Prompt caching | Writes are priced (1.25× or 2×), reads are discounted (0.1×; 0.025× on Fable 5.1) |
 | Tool usage | Web search and code execution have separate meters |
 | Batch processing | 50% discount via Batch API (Fast mode excluded) |
 | Service tier | Standard, Priority, or Batch - affects capacity and pricing |
@@ -52,7 +52,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 ## Rate structure: Claude models
 
-> *Illustrative rates, list price, as of June 2026 (Anthropic model documentation).
+> *Illustrative rates, list price, as of September 2026 (Anthropic model documentation).
 > Prices move and this file does not. For a current figure, call a live pricing tool or
 > check <https://optimtoken.optimnow.io>. What is durable below is the tier structure and
 > the multipliers, not the absolute numbers.*
@@ -66,7 +66,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 | Claude Opus 4.8 | $5 | $25 | 1M | Previous Opus |
 | Claude Opus 4.7 | $5 | $25 | 1M | |
 | Claude Opus 4.6 | $5 | $25 | 1M | |
-| Claude Sonnet 5 | $3 | $15 | 1M | Introductory $2/$10 through 31 August 2026 |
+| Claude Sonnet 5 | $2 | $10 | 1M | Launched at an introductory rate; Anthropic made it the standard price in August 2026 and cancelled the scheduled 1 September increase |
 | Claude Sonnet 4.6 | $3 | $15 | 1M | |
 | Claude Haiku 4.5 | $1 | $5 | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (the still-active Opus 4.5 and Sonnet 4.5 are likewise 200K) |
 
@@ -77,9 +77,13 @@ older Opus for price reasons. Second, Fable 5 sits at 2x Opus pricing, which mak
 "use the most capable model" a materially different decision from "use the newest
 Opus": route to Fable 5 on evidence, not by default.
 
-The introductory Sonnet 5 rate is a scheduled increase, not a discount to
-negotiate: budgets built on $2/$10 rise 50% on 1 September 2026 with no change in
-usage. Flag it now if Sonnet 5 carries meaningful volume.
+**The Sonnet 5 introductory rate became the standard rate.** The $2/$10 launch
+price was announced as temporary, with a 50% increase scheduled for 1 September
+2026. Anthropic cancelled the increase before it took effect (pricing page, checked
+9 September 2026: the previously scheduled increase "will not occur"). Two
+consequences: budgets built on the introductory rate stay valid, and Sonnet 5 now
+sits at 0.4x Opus rather than 0.6x, which widens the payoff from tiered routing.
+Verify the current figure on the pricing page or the live hub before quoting it.
 
 ### Fast mode pricing
 
@@ -115,7 +119,7 @@ an hour; the ceiling is 24 hours. Results are retained 29 days.
 | Model | Input ($/MTok) | Output ($/MTok) |
 |---|---|---|
 | Claude Opus 5 Batch | $2.50 | $12.50 |
-| Claude Sonnet 5 Batch | $1.50 | $7.50 ($1 / $5 introductory through 31 August 2026) |
+| Claude Sonnet 5 Batch | $1 | $5 |
 | Claude Haiku 4.5 Batch | $0.50 | $2.50 |
 
 Batch is the single largest rate lever available without a commercial negotiation.
@@ -129,7 +133,8 @@ completion - which makes it a workload-classification exercise, not a procuremen
   parameter is set
 - **5-minute cache writes**: x1.25 on base input price
 - **1-hour cache writes**: x2 on base input price
-- **Cache reads**: x0.1 on base input price (90% discount)
+- **Cache reads**: x0.1 on base input price (90% discount). Fable 5.1 reads at
+  x0.025 (97.5% discount), which moves the cache break-even for that tier
 - **Modifiers stack** - Fast mode plus US-only inference compounds
 
 **Cache break-even depends on the TTL, and the 1-hour TTL is not a free upgrade.**
@@ -323,6 +328,21 @@ after the cap is hit. This gives teams enforcing per-user or per-team budget cap
 an additional native cost-governance signal alongside the July 2026 Enterprise
 admin tooling, reducing surprise overage incidents. See the "Cost tracking for
 Claude Code" section in `finops-ai-dev-tools.md` for detail.
+
+**Prompt-cache visibility (Claude Code v2.1.251, 28 August 2026):** the `/cost`
+command now shows a per-session prompt-cache line (hit ratio, misses, tokens
+re-cached, warm or cold), with a matching `prompt_cache` object for status-line
+scripts; it covers the main conversation only, not subagents. That signal ties
+directly into the cache multiplier mechanics documented above (5-minute writes at
+1.25x, 1-hour writes at 2x, reads at 0.1x): it lets teams confirm that prefixes are
+actually being read back rather than silently re-written at full rate - the exact
+break-even question raised in the "Modifiers" section. The same release added a
+spend-limit bar to `/usage` and a `rate_limits.spend_limit` status field, but only
+for developers behind a self-hosted Claude apps gateway with spend limits
+configured; Console, Team and Enterprise users do not see it. See the "Cost
+tracking for Claude Code" section in `finops-ai-dev-tools.md` for detail. Sources:
+https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md (2.1.251),
+https://code.claude.com/docs/en/costs.
 
 Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend) (primary),
 [Anthropic keeps signaling where AI cost governance needs to go](https://www.finout.io/blog/anthropic-keeps-signaling-where-ai-cost-governance-needs-to-go.-its-not-all-the-way-there-yet) (Finout commentary).

@@ -297,6 +297,35 @@ governing how aggressively Karpenter replaces nodes.
 Tune up or down based on the observed pod-disruption rate vs the savings
 delivered.
 
+#### Waste pattern: silent cross-AZ drift after Spot exhaustion
+
+When Spot capacity runs out in one zone, Karpenter keeps the cluster healthy by
+placing new nodes wherever capacity exists: the busy zone goes first, so the
+replacements land in the other zones, often as On-Demand fallback. Nothing
+fails, but calls that used to stay zone-local now cross zones and are billed
+at the Regional data transfer rate in each direction. The cost lands in
+networking, disconnected from any Karpenter or Spot signal, and no health or
+utilisation alert fires.
+
+Detection and mitigation (a named pattern since September 2026):
+
+- **Detect** by alerting on the On-Demand to Spot ratio, on nodes per zone,
+  and on `DataTransfer-Regional-Bytes` usage on the cluster's accounts, then
+  correlate a spike with the Spot exhaustion event that caused it.
+- **Reduce the trigger**: widen the NodePool's instance families and sizes so
+  more Spot pools qualify and the fallback fires less often.
+- **Keep traffic local**: set `trafficDistribution: PreferClose` on Services
+  so requests prefer same-zone endpoints, and use topology spread constraints
+  to keep pods spread evenly. Even spread on its own does not help; it only
+  makes you pay the cross-zone rate consistently. Zones are a filter for
+  Karpenter, not a preference, so pinning a NodePool to one zone trades away
+  the resilience that makes Spot workable.
+- See the Spot best practices in `finops-aws-commitments.md` and the
+  networking patterns in `finops-aws-patterns.md`. Source: AWS Fundamentals,
+  "Networking Is Still Hard" (Tobias Schmidt, 8 September 2026),
+  https://awsfundamentals.com/blog/cross-az-traffic-karpenter - a practitioner
+  write-up, not AWS documentation.
+
 ### Pod Disruption Budgets are non-negotiable
 
 Every workload with an SLO must have a PDB. No exceptions. PDBs are how the
@@ -460,7 +489,11 @@ own. It belongs to the Platform team's budget, not the application teams'.
   K8s allocation is one source feeding the broader allocation pipeline
 - `finops-tagging.md` - tag (label) hygiene is the prerequisite
 - `finops-aws-commitments.md` - EKS-specific commitment options; Karpenter
-  integration with EC2 Savings Plans and Compute Savings Plans
+  integration with EC2 Savings Plans and Compute Savings Plans; Spot best
+  practices and cross-AZ traffic monitoring as a companion signal to Spot
+  interruption handling
+- `finops-aws-patterns.md` - networking patterns, including cross-AZ data
+  transfer cost attribution for Spot-driven node AZ drift
 - `finops-azure.md` - AKS-specific deep cuts (Node Auto Provisioning,
   Azure Linux 2 retirement, MIG / MPS / DRA for GPU partitioning)
 - `finops-gcp.md` - GKE-specific options (Spot VMs, Autopilot vs Standard,

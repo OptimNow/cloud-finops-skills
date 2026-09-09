@@ -159,6 +159,18 @@ $/PTU/hour rates for any client decision.
 For some models, provisioned capacity never generates token-cost savings - it is purely
 a performance and SLA product.
 
+**Worked example (illustrative, September 2026).** Tarrowmere Assurance, a fictional
+insurer, runs a claims-summarisation workload on Azure OpenAI at a steady 1.4M input
+tokens an hour on weekdays and about a third of that at night and at weekends: a
+peak-to-trough ratio of 3.1:1. Normalised at 100% utilisation, the one-year PTU
+reservation it was quoted works out at 0.79x the pay-as-you-go input rate, so its
+break-even utilisation is 79%; below that, the reservation costs more per token than
+paying as you go. Load testing put weekday utilisation at 83% and the weekly average
+at 57%. Reserving for the whole curve loses money; reserving for the night-and-weekend
+floor and spilling the weekday peak to pay-as-you-go clears break-even with room to
+spare. The pair to remember is 3.1:1 against 79%: the traffic shape decides, the
+discount does not.
+
 ### Normalisation checklist
 
 - [ ] Identify the capacity unit type (PTU, throughput unit, scale tier unit)

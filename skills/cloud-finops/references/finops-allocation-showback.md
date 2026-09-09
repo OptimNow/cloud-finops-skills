@@ -278,6 +278,9 @@ likely to happen.
 Better: surface unallocated spend as a discrete line item. Make it visible to
 leadership. Drive the tagging programme on the back of it. See `finops-tagging.md`
 for the enforcement work that brings unallocated spend below the 10% threshold.
+An unallocated euro has no owner, and unowned spend only grows: nobody rightsizes
+what nobody is charged for, so the unallocated line drifts upward until someone is
+made to look at it.
 
 **AI spend needs its own unallocated-% treatment.** Token and harness cost
 attributes at the session level rather than the resource level, and one engineer

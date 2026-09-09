@@ -442,18 +442,19 @@ for every feature is the AI equivalent of running all workloads on ml.p4d.24xlar
 
 What drives the routing decision is the **spread between tiers**, not the absolute rate.
 The spread is the durable, transferable number; the rate card behind it changes every
-few months. Tier structure as observed August 2026:
+few months. Tier structure as observed September 2026:
 
 | Model tier | Use case | Cost ratio vs small tier (Claude) |
 |---|---|---|
 | Small / fast (Haiku class) | Classification, routing, simple Q&A | 1x |
-| Mid-tier (Sonnet class) | Complex reasoning, code generation | 3x |
+| Mid-tier (Sonnet class) | Complex reasoning, code generation | 2x (Sonnet 5; 3x for Sonnet 4.6) |
 | Large (Opus class) | Research, nuanced judgment | 5x |
 | Frontier (Fable class) | Hardest reasoning, high-stakes work | 10x |
 
 The spread is vendor-specific and compresses across generations: the Claude 3-era
-small-to-large ratio was roughly 60x, the current one is 5-10x, while OpenAI's
-mini-to-reasoning spread remains near 100x. A vendor whose spread is 100x rewards
+small-to-large ratio was roughly 60x, the current one is 5-10x, while OpenAI's spread
+depends on the pairing: about 20x within one model family and 150x or more from a nano
+model to a pro reasoning model. A vendor whose spread is 100x rewards
 tiered routing far more than one at 5x, and that alone can decide whether the routing
 harness is worth building.
 
@@ -514,7 +515,8 @@ The following inference parameters directly affect output length and therefore c
 
 #### Token engineering - the input/output optimisation menu
 
-Per-token, input is roughly 4-5x cheaper than output. That price signal misleads:
+Per-token, input is roughly 4-8x cheaper than output (5x across Anthropic's line, 4-8x
+across OpenAI's, as of September 2026). That price signal misleads:
 **in multi-turn conversations and agent loops, the entire history is re-billed as
 input on every turn.** Input token spend compounds quadratically with conversation
 length and routinely dominates. Optimise both sides.
@@ -577,6 +579,13 @@ deployments:
 - Set spending limits at the feature level, not just the account level
 - Anomaly alerts should trigger within minutes, not surface on the monthly bill
 - Define thresholds that require review before spend, not after
+- Where the platform offers native token-budget enforcement, use it as a proactive
+  guardrail rather than relying on alerts alone. Since 31 August 2026, BigQuery
+  again supports daily token quotas for its generative AI functions (AI.GENERATE_TEXT
+  and the other Gemini-based inference functions), per project and per user; the
+  defaults are high, so the control is the stricter override you set - a GCP-native
+  example of token budget enforcement that complements budget alerts and anomaly
+  detection (see `finops-gcp.md`).
 
 **Governance policies to establish:**
 - Require AI cost estimates (COGS modelling) before feature deployment
@@ -632,9 +641,10 @@ calls, validation loops, or agents that invoke themselves multiply token consump
 per query - each retry or validation loop triggers additional SaaS charges alongside
 model costs.
 
-*Real example:* A sales intelligence agent validated its own output with a second API
-call. When validation failed, it retried the full sequence. A single user query generated
-47 API calls at $2.30 each. At 12,000 queries/month: $27,600 in unintended cost. When
+*Real example (figures illustrative):* A sales intelligence agent validated its own output
+with a second API call. When validation failed, it retried the full sequence. A single user
+query generated 47 API calls, about $2.30 per query where a single call would have cost
+$0.05. At 12,000 queries/month: $27,600 in unintended cost. When
 the same agent began querying Salesforce data, per-query charges added another $18,000/month
 that appeared in the SaaS bill, not the AI infrastructure budget.
 
@@ -655,10 +665,12 @@ cross-region data transfer appearing in billing without a clear infrastructure c
 A feature appears viable at low volume. Each interaction loses money, but losses are
 small and unnoticed. As adoption grows, the scale-up accelerates the loss.
 
-*Real example:* An AI-powered search feature was included in a standard $15/user/month
-subscription. Each user performed 120 searches/month at $0.08 each - $9.60 in AI costs
-per user, against $15 in subscription revenue. Profitable only for users performing fewer
-than 25 searches/month. Feature adoption growth increased losses, not margins.
+*Real example (figures illustrative):* An AI-powered search feature was included in a
+standard $15/user/month subscription. Power users performed 220 searches/month at $0.08
+each - $17.60 in AI costs per user, against $15 in subscription revenue, before any other
+cost of serving the account. Break-even sat at roughly 187 searches/month, and the users
+who adopted the feature most were exactly the ones above it. Feature adoption growth
+increased losses, not margins.
 
 *Detection signal:* AI costs growing proportionally with user adoption; unit margin
 declining as volume increases.

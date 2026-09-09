@@ -140,6 +140,25 @@ Key dimensions available for filtering and grouping:
 unit economics (cost per 1,000 tokens, cost per API call), you need to combine billing
 data with application-level metrics from CloudWatch or your own instrumentation.
 
+### Cost Anomaly Detection for Bedrock foundation models
+
+Since 19 August 2026, **AWS Cost Anomaly Detection** monitors spend on third-party
+foundation models on Bedrock, such as Anthropic Claude and other provider-hosted models,
+through the AWS services managed monitor with no setup required (all commercial Regions
+except GovCloud and China). Detected anomalies come with a root-cause breakdown ranked by
+dollar impact across service, account, Region and usage type. This reduces reliance on
+CloudWatch-only detection for this specific gap:
+spend spikes on Bedrock foundation models can now be surfaced through the native
+anomaly-detection path rather than requiring custom CloudWatch alarms on token metrics.
+
+**FinOps positioning:** use native Cost Anomaly Detection as the first line of spend-spike
+detection for Bedrock foundation models, and complement it with usage-telemetry-based
+detection (token-count metrics, invocation logging) for the token-level granularity that
+billing-based anomaly detection does not provide. See `finops-anomaly-management.md`
+for the AI/token-workload anomaly approach.
+
+Source: https://aws.amazon.com/about-aws/whats-new/2026/08/aws-cost-anomaly-detection-bedrock-3P/
+
 ### Tagging strategy for Bedrock
 
 AWS Bedrock supports resource tagging on provisioned throughput resources. For on-demand

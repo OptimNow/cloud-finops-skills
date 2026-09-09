@@ -199,7 +199,9 @@ def test_section_match_is_case_insensitive_and_partial() -> None:
 def test_section_match_tolerates_word_order() -> None:
     """Tier 4: every word of the query appears in the heading, order-free."""
     result = tools.get_reference(CATALOGUE, section="patterns networking")
-    assert result["section"] == "Networking Optimization Patterns (14)"
+    # The trailing "(N)" is a pattern count that content updates bump; the
+    # match under test is the heading words, so do not pin the count.
+    assert result["section"].startswith("Networking Optimization Patterns (")
 
 
 def test_h2_sections_are_selectable_too() -> None:

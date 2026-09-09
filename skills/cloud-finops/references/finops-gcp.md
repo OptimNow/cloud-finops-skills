@@ -52,6 +52,32 @@ face when managing AI workloads on GCP.
 - Native tooling for AI spend attribution without third-party tools
 - Integrated into the Cloud Billing console for unified cost management
 
+**Gemini Enterprise Pay-as-you-go edition - consumption alongside subscription.**
+On 26 August 2026 Google announced a **Gemini Enterprise Pay-as-you-go** edition
+alongside the per-seat editions (Business, Standard, Plus, Frontline). There is no
+base subscription fee: you pay for the compute and tokens your teams consume at
+standard model API rates, with no feature quota limits. At announcement it was
+available to select customers on invoiced Cloud Billing accounts and "rolling out
+broadly soon", so check eligibility before planning around it. This gives FinOps
+teams a choice of billing shape for agent workloads rather than a single seat-based
+commitment.
+
+- **Subscription (per-seat)**: predictable cost; best where a stable, known
+  population of users runs agents regularly, and where flat budgeting matters more
+  than usage sensitivity. Idle seats are the waste to watch.
+- **Pay-as-you-go**: cost scales with actual usage; best for spiky, exploratory or
+  uneven adoption where many seats would sit idle, or where new agent workloads have
+  uncertain demand. Unbounded usage is the risk to watch.
+
+**Choosing between them, with budget guardrails:** default to pay-as-you-go for new
+or variable agent workloads and pair it with a budget, threshold alerts and anomaly
+detection so unpredictable usage cannot silently overrun the budget. Move to a
+subscription edition once adoption stabilises and per-seat cost is consistently
+below the observed consumption run-rate. Reassess the mix as adoption matures. See
+`finops-agentic.md` under cost governance for agent spend flexibility. Sources:
+https://cloud.google.com/blog/products/ai-machine-learning/flexible-billing-and-cost-controls-for-agents-on-google-cloud
+(primary, 26 August 2026), https://docs.cloud.google.com/gemini/enterprise/docs/editions.
+
 **Originating products filter and Gemini Enterprise preset report.** As of August 2026,
 Cloud Billing added an **"Originating products"** filter/group-by dimension in Billing
 Reports, plus a **Gemini Enterprise preset report**. Together these give more precise
@@ -337,6 +363,29 @@ per-principal budget guardrails inside a single shared reservation.
 
 Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments (primary),
 https://finopsweekly.com/news/gcp-updates-2026-07-02/ (secondary source - verify against Google Cloud docs)
+
+#### Daily token quotas for generative AI SQL functions - native spend guardrail
+
+On 31 August 2026 BigQuery restored **daily token quotas** for its generative AI
+functions (`AI.GENERATE_TEXT`, `AI.CLASSIFY` and the other Gemini-based inference
+functions; embedding functions such as `AI.EMBED` are excluded). The quotas went GA
+on 8 June 2026, were disabled a week later, and came back at the end of August.
+They are the platform-level cap on GenAI spend from BigQuery workloads,
+complementing budget alerts and anomaly detection.
+
+- Four quota metrics, tracked globally across regions: input and output tokens per
+  day, each at project level and per user. Cached tokens do not count.
+- The defaults are very high, so the quota does nothing until you lower it: set a
+  stricter override on the IAM & Admin > Quotas & System Limits page. That override
+  is the actual cost control.
+- Complements (does not replace) budget alerts and anomaly detection - it is the
+  hard ceiling while budget alerts remain the softer, notification-based signal.
+
+Sources: https://docs.cloud.google.com/bigquery/docs/control-genai-costs (primary),
+https://docs.cloud.google.com/bigquery/docs/release-notes#August_31_2026 (release
+note). See `finops-for-ai.md` for the broader proactive guardrail and token-budget
+enforcement guidance; this is the GCP-native example of platform-level token
+budget enforcement.
 
 **Frame for clients**: BigQuery commitments trade flexibility for
 predictability, and often performance for predictability. The right

@@ -1215,7 +1215,7 @@ While stopping an RDS instance reduces runtime cost, AWS enforces a 7-day limit 
 
 ---
 
-### Networking Optimization Patterns (14)
+### Networking Optimization Patterns (15)
 
 **Elastic Load Balancer With Only One Ec2 Instance**
 Service: AWS ELB | Type: Inefficient Architecture
@@ -1234,6 +1234,15 @@ Some architectures unintentionally route large volumes of traffic between resour
 - Identify resources that receive or send high volumes of traffic to other Availability Zones within the same region
 - Review VPC flow logs, CloudWatch metrics, or billing data to assess regional data transfer patterns
 - Determine whether the resource acts as a centralised destination for data aggregation, storage, or processing
+
+**Karpenter Nodes Landing In Other Availability Zones After Spot Exhaustion**
+Service: AWS EKS | Type: Inefficient Architecture
+
+When Spot capacity runs out in one Availability Zone, Karpenter places new nodes (often On-Demand fallback) in the zones that still have capacity. The cluster stays healthy, but calls that used to stay zone-local now cross zones and are billed at the Regional data transfer rate in each direction, with no health or utilisation alert. The cost surfaces only in inter-AZ data transfer lines. See the waste pattern in `finops-kubernetes.md` and the Spot best practices in `finops-aws-commitments.md`. Source: AWS Fundamentals, "Networking Is Still Hard" (8 September 2026), https://awsfundamentals.com/blog/cross-az-traffic-karpenter (practitioner write-up, not AWS documentation).
+
+- Alert on the On-Demand to Spot ratio, on nodes per zone, and on `DataTransfer-Regional-Bytes`, and correlate spikes with Spot exhaustion events
+- Widen NodePool instance families and sizes so more Spot pools qualify and the fallback fires less often
+- Set `trafficDistribution: PreferClose` on Services and use topology spread constraints; even spread alone only makes the cross-zone charge consistent
 
 **Managed Nat Gateway With Excessive Data Transfer**
 Service: AWS NAT Gateway | Type: Inefficient Architecture
