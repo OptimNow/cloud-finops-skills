@@ -332,6 +332,15 @@ An agent that stops instances autonomously is not - regardless of how sophistica
 reasoning is. Governance, not technology capability, is the real constraint on autonomous
 FinOps agents.
 
+**Billing-model flexibility for agent spend.** As of August 2026, Google's Gemini
+Enterprise / AI Cost Summary Agent offers a pay-as-you-go consumption edition
+alongside the existing per-user subscription model - see finops-gcp.md for guidance
+on choosing consumption versus subscription billing under budget guardrails. This
+matters for cost governance: consumption billing suits variable, unbounded agent
+workloads where per-user seats over- or under-provision, while subscription billing
+gives predictable spend for steady-state usage. Match the billing model to the
+workload's cost class (see Big-T notation above).
+
 AgentCore's policy capability now supports natural-language-to-Cedar tool-access controls,
 consistent with the policy-generation-over-direct-mutation pillar above.
 
@@ -609,14 +618,20 @@ question wherever developers can toggle it themselves.
   LiteLLM auto-detects Claude Code via User-Agent header
 - **Anthropic Console** - basic usage and billing data at the organisation level
 
-**Native gateway spend-limit warnings (as of August 2026).** Claude Code now surfaces
-gateway spend limits proactively in its usage warnings - showing the spending cap, the
-reset time, and the operator message - rather than only failing silently or after the
-fact. For teams enforcing per-user or per-team budget caps this improves cost-governance
-visibility and reduces surprise overage incidents. The practical effect is that ClaudeXray
-and LiteLLM are no longer needed *purely* for budget-cap visibility; they remain valuable
-for metadata injection, cross-tool aggregation, and analytics, but the cap-and-reset
-signal is now available natively.
+**Native gateway spend-limit warnings (as of September 2026).** Claude Code v2.1.251
+surfaces gateway spend limits proactively in its usage warnings - showing the spending
+cap, the reset time, and the operator message - rather than only failing silently or after
+the fact. The client now exposes a `rate_limits.spend_limit` status field and adds a
+spend-limit bar in the UI, giving FinOps teams a native signal for tracking token spend
+against caps. The same release also introduces prompt-cache visibility monitoring, so
+developers can observe cache efficiency directly in the client rather than inferring it
+from downstream billing data - useful for spotting the cache-miss patterns described in
+"The context-load tax" section below and for validating the cache multiplier mechanics
+documented in `finops-anthropic.md`. For teams enforcing per-user or per-team budget caps
+this improves cost-governance visibility and reduces surprise overage incidents. The
+practical effect is that ClaudeXray and LiteLLM are no longer needed *purely* for
+budget-cap visibility; they remain valuable for metadata injection, cross-tool
+aggregation, and analytics, but the cap-and-reset signal is now available natively.
 
 ---
 
@@ -2450,7 +2465,13 @@ billing data.** The usage surfaces to watch:
   (`InputTokenCount`, `OutputTokenCount`, `Invocations`, `InvocationThrottles`), per
   `ModelId`, at minute granularity. Application inference profiles carry cost-allocation
   tags for per-application attribution, but their cost side is daily-grained - use it for
-  ownership, not live alerting.
+  ownership, not live alerting. As of August 2026, AWS Cost Anomaly Detection also
+  natively monitors third-party foundation models on Bedrock (including provider-hosted
+  models such as Anthropic Claude), with root-cause breakdowns by account, region,
+  service, and usage type. Treat this native coverage as a complement to the
+  usage-telemetry-based detection above, not a replacement: it narrows the reliance on
+  CloudWatch-only detection for this gap, but its cost side remains too latent for the
+  minute-scale burn scenarios that follow.
 - **Anthropic** - the Usage & Cost Admin API usage endpoint
   (`/v1/organizations/usage_report/messages`) supports 1-minute buckets with data
   appearing within ~5 minutes; the cost endpoint is daily-only.
@@ -2914,6 +2935,17 @@ after the cap is hit. This gives teams enforcing per-user or per-team budget cap
 an additional native cost-governance signal alongside the July 2026 Enterprise
 admin tooling, reducing surprise overage incidents. See the "Cost tracking for
 Claude Code" section in `finops-ai-dev-tools.md` for detail.
+
+**Prompt-cache visibility (as of September 2026):** Claude Code v2.1.251 adds a
+spend-limit bar in the UI and a `rate_limits.spend_limit` status field, plus
+native prompt-cache visibility monitoring. The prompt-cache signal ties directly
+into the cache multiplier mechanics documented above (5-minute writes at 1.25x,
+1-hour writes at 2x, reads at 0.1x): native visibility into cache hit behaviour
+lets teams confirm that prefixes are actually being read back rather than silently
+re-written at full rate - the exact break-even question raised in the "Modifiers"
+section. This reduces reliance on third-party tooling purely for budget-cap
+visibility. See the "Cost tracking for Claude Code" section in
+`finops-ai-dev-tools.md` for detail.
 
 Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend) (primary),
 [Anthropic keeps signaling where AI cost governance needs to go](https://www.finout.io/blog/anthropic-keeps-signaling-where-ai-cost-governance-needs-to-go.-its-not-all-the-way-there-yet) (Finout commentary).
@@ -4887,7 +4919,7 @@ While stopping an RDS instance reduces runtime cost, AWS enforces a 7-day limit 
 
 ---
 
-### Networking Optimization Patterns (14)
+### Networking Optimization Patterns (15)
 
 **Elastic Load Balancer With Only One Ec2 Instance**
 Service: AWS ELB | Type: Inefficient Architecture
@@ -4906,6 +4938,15 @@ Some architectures unintentionally route large volumes of traffic between resour
 - Identify resources that receive or send high volumes of traffic to other Availability Zones within the same region
 - Review VPC flow logs, CloudWatch metrics, or billing data to assess regional data transfer patterns
 - Determine whether the resource acts as a centralised destination for data aggregation, storage, or processing
+
+**Karpenter Spot Node Replacement Shifting Nodes Across Availability Zones**
+Service: AWS EKS | Type: Inefficient Architecture
+
+As of March 2026, Karpenter's Spot-driven node replacement can silently shift nodes across Availability Zones when Spot capacity in the original AZ is exhausted. The replacement node may land in a different AZ from the workloads it serves, generating cross-AZ data transfer charges that appear on the bill with no corresponding health or utilisation alert. This is easy to miss because the cluster remains healthy and the cost surfaces only in inter-AZ data transfer lines. See the Karpenter consolidation/disruption tuning guidance in `finops-kubernetes.md` and the Spot best practices in `finops-aws-commitments.md`.
+
+- Detect nodes that changed AZ due to Spot interruption or replacement, and correlate the timing with cross-AZ data transfer cost spikes
+- Apply Karpenter NodePool AZ-affinity or topology spread constraints to keep replacement capacity aligned with dependent workloads
+- Add cross-AZ traffic monitoring as a companion signal to Spot interruption handling, so replacements that cross AZ boundaries are surfaced promptly
 
 **Managed Nat Gateway With Excessive Data Transfer**
 Service: AWS NAT Gateway | Type: Inefficient Architecture
@@ -5227,6 +5268,23 @@ the receiving side and the export configuration on the source side.
   AWS Organizations (M&A integrations, multi-payer setups, partner-resold
   accounts).
 
+**SQL-based row filtering at the source (March 2026).** AWS Data Exports now
+supports SQL-based row filtering for CUR 2.0 data, in addition to the existing
+column selection. This lets teams produce pre-filtered per-account or
+per-service datasets at the source, without building custom Lambda / Glue /
+Athena post-processing pipelines. As of March 2026, this is directly useful for:
+- Partner sharing - publish a dataset scoped to only the accounts or services a
+  partner is entitled to see.
+- Program or cost-centre isolation - a pre-filtered export per program without a
+  downstream copy step.
+- Audit scoping - hand auditors a dataset limited to the rows in scope rather
+  than the full CUR.
+
+Filtering at the source reduces the operational overhead of sharing scoped cost
+data and removes the need for organisations to maintain their own filtering
+pipeline. Source:
+https://aws.amazon.com/blogs/aws-cloud-financial-management/automating-filtered-cost-and-usage-report-exports-with-aws-data-exports/
+
 Sources: https://aws.amazon.com/about-aws/whats-new/2025/11/aws-data-exports-focus-1-2-available/
 and https://aws.amazon.com/about-aws/whats-new/2026/03/aws-data-exports-cross-account-delivery-cost/
 
@@ -5310,6 +5368,19 @@ unexpected spending increases and sends alerts via SNS or email.
   (a 100% increase on $10 is $10; a 20% increase on $50,000 is $10,000)
 - Route alerts to both the FinOps practitioner and the engineering team lead
 - Review alert history monthly - tune thresholds to reduce false positives
+
+**Automated spend guardrails via AWS Budgets Actions (circuit breaker).** As of
+March 2026, AWS documents a programmatic "circuit breaker" pattern that uses AWS
+Budgets Actions to automatically restrict or revoke developer access when a
+budget threshold is exceeded, while maintaining an audit trail. This extends
+Budgets Actions beyond the existing SCP-apply and EC2-stop actions to IAM
+Identity Center permission-set assignments, giving FinOps teams a stronger
+automated governance guardrail: when a budget breaches, the action can detach or
+restrict IAM Identity Center permission sets (alongside applying an SCP or
+stopping EC2 instances) to halt further spend. Treat this as a complement to the
+reactive anomaly and budget alerts above, not a replacement - it is the
+preventive backstop that acts without waiting for a human. Source:
+https://aws.amazon.com/blogs/aws-cloud-financial-management/how-to-programmatically-manage-account-access-with-aws-budgets-alerts/
 
 ---
 
@@ -5933,6 +6004,15 @@ comparison is not close.
 - **Unsupported features block subscription.** The console refuses to attach a
   plan while the distribution still has Lambda@Edge, real-time logs or any
   other unsupported feature active.
+- **Programmatic management is now available.** As of September 2026, flat-rate
+  plan subscription, upgrade, downgrade and cancellation can be managed
+  programmatically via the CLI, SDKs, CloudFormation, CDK or the new
+  PricingPlanManager API - no longer console-only. Paid plans use a two-phase
+  create-then-approve activation flow so that provisioning a plan does not
+  silently commit you to a monthly charge; the approval step is a governance
+  safeguard that matters for IaC pipelines and agent-driven provisioning
+  workflows, where an unreviewed template change could otherwise attach a paid
+  plan. Source: https://aws.amazon.com/about-aws/whats-new/2026/09/cloudfront-flat-rate-pricing-plans-api/
 - **Maximum 100 plans per AWS account, 3 Free plans maximum. AWS Free Tier
   accounts are not eligible.**
 
@@ -6900,6 +6980,17 @@ conversations.
 calculation from the cost-plus-utilisation join, reconcile differences. Differences are
 diagnostic - they usually reveal AHB not factored, scope mismatches, or workload context
 Advisor cannot know.
+
+**Agentic access to commitment recommendation data.** As of September 2026, the Azure
+Resource Manager MCP Server (public preview) exposes cost query and pricing tools by
+default, with optional capabilities for reservation, Savings Plan, and Advisor
+recommendation data (plus forecasting, budgets/alerts, and idle AKS capacity detection).
+This lets AI agents pull the same backward-looking recommendation feed described above
+natively. The same calibration caveats apply: agent-surfaced recommendations remain a
+sanity check, not a source of truth, and still need reconciling against your own
+cost-plus-utilisation join. See the agentic FinOps discussion in `finops-azure.md` and
+the tag-hygiene pattern in `finops-tagging.md` for the broader MCP governance context.
+Source: Microsoft Learn (Azure Resource Manager MCP Server, public preview).
 
 Source: https://learn.microsoft.com/en-us/azure/advisor/advisor-reference-cost-recommendations
 
@@ -10079,8 +10170,6 @@ for Azure cost reporting.
 
 ---
 
----
-
 > *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
 
 
@@ -10222,6 +10311,21 @@ Key dimensions available for filtering and grouping:
 **Limitation:** native Cost Explorer does not provide token-level granularity. For
 unit economics (cost per 1,000 tokens, cost per API call), you need to combine billing
 data with application-level metrics from CloudWatch or your own instrumentation.
+
+### Cost Anomaly Detection for Bedrock foundation models
+
+As of August 2026, **AWS Cost Anomaly Detection** natively monitors third-party
+foundation models on Bedrock, including provider-hosted models such as Anthropic Claude.
+Detected anomalies come with root-cause breakdowns by account, region, service, and
+usage type. This reduces reliance on CloudWatch-only detection for this specific gap:
+spend spikes on Bedrock foundation models can now be surfaced through the native
+anomaly-detection path rather than requiring custom CloudWatch alarms on token metrics.
+
+**FinOps positioning:** use native Cost Anomaly Detection as the first line of spend-spike
+detection for Bedrock foundation models, and complement it with usage-telemetry-based
+detection (token-count metrics, invocation logging) for the token-level granularity that
+billing-based anomaly detection does not provide. See `finops-anomaly-management.md`
+for the AI/token-workload anomaly approach.
 
 ### Tagging strategy for Bedrock
 
@@ -12369,6 +12473,12 @@ deployments:
 - Set spending limits at the feature level, not just the account level
 - Anomaly alerts should trigger within minutes, not surface on the monthly bill
 - Define thresholds that require review before spend, not after
+- Where the platform offers native token-budget enforcement, use it as a proactive
+  guardrail rather than relying on alerts alone. As of September 2026, BigQuery
+  supports daily token quotas for its generative AI SQL functions (ML.GENERATE_TEXT
+  and related), letting teams cap daily token consumption at the platform level - a
+  GCP-native example of token budget enforcement that complements budget alerts and
+  anomaly detection (see `finops-gcp.md`).
 
 **Governance policies to establish:**
 - Require AI cost estimates (COGS modelling) before feature deployment
@@ -12962,6 +13072,25 @@ face when managing AI workloads on GCP.
 - Native tooling for AI spend attribution without third-party tools
 - Integrated into the Cloud Billing console for unified cost management
 
+**Gemini Enterprise consumption edition - pay-as-you-go alongside subscription.**
+As of August 2026, Gemini Enterprise added a **pay-as-you-go consumption edition**
+alongside the existing per-user subscription model. This gives FinOps teams a choice
+of billing shape for agent workloads rather than a single seat-based commitment.
+
+- **Subscription (per-user)**: predictable per-seat cost; best where a stable,
+  known population of users runs agents regularly, and where flat budgeting matters
+  more than usage sensitivity.
+- **Consumption (pay-as-you-go)**: cost scales with actual agent usage; best for
+  spiky, exploratory, or uneven adoption where many seats would sit idle under a
+  subscription, or where new agent workloads have uncertain demand.
+
+**Choosing between them, with budget guardrails:** default to consumption for new
+or variable agent workloads and pair it with budget alerts (50% / 80% / 100%) and
+anomaly detection so unpredictable usage cannot silently overrun the budget. Move to
+subscription once adoption stabilises and per-user cost is consistently below the
+observed consumption run-rate. Reassess the mix periodically as adoption matures. See
+`finops-agentic.md` under cost governance for agent spend flexibility.
+
 **Originating products filter and Gemini Enterprise preset report.** As of August 2026,
 Cloud Billing added an **"Originating products"** filter/group-by dimension in Billing
 Reports, plus a **Gemini Enterprise preset report**. Together these give more precise
@@ -13247,6 +13376,26 @@ per-principal budget guardrails inside a single shared reservation.
 
 Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments (primary),
 https://finopsweekly.com/news/gcp-updates-2026-07-02/ (secondary source - verify against Google Cloud docs)
+
+#### Daily token quotas for generative AI SQL functions - native spend guardrail
+
+As of September 2026, BigQuery has restored **daily token quotas** for its
+generative AI SQL functions (`ML.GENERATE_TEXT` and related functions), allowing
+teams to cap daily token consumption directly at the platform level. This gives
+FinOps and data teams a proactive, native guardrail against unexpected GenAI spend
+spikes from BigQuery-based AI workloads, complementing existing budget alerts and
+anomaly detection.
+
+- Cap daily token consumption per project at the platform level, so a runaway
+  GenAI SQL workload cannot silently blow through the budget before an alert fires
+- Complements (does not replace) budget alerts and anomaly detection - use it as a
+  hard ceiling while budget alerts remain the softer, notification-based signal
+- Enforce token budgets on `ML.GENERATE_TEXT` and related generative AI functions
+  before spend materialises, rather than reacting after the invoice
+
+See `finops-for-ai.md` for the broader proactive guardrail and token-budget
+enforcement guidance; this is the GCP-native example of platform-level token
+budget enforcement.
 
 **Frame for clients**: BigQuery commitments trade flexibility for
 predictability, and often performance for predictability. The right
@@ -14719,6 +14868,29 @@ governing how aggressively Karpenter replaces nodes.
 Tune up or down based on the observed pod-disruption rate vs the savings
 delivered.
 
+#### Waste pattern: silent cross-AZ node drift from Spot replacement
+
+When Karpenter replaces a Spot node whose original availability zone has
+exhausted Spot capacity, it may provision the replacement in a different AZ.
+This is a legitimate resilience behaviour, but it can silently shift a
+workload's pods across zones and generate cross-AZ data transfer charges that
+appear on the bill with no corresponding health or utilisation alert. The cost
+lands in networking, disconnected from any Karpenter or Spot signal.
+
+As of March 2026, this is a named detection pattern:
+
+- **Detect** nodes that changed AZ following a Spot interruption or
+  replacement, and correlate the timing with cross-AZ data transfer cost
+  spikes on the same cluster.
+- **Mitigate** with NodePool AZ-affinity or topology spread constraints where
+  the workload's cross-AZ chatter is expensive enough to outweigh the
+  resilience benefit of free AZ selection. This is a per-workload trade-off,
+  not a cluster-wide default.
+- **Monitor** cross-AZ traffic as a companion signal to Spot interruption
+  handling, so a spike is attributable to the replacement event that caused
+  it. See the Spot best practices in `finops-aws-commitments.md` and the
+  networking patterns in `finops-aws-patterns.md`.
+
 ### Pod Disruption Budgets are non-negotiable
 
 Every workload with an SLO must have a PDB. No exceptions. PDBs are how the
@@ -14882,7 +15054,11 @@ own. It belongs to the Platform team's budget, not the application teams'.
   K8s allocation is one source feeding the broader allocation pipeline
 - `finops-tagging.md` - tag (label) hygiene is the prerequisite
 - `finops-aws-commitments.md` - EKS-specific commitment options; Karpenter
-  integration with EC2 Savings Plans and Compute Savings Plans
+  integration with EC2 Savings Plans and Compute Savings Plans; Spot best
+  practices and cross-AZ traffic monitoring as a companion signal to Spot
+  interruption handling
+- `finops-aws-patterns.md` - networking patterns, including cross-AZ data
+  transfer cost attribution for Spot-driven node AZ drift
 - `finops-azure.md` - AKS-specific deep cuts (Node Auto Provisioning,
   Azure Linux 2 retirement, MIG / MPS / DRA for GPU partitioning)
 - `finops-gcp.md` - GKE-specific options (Spot VMs, Autopilot vs Standard,
@@ -16736,6 +16912,14 @@ where writes are needed). Microsoft's own PoC catalogue includes a "Tag Hygiene 
 agent that finds resources missing required tags, generates a patch template, and deploys
 on approval - the same read-freely / write-behind-confirmation guardrail described above.
 See `finops-azure.md` ("Agentic FinOps on Azure") for the full treatment.
+
+As of September 2026, the Azure Resource Manager MCP Server (public preview) also
+extends this agentic pattern beyond tag hygiene into cost analysis and optimisation:
+it now exposes cost query and pricing tools by default, with optional tools for cost
+forecasting, budgets and alerts, reservations, Savings Plans, and Advisor
+recommendations, plus idle AKS capacity identification. This enables agents to
+analyse spend and estimate deployment costs natively, under the same identity-scoped,
+read-freely / write-behind-confirmation guardrails ([FinOps Weekly](https://finopsweekly.com/news/azure-updates-2026-09-03/)).
 
 ---
 
