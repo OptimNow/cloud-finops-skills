@@ -346,6 +346,28 @@ Once costs are attributed, translate them from infrastructure metrics to busines
 | Layer 2: Harness | All surrounding infrastructure (compute, storage, retrieval, egress) | $0.0035 per conversation |
 | Layer 3: Total unit cost | Layer 1 + Layer 2 + amortized fixed costs | $0.004 per conversation |
 
+"Amortized fixed costs" in Layer 3 hides the lines that most often go unbudgeted. The
+Tokenomics Foundation calls the full numerator the *total cost of AI* (TCA, proposed
+September 2026; see `finops-ai-value-management.md` for the ratio it sits in), and the
+components it names are the checklist to run before quoting a unit cost:
+
+- **Model consumption** - the token invoice, the only line most teams report
+- **Harness** - the infrastructure map above
+- **Platform** - gateways, routers, observability and evaluation tooling, bought or built
+- **Software and licences** - AI dev tools, SaaS AI add-ons, vector database
+  subscriptions, marketplace lines
+- **Labour** - the people who build, evaluate, review and supervise the system, including
+  residual human review of its output and the FinOps effort to run all of the above
+- **Energy and capital** - GPU hardware, power and cooling, wherever any of it is
+  self-hosted
+- **Process change** - the business-process rework the feature required; one-off, but real
+
+One enterprise audit the foundation cites put model consumption at roughly a quarter of
+total AI spend, and the practitioner reports it has collected range from a tenth to a
+quarter. Treat the exact share as illustrative and single-sourced; the harness figure
+above (40-60%) is consistent with it, and the ordering is durable. A token-only report
+understates the bill by a multiple before value is even discussed.
+
 **Step 3 - Define value per unit** (pick the most relevant method):
 
 - **Cost displacement** - what does the equivalent human action cost?
@@ -446,6 +468,18 @@ APIs (DeepSeek, Qwen, Kimi, GLM) and their distinct discount mechanics, see
 Implement tiered routing: classify query complexity first (cheap), then route to the
 appropriate model. Simple queries to small models, complex queries to large models.
 
+**The router enforces a quality floor; it does not set one.** The bar (what output is
+acceptable for this task) belongs to the product or business owner, and the router's job
+is to find the cheapest path that clears it. A routing change that lowers quality does not
+show up as a saving: it shows up later as retention loss or rework, which is why routing
+decisions need the same quality gate as the value claims in
+`finops-ai-value-management.md`. Vocabulary, since the tooling market blurs it: a *proxy*
+is transparent pass-through (rate limits, retries); a *router* is the decision layer, and
+model selection is a routing decision; a *gateway* houses both plus organisation-level
+policy, observability and failover. Containment runs one way: a router that grows policy
+and failover has become a gateway (Tokenomics Foundation consumption working group,
+September 2026).
+
 **Prompt engineering as cost control:**
 - System prompts are billed on every request - keep them lean and precise
 - Context windows accumulate cost - manage conversation history length explicitly
@@ -458,6 +492,12 @@ appropriate model. Simple queries to small models, complex queries to large mode
 - Cache embedding results for repeated documents in RAG systems
 - Cache responses for deterministic or near-deterministic queries
 - Cache at the application layer before hitting the model API
+- Routing and caching interact: provider prompt caches are local to the provider and
+  often to the serving path, so a request routed to a different model or vendor misses
+  the cache it would otherwise have hit. Measure the two levers together, not separately
+- Report a cache **hit ratio** (bounded, 0-100%), not a reuse multiple. Bounded ratios
+  compose across teams; a figure in the hundreds of thousands of percent means nothing
+  to a reader
 
 **Architecture hygiene:**
 - Not every feature needs AI - use deterministic code or standard APIs when they are

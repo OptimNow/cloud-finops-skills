@@ -138,6 +138,19 @@ optimisation.
 Unit economics enable comparison across AI investments and anchor the value conversation
 at a level that is meaningful to business stakeholders.
 
+**The ratio now has a name in the wider discipline.** The Tokenomics Foundation's working
+definition (v0.5.2, September 2026) frames AI economics as converting energy and capital
+into AI capabilities and consuming them to realise measurable business value, and its
+executive director has proposed *total cost of AI* (TCA) as the numerator of AI unit
+economics: everything converted into AI capability, over realised value that clears a
+quality bar. It is a proposal under working-group review, not a standard, but it is the
+framing this file already uses and the two halves map cleanly. The numerator is the full
+cost surface in `finops-for-ai.md`, of which model consumption is routinely a minority;
+the denominator is the booked value described under "Book the value somewhere" below.
+Source: Tokenomics Brief, "Why Tokens Aren't the AI Bill: Introducing Total Cost of AI"
+(7 September 2026, <https://www.youtube.com/watch?v=SE2sPwZE_t4>) and
+<https://www.tokeneconomics.com>.
+
 ### Optimise AI platform and GPU utilisation
 
 - Monitor GPU and inference compute utilisation rates
@@ -376,6 +389,26 @@ most of the gap between a business case and its realised outcome.
   already paying to serve that subscriber counts. Charging the full subscription price
   into the value column counts infrastructure you were paying for anyway.
 
+### Labour claims carry three different baselines
+
+Cost displacement is the method most business cases reach for, and "labour saved" is
+where they blur. The Tokenomics Foundation's value working group (draft, September 2026)
+splits it into three claims that each need their own baseline. The split is worth
+adopting because a case that blends them cannot be audited:
+
+| Claim | What happened | Baseline to measure against | Where it usually fails |
+|---|---|---|---|
+| **Capacity gain** | The same people produce more | The pre-AI output rate of the same team | No counterfactual: extra output only carries value if it was wanted and is used |
+| **Augmentation** | AI does part of the task, the human stays in the loop | The human alone on the same task | Gross of the review time the human still spends (the residual-review trap above) |
+| **Automation** | AI does the task end to end | The better of the human alone and the previous automation, plus a quality gate | Counting output that failed the gate; nobody named as owner of the decision once the human is out of the loop |
+
+Say which one a case is making. Augmentation is the easiest to measure and the most
+commonly overstated. Automation is the only one that removes a cost line, and only if the
+freed capacity is actually redeployed or removed (next section). Capacity gain and new
+capabilities routinely weigh more with executives than cost avoidance, which is exactly
+why they need the strictest counterfactual: without one, the ROI story collapses into an
+FTE estimate nobody will sign.
+
 ### Realisation rate is not a quality metric
 
 Realisation rate answers "did the model produce usable output at all?" - it captures
@@ -408,6 +441,37 @@ Two structural points to carry into the readout:
   rests on an unvalidated business assumption rather than on an AI capability. Stage-gate
   it on measuring that assumption, not on building more.
 
+### Book the value somewhere, or it is not yet value
+
+A value claim survives a finance review when it can name three things: the category of
+value it is (which mechanism above), the conversion it went through (hours, tickets or
+conversion points into money), and the line in the financial statements where it lands.
+The same working-group draft proposes five destinations, and they are the useful
+discipline:
+
+| Destination | What it means | Test |
+|---|---|---|
+| **New revenue won** | Revenue that would not otherwise have existed | Attributable in the sales or billing system, not modelled |
+| **Revenue retained** | Churn that did not happen | Cohort comparison, brought to the period of the case |
+| **Spend removed** | A cost line that is smaller this quarter than last | Visible in the P&L or the vendor invoice trail |
+| **Spend avoided** | Growth absorbed without the spend that would have come with it | Budget-relative and counterfactual: state the baseline avoided against |
+| **Capital freed** | Capacity, licences or hardware released for other use | Only counts once redeployed or disposed of |
+
+Two rules follow. **Spend removed and spend avoided are not interchangeable.** Removed
+shows up in the ledger without argument; avoided rests on a counterfactual and is only as
+credible as the baseline it is measured against. A case that reports avoidance as removal
+is caught by the first controller who compares it with actuals. **Freed capacity with no
+destination is a tracked estimate, not booked value.** A company-wide assistant that saves
+every employee half an hour a day is real, and visible to anyone who looks, but until a
+team is resized, a hiring plan is reduced, or the hours are redirected into output someone
+pays for, it has nowhere to land in the books. Carry it as a tracked FTE-equivalent figure
+with a review date, and move it to spend removed or new revenue won in the quarter someone
+acts on it. Reporting it as savings in the meantime is the most common way an AI programme
+loses credibility with Finance.
+
+The value working-group taxonomy was unpublished at the time of writing (September 2026);
+re-check it against <https://www.tokeneconomics.com> once the paper ships.
+
 ### Where the arithmetic lives
 
 The formulas, worked examples, and the assumptions-and-limitations section behind all of
@@ -437,6 +501,8 @@ routes to, so the cost side carries its own as-of date.
 ---
 
 > Sources: FinOps Foundation AI Working Group paper, State of FinOps 2026, Google Cloud
-> and Shopify practitioner insights on AI scaling governance.
+> and Shopify practitioner insights on AI scaling governance; Tokenomics Foundation
+> definition v0.5.2 and the Tokenomics Brief episode "Why Tokens Aren't the AI Bill"
+> (September 2026) for the TCA framing, labour split and ledger destinations.
 
 > *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

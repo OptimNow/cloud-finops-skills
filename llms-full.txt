@@ -52,7 +52,7 @@ methodology questions - not for routine billing-mechanics queries.
 | OptimNow methodology, engagement approach, four pillars, FinOps strategy design, practice positioning | `references/optimnow-methodology.md` |
 | AI costs, LLM inference, token economics, agentic cost patterns, AI ROI, AI cost allocation, GPU cost attribution, GPU telemetry, DCGM metrics, "GPU utilization is misleading", tensor core activity, GPU memory bandwidth, RAG harness costs | `references/finops-for-ai.md` |
 | Agentic FinOps, true agents vs pipelines vs workflows, agentic cost anatomy, cost per completed task, cost-safe agent architecture, agent-initiated payments, x402, MPP, agent wallets | `references/finops-agentic.md` |
-| AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations, AI business case, quantifying AI business value, cost displacement vs revenue uplift vs retention vs premium monetisation, realisation rate, ROI sensitivity analysis, payback, break-even volume | `references/finops-ai-value-management.md` |
+| AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations, AI business case, quantifying AI business value, cost displacement vs revenue uplift vs retention vs premium monetisation, realisation rate, ROI sensitivity analysis, payback, break-even volume, total cost of AI (TCA), labour claims (capacity gain vs augmentation vs automation), booking AI value (spend removed vs spend avoided, capital freed) | `references/finops-ai-value-management.md` |
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
 | Self-hosted vs managed AI inference, build vs buy LLM, vLLM, SGLang, llama.cpp, GPU rental, RunPod, CoreWeave, Lambda, hidden cost surface, ML-Ops maturity rubric, hybrid routing (LiteLLM, Portkey) | `references/finops-ai-self-hosted-vs-managed.md` |
 | Open-weight model vendors on their own hosted APIs, DeepSeek, Qwen, Kimi, Moonshot, GLM, Z.ai, Chinese model APIs, open-weight pricing, time-based pricing, peak and off-peak token rates, vendor API vs third-party host channel choice, open-weight model licensing, GLM Coding Plan | `references/finops-open-weight-vendors.md` |
@@ -1456,6 +1456,19 @@ optimisation.
 Unit economics enable comparison across AI investments and anchor the value conversation
 at a level that is meaningful to business stakeholders.
 
+**The ratio now has a name in the wider discipline.** The Tokenomics Foundation's working
+definition (v0.5.2, September 2026) frames AI economics as converting energy and capital
+into AI capabilities and consuming them to realise measurable business value, and its
+executive director has proposed *total cost of AI* (TCA) as the numerator of AI unit
+economics: everything converted into AI capability, over realised value that clears a
+quality bar. It is a proposal under working-group review, not a standard, but it is the
+framing this file already uses and the two halves map cleanly. The numerator is the full
+cost surface in `finops-for-ai.md`, of which model consumption is routinely a minority;
+the denominator is the booked value described under "Book the value somewhere" below.
+Source: Tokenomics Brief, "Why Tokens Aren't the AI Bill: Introducing Total Cost of AI"
+(7 September 2026, <https://www.youtube.com/watch?v=SE2sPwZE_t4>) and
+<https://www.tokeneconomics.com>.
+
 ### Optimise AI platform and GPU utilisation
 
 - Monitor GPU and inference compute utilisation rates
@@ -1694,6 +1707,26 @@ most of the gap between a business case and its realised outcome.
   already paying to serve that subscriber counts. Charging the full subscription price
   into the value column counts infrastructure you were paying for anyway.
 
+### Labour claims carry three different baselines
+
+Cost displacement is the method most business cases reach for, and "labour saved" is
+where they blur. The Tokenomics Foundation's value working group (draft, September 2026)
+splits it into three claims that each need their own baseline. The split is worth
+adopting because a case that blends them cannot be audited:
+
+| Claim | What happened | Baseline to measure against | Where it usually fails |
+|---|---|---|---|
+| **Capacity gain** | The same people produce more | The pre-AI output rate of the same team | No counterfactual: extra output only carries value if it was wanted and is used |
+| **Augmentation** | AI does part of the task, the human stays in the loop | The human alone on the same task | Gross of the review time the human still spends (the residual-review trap above) |
+| **Automation** | AI does the task end to end | The better of the human alone and the previous automation, plus a quality gate | Counting output that failed the gate; nobody named as owner of the decision once the human is out of the loop |
+
+Say which one a case is making. Augmentation is the easiest to measure and the most
+commonly overstated. Automation is the only one that removes a cost line, and only if the
+freed capacity is actually redeployed or removed (next section). Capacity gain and new
+capabilities routinely weigh more with executives than cost avoidance, which is exactly
+why they need the strictest counterfactual: without one, the ROI story collapses into an
+FTE estimate nobody will sign.
+
 ### Realisation rate is not a quality metric
 
 Realisation rate answers "did the model produce usable output at all?" - it captures
@@ -1726,6 +1759,37 @@ Two structural points to carry into the readout:
   rests on an unvalidated business assumption rather than on an AI capability. Stage-gate
   it on measuring that assumption, not on building more.
 
+### Book the value somewhere, or it is not yet value
+
+A value claim survives a finance review when it can name three things: the category of
+value it is (which mechanism above), the conversion it went through (hours, tickets or
+conversion points into money), and the line in the financial statements where it lands.
+The same working-group draft proposes five destinations, and they are the useful
+discipline:
+
+| Destination | What it means | Test |
+|---|---|---|
+| **New revenue won** | Revenue that would not otherwise have existed | Attributable in the sales or billing system, not modelled |
+| **Revenue retained** | Churn that did not happen | Cohort comparison, brought to the period of the case |
+| **Spend removed** | A cost line that is smaller this quarter than last | Visible in the P&L or the vendor invoice trail |
+| **Spend avoided** | Growth absorbed without the spend that would have come with it | Budget-relative and counterfactual: state the baseline avoided against |
+| **Capital freed** | Capacity, licences or hardware released for other use | Only counts once redeployed or disposed of |
+
+Two rules follow. **Spend removed and spend avoided are not interchangeable.** Removed
+shows up in the ledger without argument; avoided rests on a counterfactual and is only as
+credible as the baseline it is measured against. A case that reports avoidance as removal
+is caught by the first controller who compares it with actuals. **Freed capacity with no
+destination is a tracked estimate, not booked value.** A company-wide assistant that saves
+every employee half an hour a day is real, and visible to anyone who looks, but until a
+team is resized, a hiring plan is reduced, or the hours are redirected into output someone
+pays for, it has nowhere to land in the books. Carry it as a tracked FTE-equivalent figure
+with a review date, and move it to spend removed or new revenue won in the quarter someone
+acts on it. Reporting it as savings in the meantime is the most common way an AI programme
+loses credibility with Finance.
+
+The value working-group taxonomy was unpublished at the time of writing (September 2026);
+re-check it against <https://www.tokeneconomics.com> once the paper ships.
+
 ### Where the arithmetic lives
 
 The formulas, worked examples, and the assumptions-and-limitations section behind all of
@@ -1755,7 +1819,9 @@ routes to, so the cost side carries its own as-of date.
 ---
 
 > Sources: FinOps Foundation AI Working Group paper, State of FinOps 2026, Google Cloud
-> and Shopify practitioner insights on AI scaling governance.
+> and Shopify practitioner insights on AI scaling governance; Tokenomics Foundation
+> definition v0.5.2 and the Tokenomics Brief episode "Why Tokens Aren't the AI Bill"
+> (September 2026) for the TCA framing, labour split and ledger destinations.
 
 > *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
 
@@ -12072,6 +12138,28 @@ Once costs are attributed, translate them from infrastructure metrics to busines
 | Layer 2: Harness | All surrounding infrastructure (compute, storage, retrieval, egress) | $0.0035 per conversation |
 | Layer 3: Total unit cost | Layer 1 + Layer 2 + amortized fixed costs | $0.004 per conversation |
 
+"Amortized fixed costs" in Layer 3 hides the lines that most often go unbudgeted. The
+Tokenomics Foundation calls the full numerator the *total cost of AI* (TCA, proposed
+September 2026; see `finops-ai-value-management.md` for the ratio it sits in), and the
+components it names are the checklist to run before quoting a unit cost:
+
+- **Model consumption** - the token invoice, the only line most teams report
+- **Harness** - the infrastructure map above
+- **Platform** - gateways, routers, observability and evaluation tooling, bought or built
+- **Software and licences** - AI dev tools, SaaS AI add-ons, vector database
+  subscriptions, marketplace lines
+- **Labour** - the people who build, evaluate, review and supervise the system, including
+  residual human review of its output and the FinOps effort to run all of the above
+- **Energy and capital** - GPU hardware, power and cooling, wherever any of it is
+  self-hosted
+- **Process change** - the business-process rework the feature required; one-off, but real
+
+One enterprise audit the foundation cites put model consumption at roughly a quarter of
+total AI spend, and the practitioner reports it has collected range from a tenth to a
+quarter. Treat the exact share as illustrative and single-sourced; the harness figure
+above (40-60%) is consistent with it, and the ordering is durable. A token-only report
+understates the bill by a multiple before value is even discussed.
+
 **Step 3 - Define value per unit** (pick the most relevant method):
 
 - **Cost displacement** - what does the equivalent human action cost?
@@ -12172,6 +12260,18 @@ APIs (DeepSeek, Qwen, Kimi, GLM) and their distinct discount mechanics, see
 Implement tiered routing: classify query complexity first (cheap), then route to the
 appropriate model. Simple queries to small models, complex queries to large models.
 
+**The router enforces a quality floor; it does not set one.** The bar (what output is
+acceptable for this task) belongs to the product or business owner, and the router's job
+is to find the cheapest path that clears it. A routing change that lowers quality does not
+show up as a saving: it shows up later as retention loss or rework, which is why routing
+decisions need the same quality gate as the value claims in
+`finops-ai-value-management.md`. Vocabulary, since the tooling market blurs it: a *proxy*
+is transparent pass-through (rate limits, retries); a *router* is the decision layer, and
+model selection is a routing decision; a *gateway* houses both plus organisation-level
+policy, observability and failover. Containment runs one way: a router that grows policy
+and failover has become a gateway (Tokenomics Foundation consumption working group,
+September 2026).
+
 **Prompt engineering as cost control:**
 - System prompts are billed on every request - keep them lean and precise
 - Context windows accumulate cost - manage conversation history length explicitly
@@ -12184,6 +12284,12 @@ appropriate model. Simple queries to small models, complex queries to large mode
 - Cache embedding results for repeated documents in RAG systems
 - Cache responses for deterministic or near-deterministic queries
 - Cache at the application layer before hitting the model API
+- Routing and caching interact: provider prompt caches are local to the provider and
+  often to the serving path, so a request routed to a different model or vendor misses
+  the cache it would otherwise have hit. Measure the two levers together, not separately
+- Report a cache **hit ratio** (bounded, 0-100%), not a reuse multiple. Bounded ratios
+  compose across teams; a figure in the hundreds of thousands of percent means nothing
+  to a reader
 
 **Architecture hygiene:**
 - Not every feature needs AI - use deterministic code or standard APIs when they are
@@ -17959,6 +18065,23 @@ into internal tooling, showback reports, or FinOps platforms.
 → https://www.climatiq.io/cloud-computing-carbon-emissions
 
 ---
+
+### AI energy per token: declare the meter boundary first
+
+Energy per token is becoming the AI-side carbon unit, and it is only comparable within a
+declared boundary. Moving the meter from the GPU edge to the server, the rack, the
+data-centre front door, and out to grid, water and the embodied energy of the hardware
+changes the number at every step; the denominator moves too, since speculative decoding
+and retries burn tokens that are discarded before any output. Energy per token is
+therefore a property of a specific serving configuration, not a benchmark, and
+cross-provider comparisons that mix boundaries are not meaningful. The Tokenomics
+Foundation's production working group (September 2026) leans towards documenting how to
+choose the boundary rather than fixing one, and towards reporting *total* and
+*influenceable* figures separately, since most of the footprint beyond the rack is outside
+a cloud customer's control. One early-stage alternative worth watching: energy per
+benchmark, a fixed prompt set with a quality threshold, measured within the declared
+boundary. No standard exists yet. For a client deliverable, state the boundary in the
+first line of the figure and keep it aligned with the scope 2 / scope 3 split below.
 
 ## FinOps-to-GreenOps integration
 
