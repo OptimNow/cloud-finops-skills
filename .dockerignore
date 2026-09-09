@@ -1,0 +1,14 @@
+# Keep the build context to what the Dockerfile copies. Everything else in
+# the repo (pipeline/, assets/, llms-full.txt, .git, dist/) is noise here.
+*
+!.claude-plugin/plugin.json
+!skills/cloud-finops/references/
+!skills/cloud-finops/playbooks/
+!mcp_server/
+mcp_server/.venv
+mcp_server/**/__pycache__
+mcp_server/**/.pytest_cache
+mcp_server/dist
+mcp_server/build
+# Regenerated at build time; never ship a stale local copy.
+mcp_server/src/cloud_finops_mcp/data/**

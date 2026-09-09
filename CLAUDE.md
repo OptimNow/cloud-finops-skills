@@ -39,7 +39,10 @@ cloud-finops-skills/
 │                             plus the "if I change X, what else needs review" table
 ├── install.sh             <- One-liner installer script
 ├── server.json            <- MCP Registry manifest (carries the version TWICE)
-├── alpic.json             <- Alpic build contract for the hosted MCP deployment
+├── Dockerfile             <- Image for the hosted MCP connector on Fly.io (builds
+│                             from this checkout; bundled data synced at build time)
+├── fly.toml               <- Fly.io app config (app cloud-finops-mcp, region cdg,
+│                             scale-to-zero); .dockerignore trims the build context
 ├── .claude-plugin/        <- plugin.json + marketplace.json (versions bump together)
 ├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
 │                             publish-mcp, publish-registry, mcp-install-smoke,
@@ -767,7 +770,7 @@ So the check is one-directional. Before merging, if the PR touches any of these:
 | The `provenance` contract (tier semantics, `upstreamTimestamp` / `eloAsOf`, the stale notice) | `ai-pricing-hub-mcp` | "Price figures" rule 5, in SKILL.md, POWER.md and the INSTALLATION.md response contract |
 | An MCP tool name or parameter of the ROI calculator | `ai-roi-calculator-mcp` | INSTALLATION.md companion section |
 | A value method, an input's meaning, or a documented trap | `ai-roi-calculator` METHODOLOGY.md | `references/finops-ai-value-management.md` |
-| Any `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, server.json |
+| Any `*.fly.dev`, `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, server.json |
 
 Two standing rules that follow from the map:
 
@@ -846,16 +849,17 @@ Two standing rules that follow from the map:
       PyPI publish and waits for the version to be visible on PyPI, because the
       registry validates the package before accepting the entry. Verify it landed
       at <https://registry.modelcontextprotocol.io/v0/servers?search=finops>.
-- [ ] **Release PR only: redeploy the hosted MCP (Alpic) after the tag, then verify
-      by calling it.** The Alpic deployment does not reliably pick up releases on its
-      own, and this has now recurred: the 2026-08-19 audit found it serving 1.29.0
+- [ ] **Release PR only: redeploy the hosted MCP (Fly.io) after the tag, then verify
+      by calling it.** Nothing redeploys the connector on its own. On Alpic, where it
+      lived until September 2026, the 2026-08-19 audit found it serving 1.29.0
       content (pre price-purge) while PyPI was at 1.31.0, and the 2026-08-27 review
       found it *still* on 1.29.0, 33 references, with PyPI at 1.33.0 - four releases
-      behind. Assume the redeploy did not happen unless you called the endpoint and
-      saw otherwise. After the PyPI publish, trigger a redeploy on
-      Alpic, then call the hosted endpoint
-      (`https://cloud-finops-skills-590a051d.alpic.live/mcp`) and confirm it serves
-      the released content: the server's startup log names the bundle stamp
+      behind; Alpic's shared free quota then took all three OptimNow connectors down
+      on 2026-09-09 (HTTP 402). Assume the redeploy did not happen unless you called
+      the endpoint and saw otherwise. After the PyPI publish, run `fly deploy` from
+      the repo root on the tagged commit (the image builds from the checkout), then
+      call the hosted endpoint (`https://cloud-finops-mcp.fly.dev/mcp`) and confirm
+      it serves the released content: the server's startup log names the bundle stamp
       (`data/content_version.txt`, version + sync date, written by
       `mcp_server/scripts/sync_references.py` since 1.32), or compare a `list_references` line count
       against the tag. Do not tick this from the source alone - the audit found the

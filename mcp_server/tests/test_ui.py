@@ -153,18 +153,18 @@ async def test_tools_link_their_widgets() -> None:
 def test_ui_domain_is_derived_from_the_canonical_connector_url() -> None:
     """The sandbox-domain hash must follow the URL constant, never drift.
 
-    The claude host validates sha256(<connector URL as it displays it -
-    for a root-entered connector that is the ROOT url WITH its trailing
-    slash>)[:32] + ".claudemcpcontent.com" against the resource meta.
-    Observed live on 2026-08-20: hashing "/mcp" while the host saw the
-    root url logged 'ui.domain validation failed'. Skybridge hashes
-    https://<host><request-pathname>, i.e. root-with-slash.
+    The claude host validates sha256(<connector URL exactly as the user
+    entered it>)[:32] + ".claudemcpcontent.com" against the resource meta.
+    Observed live on 2026-08-20: hashing "/mcp" while the host saw a
+    root-entered url logged 'ui.domain validation failed'. Skybridge hashes
+    https://<host><request-pathname>. On Fly.io the MCP is served at /mcp
+    only, so the documented form is <origin>/mcp with no trailing slash.
     """
     import hashlib
 
     assert server.CANONICAL_CONNECTOR_URL == (
-        server.CANONICAL_CONNECTOR_ORIGIN + "/"
-    ), "the connector URL is the root form, trailing slash included"
+        server.CANONICAL_CONNECTOR_ORIGIN + "/mcp"
+    ), "the connector URL is the /mcp form, no trailing slash"
     expected = (
         hashlib.sha256(server.CANONICAL_CONNECTOR_URL.encode("utf-8")).hexdigest()[:32]
         + ".claudemcpcontent.com"

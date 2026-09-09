@@ -1,0 +1,27 @@
+# Fly.io app for the hosted connector. `fly deploy` from the repo root builds
+# the Dockerfile and rolls the app; the public URL is
+# https://cloud-finops-mcp.fly.dev/mcp (the constant in server.py and the docs
+# must match it byte for byte - the MCP Apps sandbox domain is derived from it).
+#
+# Scale-to-zero: the machine stops when idle and restarts on the next request,
+# so a quiet month costs only the stopped machine's root filesystem.
+
+app = "cloud-finops-mcp"
+primary_region = "cdg"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
