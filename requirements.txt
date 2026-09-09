@@ -1,0 +1,9 @@
+# Prefect Horizon deployment of the hosted connector (see horizon_server.py).
+# Horizon reads this file at the repo root. Nothing else in the repo uses it.
+#
+# fastmcp 4.x depends on the mcp 2.x SDK, which cloud-finops-mcp does not yet
+# support (it pins mcp>=1.28,<2), so stay on the 3.x line until that pin moves.
+fastmcp>=3,<4
+# Exact published wheel: the content served is the released bundle, nothing
+# newer. Bump this pin in the release PR alongside the four version fields.
+cloud-finops-mcp==1.36.0
