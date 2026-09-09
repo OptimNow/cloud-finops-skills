@@ -181,6 +181,23 @@ into internal tooling, showback reports, or FinOps platforms.
 
 ---
 
+### AI energy per token: declare the meter boundary first
+
+Energy per token is becoming the AI-side carbon unit, and it is only comparable within a
+declared boundary. Moving the meter from the GPU edge to the server, the rack, the
+data-centre front door, and out to grid, water and the embodied energy of the hardware
+changes the number at every step; the denominator moves too, since speculative decoding
+and retries burn tokens that are discarded before any output. Energy per token is
+therefore a property of a specific serving configuration, not a benchmark, and
+cross-provider comparisons that mix boundaries are not meaningful. The Tokenomics
+Foundation's production working group (September 2026) leans towards documenting how to
+choose the boundary rather than fixing one, and towards reporting *total* and
+*influenceable* figures separately, since most of the footprint beyond the rack is outside
+a cloud customer's control. One early-stage alternative worth watching: energy per
+benchmark, a fixed prompt set with a quality threshold, measured within the declared
+boundary. No standard exists yet. For a client deliverable, state the boundary in the
+first line of the figure and keep it aligned with the scope 2 / scope 3 split below.
+
 ## FinOps-to-GreenOps integration
 
 ### The core principle
