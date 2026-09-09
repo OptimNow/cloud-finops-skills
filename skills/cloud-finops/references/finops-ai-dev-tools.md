@@ -203,14 +203,20 @@ question wherever developers can toggle it themselves.
   LiteLLM auto-detects Claude Code via User-Agent header
 - **Anthropic Console** - basic usage and billing data at the organisation level
 
-**Native gateway spend-limit warnings (as of August 2026).** Claude Code now surfaces
-gateway spend limits proactively in its usage warnings - showing the spending cap, the
-reset time, and the operator message - rather than only failing silently or after the
-fact. For teams enforcing per-user or per-team budget caps this improves cost-governance
-visibility and reduces surprise overage incidents. The practical effect is that ClaudeXray
-and LiteLLM are no longer needed *purely* for budget-cap visibility; they remain valuable
-for metadata injection, cross-tool aggregation, and analytics, but the cap-and-reset
-signal is now available natively.
+**Native gateway spend-limit warnings (as of September 2026).** Claude Code v2.1.251
+surfaces gateway spend limits proactively in its usage warnings - showing the spending
+cap, the reset time, and the operator message - rather than only failing silently or after
+the fact. The client now exposes a `rate_limits.spend_limit` status field and adds a
+spend-limit bar in the UI, giving FinOps teams a native signal for tracking token spend
+against caps. The same release also introduces prompt-cache visibility monitoring, so
+developers can observe cache efficiency directly in the client rather than inferring it
+from downstream billing data - useful for spotting the cache-miss patterns described in
+"The context-load tax" section below and for validating the cache multiplier mechanics
+documented in `finops-anthropic.md`. For teams enforcing per-user or per-team budget caps
+this improves cost-governance visibility and reduces surprise overage incidents. The
+practical effect is that ClaudeXray and LiteLLM are no longer needed *purely* for
+budget-cap visibility; they remain valuable for metadata injection, cross-tool
+aggregation, and analytics, but the cap-and-reset signal is now available natively.
 
 ---
 

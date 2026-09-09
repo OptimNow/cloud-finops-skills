@@ -155,6 +155,15 @@ An agent that stops instances autonomously is not - regardless of how sophistica
 reasoning is. Governance, not technology capability, is the real constraint on autonomous
 FinOps agents.
 
+**Billing-model flexibility for agent spend.** As of August 2026, Google's Gemini
+Enterprise / AI Cost Summary Agent offers a pay-as-you-go consumption edition
+alongside the existing per-user subscription model - see finops-gcp.md for guidance
+on choosing consumption versus subscription billing under budget guardrails. This
+matters for cost governance: consumption billing suits variable, unbounded agent
+workloads where per-user seats over- or under-provision, while subscription billing
+gives predictable spend for steady-state usage. Match the billing model to the
+workload's cost class (see Big-T notation above).
+
 AgentCore's policy capability now supports natural-language-to-Cedar tool-access controls,
 consistent with the policy-generation-over-direct-mutation pillar above.
 

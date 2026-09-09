@@ -577,6 +577,12 @@ deployments:
 - Set spending limits at the feature level, not just the account level
 - Anomaly alerts should trigger within minutes, not surface on the monthly bill
 - Define thresholds that require review before spend, not after
+- Where the platform offers native token-budget enforcement, use it as a proactive
+  guardrail rather than relying on alerts alone. As of September 2026, BigQuery
+  supports daily token quotas for its generative AI SQL functions (ML.GENERATE_TEXT
+  and related), letting teams cap daily token consumption at the platform level - a
+  GCP-native example of token budget enforcement that complements budget alerts and
+  anomaly detection (see `finops-gcp.md`).
 
 **Governance policies to establish:**
 - Require AI cost estimates (COGS modelling) before feature deployment

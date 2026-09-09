@@ -540,6 +540,17 @@ calculation from the cost-plus-utilisation join, reconcile differences. Differen
 diagnostic - they usually reveal AHB not factored, scope mismatches, or workload context
 Advisor cannot know.
 
+**Agentic access to commitment recommendation data.** As of September 2026, the Azure
+Resource Manager MCP Server (public preview) exposes cost query and pricing tools by
+default, with optional capabilities for reservation, Savings Plan, and Advisor
+recommendation data (plus forecasting, budgets/alerts, and idle AKS capacity detection).
+This lets AI agents pull the same backward-looking recommendation feed described above
+natively. The same calibration caveats apply: agent-surfaced recommendations remain a
+sanity check, not a source of truth, and still need reconciling against your own
+cost-plus-utilisation join. See the agentic FinOps discussion in `finops-azure.md` and
+the tag-hygiene pattern in `finops-tagging.md` for the broader MCP governance context.
+Source: Microsoft Learn (Azure Resource Manager MCP Server, public preview).
+
 Source: https://learn.microsoft.com/en-us/azure/advisor/advisor-reference-cost-recommendations
 
 #### Tooling decision - Power BI / FinOps Hubs / third-party

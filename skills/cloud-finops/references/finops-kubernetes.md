@@ -297,6 +297,29 @@ governing how aggressively Karpenter replaces nodes.
 Tune up or down based on the observed pod-disruption rate vs the savings
 delivered.
 
+#### Waste pattern: silent cross-AZ node drift from Spot replacement
+
+When Karpenter replaces a Spot node whose original availability zone has
+exhausted Spot capacity, it may provision the replacement in a different AZ.
+This is a legitimate resilience behaviour, but it can silently shift a
+workload's pods across zones and generate cross-AZ data transfer charges that
+appear on the bill with no corresponding health or utilisation alert. The cost
+lands in networking, disconnected from any Karpenter or Spot signal.
+
+As of March 2026, this is a named detection pattern:
+
+- **Detect** nodes that changed AZ following a Spot interruption or
+  replacement, and correlate the timing with cross-AZ data transfer cost
+  spikes on the same cluster.
+- **Mitigate** with NodePool AZ-affinity or topology spread constraints where
+  the workload's cross-AZ chatter is expensive enough to outweigh the
+  resilience benefit of free AZ selection. This is a per-workload trade-off,
+  not a cluster-wide default.
+- **Monitor** cross-AZ traffic as a companion signal to Spot interruption
+  handling, so a spike is attributable to the replacement event that caused
+  it. See the Spot best practices in `finops-aws-commitments.md` and the
+  networking patterns in `finops-aws-patterns.md`.
+
 ### Pod Disruption Budgets are non-negotiable
 
 Every workload with an SLO must have a PDB. No exceptions. PDBs are how the
@@ -460,7 +483,11 @@ own. It belongs to the Platform team's budget, not the application teams'.
   K8s allocation is one source feeding the broader allocation pipeline
 - `finops-tagging.md` - tag (label) hygiene is the prerequisite
 - `finops-aws-commitments.md` - EKS-specific commitment options; Karpenter
-  integration with EC2 Savings Plans and Compute Savings Plans
+  integration with EC2 Savings Plans and Compute Savings Plans; Spot best
+  practices and cross-AZ traffic monitoring as a companion signal to Spot
+  interruption handling
+- `finops-aws-patterns.md` - networking patterns, including cross-AZ data
+  transfer cost attribution for Spot-driven node AZ drift
 - `finops-azure.md` - AKS-specific deep cuts (Node Auto Provisioning,
   Azure Linux 2 retirement, MIG / MPS / DRA for GPU partitioning)
 - `finops-gcp.md` - GKE-specific options (Spot VMs, Autopilot vs Standard,

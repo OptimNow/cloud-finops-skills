@@ -52,6 +52,25 @@ face when managing AI workloads on GCP.
 - Native tooling for AI spend attribution without third-party tools
 - Integrated into the Cloud Billing console for unified cost management
 
+**Gemini Enterprise consumption edition - pay-as-you-go alongside subscription.**
+As of August 2026, Gemini Enterprise added a **pay-as-you-go consumption edition**
+alongside the existing per-user subscription model. This gives FinOps teams a choice
+of billing shape for agent workloads rather than a single seat-based commitment.
+
+- **Subscription (per-user)**: predictable per-seat cost; best where a stable,
+  known population of users runs agents regularly, and where flat budgeting matters
+  more than usage sensitivity.
+- **Consumption (pay-as-you-go)**: cost scales with actual agent usage; best for
+  spiky, exploratory, or uneven adoption where many seats would sit idle under a
+  subscription, or where new agent workloads have uncertain demand.
+
+**Choosing between them, with budget guardrails:** default to consumption for new
+or variable agent workloads and pair it with budget alerts (50% / 80% / 100%) and
+anomaly detection so unpredictable usage cannot silently overrun the budget. Move to
+subscription once adoption stabilises and per-user cost is consistently below the
+observed consumption run-rate. Reassess the mix periodically as adoption matures. See
+`finops-agentic.md` under cost governance for agent spend flexibility.
+
 **Originating products filter and Gemini Enterprise preset report.** As of August 2026,
 Cloud Billing added an **"Originating products"** filter/group-by dimension in Billing
 Reports, plus a **Gemini Enterprise preset report**. Together these give more precise
@@ -337,6 +356,26 @@ per-principal budget guardrails inside a single shared reservation.
 
 Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments (primary),
 https://finopsweekly.com/news/gcp-updates-2026-07-02/ (secondary source - verify against Google Cloud docs)
+
+#### Daily token quotas for generative AI SQL functions - native spend guardrail
+
+As of September 2026, BigQuery has restored **daily token quotas** for its
+generative AI SQL functions (`ML.GENERATE_TEXT` and related functions), allowing
+teams to cap daily token consumption directly at the platform level. This gives
+FinOps and data teams a proactive, native guardrail against unexpected GenAI spend
+spikes from BigQuery-based AI workloads, complementing existing budget alerts and
+anomaly detection.
+
+- Cap daily token consumption per project at the platform level, so a runaway
+  GenAI SQL workload cannot silently blow through the budget before an alert fires
+- Complements (does not replace) budget alerts and anomaly detection - use it as a
+  hard ceiling while budget alerts remain the softer, notification-based signal
+- Enforce token budgets on `ML.GENERATE_TEXT` and related generative AI functions
+  before spend materialises, rather than reacting after the invoice
+
+See `finops-for-ai.md` for the broader proactive guardrail and token-budget
+enforcement guidance; this is the GCP-native example of platform-level token
+budget enforcement.
 
 **Frame for clients**: BigQuery commitments trade flexibility for
 predictability, and often performance for predictability. The right

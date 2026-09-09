@@ -224,7 +224,13 @@ billing data.** The usage surfaces to watch:
   (`InputTokenCount`, `OutputTokenCount`, `Invocations`, `InvocationThrottles`), per
   `ModelId`, at minute granularity. Application inference profiles carry cost-allocation
   tags for per-application attribution, but their cost side is daily-grained - use it for
-  ownership, not live alerting.
+  ownership, not live alerting. As of August 2026, AWS Cost Anomaly Detection also
+  natively monitors third-party foundation models on Bedrock (including provider-hosted
+  models such as Anthropic Claude), with root-cause breakdowns by account, region,
+  service, and usage type. Treat this native coverage as a complement to the
+  usage-telemetry-based detection above, not a replacement: it narrows the reliance on
+  CloudWatch-only detection for this gap, but its cost side remains too latent for the
+  minute-scale burn scenarios that follow.
 - **Anthropic** - the Usage & Cost Admin API usage endpoint
   (`/v1/organizations/usage_report/messages`) supports 1-minute buckets with data
   appearing within ~5 minutes; the cost endpoint is daily-only.

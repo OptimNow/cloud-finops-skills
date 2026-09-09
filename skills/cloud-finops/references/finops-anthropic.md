@@ -324,6 +324,17 @@ an additional native cost-governance signal alongside the July 2026 Enterprise
 admin tooling, reducing surprise overage incidents. See the "Cost tracking for
 Claude Code" section in `finops-ai-dev-tools.md` for detail.
 
+**Prompt-cache visibility (as of September 2026):** Claude Code v2.1.251 adds a
+spend-limit bar in the UI and a `rate_limits.spend_limit` status field, plus
+native prompt-cache visibility monitoring. The prompt-cache signal ties directly
+into the cache multiplier mechanics documented above (5-minute writes at 1.25x,
+1-hour writes at 2x, reads at 0.1x): native visibility into cache hit behaviour
+lets teams confirm that prefixes are actually being read back rather than silently
+re-written at full rate - the exact break-even question raised in the "Modifiers"
+section. This reduces reliance on third-party tooling purely for budget-cap
+visibility. See the "Cost tracking for Claude Code" section in
+`finops-ai-dev-tools.md` for detail.
+
 Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend) (primary),
 [Anthropic keeps signaling where AI cost governance needs to go](https://www.finout.io/blog/anthropic-keeps-signaling-where-ai-cost-governance-needs-to-go.-its-not-all-the-way-there-yet) (Finout commentary).
 

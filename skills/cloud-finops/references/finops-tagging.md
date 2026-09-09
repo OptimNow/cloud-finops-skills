@@ -210,6 +210,14 @@ agent that finds resources missing required tags, generates a patch template, an
 on approval - the same read-freely / write-behind-confirmation guardrail described above.
 See `finops-azure.md` ("Agentic FinOps on Azure") for the full treatment.
 
+As of September 2026, the Azure Resource Manager MCP Server (public preview) also
+extends this agentic pattern beyond tag hygiene into cost analysis and optimisation:
+it now exposes cost query and pricing tools by default, with optional tools for cost
+forecasting, budgets and alerts, reservations, Savings Plans, and Advisor
+recommendations, plus idle AKS capacity identification. This enables agents to
+analyse spend and estimate deployment costs natively, under the same identity-scoped,
+read-freely / write-behind-confirmation guardrails ([FinOps Weekly](https://finopsweekly.com/news/azure-updates-2026-09-03/)).
+
 ---
 
 ## Tagging maturity progression

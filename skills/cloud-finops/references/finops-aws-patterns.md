@@ -1215,7 +1215,7 @@ While stopping an RDS instance reduces runtime cost, AWS enforces a 7-day limit 
 
 ---
 
-### Networking Optimization Patterns (14)
+### Networking Optimization Patterns (15)
 
 **Elastic Load Balancer With Only One Ec2 Instance**
 Service: AWS ELB | Type: Inefficient Architecture
@@ -1234,6 +1234,15 @@ Some architectures unintentionally route large volumes of traffic between resour
 - Identify resources that receive or send high volumes of traffic to other Availability Zones within the same region
 - Review VPC flow logs, CloudWatch metrics, or billing data to assess regional data transfer patterns
 - Determine whether the resource acts as a centralised destination for data aggregation, storage, or processing
+
+**Karpenter Spot Node Replacement Shifting Nodes Across Availability Zones**
+Service: AWS EKS | Type: Inefficient Architecture
+
+As of March 2026, Karpenter's Spot-driven node replacement can silently shift nodes across Availability Zones when Spot capacity in the original AZ is exhausted. The replacement node may land in a different AZ from the workloads it serves, generating cross-AZ data transfer charges that appear on the bill with no corresponding health or utilisation alert. This is easy to miss because the cluster remains healthy and the cost surfaces only in inter-AZ data transfer lines. See the Karpenter consolidation/disruption tuning guidance in `finops-kubernetes.md` and the Spot best practices in `finops-aws-commitments.md`.
+
+- Detect nodes that changed AZ due to Spot interruption or replacement, and correlate the timing with cross-AZ data transfer cost spikes
+- Apply Karpenter NodePool AZ-affinity or topology spread constraints to keep replacement capacity aligned with dependent workloads
+- Add cross-AZ traffic monitoring as a companion signal to Spot interruption handling, so replacements that cross AZ boundaries are surfaced promptly
 
 **Managed Nat Gateway With Excessive Data Transfer**
 Service: AWS NAT Gateway | Type: Inefficient Architecture

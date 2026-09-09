@@ -83,6 +83,23 @@ the receiving side and the export configuration on the source side.
   AWS Organizations (M&A integrations, multi-payer setups, partner-resold
   accounts).
 
+**SQL-based row filtering at the source (March 2026).** AWS Data Exports now
+supports SQL-based row filtering for CUR 2.0 data, in addition to the existing
+column selection. This lets teams produce pre-filtered per-account or
+per-service datasets at the source, without building custom Lambda / Glue /
+Athena post-processing pipelines. As of March 2026, this is directly useful for:
+- Partner sharing - publish a dataset scoped to only the accounts or services a
+  partner is entitled to see.
+- Program or cost-centre isolation - a pre-filtered export per program without a
+  downstream copy step.
+- Audit scoping - hand auditors a dataset limited to the rows in scope rather
+  than the full CUR.
+
+Filtering at the source reduces the operational overhead of sharing scoped cost
+data and removes the need for organisations to maintain their own filtering
+pipeline. Source:
+https://aws.amazon.com/blogs/aws-cloud-financial-management/automating-filtered-cost-and-usage-report-exports-with-aws-data-exports/
+
 Sources: https://aws.amazon.com/about-aws/whats-new/2025/11/aws-data-exports-focus-1-2-available/
 and https://aws.amazon.com/about-aws/whats-new/2026/03/aws-data-exports-cross-account-delivery-cost/
 
@@ -166,6 +183,19 @@ unexpected spending increases and sends alerts via SNS or email.
   (a 100% increase on $10 is $10; a 20% increase on $50,000 is $10,000)
 - Route alerts to both the FinOps practitioner and the engineering team lead
 - Review alert history monthly - tune thresholds to reduce false positives
+
+**Automated spend guardrails via AWS Budgets Actions (circuit breaker).** As of
+March 2026, AWS documents a programmatic "circuit breaker" pattern that uses AWS
+Budgets Actions to automatically restrict or revoke developer access when a
+budget threshold is exceeded, while maintaining an audit trail. This extends
+Budgets Actions beyond the existing SCP-apply and EC2-stop actions to IAM
+Identity Center permission-set assignments, giving FinOps teams a stronger
+automated governance guardrail: when a budget breaches, the action can detach or
+restrict IAM Identity Center permission sets (alongside applying an SCP or
+stopping EC2 instances) to halt further spend. Treat this as a complement to the
+reactive anomaly and budget alerts above, not a replacement - it is the
+preventive backstop that acts without waiting for a human. Source:
+https://aws.amazon.com/blogs/aws-cloud-financial-management/how-to-programmatically-manage-account-access-with-aws-budgets-alerts/
 
 ---
 
@@ -789,6 +819,15 @@ comparison is not close.
 - **Unsupported features block subscription.** The console refuses to attach a
   plan while the distribution still has Lambda@Edge, real-time logs or any
   other unsupported feature active.
+- **Programmatic management is now available.** As of September 2026, flat-rate
+  plan subscription, upgrade, downgrade and cancellation can be managed
+  programmatically via the CLI, SDKs, CloudFormation, CDK or the new
+  PricingPlanManager API - no longer console-only. Paid plans use a two-phase
+  create-then-approve activation flow so that provisioning a plan does not
+  silently commit you to a monthly charge; the approval step is a governance
+  safeguard that matters for IaC pipelines and agent-driven provisioning
+  workflows, where an unreviewed template change could otherwise attach a paid
+  plan. Source: https://aws.amazon.com/about-aws/whats-new/2026/09/cloudfront-flat-rate-pricing-plans-api/
 - **Maximum 100 plans per AWS account, 3 Free plans maximum. AWS Free Tier
   accounts are not eligible.**
 
