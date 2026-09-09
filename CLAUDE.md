@@ -143,6 +143,7 @@ cloud-finops-skills/
 │                             core.autocrlf=true
 └── pipeline/              <- Content update pipeline (gitignored, private)
     ├── run_scan.py        <- Fortnightly scan entry point
+    ├── run_monthly.bat    <- Task Scheduler wrapper (both scheduled tasks call it)
     ├── run_apply.py.FROZEN <- Review and apply entry point, frozen since the
     │                          May 2026 truncation incident (see docs/ROADMAP.md P1)
     ├── run_report.py      <- Per-run report rendering
@@ -191,6 +192,13 @@ reference. Procedure and rotation table in `pipeline/MONTHLY_WORKFLOW.md`.
 The pipeline is human-in-the-loop: nothing is changed automatically. Every
 proposed update goes through preview, approve/reject, and a guard-railed
 execute pass before touching any reference file.
+
+Two things the guard rails cannot see, both observed in September 2026 and
+written up under "Lessons learned" below: a scan that fires while the machine
+is offline used to report success with zero items (the scan now records
+`fetch_failure` instead), and the applier invents dates and citations, so every
+applied item is verified against its primary source before the content PR is
+left for review.
 
 **Operational reference:** `pipeline/MONTHLY_WORKFLOW.md` (gitignored,
 private; only present in the maintainer's local repo) is the step-by-step
@@ -338,7 +346,7 @@ What the session established:
   non-additive changes. The August 2026 split (see "Closed gaps" in
   [`docs/ROADMAP.md`](docs/ROADMAP.md)) removed both
   from that band; the largest files are now `finops-azure.md` (~1,800 lines)
-  and `finops-aws-patterns.md` (~1,470). Treat roughly 1,500 lines as the
+  and `finops-aws-patterns.md` (~1,480). Treat roughly 1,500 lines as the
   threshold above which structural changes need manual integration. Additive
   edits (new subsection, new note) work fine at any size.
 
@@ -433,6 +441,44 @@ monitor a remote surface you have not called.**
 rename look expensive. 36 of them were the CC BY-SA attribution footer, which must not
 change - it is the string third-party reusers carry. The real surface was 8 occurrences
 in 5 files. Count the *kind* of hit before estimating effort from a grep total.
+
+### Guard rails check shape, not truth: the 9 September 2026 batch
+
+The first content batch run with every guard rail and CI gate in place still
+needed a correction on every item. Two findings, both with detection steps in
+the maintainer-local doctrine:
+
+- **A scan that runs offline reports success.** The 1 September scheduled scan
+  fired while the laptop had no network. All 30 sources failed DNS resolution,
+  the run logged "no new items", advanced its state and exited `success`. The
+  report field that catches a broken classifier (`items_dropped_api_error`)
+  stayed at zero because nothing reached the classifier. `run_scan.py` now
+  records `exit_status: fetch_failure` and leaves state untouched when every
+  source returns nothing. Recovery is a manual run with a lookback wide enough
+  to reach the failed window; deduplication on processed URLs keeps the extra
+  days cheap. Related: the pipeline reads from and commits into the main
+  checkout folder (paths resolve from the script's own location), so that
+  checkout must be on `main` and clean before a manual run. On 1 September it
+  was parked on a merged feature branch, two references behind main.
+- **The applier invents dates and citations.** Nine approved items, nine
+  corrections. The model wrote "as of March 2026" on items dated 1 to 8
+  September (copying the month from neighbouring source URLs), cited
+  "Microsoft Learn" with no URL, described a 2023 Data Exports capability as
+  new, called a Lambda-on-alert pattern a native Budgets Action, and rewrote a
+  blog's mitigation advice into the thing the blog argues against. None of it
+  tripped a guard, because the guards check line counts, footers and
+  separators. The fix that worked, now a standing step between `--execute --pr`
+  and merge: fan out one read-only agent per applied claim to verify it against
+  the provider's primary page and return a verdict table, then commit the
+  corrections on the content branch. About ten minutes of wall-clock and no
+  pipeline credits, and the same fan-out absorbed that cycle's rotating pricing
+  re-verification pass.
+
+Two smaller things the pipeline does not do and the PR author must: regenerate
+`llms-full.txt` (the `build-llms-full.sh --check` gate fails otherwise), and
+expect a test that pins a content count to break when a catalogue grows
+(`test_section_match_tolerates_word_order` no longer pins the networking
+pattern count, since PR #192).
 
 ### Skills inject, MCP tools decide: what the probe cycles taught about the two surfaces (2026-08-30)
 
