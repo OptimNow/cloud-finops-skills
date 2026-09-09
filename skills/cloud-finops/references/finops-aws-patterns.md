@@ -1235,14 +1235,14 @@ Some architectures unintentionally route large volumes of traffic between resour
 - Review VPC flow logs, CloudWatch metrics, or billing data to assess regional data transfer patterns
 - Determine whether the resource acts as a centralised destination for data aggregation, storage, or processing
 
-**Karpenter Spot Node Replacement Shifting Nodes Across Availability Zones**
+**Karpenter Nodes Landing In Other Availability Zones After Spot Exhaustion**
 Service: AWS EKS | Type: Inefficient Architecture
 
-As of March 2026, Karpenter's Spot-driven node replacement can silently shift nodes across Availability Zones when Spot capacity in the original AZ is exhausted. The replacement node may land in a different AZ from the workloads it serves, generating cross-AZ data transfer charges that appear on the bill with no corresponding health or utilisation alert. This is easy to miss because the cluster remains healthy and the cost surfaces only in inter-AZ data transfer lines. See the Karpenter consolidation/disruption tuning guidance in `finops-kubernetes.md` and the Spot best practices in `finops-aws-commitments.md`.
+When Spot capacity runs out in one Availability Zone, Karpenter places new nodes (often On-Demand fallback) in the zones that still have capacity. The cluster stays healthy, but calls that used to stay zone-local now cross zones and are billed at the Regional data transfer rate in each direction, with no health or utilisation alert. The cost surfaces only in inter-AZ data transfer lines. See the waste pattern in `finops-kubernetes.md` and the Spot best practices in `finops-aws-commitments.md`. Source: AWS Fundamentals, "Networking Is Still Hard" (8 September 2026), https://awsfundamentals.com/blog/cross-az-traffic-karpenter (practitioner write-up, not AWS documentation).
 
-- Detect nodes that changed AZ due to Spot interruption or replacement, and correlate the timing with cross-AZ data transfer cost spikes
-- Apply Karpenter NodePool AZ-affinity or topology spread constraints to keep replacement capacity aligned with dependent workloads
-- Add cross-AZ traffic monitoring as a companion signal to Spot interruption handling, so replacements that cross AZ boundaries are surfaced promptly
+- Alert on the On-Demand to Spot ratio, on nodes per zone, and on `DataTransfer-Regional-Bytes`, and correlate spikes with Spot exhaustion events
+- Widen NodePool instance families and sizes so more Spot pools qualify and the fallback fires less often
+- Set `trafficDistribution: PreferClose` on Services and use topology spread constraints; even spread alone only makes the cross-zone charge consistent
 
 **Managed Nat Gateway With Excessive Data Transfer**
 Service: AWS NAT Gateway | Type: Inefficient Architecture

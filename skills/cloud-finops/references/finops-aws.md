@@ -83,11 +83,13 @@ the receiving side and the export configuration on the source side.
   AWS Organizations (M&A integrations, multi-payer setups, partner-resold
   accounts).
 
-**SQL-based row filtering at the source (March 2026).** AWS Data Exports now
-supports SQL-based row filtering for CUR 2.0 data, in addition to the existing
-column selection. This lets teams produce pre-filtered per-account or
-per-service datasets at the source, without building custom Lambda / Glue /
-Athena post-processing pipelines. As of March 2026, this is directly useful for:
+**SQL-based row filtering at the source.** AWS Data Exports has supported SQL
+row filtering (a `WHERE` clause on the CUR 2.0 table) alongside column
+selection since its launch in November 2023. It is an existing capability, not
+a recent one, but it is under-used: an AWS how-to published on 26 August 2026
+shows how to automate pre-filtered per-account or per-service exports at the
+source, without a custom Lambda / Glue / Athena post-processing pipeline. Where
+this pays off:
 - Partner sharing - publish a dataset scoped to only the accounts or services a
   partner is entitled to see.
 - Program or cost-centre isolation - a pre-filtered export per program without a
@@ -97,7 +99,7 @@ Athena post-processing pipelines. As of March 2026, this is directly useful for:
 
 Filtering at the source reduces the operational overhead of sharing scoped cost
 data and removes the need for organisations to maintain their own filtering
-pipeline. Source:
+pipeline. Source (AWS how-to, 26 August 2026):
 https://aws.amazon.com/blogs/aws-cloud-financial-management/automating-filtered-cost-and-usage-report-exports-with-aws-data-exports/
 
 Sources: https://aws.amazon.com/about-aws/whats-new/2025/11/aws-data-exports-focus-1-2-available/
@@ -184,17 +186,18 @@ unexpected spending increases and sends alerts via SNS or email.
 - Route alerts to both the FinOps practitioner and the engineering team lead
 - Review alert history monthly - tune thresholds to reduce false positives
 
-**Automated spend guardrails via AWS Budgets Actions (circuit breaker).** As of
-March 2026, AWS documents a programmatic "circuit breaker" pattern that uses AWS
-Budgets Actions to automatically restrict or revoke developer access when a
-budget threshold is exceeded, while maintaining an audit trail. This extends
-Budgets Actions beyond the existing SCP-apply and EC2-stop actions to IAM
-Identity Center permission-set assignments, giving FinOps teams a stronger
-automated governance guardrail: when a budget breaches, the action can detach or
-restrict IAM Identity Center permission sets (alongside applying an SCP or
-stopping EC2 instances) to halt further spend. Treat this as a complement to the
-reactive anomaly and budget alerts above, not a replacement - it is the
-preventive backstop that acts without waiting for a human. Source:
+**Automated spend guardrails: Budgets Actions and the access circuit breaker.**
+AWS Budgets Actions natively support three responses when a budget threshold is
+crossed: apply an IAM policy, apply an SCP, or stop EC2 / RDS instances. An AWS
+how-to published on 1 September 2026 extends the idea to developer access
+itself, which native actions do not cover: a budget alert publishes to SNS, and
+a Lambda function then removes the user's IAM Identity Center permission-set
+assignment or swaps it for a read-only one, with an audit trail. It is custom
+automation on top of a Budgets alert, not a new Budgets Action type, so it needs
+owning like any other Lambda. Treat both the native actions and the circuit
+breaker as a complement to the reactive anomaly and budget alerts above, not a
+replacement - they are the preventive backstop that acts without waiting for a
+human. Source (AWS how-to, 1 September 2026):
 https://aws.amazon.com/blogs/aws-cloud-financial-management/how-to-programmatically-manage-account-access-with-aws-budgets-alerts/
 
 ---
@@ -819,11 +822,12 @@ comparison is not close.
 - **Unsupported features block subscription.** The console refuses to attach a
   plan while the distribution still has Lambda@Edge, real-time logs or any
   other unsupported feature active.
-- **Programmatic management is now available.** As of September 2026, flat-rate
+- **Programmatic management is now available.** Since 3 September 2026, flat-rate
   plan subscription, upgrade, downgrade and cancellation can be managed
   programmatically via the CLI, SDKs, CloudFormation, CDK or the new
-  PricingPlanManager API - no longer console-only. Paid plans use a two-phase
-  create-then-approve activation flow so that provisioning a plan does not
+  PricingPlanManager API - no longer console-only. Paid plans support an optional
+  two-phase activation flow (create the plan, then approve it to start billing;
+  free plans activate immediately) so that provisioning a plan does not
   silently commit you to a monthly charge; the approval step is a governance
   safeguard that matters for IaC pipelines and agent-driven provisioning
   workflows, where an unreviewed template change could otherwise attach a paid

@@ -180,12 +180,14 @@ standard API rates:
 | Model | Input ($/MTok) | Output ($/MTok) |
 |---|---|---|
 | Claude Haiku 4.5 | $1.00 | $5.00 |
-| Claude Sonnet 5 / 4.6 | $3.00 | $15.00 (Sonnet 5 introductory $2/$10 through 31 August 2026) |
+| Claude Sonnet 5 | $2.00 | $10.00 (introductory rate made permanent in August 2026) |
+| Claude Sonnet 4.6 | $3.00 | $15.00 |
 | Claude Opus 5 / 4.8 / 4.6 | $5.00 | $25.00 |
 
-Anthropic's own data indicates the average Claude Code user on API key mode costs ~$6/day,
-with 90% of users staying under $12/day. At sustained full-time usage, expect
-$100-$200/developer/month.
+Anthropic's own data (as of September 2026) puts the average Claude Code user on API
+key mode at around $13 per developer per active day, with 90% of users staying under
+$30 per active day, and $150-250 per developer per month at sustained usage. Source:
+https://code.claude.com/docs/en/costs.
 
 **Important cross-reference:** Claude Code usage on API key mode is subject to the same
 billing mechanics documented in `finops-anthropic.md` - Fast mode (2x, Opus-tier only),
@@ -203,20 +205,25 @@ question wherever developers can toggle it themselves.
   LiteLLM auto-detects Claude Code via User-Agent header
 - **Anthropic Console** - basic usage and billing data at the organisation level
 
-**Native gateway spend-limit warnings (as of September 2026).** Claude Code v2.1.251
-surfaces gateway spend limits proactively in its usage warnings - showing the spending
-cap, the reset time, and the operator message - rather than only failing silently or after
-the fact. The client now exposes a `rate_limits.spend_limit` status field and adds a
-spend-limit bar in the UI, giving FinOps teams a native signal for tracking token spend
-against caps. The same release also introduces prompt-cache visibility monitoring, so
-developers can observe cache efficiency directly in the client rather than inferring it
-from downstream billing data - useful for spotting the cache-miss patterns described in
-"The context-load tax" section below and for validating the cache multiplier mechanics
-documented in `finops-anthropic.md`. For teams enforcing per-user or per-team budget caps
-this improves cost-governance visibility and reduces surprise overage incidents. The
-practical effect is that ClaudeXray and LiteLLM are no longer needed *purely* for
-budget-cap visibility; they remain valuable for metadata injection, cross-tool
-aggregation, and analytics, but the cap-and-reset signal is now available natively.
+**Native gateway spend-limit warnings (as of September 2026).** For teams that run
+Claude Code behind a self-hosted Claude apps gateway with spend limits configured, the
+client surfaces those limits proactively in its usage warnings - the spending cap, the
+reset time and the operator message - rather than only failing silently or after the
+fact (since v2.1.225). Since v2.1.251 (28 August 2026) it also shows a spend-limit bar
+in `/usage` and exposes a `rate_limits.spend_limit` status-line field, both as a
+percentage of the cap rather than a dollar amount; the gateway server must be v2.1.225
+or later. None of this applies to Console API keys or to Team and Enterprise seats,
+which have their own admin-side alerts. The same release added a per-session
+prompt-cache line to `/cost` (hit ratio, misses, tokens re-cached, warm or cold) and a
+matching `prompt_cache` status object, so developers can see cache efficiency in the
+client rather than inferring it from billing data - useful for spotting the cache-miss
+patterns described in "The context-load tax" section below. Related: v2.1.243 added
+`modelPricing` (contracted rates shown in `/cost`) and a configurable `promptCacheTtl`.
+For gateway users the practical effect is that ClaudeXray and LiteLLM are no longer
+needed *purely* for budget-cap visibility; they remain valuable for metadata injection,
+cross-tool aggregation and analytics. Sources:
+https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md,
+https://code.claude.com/docs/en/costs, https://code.claude.com/docs/en/statusline.
 
 ---
 
@@ -414,12 +421,14 @@ less per request.
 
 ### For BYOK tools (Claude Code, Codex)
 
-**Model selection** - the mid tier runs at roughly 0.6x the large tier on the Claude side,
-and the gap between a mini and a frontier model on the OpenAI side is wider still. Choose
+**Model selection** - the mid tier runs at roughly 0.4x the large tier on the Claude side
+(Sonnet 5 against Opus 5, as of September 2026; 0.6x for Sonnet 4.6), and the gap
+between a mini and a frontier model on the OpenAI side is wider still. Choose
 the model that matches the task complexity, default to the more efficient one, and escalate
 only when needed. Pull the current rates before quantifying the saving.
 
-**Prompt caching** (Anthropic) - cache reads cost 0.1x the base input price. Cache writes
+**Prompt caching** (Anthropic) - cache reads cost 0.1x the base input price (0.025x on
+Fable 5.1). Cache writes
 cost 1.25x (5-minute TTL) or 2x (1-hour TTL). For repetitive workflows with stable system
 prompts, caching provides significant savings. See `finops-anthropic.md` for the full
 mechanics.
@@ -463,8 +472,10 @@ sessions/day is a material daily line item for capability nobody used that day.
 
 **Interaction with prompt caching.** The context prefix is cached, so within the cache window
 the marginal cost is small (cache reads are 0.1x base input; see `finops-anthropic.md` for
-the full mechanics). Two things break that: (1) the ~5-minute cache TTL - an idle gap longer
-than the window forces the whole prefix to be reprocessed at full price on the next turn (in
+the full mechanics). Two things break that: (1) the cache TTL - about 5 minutes on API-key
+or usage-credit billing, 1 hour on subscription sessions, configurable via `promptCacheTtl`
+since v2.1.243 - an idle gap longer than the window forces the whole prefix to be
+reprocessed at full price on the next turn (in
 the walkthrough, a cache miss after a coffee break turned a ~$0.02 turn into ~$0.12), and
 (2) enabling a new server mid-prefix invalidates the cache from that point on. Long,
 unfocused sessions make it worse: the resent context keeps growing, so every miss reprocesses

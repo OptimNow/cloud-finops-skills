@@ -30,7 +30,7 @@ as "agents":
 |---|---|---|---|
 | **Workflow** | Traditional software with GenAI bolted into one or more steps | Bounded per invocation | Standard test set |
 | **Pipeline** | Predetermined steps, LLM called at one or more of them (most chatbots) | Bounded: per-call cost × known number of calls | LLM-as-judge works (fixed trajectory) |
-| **True agent** | Broad objective, tools available, decides at run time what to call, in what order, for how long | **Unbounded per task** - up to ~30x token variance on the same prompt (Pay-i-reported) | LLM-as-judge breaks: the agent constructs its own prompts, signal lives in the trajectory, not the final output |
+| **True agent** | Broad objective, tools available, decides at run time what to call, in what order, for how long | **Unbounded per task** - up to ~30x token variance on the same prompt (Bai et al. 2026, cited below) | LLM-as-judge breaks: the agent constructs its own prompts, signal lives in the trajectory, not the final output |
 
 **FinOps implications:**
 
@@ -155,14 +155,14 @@ An agent that stops instances autonomously is not - regardless of how sophistica
 reasoning is. Governance, not technology capability, is the real constraint on autonomous
 FinOps agents.
 
-**Billing-model flexibility for agent spend.** As of August 2026, Google's Gemini
-Enterprise / AI Cost Summary Agent offers a pay-as-you-go consumption edition
-alongside the existing per-user subscription model - see finops-gcp.md for guidance
-on choosing consumption versus subscription billing under budget guardrails. This
+**Billing-model flexibility for agent spend.** Since 26 August 2026, Gemini
+Enterprise offers a Pay-as-you-go edition (compute and tokens at standard model API
+rates, no base fee) alongside its per-seat editions - see `finops-gcp.md` for the
+eligibility caveat and for choosing between them under budget guardrails. This
 matters for cost governance: consumption billing suits variable, unbounded agent
-workloads where per-user seats over- or under-provision, while subscription billing
-gives predictable spend for steady-state usage. Match the billing model to the
-workload's cost class (see Big-T notation above).
+workloads where per-seat licences over- or under-provision, while subscription
+billing gives predictable spend for steady-state usage. Match the billing model to
+the workload's cost class (see Big-T notation above).
 
 AgentCore's policy capability now supports natural-language-to-Cedar tool-access controls,
 consistent with the policy-generation-over-direct-mutation pillar above.
@@ -189,7 +189,7 @@ verifies, settles, and returns the resource with a receipt.
 
 | Layer | What exists (as of July 2026) |
 |---|---|
-| Protocol | **x402** - open standard, created by Coinbase, now a Linux Foundation project (x402 Foundation; Coinbase and Cloudflare founding members; AWS, Stripe, Vercel among members). **MPP** (Machine Payments Protocol) - Stripe + Tempo Labs, IETF standards track, adds card rails and streaming payment sessions, backwards-compatible with x402 |
+| Protocol | **x402** - open standard, created by Coinbase, now a Linux Foundation project (x402 Foundation; Coinbase and Cloudflare founding members; AWS, Stripe, Google and Visa among the premier members; 40 members at the July 2026 launch). **MPP** (Machine Payments Protocol) - Stripe + Tempo Labs, IETF standards track, adds card rails and streaming payment sessions, backwards-compatible with x402 |
 | Platform rails | **Amazon Bedrock AgentCore Payments** - managed wallets via Coinbase CDP or Stripe (Privy); every payment runs in a *payment session* with a spending cap (`maxSpendAmount`) and expiry; wallets start empty and the end user explicitly grants the agent transaction permission; AgentCore Gateway reaches paid MCP servers/APIs incl. the Coinbase x402 Bazaar catalogue. **Cloudflare Agents SDK** - agents that pay (optional human-in-the-loop confirmation per payment) and services that charge (`paidTool`, one-line middleware) |
 | Control plane | **Ampersend** (Edge & Node, on x402 + Google A2A) - team wallets, funding automation, approvals, spend observability. Early entrant; expect a category |
 

@@ -297,28 +297,34 @@ governing how aggressively Karpenter replaces nodes.
 Tune up or down based on the observed pod-disruption rate vs the savings
 delivered.
 
-#### Waste pattern: silent cross-AZ node drift from Spot replacement
+#### Waste pattern: silent cross-AZ drift after Spot exhaustion
 
-When Karpenter replaces a Spot node whose original availability zone has
-exhausted Spot capacity, it may provision the replacement in a different AZ.
-This is a legitimate resilience behaviour, but it can silently shift a
-workload's pods across zones and generate cross-AZ data transfer charges that
-appear on the bill with no corresponding health or utilisation alert. The cost
-lands in networking, disconnected from any Karpenter or Spot signal.
+When Spot capacity runs out in one zone, Karpenter keeps the cluster healthy by
+placing new nodes wherever capacity exists: the busy zone goes first, so the
+replacements land in the other zones, often as On-Demand fallback. Nothing
+fails, but calls that used to stay zone-local now cross zones and are billed
+at the Regional data transfer rate in each direction. The cost lands in
+networking, disconnected from any Karpenter or Spot signal, and no health or
+utilisation alert fires.
 
-As of March 2026, this is a named detection pattern:
+Detection and mitigation (a named pattern since September 2026):
 
-- **Detect** nodes that changed AZ following a Spot interruption or
-  replacement, and correlate the timing with cross-AZ data transfer cost
-  spikes on the same cluster.
-- **Mitigate** with NodePool AZ-affinity or topology spread constraints where
-  the workload's cross-AZ chatter is expensive enough to outweigh the
-  resilience benefit of free AZ selection. This is a per-workload trade-off,
-  not a cluster-wide default.
-- **Monitor** cross-AZ traffic as a companion signal to Spot interruption
-  handling, so a spike is attributable to the replacement event that caused
-  it. See the Spot best practices in `finops-aws-commitments.md` and the
-  networking patterns in `finops-aws-patterns.md`.
+- **Detect** by alerting on the On-Demand to Spot ratio, on nodes per zone,
+  and on `DataTransfer-Regional-Bytes` usage on the cluster's accounts, then
+  correlate a spike with the Spot exhaustion event that caused it.
+- **Reduce the trigger**: widen the NodePool's instance families and sizes so
+  more Spot pools qualify and the fallback fires less often.
+- **Keep traffic local**: set `trafficDistribution: PreferClose` on Services
+  so requests prefer same-zone endpoints, and use topology spread constraints
+  to keep pods spread evenly. Even spread on its own does not help; it only
+  makes you pay the cross-zone rate consistently. Zones are a filter for
+  Karpenter, not a preference, so pinning a NodePool to one zone trades away
+  the resilience that makes Spot workable.
+- See the Spot best practices in `finops-aws-commitments.md` and the
+  networking patterns in `finops-aws-patterns.md`. Source: AWS Fundamentals,
+  "Networking Is Still Hard" (Tobias Schmidt, 8 September 2026),
+  https://awsfundamentals.com/blog/cross-az-traffic-karpenter - a practitioner
+  write-up, not AWS documentation.
 
 ### Pod Disruption Budgets are non-negotiable
 
