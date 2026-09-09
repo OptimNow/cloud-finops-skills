@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import ToolAnnotations
 
 from . import __version__
@@ -613,6 +614,19 @@ async def run_http(host: str = DEFAULT_HTTP_HOST, port: int = DEFAULT_HTTP_PORT)
     mcp.settings.host = host
     mcp.settings.port = port
     mcp.settings.stateless_http = True
+    # The module-level ``mcp`` is constructed with the SDK's default host
+    # (127.0.0.1), and the SDK then switches on DNS-rebinding protection with
+    # an allow-list of localhost Host headers. Changing ``settings.host`` here
+    # does not revisit that choice, so a public deployment answered every
+    # request with 421 "Invalid Host header: cloud-finops-mcp.fly.dev"
+    # (observed on Fly.io, 2026-09-09; Alpic's ingress had masked it by
+    # rewriting Host). Rebinding protection defends a server bound to
+    # localhost against a hostile web page; a public host behind a
+    # TLS-terminating ingress gains nothing from it, so it is switched off
+    # for the HTTP transport only. Stdio is unaffected.
+    mcp.settings.transport_security = TransportSecuritySettings(
+        enable_dns_rebinding_protection=False
+    )
     await mcp.run_streamable_http_async()
 
 
