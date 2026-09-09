@@ -2129,6 +2129,9 @@ likely to happen.
 Better: surface unallocated spend as a discrete line item. Make it visible to
 leadership. Drive the tagging programme on the back of it. See `finops-tagging.md`
 for the enforcement work that brings unallocated spend below the 10% threshold.
+An unallocated euro has no owner, and unowned spend only grows: nobody rightsizes
+what nobody is charged for, so the unallocated line drifts upward until someone is
+made to look at it.
 
 **AI spend needs its own unallocated-% treatment.** Token and harness cost
 attributes at the session level rather than the resource level, and one engineer
@@ -13952,6 +13955,18 @@ $/PTU/hour rates for any client decision.
 For some models, provisioned capacity never generates token-cost savings - it is purely
 a performance and SLA product.
 
+**Worked example (illustrative, September 2026).** Tarrowmere Assurance, a fictional
+insurer, runs a claims-summarisation workload on Azure OpenAI at a steady 1.4M input
+tokens an hour on weekdays and about a third of that at night and at weekends: a
+peak-to-trough ratio of 3.1:1. Normalised at 100% utilisation, the one-year PTU
+reservation it was quoted works out at 0.79x the pay-as-you-go input rate, so its
+break-even utilisation is 79%; below that, the reservation costs more per token than
+paying as you go. Load testing put weekday utilisation at 83% and the weekly average
+at 57%. Reserving for the whole curve loses money; reserving for the night-and-weekend
+floor and spilling the weekday peak to pay-as-you-go clears break-even with room to
+spare. The pair to remember is 3.1:1 against 79%: the traffic shape decides, the
+discount does not.
+
 ### Normalisation checklist
 
 - [ ] Identify the capacity unit type (PTU, throughput unit, scale tier unit)
@@ -18890,7 +18905,9 @@ this organisation at this stage?"
 ### Visibility before optimisation
 Cost visibility is a prerequisite, not a phase. You cannot rightsize what you cannot see.
 You cannot allocate savings to a team that has no cost attribution. This principle prevents
-the common mistake of jumping to optimisation before the foundation is in place.
+the common mistake of jumping to optimisation before the foundation is in place. An
+unallocated euro has no owner, and unowned spend only grows - which is why allocation,
+not tooling, is the first deliverable.
 
 Corollary: **physical tagging must precede virtual tagging**. Virtual tagging (applying
 metadata in the billing layer without changing resource tags) is powerful but fragile if

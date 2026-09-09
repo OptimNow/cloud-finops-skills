@@ -93,7 +93,9 @@ this organisation at this stage?"
 ### Visibility before optimisation
 Cost visibility is a prerequisite, not a phase. You cannot rightsize what you cannot see.
 You cannot allocate savings to a team that has no cost attribution. This principle prevents
-the common mistake of jumping to optimisation before the foundation is in place.
+the common mistake of jumping to optimisation before the foundation is in place. An
+unallocated euro has no owner, and unowned spend only grows - which is why allocation,
+not tooling, is the first deliverable.
 
 Corollary: **physical tagging must precede virtual tagging**. Virtual tagging (applying
 metadata in the billing layer without changing resource tags) is powerful but fragile if
