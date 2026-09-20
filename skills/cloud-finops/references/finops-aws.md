@@ -558,6 +558,36 @@ Configure at minimum:
 lead for the relevant account. FinOps-only alerts create a bottleneck; engineering-only
 alerts lack financial context.
 
+### AWS FinOps Agent and the automation ladder
+
+AWS introduced the **AWS FinOps Agent** at FinOps X 2026; it is in **public preview** as
+of 10 September 2026, so treat its scope and pricing as unsettled. It packages built-in
+FinOps workflows (anomaly investigation, cost reporting, optimisation summaries) over
+the existing Billing and Cost Management services, runs continuously rather than on
+request, delivers to email, Slack or Jira, and acts only within the IAM permissions it
+is given.
+
+More durable than the product is the four-tier ladder AWS published with it, because it
+maps onto native tools that are already generally available:
+
+| Tier | What is automated | Native example | Trust lever |
+|---|---|---|---|
+| 1. Read-only insights | Reporting, anomaly investigation | Agent correlating Cost Anomaly Detection alerts with CloudTrail events | Transparency - the reasoning is shown |
+| 2. Human-approved mutation | One action, one approval | Compute Optimizer one-click idle EBS cleanup; Budget Actions applying an IAM policy or SCP after approval | Preview and simulate before the change |
+| 3. Rule-based automation | Recurring actions under your rules | Compute Optimizer EBS automation with tag and region exclusions, snapshot before delete | Permission control - scope what is in and out |
+| 4. Autonomy with boundaries | Continuous monitoring, reporting, ticketing | FinOps Agent within IAM scope | Blast-radius caps (account, region, maximum financial impact) and rollback |
+
+**How to use it.** Climb one tier at a time and per action type, not per tool: an estate
+can sit at tier 3 for unattached EBS volumes and tier 1 for everything touching
+commitments. Tier 1 is a Crawl-stage action with no downside. Tiers 3 and 4 presuppose
+tagging good enough to write exclusion rules against - automation over an untagged
+estate deletes things nobody can identify as needed. Note what is absent from every
+tier: commitment purchases. Savings Plans Purchase Analyzer simulates, it does not buy.
+
+See `finops-agentic.md` for the vendor-neutral reasoning on policy generation versus
+direct mutation. Source:
+https://aws.amazon.com/blogs/aws-cloud-financial-management/automation-and-trust-in-finops/
+
 ### Extended Support version audits (recurring action item)
 
 Several AWS services charge an Extended Support surcharge for domains, clusters, or

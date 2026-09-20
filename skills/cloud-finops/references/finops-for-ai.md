@@ -490,6 +490,11 @@ September 2026).
 
 **Caching:**
 - Cache system prompts and static context (Anthropic and OpenAI support prompt caching)
+- Check whether the provider bills cache **writes** before treating caching as free.
+  Anthropic and Bedrock always have; Azure OpenAI does from the GPT-5.6 family onwards
+  (1.25x the input rate, as of 20 September 2026), while Vertex AI writes at the standard
+  input rate. Where writes carry a premium, a prefix that is never re-read costs more
+  than not caching - see the provider files for break-even and cache-mode controls
 - Cache embedding results for repeated documents in RAG systems
 - Cache responses for deterministic or near-deterministic queries
 - Cache at the application layer before hitting the model API

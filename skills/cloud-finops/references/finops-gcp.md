@@ -124,6 +124,43 @@ GCP exposes three distinct exports to BigQuery, and they are not interchangeable
 
 Source: https://cloud.google.com/billing/docs/how-to/export-data-bigquery
 
+### Incentives page - tracking conditional contract credits
+
+Custom Google Cloud contracts often carry **conditional incentives**: credits that are
+only earned if a spend or usage milestone is hit inside a set window. The Cloud Billing
+console now has an **Incentives** page (Billing navigation menu, as of September 2026)
+that tracks them in one place: spend-based milestone credits, Incremental Workload
+Credits (multi-milestone programmes tracking incremental spend), and Rapid Migration and
+Modernization Program (RaMP) incentives. Each milestone shows its end date, spend target,
+progress, reward, and a status of Active, Achieved, Upcoming or **Missed**.
+
+What matters for FinOps:
+
+- **A missed milestone is forfeited money, and until now nobody owned watching it.**
+  These terms are negotiated by procurement and then sit in a contract PDF. Put the
+  milestone end dates in the same calendar as commitment expiries, and review the page
+  monthly. It only appears for billing accounts whose contract includes such programmes.
+- **The tracker lags by up to three days** and is not real time. Do not steer
+  end-of-window spend decisions off it without allowing for the delay.
+- **Credits arrive late.** They are typically applied within 45 days of achieving the
+  milestone (for monthly milestones, within about 45 days of month-end), so the benefit
+  lands in a later period than the spend that earned it. Forecasts and accruals should
+  reflect that timing rather than netting the credit against the earning month.
+- **In reports and the BigQuery export they appear as `PROMOTION` type credits**, the
+  same type as other promotional credits. They act as a payment method applied to
+  eligible costs, not as a rate discount, so unit-cost analysis on list or CUD-effective
+  rates is unaffected by them.
+- **RaMP incentives depend on workload tagging.** Outcome-based RaMP rewards are
+  calculated from consumption mapped to the programme, so an untagged migrated workload
+  earns nothing. This is a tagging-governance dependency with a direct cash value.
+- **Do not pull spend forward just to hit a milestone** without comparing the credit
+  against the cost of the extra consumption - the same discipline as not over-buying to
+  reach an EDP or MACC tier.
+- Access needs the `billing.credits.list` permission (Billing Account Viewer, User or
+  Administrator).
+
+Source: https://docs.cloud.google.com/billing/docs/how-to/incentives-program-tracker
+
 ### FOCUS billing export
 
 GCP supports a **FOCUS-conformant BigQuery export** for cross-cloud normalisation.
