@@ -332,6 +332,16 @@ An agent that stops instances autonomously is not - regardless of how sophistica
 reasoning is. Governance, not technology capability, is the real constraint on autonomous
 FinOps agents.
 
+AWS's own position, published with the AWS FinOps Agent public preview (10 September
+2026), lands in the same place from the vendor side: a four-tier ladder from read-only
+insights, through human-approved and rule-based mutation, to bounded autonomy, each tier
+paired with a control - transparency, preview, permission scope, then blast-radius caps
+and rollback. Two things are worth borrowing regardless of cloud. Autonomy is granted
+per action type, not per agent. And the top tier is still bounded by a **maximum
+financial impact**, which is the agentic equivalent of a spend cap and belongs in any
+agent's design, first-party or not. Tier detail and native examples are in
+`finops-aws.md`.
+
 **Billing-model flexibility for agent spend.** Since 26 August 2026, Gemini
 Enterprise offers a Pay-as-you-go edition (compute and tokens at standard model API
 rates, no base fee) alongside its per-seat editions - see `finops-gcp.md` for the
@@ -634,6 +644,11 @@ matching `prompt_cache` status object, so developers can see cache efficiency in
 client rather than inferring it from billing data - useful for spotting the cache-miss
 patterns described in "The context-load tax" section below. Related: v2.1.243 added
 `modelPricing` (contracted rates shown in `/cost`) and a configurable `promptCacheTtl`.
+v2.1.268 closes the loop for gateway deployments: with `pricing:` set in the gateway's
+`gateway.yaml`, signed-in clients receive the same rates through managed settings, so
+`/cost` and telemetry match the gateway's spend meter. Before this, contracted rates had
+to be configured client-side and could drift from what the gateway metered - which made
+developer-visible cost and the enforced cap disagree. Set rates once, at the gateway.
 For gateway users the practical effect is that ClaudeXray and LiteLLM are no longer
 needed *purely* for budget-cap visibility; they remain valuable for metadata injection,
 cross-tool aggregation and analytics. Sources:
@@ -4043,6 +4058,19 @@ While many AWS customers have migrated EC2 workloads to Graviton to reduce costs
 - Update Lambda function configurations to use ARM/Graviton2 where compatible
 - Benchmark function performance and duration to validate equal or improved performance
 - For stable, high-throughput functions, consider pairing architecture changes with Compute Savings Plans
+- **Lambda Managed Instances is a different cost model, and it now reaches Graviton5.**
+  Lambda Managed Instances runs functions on EC2 instances in your account while Lambda
+  keeps managing instance lifecycle, patching, routing and scaling. The point for FinOps
+  is that it bills through EC2 pricing rather than standard per-invocation Lambda
+  billing, so the architecture question becomes an instance-generation question. Since
+  9 September 2026 it supports Graviton5-powered C9g, C9gd, M9g and M9gd instances,
+  which AWS states deliver up to 25% better compute performance than Graviton4. Two
+  things to check: a capacity provider pinned to a specific older instance type does not
+  move on its own, whereas one left on `default` has Graviton5 added to the pool Lambda
+  picks from; and "up to 25% faster" is a performance claim, not a price cut - it only
+  becomes a saving if the workload finishes sooner or packs onto fewer instances, so
+  benchmark before counting it. Source:
+  https://aws.amazon.com/about-aws/whats-new/2026/09/aws-lambda-graviton5-ec2/
 
 **Suboptimal Architecture Selection In Aws Lambda**
 Service: AWS Lambda | Type: Suboptimal Configuration
@@ -5798,6 +5826,36 @@ Configure at minimum:
 **Recommended alert recipients:** Both the FinOps practitioner and the engineering team
 lead for the relevant account. FinOps-only alerts create a bottleneck; engineering-only
 alerts lack financial context.
+
+### AWS FinOps Agent and the automation ladder
+
+AWS introduced the **AWS FinOps Agent** at FinOps X 2026; it is in **public preview** as
+of 10 September 2026, so treat its scope and pricing as unsettled. It packages built-in
+FinOps workflows (anomaly investigation, cost reporting, optimisation summaries) over
+the existing Billing and Cost Management services, runs continuously rather than on
+request, delivers to email, Slack or Jira, and acts only within the IAM permissions it
+is given.
+
+More durable than the product is the four-tier ladder AWS published with it, because it
+maps onto native tools that are already generally available:
+
+| Tier | What is automated | Native example | Trust lever |
+|---|---|---|---|
+| 1. Read-only insights | Reporting, anomaly investigation | Agent correlating Cost Anomaly Detection alerts with CloudTrail events | Transparency - the reasoning is shown |
+| 2. Human-approved mutation | One action, one approval | Compute Optimizer one-click idle EBS cleanup; Budget Actions applying an IAM policy or SCP after approval | Preview and simulate before the change |
+| 3. Rule-based automation | Recurring actions under your rules | Compute Optimizer EBS automation with tag and region exclusions, snapshot before delete | Permission control - scope what is in and out |
+| 4. Autonomy with boundaries | Continuous monitoring, reporting, ticketing | FinOps Agent within IAM scope | Blast-radius caps (account, region, maximum financial impact) and rollback |
+
+**How to use it.** Climb one tier at a time and per action type, not per tool: an estate
+can sit at tier 3 for unattached EBS volumes and tier 1 for everything touching
+commitments. Tier 1 is a Crawl-stage action with no downside. Tiers 3 and 4 presuppose
+tagging good enough to write exclusion rules against - automation over an untagged
+estate deletes things nobody can identify as needed. Note what is absent from every
+tier: commitment purchases. Savings Plans Purchase Analyzer simulates, it does not buy.
+
+See `finops-agentic.md` for the vendor-neutral reasoning on policy generation versus
+direct mutation. Source:
+https://aws.amazon.com/blogs/aws-cloud-financial-management/automation-and-trust-in-finops/
 
 ### Extended Support version audits (recurring action item)
 
@@ -7624,6 +7682,7 @@ while the absolute rates have not (structure as of August 2026):
 |---|---|---|
 | GPT-5 | 0.1x (90% discount) | 8x |
 | GPT-4.1 | 0.25x (75% discount) | 4x |
+| GPT-5.6 family | 0.1x read, **1.25x cache write** (as of 20 September 2026) | 6x |
 
 For the current absolute rates, use the Azure pricing documentation or a live pricing
 tool (<https://optimtoken.optimnow.io>) rather than a figure remembered from this file.
@@ -7865,12 +7924,46 @@ highest ROI for the effort.
 
 Azure OpenAI supports prompt caching. The cached-input discount is **model-dependent**,
 not a flat rate: roughly 90% on GPT-5, 75% on
-GPT-4.1, ~50% on GPT-4o, and up to 100% on Provisioned deployments. Newer model
-generations may also charge for cache **writes** - check the per-model pricing page
-rather than assuming reads-only billing. Effective for:
+GPT-4.1, ~50% on GPT-4o, and up to 100% on Provisioned deployments. Effective for:
 - Long, repeated system prompts
 - RAG pipelines with consistent prefixes
 - Multi-turn conversations with stable context
+
+**From the GPT-5.6 family onwards, cache writes are billed** (verified 20 September
+2026). Models before GPT-5.6 do not charge to write to the cache; on GPT-5.6 and later,
+a cache write bills at **1.25x the input rate**, against a read at 0.1x. Caching on
+Azure OpenAI is no longer a lever with no downside - it is now the same shape as
+Anthropic and Bedrock prompt caching, and needs the same hit-rate discipline.
+
+- **Break-even is one reuse.** Write once and read once costs 1.35x the input rate
+  against 2x uncached, so any prefix that is read at least once inside its lifetime
+  still wins. The loss case is the prefix that is written and never read: 25% more than
+  not caching at all.
+- **The default mode writes on every request.** `prompt_cache_options.mode` defaults to
+  `implicit`, which places a breakpoint on the latest message of every request, so a
+  workload with unique prompts of 1,024+ tokens pays the write premium continuously and
+  gets nothing back. Setting the mode to `explicit` with no breakpoints disables caching
+  and the write charge for that request; with breakpoints, only the marked prefixes are
+  written. One-shot, unique-input workloads (bulk classification over distinct
+  documents, single-turn extraction) are the ones to move to `explicit`.
+- **Hit rate is now a cost control, not a nice-to-have.** Set a stable
+  `prompt_cache_key` per shared prefix; above roughly 15 requests per minute on one
+  prefix-and-key pair some requests miss the cache, so spread high-volume traffic across
+  several keys with a stable mapping. The minimum cache lifetime is 30 minutes (the only
+  supported `ttl` value); the service may retain longer. A request can create at most
+  four new cache writes.
+- **The write is visible in the response.** Standard deployments report
+  `cache_write_tokens` alongside `cached_tokens`. Instrument both and track the ratio of
+  tokens written to tokens read per workload - a ratio near or above 1 means the workload
+  is paying for a cache it does not use.
+- **A model upgrade changes the billing, silently.** Moving a deployment from GPT-5.5 or
+  earlier to GPT-5.6 turns on write charges with no code change, because implicit mode
+  is the default. Add the cache-mode decision to the migration checklist. Provisioned
+  (PTU-M) deployments do not support cache breakpoints.
+
+Sources:
+https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/prompt-caching,
+https://azure.microsoft.com/en-us/pricing/details/cognitive-services/openai-service/
 
 ### Prompt optimisation
 
@@ -12473,6 +12566,11 @@ September 2026).
 
 **Caching:**
 - Cache system prompts and static context (Anthropic and OpenAI support prompt caching)
+- Check whether the provider bills cache **writes** before treating caching as free.
+  Anthropic and Bedrock always have; Azure OpenAI does from the GPT-5.6 family onwards
+  (1.25x the input rate, as of 20 September 2026), while Vertex AI writes at the standard
+  input rate. Where writes carry a premium, a prefix that is never re-read costs more
+  than not caching - see the provider files for break-even and cache-mode controls
 - Cache embedding results for repeated documents in RAG systems
 - Cache responses for deterministic or near-deterministic queries
 - Cache at the application layer before hitting the model API
@@ -13236,6 +13334,43 @@ GCP exposes three distinct exports to BigQuery, and they are not interchangeable
   filter or aggregate carefully.
 
 Source: https://cloud.google.com/billing/docs/how-to/export-data-bigquery
+
+### Incentives page - tracking conditional contract credits
+
+Custom Google Cloud contracts often carry **conditional incentives**: credits that are
+only earned if a spend or usage milestone is hit inside a set window. The Cloud Billing
+console now has an **Incentives** page (Billing navigation menu, as of September 2026)
+that tracks them in one place: spend-based milestone credits, Incremental Workload
+Credits (multi-milestone programmes tracking incremental spend), and Rapid Migration and
+Modernization Program (RaMP) incentives. Each milestone shows its end date, spend target,
+progress, reward, and a status of Active, Achieved, Upcoming or **Missed**.
+
+What matters for FinOps:
+
+- **A missed milestone is forfeited money, and until now nobody owned watching it.**
+  These terms are negotiated by procurement and then sit in a contract PDF. Put the
+  milestone end dates in the same calendar as commitment expiries, and review the page
+  monthly. It only appears for billing accounts whose contract includes such programmes.
+- **The tracker lags by up to three days** and is not real time. Do not steer
+  end-of-window spend decisions off it without allowing for the delay.
+- **Credits arrive late.** They are typically applied within 45 days of achieving the
+  milestone (for monthly milestones, within about 45 days of month-end), so the benefit
+  lands in a later period than the spend that earned it. Forecasts and accruals should
+  reflect that timing rather than netting the credit against the earning month.
+- **In reports and the BigQuery export they appear as `PROMOTION` type credits**, the
+  same type as other promotional credits. They act as a payment method applied to
+  eligible costs, not as a rate discount, so unit-cost analysis on list or CUD-effective
+  rates is unaffected by them.
+- **RaMP incentives depend on workload tagging.** Outcome-based RaMP rewards are
+  calculated from consumption mapped to the programme, so an untagged migrated workload
+  earns nothing. This is a tagging-governance dependency with a direct cash value.
+- **Do not pull spend forward just to hit a milestone** without comparing the credit
+  against the cost of the extra consumption - the same discipline as not over-buying to
+  reach an EDP or MACC tier.
+- Access needs the `billing.credits.list` permission (Billing Account Viewer, User or
+  Administrator).
+
+Source: https://docs.cloud.google.com/billing/docs/how-to/incentives-program-tracker
 
 ### FOCUS billing export
 

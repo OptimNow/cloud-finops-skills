@@ -114,6 +114,7 @@ while the absolute rates have not (structure as of August 2026):
 |---|---|---|
 | GPT-5 | 0.1x (90% discount) | 8x |
 | GPT-4.1 | 0.25x (75% discount) | 4x |
+| GPT-5.6 family | 0.1x read, **1.25x cache write** (as of 20 September 2026) | 6x |
 
 For the current absolute rates, use the Azure pricing documentation or a live pricing
 tool (<https://optimtoken.optimnow.io>) rather than a figure remembered from this file.
@@ -355,12 +356,46 @@ highest ROI for the effort.
 
 Azure OpenAI supports prompt caching. The cached-input discount is **model-dependent**,
 not a flat rate: roughly 90% on GPT-5, 75% on
-GPT-4.1, ~50% on GPT-4o, and up to 100% on Provisioned deployments. Newer model
-generations may also charge for cache **writes** - check the per-model pricing page
-rather than assuming reads-only billing. Effective for:
+GPT-4.1, ~50% on GPT-4o, and up to 100% on Provisioned deployments. Effective for:
 - Long, repeated system prompts
 - RAG pipelines with consistent prefixes
 - Multi-turn conversations with stable context
+
+**From the GPT-5.6 family onwards, cache writes are billed** (verified 20 September
+2026). Models before GPT-5.6 do not charge to write to the cache; on GPT-5.6 and later,
+a cache write bills at **1.25x the input rate**, against a read at 0.1x. Caching on
+Azure OpenAI is no longer a lever with no downside - it is now the same shape as
+Anthropic and Bedrock prompt caching, and needs the same hit-rate discipline.
+
+- **Break-even is one reuse.** Write once and read once costs 1.35x the input rate
+  against 2x uncached, so any prefix that is read at least once inside its lifetime
+  still wins. The loss case is the prefix that is written and never read: 25% more than
+  not caching at all.
+- **The default mode writes on every request.** `prompt_cache_options.mode` defaults to
+  `implicit`, which places a breakpoint on the latest message of every request, so a
+  workload with unique prompts of 1,024+ tokens pays the write premium continuously and
+  gets nothing back. Setting the mode to `explicit` with no breakpoints disables caching
+  and the write charge for that request; with breakpoints, only the marked prefixes are
+  written. One-shot, unique-input workloads (bulk classification over distinct
+  documents, single-turn extraction) are the ones to move to `explicit`.
+- **Hit rate is now a cost control, not a nice-to-have.** Set a stable
+  `prompt_cache_key` per shared prefix; above roughly 15 requests per minute on one
+  prefix-and-key pair some requests miss the cache, so spread high-volume traffic across
+  several keys with a stable mapping. The minimum cache lifetime is 30 minutes (the only
+  supported `ttl` value); the service may retain longer. A request can create at most
+  four new cache writes.
+- **The write is visible in the response.** Standard deployments report
+  `cache_write_tokens` alongside `cached_tokens`. Instrument both and track the ratio of
+  tokens written to tokens read per workload - a ratio near or above 1 means the workload
+  is paying for a cache it does not use.
+- **A model upgrade changes the billing, silently.** Moving a deployment from GPT-5.5 or
+  earlier to GPT-5.6 turns on write charges with no code change, because implicit mode
+  is the default. Add the cache-mode decision to the migration checklist. Provisioned
+  (PTU-M) deployments do not support cache breakpoints.
+
+Sources:
+https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/prompt-caching,
+https://azure.microsoft.com/en-us/pricing/details/cognitive-services/openai-service/
 
 ### Prompt optimisation
 

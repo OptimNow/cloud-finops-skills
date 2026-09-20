@@ -283,6 +283,19 @@ While many AWS customers have migrated EC2 workloads to Graviton to reduce costs
 - Update Lambda function configurations to use ARM/Graviton2 where compatible
 - Benchmark function performance and duration to validate equal or improved performance
 - For stable, high-throughput functions, consider pairing architecture changes with Compute Savings Plans
+- **Lambda Managed Instances is a different cost model, and it now reaches Graviton5.**
+  Lambda Managed Instances runs functions on EC2 instances in your account while Lambda
+  keeps managing instance lifecycle, patching, routing and scaling. The point for FinOps
+  is that it bills through EC2 pricing rather than standard per-invocation Lambda
+  billing, so the architecture question becomes an instance-generation question. Since
+  9 September 2026 it supports Graviton5-powered C9g, C9gd, M9g and M9gd instances,
+  which AWS states deliver up to 25% better compute performance than Graviton4. Two
+  things to check: a capacity provider pinned to a specific older instance type does not
+  move on its own, whereas one left on `default` has Graviton5 added to the pool Lambda
+  picks from; and "up to 25% faster" is a performance claim, not a price cut - it only
+  becomes a saving if the workload finishes sooner or packs onto fewer instances, so
+  benchmark before counting it. Source:
+  https://aws.amazon.com/about-aws/whats-new/2026/09/aws-lambda-graviton5-ec2/
 
 **Suboptimal Architecture Selection In Aws Lambda**
 Service: AWS Lambda | Type: Suboptimal Configuration

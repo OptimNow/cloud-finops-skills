@@ -155,6 +155,16 @@ An agent that stops instances autonomously is not - regardless of how sophistica
 reasoning is. Governance, not technology capability, is the real constraint on autonomous
 FinOps agents.
 
+AWS's own position, published with the AWS FinOps Agent public preview (10 September
+2026), lands in the same place from the vendor side: a four-tier ladder from read-only
+insights, through human-approved and rule-based mutation, to bounded autonomy, each tier
+paired with a control - transparency, preview, permission scope, then blast-radius caps
+and rollback. Two things are worth borrowing regardless of cloud. Autonomy is granted
+per action type, not per agent. And the top tier is still bounded by a **maximum
+financial impact**, which is the agentic equivalent of a spend cap and belongs in any
+agent's design, first-party or not. Tier detail and native examples are in
+`finops-aws.md`.
+
 **Billing-model flexibility for agent spend.** Since 26 August 2026, Gemini
 Enterprise offers a Pay-as-you-go edition (compute and tokens at standard model API
 rates, no base fee) alongside its per-seat editions - see `finops-gcp.md` for the

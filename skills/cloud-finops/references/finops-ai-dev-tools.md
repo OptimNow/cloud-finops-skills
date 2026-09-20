@@ -219,6 +219,11 @@ matching `prompt_cache` status object, so developers can see cache efficiency in
 client rather than inferring it from billing data - useful for spotting the cache-miss
 patterns described in "The context-load tax" section below. Related: v2.1.243 added
 `modelPricing` (contracted rates shown in `/cost`) and a configurable `promptCacheTtl`.
+v2.1.268 closes the loop for gateway deployments: with `pricing:` set in the gateway's
+`gateway.yaml`, signed-in clients receive the same rates through managed settings, so
+`/cost` and telemetry match the gateway's spend meter. Before this, contracted rates had
+to be configured client-side and could drift from what the gateway metered - which made
+developer-visible cost and the enforced cap disagree. Set rates once, at the gateway.
 For gateway users the practical effect is that ClaudeXray and LiteLLM are no longer
 needed *purely* for budget-cap visibility; they remain valuable for metadata injection,
 cross-tool aggregation and analytics. Sources:
