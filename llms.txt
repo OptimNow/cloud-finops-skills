@@ -41,7 +41,7 @@ Hub at https://optimtoken.optimnow.io.
 - [finops-azure-patterns.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure-patterns.md): Azure enumerated per-service optimisation pattern catalogue
 - [finops-azure-openai.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-azure-openai.md): Azure OpenAI Service (PTUs, spillover, costs)
 - [finops-gcp.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-gcp.md): GCP FinOps (Compute, BigQuery, networking)
-- [finops-vertexai.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-vertexai.md): GCP Vertex AI billing and optimisation
+- [finops-vertexai.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-vertexai.md): GCP Vertex AI (Gemini Enterprise Agent Platform) billing, service tiers, Flexible Savings Plans, and the Gemini Developer API
 - [finops-tagging.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-tagging.md): Tagging governance and naming conventions
 - [finops-framework.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-framework.md): FinOps Foundation framework and maturity model
 - [finops-databricks.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/skills/cloud-finops/references/finops-databricks.md): Databricks cost optimisation, allocation, DBCU commitments

@@ -43,9 +43,22 @@ are handled through Azure.
 | Image / audio | Billed in units (images per resolution, audio per second) - separate from tokens |
 
 **Key cost driver:** output tokens are billed at 4-8x the input rate on current
-Azure OpenAI models (GPT-4.1 at 4x, GPT-5 at 8x, as of August 2026). High
-output-ratio workloads carry disproportionately higher costs, and the multiplier
-matters more than the headline input rate when you size a workload.
+Azure OpenAI models, and the multiplier moves by generation rather than by model
+size (as of 20 September 2026): GPT-4.1, GPT-4o and the o-series at 4x; GPT-5
+through GPT-5.3 at 8x, from nano to Pro; GPT-5.4 and later at 6x, dropping to 4.5x
+in the long-context band. High output-ratio workloads carry disproportionately
+higher costs, and the multiplier matters more than the headline input rate when you
+size a workload - a migration from a 5.x model at 8x to a 5.4+ model at 6x changes
+the economics of an output-heavy workload even where the input rate rises.
+
+**Long-context band and Priority Processing stack on top.** On GPT-5.4 and later, a
+request above the long-context threshold reprices at 2x input and 1.5x output.
+Priority Processing, where offered, bills at 2x the standard rate on most GPT-5.x
+models (1.75x on GPT-4.1, 2.5x on GPT-5.5) across input, cached input and output
+(as of 20 September 2026). Decide who may enable it and keep it out of batch jobs
+and CI - the same control problem as Google's Priority tier (`finops-vertexai.md`)
+and Anthropic's service tiers (`finops-anthropic.md`). Source:
+https://azure.microsoft.com/en-us/pricing/details/cognitive-services/openai-service/
 
 ### Deployment Locality
 
@@ -55,7 +68,7 @@ performance, compliance posture, and cost.
 | Locality option | Description | Cost vs. Global |
 |---|---|---|
 | **Global** | Traffic routed across regions for best availability and throughput | Lowest |
-| **Data Zone (US or EU)** | Processing within all regions of a chosen zone (e.g., all EU regions) | Slightly higher |
+| **Data Zone (US or EU)** | Processing within all regions of a chosen zone (e.g., all EU regions) | +10% on standard token rates (as of 20 September 2026) |
 | **Regional** | Processing and storage within a single Azure region (e.g., Germany, Australia) | Comparable to Data Zone for standard token rates; provisioned (PTU) hourly rates run materially higher - verify per model |
 
 **Key trade-offs:**
@@ -65,6 +78,12 @@ performance, compliance posture, and cost.
   sovereignty requirements without the throughput penalty of single-region
 - Regional deployment is the strictest option; suitable for regulated industries
   requiring single-region data residency, but performance is lower
+- **Data residency has a visible, uniform price.** The Data Zone premium is a flat
+  10% over Global across the model list, and Google applies the same 10% to
+  non-global Gemini endpoints since 1 July 2026 (`finops-vertexai.md`). Treat
+  roughly 10% on every token as the going rate for in-region processing when a
+  residency requirement is being debated, and put that number in front of whoever
+  is asking for it.
 
 Locality adds a cost premium beyond the base token rate. Always confirm your
 compliance requirements before defaulting to a more restrictive (and more expensive)

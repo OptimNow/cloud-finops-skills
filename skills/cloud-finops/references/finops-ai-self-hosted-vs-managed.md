@@ -142,6 +142,35 @@ routing and governance. Everything below is the operational bill for those three
   model quantization, observability for LLM-specific metrics (TTFT, ITL, throughput per GPU).
   This skill set is scarce and expensive in 2026.
 
+### Vendor selection costs
+
+At scale, self-hosting rarely means one GPU provider. Supply is tight enough that teams
+running open-weight models in production spread across several GPU and managed-inference
+vendors just to cover peak, and each added vendor is chosen on its hourly rate. Three
+costs sit outside that rate and decide whether the cheap vendor is actually cheap:
+
+| Hidden cost | What it looks like | What to check before signing |
+|---|---|---|
+| **Cost-data quality** | No usage export, or an invoice-level total with no per-workload breakdown. Someone rebuilds the visibility by hand, or the spend goes dark and drifts. | Ask for a sample billing export. Can it be split by model, endpoint and team? Does it land in the same allocation pipeline as the rest of the AI spend? |
+| **Time to new models** | Some managed-inference vendors take materially longer than others to support a newly released model, so the vendor's roadmap becomes the pace of your own. | When did the vendor make the last two or three relevant open-weight releases deployable, relative to release day? |
+| **Contract flexibility** | Reserved GPU terms are hardening: longer commitments, less room to resize or exit. A good rate on a rigid contract is lock-in priced as a discount. | Term length, resize and exit rights, whether reserved and on-demand can be mixed, and what happens to the commitment if the workload moves to a different GPU class. |
+
+The first row is the one FinOps owns outright. A vendor with poor cost data does not
+just cost analyst hours: it removes the early warning that stops a spend spiral, which
+is the larger exposure. Treat billing-data quality as a selection criterion with a
+weight, not as something to fix after the contract is signed, and price the manual
+reconciliation effort into the comparison when a vendor fails it.
+
+These stack with the liquidity risk on reserved capacity noted above: every additional
+vendor is another commitment to track, another data feed to normalise, and another
+place for idle reserved capacity to hide.
+
+*Sourcing note:* these three costs are practitioner-reported, from a FinOps lead running
+open-weight inference at very high request volume across multiple GPU vendors (panel
+"From AI Spend to AI Economics", https://www.youtube.com/watch?v=jenButL70oY, viewed
+20 September 2026). They describe operating experience, not vendor billing mechanics -
+verify each against the specific vendors on your shortlist.
+
 ## Where self-hosted wins (when it does)
 
 When the conditions align, self-hosted is meaningfully cheaper and operationally sensible.
@@ -241,6 +270,8 @@ Before pricing self-hosted vs managed, run these diagnostic questions:
    re-deploys, and rolls back if needed?
 7. What is the cost of one hour of downtime on this service to the business?
 8. Have you priced the routing/fallback layer if you go hybrid?
+9. For each GPU or inference vendor on the shortlist: have you seen a sample billing
+   export, and can it be allocated by model and team without manual rework?
 
 If they cannot answer 1, 2, 3, 6 with concrete specifics, they are not ready for
 self-hosted. Frame this honestly. Recommending self-hosted to a client who cannot operate it

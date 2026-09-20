@@ -74,7 +74,19 @@ or variable agent workloads and pair it with a budget, threshold alerts and anom
 detection so unpredictable usage cannot silently overrun the budget. Move to a
 subscription edition once adoption stabilises and per-seat cost is consistently
 below the observed consumption run-rate. Reassess the mix as adoption matures. See
-`finops-agentic.md` under cost governance for agent spend flexibility. Sources:
+`finops-agentic.md` under cost governance for agent spend flexibility.
+
+**Two controls from the same 26 August 2026 announcement.** *Gemini Enterprise Flexible
+Savings Plans* (FSPs) are spend-based committed use discounts on generative AI
+consumption - 10% for 1 year, 20% for 3 years, no minimum or maximum, drawing down an
+existing Google Cloud EA. They are the commitment lever for the pay-as-you-go edition,
+and they cover token spend, which no other GCP commitment instrument does. Note that the
+seat subscriptions themselves draw down an FSP *without* earning an incremental
+discount, so a plan sized against total Gemini Enterprise spend can be satisfied by
+subscriptions while discounting none of it. Separately, **project-level monthly spend
+limits** in the Cloud Billing console pause an agent's API calls at the limit, with
+alerts at 50%, 80% and 100%. Full mechanics, eligibility boundaries and the FSP-versus-
+Provisioned-Throughput decision are in `finops-vertexai.md`. Sources:
 https://cloud.google.com/blog/products/ai-machine-learning/flexible-billing-and-cost-controls-for-agents-on-google-cloud
 (primary, 26 August 2026), https://docs.cloud.google.com/gemini/enterprise/docs/editions.
 
@@ -182,6 +194,14 @@ they do not transfer if you migrate to a different series or to GKE / Cloud Run.
 Savings Plans or Azure Compute Savings Plans. Shallower discount than resource-
 based CUDs at the same term, but they apply across machine series and regions and
 survive architectural changes.
+
+**Not the same instrument as a Flexible Savings Plan.** Spend-based CUDs cover Compute
+Engine and the services listed below; **Gemini Enterprise Flexible Savings Plans (FSPs)**
+are a separate spend-based commitment covering generative AI model consumption
+(10% for 1 year, 20% for 3 years, announced 26 August 2026). The names are close enough
+to be confused in a commitment review, and they do not cover each other's spend - token
+consumption is not eligible for a Compute Engine CUD, and compute is not eligible for an
+FSP. Mechanics and the eligibility boundary are in `finops-vertexai.md`.
 
 The **architectural drift trap** (already in the patterns section below) is the
 most common GCP commitment failure: organisations buy resource-based CUDs early,
