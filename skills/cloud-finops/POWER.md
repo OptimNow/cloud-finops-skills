@@ -36,6 +36,10 @@ keywords:
   - azure openai
   - ptu
   - vertex ai
+  - gemini enterprise agent platform
+  - gemini developer api
+  - ai studio
+  - flexible savings plans
   - anthropic billing
   - deepseek
   - qwen
@@ -277,7 +281,7 @@ methodology questions - not for routine billing-mechanics queries.
 | Agentic FinOps, true agents vs pipelines vs workflows, agentic cost anatomy, cost per completed task, cost-safe agent architecture, agent-initiated payments, x402, MPP, agent wallets | `references/finops-agentic.md` |
 | AI investment governance, AI Investment Council, stage gates, incremental funding, AI value management, AI practice operations, AI business case, quantifying AI business value, cost displacement vs revenue uplift vs retention vs premium monetisation, realisation rate, ROI sensitivity analysis, payback, break-even volume, total cost of AI (TCA), labour claims (capacity gain vs augmentation vs automation), booking AI value (spend removed vs spend avoided, capital freed) | `references/finops-ai-value-management.md` |
 | GenAI capacity planning, provisioned vs shared capacity, traffic shape, spillover, throughput units | `references/finops-genai-capacity.md` |
-| Self-hosted vs managed AI inference, build vs buy LLM, vLLM, SGLang, llama.cpp, GPU rental, RunPod, CoreWeave, Lambda, hidden cost surface, ML-Ops maturity rubric, hybrid routing (LiteLLM, Portkey) | `references/finops-ai-self-hosted-vs-managed.md` |
+| Self-hosted vs managed AI inference, build vs buy LLM, vLLM, SGLang, llama.cpp, GPU rental, RunPod, CoreWeave, Lambda, GPU / inference vendor selection, hidden cost surface, ML-Ops maturity rubric, hybrid routing (LiteLLM, Portkey) | `references/finops-ai-self-hosted-vs-managed.md` |
 | Open-weight model vendors on their own hosted APIs, DeepSeek, Qwen, Kimi, Moonshot, GLM, Z.ai, Chinese model APIs, open-weight pricing, time-based pricing, peak and off-peak token rates, vendor API vs third-party host channel choice, open-weight model licensing, GLM Coding Plan | `references/finops-open-weight-vendors.md` |
 | AWS billing data, CUR, Data Exports for FOCUS 1.2, Cost Explorer, EC2/compute rightsizing, SageMaker operational FinOps, cost allocation, governance, CloudFront flat-rate plans, S3 Files, multi-org billing, AWS billing hierarchy, separate invoices per BU, Invoice Configuration, invoice units, Billing Conductor, pro forma billing, Cost Categories vs invoice, expensive IAM actions, cost-preventive SCPs, deny high-cost actions, sandbox account guardrails | `references/finops-aws.md` |
 | AWS Savings Plans, Reserved Instances, Spot, commitment decision tree, commitment portfolio liquidity, phased purchasing, EDP negotiation, Convertible RI exchange | `references/finops-aws-commitments.md` |
@@ -288,8 +292,8 @@ methodology questions - not for routine billing-mechanics queries.
 | Azure per-service inefficiency catalogue, enumerated Azure optimisation patterns | `references/finops-azure-patterns.md` |
 | Azure OpenAI Service, Azure AI Foundry, PTU reservations, locality constraint, GPT-4o, GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
 | Anthropic billing, Claude API costs, Claude Code costs, Opus, Sonnet, Haiku pricing, Fast mode, prompt caching, Batch API, long-context pricing, Managed Agents | `references/finops-anthropic.md` |
-| GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery billing export, BigQuery optimisation, FOCUS export, Sustained Use Discounts, SUDs, Committed Use Discounts, CUDs, Flexible CUDs, Spot VMs, Cloud Carbon Footprint | `references/finops-gcp.md` |
-| GCP Vertex AI billing, Vertex provisioned throughput, Gemini pricing, Vertex batch prediction, default PAYG spillover | `references/finops-vertexai.md` |
+| GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery billing export, BigQuery optimisation, FOCUS export, Sustained Use Discounts, SUDs, Committed Use Discounts, CUDs, Flexible CUDs, Flexible Savings Plans, Spot VMs, Cloud Carbon Footprint | `references/finops-gcp.md` |
+| GCP Vertex AI billing, Gemini Enterprise Agent Platform, Vertex provisioned throughput, Gemini pricing, AI Studio, Gemini Developer API, Flexible Savings Plans, FSP, Priority / Flex tiers, Vertex batch prediction, default PAYG spillover | `references/finops-vertexai.md` |
 | Tagging strategy, naming conventions, IaC enforcement, MCP governance | `references/finops-tagging.md` |
 | FinOps framework 2026, 4 domains, 22 capabilities including Executive Strategy Alignment, Usage Optimization, Architecting & Workload Placement, Sustainability, KPIs & Benchmarking, Governance Policy & Risk, Automation Tools & Services, maturity model, phases, personas | `references/finops-framework.md` |
 | Databricks clusters, jobs, Spark optimisation, Unity Catalog costs, allocation and governance, DBU executor attribution, DBCU commitments, Photon multiplier, serverless premium, amortised vs PAYG split, Azure VM RI vs DBU clarification | `references/finops-databricks.md` |

@@ -115,7 +115,7 @@ to shared capacity at pay-as-you-go rates.
 | AWS Bedrock | Must build failover logic yourself |
 | GCP Vertex AI | Default pay-as-you-go for supported Gemini models, request headers control dedicated/shared/reject behaviour |
 
-Source for Vertex AI spillover defaults: https://cloud.google.com/vertex-ai/generative-ai/docs/provisioned-throughput/use-provisioned-throughput
+Source for Vertex AI spillover defaults: https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/provisioned-throughput/use-provisioned-throughput
 
 ---
 

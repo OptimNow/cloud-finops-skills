@@ -666,12 +666,12 @@ Use these knowledge files for the following query types:
 | Azure OpenAI / Foundry PTU reservations, locality | finops-azure-openai.md |
 | Anthropic Claude billing, Fast mode, prompt caching, long-context | finops-anthropic.md |
 | GCP cost management, BigQuery export, CUDs, SUDs, Spot, Carbon Footprint | finops-gcp.md |
-| Vertex AI pricing, Provisioned Throughput, Context Caching | finops-vertexai.md |
+| Vertex AI / Gemini Enterprise Agent Platform pricing, Provisioned Throughput, Context Caching, Flexible Savings Plans, Priority / Flex tiers, Gemini Developer API (AI Studio) | finops-vertexai.md |
 | AI cost management, LLM economics, agentic patterns, ROI, methodology lens | finops-for-ai.md |
 | Agentic FinOps, agent cost anatomy, cost per completed task, cost-safe agent architecture, agent-initiated payments (x402/MPP) | finops-agentic.md |
 | AI investment governance, Investment Council, stage gates, AI business case, value quantification methods, ROI sensitivity | finops-ai-value-management.md |
 | GenAI capacity planning, provisioned vs shared, spillover | finops-genai-capacity.md |
-| Self-hosted vs managed AI inference, build-vs-buy LLM, vLLM, GPU rental, hidden cost surface | finops-ai-self-hosted-vs-managed.md |
+| Self-hosted vs managed AI inference, build-vs-buy LLM, vLLM, GPU rental, GPU / inference vendor selection, hidden cost surface | finops-ai-self-hosted-vs-managed.md |
 | Open-weight vendor hosted APIs (DeepSeek, Qwen, Kimi, GLM), time-based pricing, open-weight licensing | finops-open-weight-vendors.md |
 | AI coding tools (Cursor, Copilot, Claude Code, Codex, Windsurf, Gemini Code Assist) | finops-ai-dev-tools.md |
 | Databricks (system.billing.usage, DBCU, allocation, Photon) | finops-databricks.md |
@@ -718,7 +718,7 @@ Use these knowledge files for the following query types:
 |---|---|
 | AWS cost management, EC2, RIs, Savings Plans, EDP, RDS, Bedrock pricing, Application Inference Profiles | aws.md |
 | Azure cost management, Reservations, Savings Plans, AHB, MACC, AKS, MCA, Azure OpenAI / Foundry PTUs | azure.md |
-| GCP cost management, BigQuery export, CUDs, SUDs, Spot, Carbon Footprint, Vertex AI, Gemini pricing | gcp.md |
+| GCP cost management, BigQuery export, CUDs, SUDs, Spot, Carbon Footprint, Vertex AI / Gemini Enterprise Agent Platform, Gemini pricing, Flexible Savings Plans, AI Studio | gcp.md |
 | AI cost management, LLM economics, agentic patterns, ROI, Anthropic billing, open-weight vendor hosted APIs (DeepSeek / Qwen / Kimi / GLM), time-based pricing, open-weight licensing, AI coding tools (Cursor / Copilot / Claude Code / Codex / Windsurf), GenAI capacity, AI Investment Council, self-hosted vs managed inference | ai.md |
 | Databricks (DBCU, allocation, Photon), Microsoft Fabric (F-SKUs, CU smoothing), Snowflake (QUERY_ATTRIBUTION_HISTORY, Cortex) | data-platforms.md |
 | OCI (Cost Reports, FOCUS, cost-tracking tags, Universal Credits) | oci.md |
