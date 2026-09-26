@@ -53,7 +53,8 @@ cloud-finops-skills/
 │                             publish-mcp, publish-registry, mcp-install-smoke,
 │                             release, dependabot-automerge
 ├── assets/                <- Installation-guide screenshots (embedded in
-│                             INSTALLATION.md), the GitHub social preview, and
+│                             INSTALLATION.md), the GitHub social preview, the
+│                             directory listing icon (icon.png), and
 │                             the generated playbook-coverage.svg and
 │                             fcp-coverage.svg heat maps (embedded in
 │                             README.md; both CI-gated)

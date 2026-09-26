@@ -64,10 +64,10 @@ session):
 
 | Item | Where it is | Status |
 |---|---|---|
-| Privacy policy URL | `https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md` | In repo; review the contact line before publishing |
+| Privacy policy URL | `https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md` | In repo; contact line names jean@optimnow.io |
 | Documentation URL | `https://github.com/OptimNow/cloud-finops-skills#readme` (plugin) and `https://github.com/OptimNow/cloud-finops-skills/blob/main/mcp_server/README.md` (connector) | Exists |
-| Support contact | An OptimNow email address or the optimnow.io contact page | **To decide** - the repo carries none |
-| Icon | Square PNG or SVG | **To prepare** - `assets/` has only screenshots and the 1456x720 social preview |
+| Support contact | `jean@optimnow.io` | Decided 2026-09-26 |
+| Icon | `assets/icon.png` (96x96 PNG, square) | In repo. If the portal asks for a larger size, export the same artwork from its source; do not upscale this file |
 | Listing texts | Section 2.3 below | Drafted |
 | Test account | Not applicable, no authentication | Say so in the Test & launch step |
 
@@ -173,8 +173,8 @@ see section 0.
 | Categories | 1 to 5 | Pick the closest from the portal's list; candidates are developer tools, productivity, finance, data and analytics |
 | Documentation URL | | `https://github.com/OptimNow/cloud-finops-skills/blob/main/mcp_server/README.md` |
 | Privacy policy URL | | `https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md` |
-| Support contact | | To decide (section 0) |
-| Icon | | To prepare (section 0) |
+| Support contact | | `jean@optimnow.io` |
+| Icon | | `assets/icon.png` |
 | URL slug | permanent | `cloud-finops` |
 
 Description draft (about 1,500 characters, edit freely; the portal text cannot be
@@ -212,7 +212,7 @@ none. Reads data only.
 
 ### 2.5 Company
 
-OptimNow, <https://optimnow.io>, plus the primary contact for review updates.
+OptimNow, <https://optimnow.io>; primary contact for review updates: `jean@optimnow.io`.
 
 ### 2.6 Authentication
 

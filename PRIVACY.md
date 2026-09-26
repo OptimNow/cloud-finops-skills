@@ -64,7 +64,7 @@ and any visit is governed by that site's own notice.
 
 Because the hosted connector stores no personal data and identifies no user, there is
 nothing to access, correct or delete on request. For any question about this policy,
-contact OptimNow through the details on <https://optimnow.io>.
+contact OptimNow at <jean@optimnow.io>.
 
 ## Changes
 
