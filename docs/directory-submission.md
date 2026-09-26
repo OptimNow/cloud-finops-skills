@@ -48,13 +48,12 @@ contributors, not for the plugin.
 Verified review calls every tool. Confirm the deployment serves what you expect before
 submitting (the 2026-08 audits found it four releases behind, twice).
 
-`serverInfo.version` in the `initialize` reply is a first check, not proof. Until
-September 2026 `server.py` set no version, so the field reported the `mcp` library
-version instead of the release (it read `1.30.0` on 2026-09-26 while the server was
-serving 1.36.0 content). The server now sets it to the package version, which the
-release pins to `plugin.json`, so once a release carrying that change is deployed
-the field names the release. A deployment that still answers `1.30.0` predates the
-change. Either way, confirm the served content itself:
+`serverInfo.version` in the `initialize` reply names the deployed release since
+1.37.0; it must equal `version` in `.claude-plugin/plugin.json` at the tag you
+deployed. It is a first check, not proof. Before 1.37.0 `server.py` set no version and
+the field reported the `mcp` library version instead (it read `1.30.0` while the
+server was serving 1.36.0 content), so a deployment that answers `1.30.0` predates
+that release. Either way, confirm the served content itself:
 
 | Check | How | Expected |
 |---|---|---|
@@ -71,12 +70,14 @@ Then exercise each of the six tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
 asks you to confirm you did.
 
-**Last verified: 2026-09-26.** Served content equals tag `v1.36.0` exactly (35
-references, 37 playbooks, the 10 reference bodies changed since that tag match the
-tag); tool names, titles, annotations, descriptions and schemas are identical to
-`main`; six widget resources are served; misses return `error` with `suggestions`,
-`available_sections` or `valid_values`. The two content PRs merged after `v1.36.0`
-(#198, #199) are not live, as expected.
+**Last verified: 2026-09-26, after the 1.37.0 release and `fly deploy`.**
+`serverInfo.version` reads `1.37.0`. Served content equals tag `v1.37.0` exactly: 35
+references and 37 playbooks, with no body differing from the tag. Tool names,
+titles, annotations, descriptions and schemas are identical to the tag; six widget
+resources are served; misses return `error` with `suggestions`, `available_sections`
+or `valid_values`; and the reviewer sequence in section 2.8 returns content on every
+call. The same release is on PyPI (`cloud-finops-mcp` 1.37.0) and is the latest
+entry on the MCP Registry, pointing at the Fly.io URL.
 
 **Materials to have ready** (the portal has no "save for later" beyond your browser
 session):
