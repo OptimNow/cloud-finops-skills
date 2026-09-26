@@ -48,10 +48,13 @@ contributors, not for the plugin.
 Verified review calls every tool. Confirm the deployment serves what you expect before
 submitting (the 2026-08 audits found it four releases behind, twice).
 
-Do not use `serverInfo.version` for this. `server.py` passes no version to FastMCP,
-so the field reports the version of the `mcp` library the image installed, not the
-release (it read `1.30.0` on 2026-09-26 while the server was serving 1.36.0
-content). The checks that do mean something are the served content itself:
+`serverInfo.version` in the `initialize` reply is a first check, not proof. Until
+September 2026 `server.py` set no version, so the field reported the `mcp` library
+version instead of the release (it read `1.30.0` on 2026-09-26 while the server was
+serving 1.36.0 content). The server now sets it to the package version, which the
+release pins to `plugin.json`, so once a release carrying that change is deployed
+the field names the release. A deployment that still answers `1.30.0` predates the
+change. Either way, confirm the served content itself:
 
 | Check | How | Expected |
 |---|---|---|

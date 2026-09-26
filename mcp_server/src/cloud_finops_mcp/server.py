@@ -194,6 +194,14 @@ mcp = FastMCP(
     ),
 )
 
+# serverInfo.version. FastMCP's constructor takes no version, so the low-level
+# server falls back to the version of the `mcp` library it runs on: the hosted
+# connector reported 1.30.0 (the SDK) on 2026-09-26 while serving 1.36.0
+# content, which made the field useless as a deployment check and misleading
+# on a directory listing. Setting it here makes initialize report this
+# package's version, which the release workflow pins to plugin.json.
+mcp._mcp_server.version = __version__
+
 
 @mcp.tool(
     title="Browse the FinOps knowledge library",

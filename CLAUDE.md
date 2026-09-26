@@ -538,7 +538,10 @@ and generalise to any repo shipping both surfaces:
 7. **Verify the surface you measure, by calling it, on content.** The hosted
    server's `serverInfo` version stayed at an old value while serving
    current content - it is not a deployment check; `tools/list` description
-   text and listing totals are. And the claude.ai connector toggle is
+   text and listing totals are. (Root cause found 2026-09-26: `server.py` set
+   no version, so FastMCP reported the `mcp` SDK's own version. It now sets
+   the package version; the field names the release once that is deployed,
+   but content remains the proof.) And the claude.ai connector toggle is
    account-global, not per-chat: restore it after any isolation test.
 8. **claude.ai memory is a confounder no repo change reaches.** It recalled
    a client file into an account-phrased probe and answered from there, and
