@@ -21,7 +21,7 @@
 
 | Tool | One-step install |
 |---|---|
-| <img src="https://img.shields.io/badge/-Claude%20Code-D97757?logo=anthropic&logoColor=white" alt="Claude Code" height="22"/> | At the Claude Code prompt: `/plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git` then `/plugin install cloud-finops@optimnow` |
+| <img src="https://img.shields.io/badge/-Claude%20Code-D97757?logo=anthropic&logoColor=white" alt="Claude Code" height="22"/> | At the Claude Code prompt: `/plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git` then `/plugin install cloud-finops@optimnow`. The plugin bundles the hosted MCP connector below (`.mcp.json`), so the skill and the six retrieval tools install together |
 | <img src="https://img.shields.io/badge/-Claude.ai%20%2F%20Desktop-D97757?logo=anthropic&logoColor=white" alt="Claude.ai / Claude Desktop" height="22"/> | [Download the latest release zip](https://github.com/OptimNow/cloud-finops-skills/releases/latest), then **Settings -> Skills -> Upload zip** |
 | <img src="https://img.shields.io/badge/-ChatGPT-10A37F?logo=openai&logoColor=white" alt="ChatGPT" height="22"/> | Self-host: `./install.sh --tool chatgpt --grouped` _(a public Cloud FinOps GPT is on the Roadmap)_ |
 | <img src="https://img.shields.io/badge/-Gemini-4285F4?logo=googlegemini&logoColor=white" alt="Gemini" height="22"/> | Self-host: `./install.sh --tool gemini` _(a public Cloud FinOps Gem is on the Roadmap)_ |
@@ -294,6 +294,36 @@ viewer with copyable detection queries and a checkable fix list, and a reference
 browser with a reading panel. Hosts without MCP Apps support get the plain results;
 nothing about the tools changes. Details in
 [mcp_server/README.md](./mcp_server/README.md).
+
+---
+
+## Data handling
+
+What the plugin runs, sends and fetches, so you can decide where it is appropriate to
+use it. Full policy in [PRIVACY.md](./PRIVACY.md).
+
+- **The skill is static text.** `SKILL.md`, the references and the playbooks are
+  markdown files read into the model's context. They run no code, call no network
+  endpoint and carry no credentials. The playbooks contain detection queries (billing
+  export SQL, CLI commands) that *you* run in your own cloud account; nothing in this
+  repository reads a cloud account.
+- **The bundled MCP connector sends tool calls to `cloud-finops-mcp.fly.dev`.** When
+  the model calls one of the six tools, the tool arguments (a reference or playbook
+  name, a section phrase, facet filters such as domain or scope) travel over HTTPS to
+  that server and the matching library content comes back. The server requires no
+  account and no authentication, holds no database and no per-user state, and serves
+  the same public files as this repository. Its application log records facet queries
+  that matched nothing (the filter values, never conversation text) so coverage gaps
+  can be reviewed; the hosting platform (Fly.io, Paris region) keeps the web server's
+  standard access log. OptimNow does not sell, share or profile from either. On hosts
+  that render MCP Apps, the widget HTML comes from the same origin and its content
+  security policy allows no third-party domain.
+- **Price lookups route to OptimToken.** The skill and the server tell the model to
+  fetch current prices from the OptimNow AI Pricing Hub
+  (<https://optimtoken.optimnow.io>) instead of quoting a stale figure. That is a
+  separate public site; whether the model opens it is its decision in the conversation.
+- **Nothing else.** No telemetry, no analytics beacon, no update check, no package
+  launcher, no credential read from your environment.
 
 ---
 

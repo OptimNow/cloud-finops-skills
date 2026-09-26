@@ -33,6 +33,8 @@ cloud-finops-skills/
 ├── AGENTS.md              <- Agent-facing repo brief (truncated tree, defers to CLAUDE.md)
 ├── INSTALLATION.md        <- Setup instructions (12 tool integrations) + response contract
 ├── LICENSE.md             <- CC BY-SA 4.0
+├── PRIVACY.md             <- Privacy policy for the skill, the hosted connector and
+│                             the PyPI package (the directory listing asks for its URL)
 ├── CONTRIBUTING.md        <- Contribution guide (types, process, push-backs)
 ├── llms.txt               <- llmstxt.org-format index (linked sections; CI-gated)
 ├── DEPENDENCIES.md        <- Cross-repo dependency map for the five OptimNow repos,
@@ -44,6 +46,9 @@ cloud-finops-skills/
 ├── fly.toml               <- Fly.io app config (app cloud-finops-mcp, region cdg,
 │                             scale-to-zero); .dockerignore trims the build context
 ├── .claude-plugin/        <- plugin.json + marketplace.json (versions bump together)
+├── .mcp.json              <- Bundles the hosted connector into the plugin (remote
+│                             http entry; its url must equal CANONICAL_CONNECTOR_URL
+│                             in server.py byte for byte)
 ├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
 │                             publish-mcp, publish-registry, mcp-install-smoke,
 │                             release, dependabot-automerge
@@ -55,8 +60,11 @@ cloud-finops-skills/
 ├── docs/
 │   ├── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
 │   │                         (split out of CLAUDE.md, Aug 2026)
-│   └── mcp-apps-lessons.md <- Chronological forensic of the MCP Apps widget
-│                             rendering work (split out of CLAUDE.md, Aug 2026)
+│   ├── mcp-apps-lessons.md <- Chronological forensic of the MCP Apps widget
+│   │                         rendering work (split out of CLAUDE.md, Aug 2026)
+│   └── directory-submission.md <- Step-by-step for the two Claude directory
+│                             listings (plugin bundle + MCP connector), with the
+│                             prefilled portal answers and the holds to expect
 ├── skills/cloud-finops/          <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
@@ -369,7 +377,8 @@ rules, which you need before touching `mcp_server/src/cloud_finops_mcp/server.py
   `.claudemcpcontent.com`, and pinned by tests. Never hash an internal path such as
   `/mcp` - that wrong-input variant is what broke `ai-pricing-hub-mcp` and then this
   server. The constant must stay byte-for-byte identical to the connector URL
-  documented in README.md and INSTALLATION.md.
+  documented in README.md and INSTALLATION.md, and to the `url` in `.mcp.json`
+  (the plugin-bundled entry, since September 2026).
 - **Keep the Skybridge-parity shape** (PR #174): every widget registered twice - an
   apps-sdk variant (mime `text/html+skybridge`, `openai/*` meta, tool
   `openai/outputTemplate`) alongside the SEP-1865 spec variant
@@ -770,7 +779,7 @@ So the check is one-directional. Before merging, if the PR touches any of these:
 | The `provenance` contract (tier semantics, `upstreamTimestamp` / `eloAsOf`, the stale notice) | `ai-pricing-hub-mcp` | "Price figures" rule 5, in SKILL.md, POWER.md and the INSTALLATION.md response contract |
 | An MCP tool name or parameter of the ROI calculator | `ai-roi-calculator-mcp` | INSTALLATION.md companion section |
 | A value method, an input's meaning, or a documented trap | `ai-roi-calculator` METHODOLOGY.md | `references/finops-ai-value-management.md` |
-| Any `*.fly.dev`, `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, server.json |
+| Any `*.fly.dev`, `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, server.json, `.mcp.json`, PRIVACY.md |
 
 Two standing rules that follow from the map:
 
@@ -780,6 +789,37 @@ Two standing rules that follow from the map:
   app and its MCP far enough to return a 7-point different ROI for the same preset.
 - **Price figures are not maintained here at all.** See the Content rules "Write
   mechanics, not price figures" entry.
+
+---
+
+## Claude directory listing
+
+The repository is prepared for two listings in Anthropic's Claude directory
+(<https://claude.ai/directory/manage>): the **plugin bundle** (this repository,
+followed on `main`) and the **MCP connector** (the hosted server URL). The
+step-by-step, the prefilled portal answers and the reviewer holds to expect are in
+[`docs/directory-submission.md`](docs/directory-submission.md). Four rules that follow
+from how the directory works:
+
+- **`.mcp.json` is part of the plugin.** Since September 2026 the plugin bundles the
+  hosted connector, so a Claude Code or claude.ai plugin install also registers the
+  server. Its `url` is a fourth copy of the connector URL, alongside `server.py`,
+  README.md and INSTALLATION.md. It must be the remote `http` entry, never the
+  `uvx cloud-finops-mcp` stdio form: chat ignores local servers and the directory
+  holds any package launcher for review.
+- **Every merge to `main` is a directory version.** The directory scans each commit
+  on the tracked branch and publishes it under the listing's auto-publish setting.
+  Nothing changes in how content PRs are made, but a commit that breaks the plugin
+  (a malformed `SKILL.md` frontmatter, a stray `bin/` folder, a file the security
+  scan cannot read) now stops the listing from updating, not just CI.
+- **The plugin name stays `cloud-finops`.** A rename breaks every
+  `cloud-finops@optimnow` install. The directory may hold a generic name for a
+  reviewer; `displayName` ("Cloud FinOps by OptimNow") is the label to change, not
+  `name`.
+- **One file is always held for a reviewer**: `llms-full.txt` (over the 256 KiB
+  per-file limit). Accepted, because the plugin folder is the
+  repository root and moving it would break the marketplace path. Do not "fix" this
+  by shrinking or dropping `llms-full.txt`; it is the one-fetch ingestion artefact.
 
 ---
 
@@ -870,6 +910,10 @@ Two standing rules that follow from the map:
 - [ ] SKILL.md description stays under 1024 characters (CI-gated by
       `scripts/check-skill-description.sh`, which also warns above 950 so the
       ceiling is visible before it is hit)
+- [ ] **Connector URL changed? Move all four copies together**: `server.py`
+      (`CANONICAL_CONNECTOR_ORIGIN`), README.md, INSTALLATION.md and `.mcp.json`
+      (plus PRIVACY.md, which names the host). The directory connector listing's URL
+      is edited in the portal, not in the repo. Nothing in CI catches this
 - [ ] **Cross-repo impact checked.** If the PR quotes another OptimNow repo's tool
       names, parameters, endpoint URLs, `provenance` fields, or ROI methodology, it was
       verified against that repo. See "Cross-repo dependencies" above and
