@@ -45,19 +45,35 @@ is not loaded as project context. That warning is benign; the file is for
 contributors, not for the plugin.
 
 **Hosted server check.** The portal syncs the tool list from the live server, and
-Verified review calls every tool. Confirm the deployment is current before submitting
-(the 2026-08 audits found it four releases behind, twice):
+Verified review calls every tool. Confirm the deployment serves what you expect before
+submitting (the 2026-08 audits found it four releases behind, twice).
 
-```bash
-curl -s https://cloud-finops-mcp.fly.dev/mcp \
-  -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"check","version":"0"}}}'
-```
+Do not use `serverInfo.version` for this. `server.py` passes no version to FastMCP,
+so the field reports the version of the `mcp` library the image installed, not the
+release (it read `1.30.0` on 2026-09-26 while the server was serving 1.36.0
+content). The checks that do mean something are the served content itself:
 
-The `serverInfo.version` in the reply must match `.claude-plugin/plugin.json`. If it
-does not, run `fly deploy` from the tagged release commit first. Then exercise each of
-the six tools once through MCP Inspector (`npx @modelcontextprotocol/inspector`) or as
-a custom connector in Claude; the portal asks you to confirm you did.
+| Check | How | Expected |
+|---|---|---|
+| Listing totals | `list_references()` and `list_playbooks()` | `total` equals the number of `.md` files under `references/` and `playbooks/` (README excluded) at the tag you deployed |
+| Tool surface | `tools/list` | Six tools, each with a `title` and `readOnlyHint: true`; descriptions identical to `server.py` at that tag |
+| Bodies | `get_reference(name=...)` on a file changed in the last release | `content` equals the file at that tag |
+
+The hosted server is redeployed per release, not per merge (INSTALLATION.md), so
+content merged to `main` after the last tag is expected to be absent until the next
+release and `fly deploy`. It is not a defect. If the served content is older than the
+last tag, run `fly deploy` from the tagged commit first.
+
+Then exercise each of the six tools once through MCP Inspector
+(`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
+asks you to confirm you did.
+
+**Last verified: 2026-09-26.** Served content equals tag `v1.36.0` exactly (35
+references, 37 playbooks, the 10 reference bodies changed since that tag match the
+tag); tool names, titles, annotations, descriptions and schemas are identical to
+`main`; six widget resources are served; misses return `error` with `suggestions`,
+`available_sections` or `valid_values`. The two content PRs merged after `v1.36.0`
+(#198, #199) are not live, as expected.
 
 **Materials to have ready** (the portal has no "save for later" beyond your browser
 session):
@@ -232,12 +248,14 @@ Text to paste:
 > a custom connector (or open it in MCP Inspector) and call, in order:
 > `list_references()`, `find_references(phase="Optimize", persona="Engineering")`,
 > `get_reference(name="finops-aws-commitments", section="commitment decision")`,
-> `list_playbooks()`, `find_playbooks(service="nat gateway")`,
+> `list_playbooks()`, `find_playbooks(service="AWS NAT Gateway")`,
 > `get_playbook(name="aws-nat-gateway-endpoint-substitution")`. Each returns JSON; a miss
 > returns `error` plus `suggestions` or `available_sections`, never a bare 500.
 
-Check the playbook name against `list_playbooks()` output before pasting; names
-change when the catalogue grows. Confirm the "I have run every tool" box only after
+Facet values are exact, not fuzzy: `service="nat gateway"` returns zero results, which
+is what a reviewer would then see. This sequence was run against the live server on
+2026-09-26 and every call returned content. Re-check the names against
+`list_playbooks()` before pasting; they change when the catalogue grows. Confirm the "I have run every tool" box only after
 doing it on the deployment that is live that day.
 
 ### 2.9 Compliance
