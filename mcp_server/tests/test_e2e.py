@@ -52,6 +52,24 @@ async def test_e2e_lists_tools(server_params: StdioServerParameters) -> None:
 
 
 @pytest.mark.asyncio
+async def test_e2e_server_info_reports_package_version(
+    server_params: StdioServerParameters,
+) -> None:
+    """serverInfo.version is this package's version, not the mcp SDK's.
+
+    FastMCP falls back to the SDK version when none is set, which is how the
+    hosted connector came to report 1.30.0 while serving 1.36.0 content.
+    """
+    from cloud_finops_mcp import __version__
+
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            init = await session.initialize()
+            assert init.serverInfo.name == "cloud-finops"
+            assert init.serverInfo.version == __version__
+
+
+@pytest.mark.asyncio
 async def test_e2e_list_references(
     server_params: StdioServerParameters, expected_references: int
 ) -> None:
