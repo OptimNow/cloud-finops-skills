@@ -63,9 +63,13 @@ cloud-finops-skills/
 │   │                         (split out of CLAUDE.md, Aug 2026)
 │   ├── mcp-apps-lessons.md <- Chronological forensic of the MCP Apps widget
 │   │                         rendering work (split out of CLAUDE.md, Aug 2026)
-│   └── directory-submission.md <- Step-by-step for the two Claude directory
-│                             listings (plugin bundle + MCP connector), with the
-│                             prefilled portal answers and the holds to expect
+│   ├── directory-submission.md <- Step-by-step for the two Claude directory
+│   │                         listings (plugin bundle + MCP connector), with the
+│   │                         prefilled portal answers and the holds to expect
+│   └── list-submissions.md <- Submission kit for the curated GitHub lists
+│                             (awesome-mcp-servers, awesome-agent-skills, ...):
+│                             verified facts, exact entry lines, PR bodies,
+│                             hand-fill form drafts and the spacing schedule
 ├── skills/cloud-finops/          <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
