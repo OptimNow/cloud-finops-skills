@@ -1,9 +1,11 @@
 {
   "name": "cloud-finops",
+  "displayName": "Cloud FinOps by OptimNow",
   "version": "1.36.0",
   "description": "Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic).",
   "author": {
     "name": "OptimNow",
+    "email": "jean@optimnow.io",
     "url": "https://optimnow.io"
   },
   "repository": "https://github.com/OptimNow/cloud-finops-skills",

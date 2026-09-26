@@ -61,6 +61,12 @@ For auto-updating installs, prefer the plugin marketplace path:
 
 (Run those at the Claude Code prompt, not in a shell.)
 
+The plugin bundles the hosted MCP connector: `.mcp.json` at the repository root
+points at `https://cloud-finops-mcp.fly.dev/mcp`, so installing the plugin also
+registers a `cloud-finops` MCP server (visible under `/mcp`) next to the skill. If you
+had already added the same URL by hand with `claude mcp add`, remove one of the two
+(`claude mcp remove cloud-finops`) so the six tools are not listed twice.
+
 ### Claude Code (user-level)
 
 ```bash
