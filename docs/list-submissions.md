@@ -320,7 +320,7 @@ Record the actual dates and PR URLs below as they happen.
 
 | Target | Date | URL | Outcome |
 |---|---|---|---|
-| 1 | | | |
+| 1 | 2026-09-27 | https://github.com/punkpeye/awesome-mcp-servers/pull/15223 | Opened; validator labels has-glama, has-emoji, valid-name. Awaiting maintainer |
 | 2 | | | |
 | 3 | | | |
 | 4 | | | |
