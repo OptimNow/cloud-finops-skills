@@ -197,25 +197,67 @@ byte-for-byte identical to the documented URL.
 
 ---
 
+## 2026-09-30: first render test on the custom domain - tools reach claude.ai, widgets still do not
+
+Context: the connector moved to `https://mcp.optimnow.io/mcp` (PR #210) and was
+redeployed on Fly. Before the test, the deployed server was called directly and
+advertised the expected sandbox domain for that URL on all three widget resources
+(`5164c823f8a966e5cb0f8571d5141bd9.claudemcpcontent.com`) with the CSP origins set to
+the new host, so the static-hash input was known to be right before the host was
+involved.
+
+Test, on claude.ai (web), fresh custom connector at the canonical URL, new chat:
+
+1. "Use the cloud-finops tools to list the playbooks for AWS." The host loaded the
+   tools, the model called `find_playbooks` and returned the 21 AWS playbooks as a
+   plain table. **Tool calls work on the new URL.**
+2. "Open the playbook explorer." The model answered that the connector "only has
+   list/find/get tools, with no UI or resources", found no artifact to open, and then
+   built its own artifact from the tool results, with a caveat that the copied text
+   was unverified.
+
+What this establishes:
+
+- The failure is upstream of the hash. The `ui.domain` value was verified correct for
+  the URL as entered, and the host still did not mount a frame on a tool result that
+  carries the widget metadata. Whatever gates rendering here, it is not the constant.
+- The host exposed no `ui://` resource to the model at all. The model's statement is
+  the first direct evidence that the resources are filtered out before the model sees
+  them, rather than served and failing to render.
+- The model's fallback (build an artifact by hand) is not the feature and should not be
+  mistaken for it: its own note says the playbook text was copied without a
+  character-level check.
+
+Not established: whether Claude Desktop behaves the same (no Desktop log was
+collected), and whether the apps-sdk variant would render on a host that reads it.
+The domain move itself is done and verified; rendering stays unproven.
+
+---
+
 ## Where this stands
 
 - `ui.domain` is required, and is derived in `mcp_server/src/cloud_finops_mcp/server.py`
-  from the ROOT connector URL **including its trailing slash**
-  (`CANONICAL_CONNECTOR_ORIGIN + "/"`). It is pinned by tests. Never hash an
-  internal path such as `/mcp`.
+  from the documented connector URL, byte for byte. Since the move to Fly (2026-09-09)
+  the MCP is served at `/mcp` only, so that URL is `CANONICAL_CONNECTOR_ORIGIN + "/mcp"`
+  with no trailing slash; on Alpic it had been the root-with-slash form. The rule is
+  the same either way: hash exactly what the user is told to paste. Since 2026-09-30
+  the origin is `https://mcp.optimnow.io` and the literal hash is pinned by
+  `test_ui_domain_pins_the_custom_domain_hash`.
 - The dual widget registration (apps-sdk variant alongside the SEP-1865 spec
   variant) and the `ui.csp` block are the Skybridge-parity shape, shipped in
   PR #174. Do not remove either while trying to simplify the server.
 - The tool-side widget link is declared under all three key shapes
   (`ui.resourceUri`, the flat `ui/resourceUri`, and `openai/outputTemplate`)
   because different hosts read different ones.
-- **Rendering for this repo's connector was still unconfirmed as of the last
-  recorded test.** PR #175 removed the last known defect (the ROOT-URL hash
-  mismatch); no successful render has been recorded since. Treat interactive
-  rendering as unproven, not as shipped.
-- The next diagnostic step, if this is picked up again, is a fresh Desktop render
-  test against a current Alpic deployment, checking the `mcp-ext-apps-host` log for
-  a `ui.domain` error before assuming the shape is still at fault.
+- **Rendering for this repo's connector is still not happening, as of the
+  2026-09-30 test on claude.ai.** The hash was verified correct before the test and
+  the host still surfaced no resources to the model. Treat interactive rendering as
+  unproven, not as shipped, and do not cite it as a benefit of the hosted deployment.
+- The next diagnostic step, if this is picked up again, is a Claude Desktop render
+  test against the current Fly deployment at the canonical URL, reading the
+  `mcp-ext-apps-host` log: a `ui.domain` error would contradict the direct
+  verification and point back at the constant; no error plus no frame confirms
+  host-side gating and means the remaining lever is the resource shape, not the URL.
 
 ---
 

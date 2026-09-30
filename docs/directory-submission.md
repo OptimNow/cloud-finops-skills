@@ -73,6 +73,13 @@ Then exercise each of the six tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
 asks you to confirm you did.
 
+**Verified 2026-09-30, after the move to `https://mcp.optimnow.io/mcp` (PR #210) and
+`fly deploy`.** Both hosts answer `initialize` with `serverInfo.version` 1.37.0, list
+the six tools and `list_references` total 35; the three widget resources advertise
+the sandbox domain for the new URL. In claude.ai the connector loads and tool calls
+succeed; widgets do not render (see `docs/mcp-apps-lessons.md`, 2026-09-30 entry).
+The earlier verification follows.
+
 **Last verified: 2026-09-26, after the 1.37.0 release and `fly deploy`.**
 `serverInfo.version` reads `1.37.0`. Served content equals tag `v1.37.0` exactly: 35
 references and 37 playbooks, with no body differing from the tag. Tool names,
