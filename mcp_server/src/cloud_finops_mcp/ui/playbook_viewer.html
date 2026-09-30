@@ -51,9 +51,7 @@
       return;
     }
 
-    content.innerHTML =
-      R.renderPlaybookHtml(payload, { checklistFix: true }) +
-      '<div class="brand-note"><a href="https://optimnow.io">OptimNow</a></div>';
+    content.innerHTML = R.renderPlaybookHtml(payload, { checklistFix: true });
 
     // v2 enhancements: Copy on every code block; `playbooks/<slug>.md`
     // entries in See also navigate to that playbook via the host bridge.

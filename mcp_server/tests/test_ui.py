@@ -107,11 +107,17 @@ def test_viewer_v2_enhancements_present() -> None:
 
 
 @pytest.mark.parametrize("uri", sorted(WIDGETS))
-def test_widget_branding_is_discreet(uri: str) -> None:
-    """One small OptimNow link, no protocol jargon stamped on every render."""
+def test_widget_carries_no_branding_or_jargon(uri: str) -> None:
+    """No vendor link and no protocol jargon stamped on every render.
+
+    The widgets used to carry a small OptimNow footer link. It was removed for
+    the connector directory submission (2026-09-30): the review criteria
+    reject text that promotes products and services, and a link to the
+    author's site on every render reads that way to a reviewer.
+    """
     html = WIDGETS[uri]
-    assert "brand-note" in html
-    assert "optimnow.io" in html
+    assert "brand-note" not in html
+    assert "optimnow.io" not in html
     assert "rendered via MCP Apps" not in html
     assert "SEP-1865" not in html.split("</head>", 1)[1].split("<script>", 1)[0], (
         f"{uri} shows protocol jargon in its visible markup"

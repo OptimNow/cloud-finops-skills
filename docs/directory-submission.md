@@ -228,8 +228,8 @@ edited by Anthropic afterwards):
 >
 > The server holds no account, no credential and no user data; it cannot see your
 > cloud environment and hands over the detection query instead. Price figures are
-> not served here: the tools carry mechanics and ratios and route current prices to
-> the OptimNow AI Pricing Hub. Content is refreshed twice a month from primary
+> not served here: the tools carry mechanics and ratios, and any figure in a
+> reference is illustrative and dated inline. Content is refreshed twice a month from primary
 > provider sources and published under CC BY-SA 4.0. Built by OptimNow, a FinOps
 > consultancy, from enterprise delivery experience.
 
@@ -298,9 +298,15 @@ who add both see one set of tools.
   objects; if one does, move the sentence into the tool's "Use this when" paragraph
   rather than deleting it.
 - **Routing to OptimToken.** The criteria reject descriptions that "promote products
-  and services". The pricing-hub pointer is a data-quality rule (never quote an
-  undated figure), and the hub is OptimNow's own, first-party and free. It is disclosed
-  in the README "Data handling" section and in PRIVACY.md.
+  and services", and the data-handling step asks for "Sponsored or promoted content:
+  No". The server `instructions` used to route current prices to the OptimNow AI
+  Pricing Hub by URL; a reviewer can read a first-party link as promotion, so since
+  2026-09-30 the connector's model-facing text names no OptimNow product and no
+  `optimnow.io` URL (the widgets lost their footer link at the same time; a test in
+  `mcp_server/tests/test_conformance.py` pins both). The instruction that remains is
+  the data-quality rule alone: use a live pricing tool if one is connected, never quote
+  an undated figure. The skill keeps its pricing-hub routing; the plugin is reviewed
+  under different rules.
 - **Plugin folder is the repository root.** Installers receive `mcp_server/`,
   `scripts/` and `.github/` along with the skill. Moving the plugin to
   a subfolder would break the existing marketplace path (`source: "./"`) and every
