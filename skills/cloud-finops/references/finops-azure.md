@@ -1066,10 +1066,9 @@ Two OptimNow assets directly relevant to engagement delivery:
   https://github.com/OptimNow/finops-tag-compliance-mcp - agent-accessible tag
   compliance auditing across Azure (and AWS). Recommended pattern when an
   engagement needs ongoing tag compliance reporting integrated with an AI agent.
-- **Tagging policy generator** -
-  https://vercel.com/optim-now/tagging-policy-generator - generates Azure Policy /
-  AWS SCP / GCP Org Policy from a tagging schema. Fastest way to bootstrap a
-  tagging policy from a customer's tag taxonomy without hand-writing Bicep or ARM.
+- **Tagging policy generator** - generates Azure Policy / AWS SCP / GCP Org Policy
+  from a tagging schema. Fastest way to bootstrap a tagging policy from a
+  customer's tag taxonomy without hand-writing Bicep or ARM.
 
 ### KQL: tag governance triage
 

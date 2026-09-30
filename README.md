@@ -119,23 +119,16 @@ both only when you want both.
 
 ---
 
-## Live prices come from OptimToken, not from this repo
+## Live prices are not in this repo
 
 This skill carries billing **mechanics**, which stay true for years. It deliberately
 does not carry current price **figures**, which go stale inside a packaged skill within
-weeks. Those live in **[OptimToken](https://optimtoken.optimnow.io)** - LLM token rates
-for 250+ models and compute instance rates across seven clouds, each figure carrying
-its own as-of date:
-
-| | |
-|---|---|
-| <img src="https://img.shields.io/badge/-OptimToken%20web-7C3AED?logoColor=white" alt="OptimToken web" height="22"/> | [optimtoken.optimnow.io](https://optimtoken.optimnow.io) - compare model and instance prices in the browser, no setup |
-| <img src="https://img.shields.io/badge/-OptimToken%20MCP-7C3AED?logoColor=white" alt="OptimToken MCP" height="22"/> | Hosted, nothing to install. Point your client at `https://ai-pricing-hub-mcp-9604f763.alpic.live/` - config snippets in [INSTALLATION.md](./INSTALLATION.md#companion-connector-optimnow-ai-pricing-hub-optional) |
-
-**Recommended setup on Claude:** install the skill and add the OptimToken connector
-next to it. The skill carries the doctrine and routes pricing questions to the hub,
-so they get answered with a dated figure and its source rather than from a number the
-model remembers.
+weeks. The skill tells the model to use a live pricing tool if one is connected in the
+session, and otherwise to point you at a live source such as
+[OptimToken](https://optimtoken.optimnow.io), OptimNow's free price comparison for LLM
+token rates and compute instance rates, each figure carrying its own as-of date. Its
+MCP connector is optional and documented in its own repository; see
+[INSTALLATION.md](./INSTALLATION.md#companion-connector-optimnow-ai-pricing-hub-optional).
 
 ---
 
@@ -412,7 +405,6 @@ spend to measurable business value. Based in France with European reach.
 | [AI ROI Calculator](https://airoicalculator.optimnow.io) | Whether an AI project pays for itself: three-layer cost model, payback, break-even, sensitivity. Also an [MCP server](https://github.com/OptimNow/ai-roi-calculator-mcp) |
 | [AI Cost Readiness Assessment](https://aicostsfinops.optimnow.io) | Where your organisation stands on AI cost management |
 | [MCP for Tagging](https://github.com/OptimNow/finops-mcp) | Tag governance automation |
-| [FinOps Maturity Assessment](https://optimnow.io) | Crawl / Walk / Run positioning |
 
 ---
 
