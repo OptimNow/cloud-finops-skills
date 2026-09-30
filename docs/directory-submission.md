@@ -169,6 +169,45 @@ it can be done later from the plugin's **Settings** tab. Leave **Auto-publish** 
 offered; for a new listing an Anthropic reviewer publishes each version anyway until
 they change the setting.
 
+**Setting up the push webhook** (done 2026-10-01; the `ping` delivery answered 200).
+The portal supplies the two values, GitHub holds the webhook, and nothing in this
+repository changes. Without it the directory still finds a new commit on `main`, at
+its scheduled check about every 6 hours; with it, within minutes of the push.
+
+1. In the portal, on the **Plugin submitted for review** page (or later: the plugin's
+   **Settings** tab, **Updates**, **Set up**), select **Generate secret**. The next
+   screen shows a **Payload URL** and a **secret**. The secret is shown once: keep the
+   tab open until the GitHub side is saved, and paste it nowhere else.
+2. In a second tab, open
+   <https://github.com/OptimNow/cloud-finops-skills/settings/hooks> and select
+   **Add webhook**. The page needs admin rights on the repository; a member without
+   them does not see it.
+3. Fill in the form:
+
+   | Field | Value |
+   |---|---|
+   | Payload URL | the URL from the portal, unchanged |
+   | Content type | `application/json` |
+   | Secret | the secret from the portal. GitHub signs every delivery with it; the directory rejects a delivery it cannot verify |
+   | SSL verification | leave **Enable SSL verification** |
+   | Which events | **Just the push event**; the directory listens to pushes on the tracked branch and nothing else |
+   | Active | checked |
+
+4. Select **Add webhook**. GitHub sends a `ping` delivery at once.
+5. Open the webhook, then **Recent deliveries**: the `ping` row must show a green
+   check and a `200` response. A `401` or `403` means the secret was copied wrong, a
+   `404` a truncated Payload URL; fix the field with **Edit**, then **Redeliver** on
+   that row.
+6. Back in the portal, finish the screen.
+
+If the secret is lost before the GitHub side is saved, **Set up** on the plugin's
+**Settings** tab generates a new one; replace it in the GitHub webhook (**Edit**,
+**Secret**), the old value stops working.
+
+The webhook changes detection, not publication: while the auto-publish setting reads
+"an Anthropic reviewer publishes each version", every new version still waits for a
+**Publish** click and the reviewer.
+
 ### 1.7 After submission
 
 The **Versions** tab shows each scanned commit. A version that passes is not live
