@@ -6,7 +6,9 @@ This policy covers the three ways the Cloud FinOps library reaches you:
 
 1. **The skill files** - this repository, the Claude plugin built from it, the release
    zip, and the copies `install.sh` writes for other tools.
-2. **The hosted MCP connector** at `https://cloud-finops-mcp.fly.dev/mcp`.
+2. **The hosted MCP connector** at `https://mcp.optimnow.io/mcp` (served by the
+   Fly.io app `cloud-finops-mcp`; its former `cloud-finops-mcp.fly.dev` address still
+   answers and is covered by the same terms).
 3. **The `cloud-finops-mcp` package** from PyPI, which runs the same server on your
    own machine.
 

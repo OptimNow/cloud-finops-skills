@@ -5,7 +5,7 @@ Step-by-step for listing this repository in Anthropic's Claude directory
 involved, and the portal treats them as separate submissions:
 
 1. **Plugin bundle** - this GitHub repository (the skill only; it declares no MCP server).
-2. **MCP connector** - the hosted server at `https://cloud-finops-mcp.fly.dev/mcp`.
+2. **MCP connector** - the hosted server at `https://mcp.optimnow.io/mcp`.
 
 The two are kept separate on purpose (decision of 2026-09-30): the plugin does not
 bundle the connector, because both serve the same library and bundling would load
@@ -176,7 +176,7 @@ Same portal, **Submit new**, then **MCP connector**.
 
 ### 2.1 Connection
 
-Paste `https://cloud-finops-mcp.fly.dev/mcp` (the `/mcp` path, no trailing slash;
+Paste `https://mcp.optimnow.io/mcp` (the `/mcp` path, no trailing slash;
 the widget sandbox domain is derived from it). Single URL, not "users connect to
 different URLs".
 
@@ -251,7 +251,7 @@ No personal health data, no sponsored content.
 
 Text to paste:
 
-> No account or credential is needed. Add `https://cloud-finops-mcp.fly.dev/mcp` as
+> No account or credential is needed. Add `https://mcp.optimnow.io/mcp` as
 > a custom connector (or open it in MCP Inspector) and call, in order:
 > `list_references()`, `find_references(phase="Optimize", persona="Engineering")`,
 > `get_reference(name="finops-aws-commitments", section="commitment decision")`,

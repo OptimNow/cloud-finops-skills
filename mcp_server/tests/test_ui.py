@@ -172,6 +172,19 @@ def test_ui_domain_is_derived_from_the_canonical_connector_url() -> None:
     assert server.UI_DOMAIN == expected
 
 
+def test_ui_domain_pins_the_custom_domain_hash() -> None:
+    """The literal value the claude host expects for the canonical URL.
+
+    The test above proves the hash follows the constant; this one pins the
+    constant itself, so a well-meaning edit of the origin (back to the
+    fly.dev host, a trailing slash, an http scheme) fails here instead of
+    as a blank widget in production. Recompute with
+    sha256(url)[:32] + ".claudemcpcontent.com" when the canonical URL moves.
+    """
+    assert server.CANONICAL_CONNECTOR_URL == "https://mcp.optimnow.io/mcp"
+    assert server.UI_DOMAIN == "5164c823f8a966e5cb0f8571d5141bd9.claudemcpcontent.com"
+
+
 async def test_ui_resources_declare_the_sandbox_domain() -> None:
     """Without ui.domain the host kills the iframe after reserving it."""
     resources = await server.mcp.list_resources()

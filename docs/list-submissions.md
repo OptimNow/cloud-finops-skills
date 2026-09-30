@@ -26,7 +26,7 @@ lists offer; these are human submissions.
 | PyPI | `cloud-finops-mcp` 1.37.0 | `https://pypi.org/pypi/cloud-finops-mcp/json` |
 | Install command | `uvx cloud-finops-mcp` (stdio); `pip install cloud-finops-mcp` | `mcp_server/README.md` lines 112 and 118 |
 | Transports | stdio (default) and streamable HTTP | `mcp_server/README.md` "Streamable HTTP" |
-| Hosted endpoint | `https://cloud-finops-mcp.fly.dev/mcp` answers `initialize`, serverInfo 1.37.0 | POST with an `initialize` request |
+| Hosted endpoint | `https://mcp.optimnow.io/mcp` answers `initialize`, serverInfo 1.37.0 (custom domain since 2026-09-30; the former `cloud-finops-mcp.fly.dev` host still answers) | POST with an `initialize` request |
 | Auth | none; the server reads bundled files, no credentials, no outbound HTTP client | `server.py` grep |
 | Tools | `list_references`, `find_references`, `get_reference`, `list_playbooks`, `find_playbooks`, `get_playbook`, all `readOnlyHint: true` | `server.py` |
 | Licence | CC BY-SA 4.0 (`LICENSE.md`; GitHub shows "Other") | repo API `license.spdx_id = NOASSERTION` |
@@ -173,14 +173,14 @@ repository, zero hits). Form answers:
 | Project URL | `https://github.com/OptimNow/cloud-finops-skills` |
 | Best category | `Knowledge Management & Memory` (alternative: `Cloud Platforms & Services`; they adjust during triage) |
 | What can an agent do with this server? | An agent can list, filter and read FinOps reference guides on cloud and AI billing mechanics, commitments, allocation and chargeback, and fetch named waste-pattern playbooks that carry a detection query to run in the user's own account. Six read-only tools over content bundled with the package; nothing to connect to a cloud account. |
-| Install or connection instructions | `Install: uvx cloud-finops-mcp` (stdio, PyPI package cloud-finops-mcp). `Alternative: pip install cloud-finops-mcp` then run `cloud-finops-mcp`. `Hosted: https://cloud-finops-mcp.fly.dev/mcp` (streamable HTTP). `Env: none`. |
+| Install or connection instructions | `Install: uvx cloud-finops-mcp` (stdio, PyPI package cloud-finops-mcp). `Alternative: pip install cloud-finops-mcp` then run `cloud-finops-mcp`. `Hosted: https://mcp.optimnow.io/mcp` (streamable HTTP). `Env: none`. |
 | Transport | `multiple` |
 | Auth requirements | `no auth` |
 | Known supported clients | `Claude Desktop, Claude Code, Cursor, Codex CLI, Windsurf, VS Code` (the client sections in `mcp_server/README.md`) |
 | License | `CC-BY-SA-4.0` |
 | Before submitting | tick "I searched the repo for this project URL or name to avoid duplicates" (done on 2026-09-26; redo the search on the day) |
 
-Include the hosted endpoint only if `curl -sS -X POST https://cloud-finops-mcp.fly.dev/mcp`
+Include the hosted endpoint only if `curl -sS -X POST https://mcp.optimnow.io/mcp`
 with an `initialize` body answers on the day.
 
 ---
@@ -215,7 +215,7 @@ Entry (three lines, the second and third indented by two spaces; description is 
 characters, their limit is 120):
 
 ```markdown
-- [Cloud FinOps by OptimNow](https://pypi.org/project/cloud-finops-mcp/) `https://cloud-finops-mcp.fly.dev/mcp`
+- [Cloud FinOps by OptimNow](https://pypi.org/project/cloud-finops-mcp/) `https://mcp.optimnow.io/mcp`
   [![Cloud FinOps by OptimNow MCP connector](https://glama.ai/mcp/connectors/io.github.OptimNow/cloud-finops/badges/score.svg)](https://glama.ai/mcp/connectors/io.github.OptimNow/cloud-finops)
   🔓 - Fetches FinOps reference guides and waste-pattern runbooks on cloud and AI cost management; no account needed.
 ```

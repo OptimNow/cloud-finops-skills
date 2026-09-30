@@ -21,7 +21,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://cloud-finops-mcp.fly.dev/mcp"
+      "url": "https://mcp.optimnow.io/mcp"
     }
   ]
 }

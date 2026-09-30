@@ -5,7 +5,7 @@
 #
 # Decision taken 2026-09-30 for the Claude directory submission: the plugin
 # bundle (this repository) contains the skill, and the hosted MCP connector
-# (https://cloud-finops-mcp.fly.dev/mcp) is listed in the directory separately
+# (https://mcp.optimnow.io/mcp) is listed in the directory separately
 # and added by the user if they want the retrieval tools. The two serve the
 # same library, so a plugin that also declared the server would load the six
 # tool definitions into every session next to the skill and pay for the same

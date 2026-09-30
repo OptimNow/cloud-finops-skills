@@ -68,7 +68,16 @@ REFERENCE_BROWSER_URI = "ui://cloud-finops/reference-browser"
 # INSTALLATION.md) is the /mcp form without a trailing slash and this
 # constant must match it byte-for-byte; hashing another variant is exactly
 # the mistake that broke ai-pricing-hub and then this server.
-CANONICAL_CONNECTOR_ORIGIN = "https://cloud-finops-mcp.fly.dev"
+#
+# Since 2026-09-30 the canonical host is the custom domain mcp.optimnow.io
+# (a CNAME to the Fly app, certificate issued by Fly). The old
+# cloud-finops-mcp.fly.dev host still answers every request - DNS-rebinding
+# protection is off in run_http, so there is no Host allow-list to extend -
+# but its ui.domain no longer matches, so a connector added under the old
+# URL gets tool results without widgets. One URL is canonical on purpose:
+# serving a per-request hash for both would touch the widget path, whose
+# rendering is still unconfirmed (see docs/mcp-apps-lessons.md).
+CANONICAL_CONNECTOR_ORIGIN = "https://mcp.optimnow.io"
 CANONICAL_CONNECTOR_URL = CANONICAL_CONNECTOR_ORIGIN + "/mcp"
 UI_DOMAIN = (
     hashlib.sha256(CANONICAL_CONNECTOR_URL.encode("utf-8")).hexdigest()[:32]
