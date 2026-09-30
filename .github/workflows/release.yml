@@ -33,16 +33,28 @@ jobs:
           unzip -l "${ZIP_NAME}" | head -5  # log the first few entries to verify forward-slash paths
           echo "ZIP_NAME=${ZIP_NAME}" >> "$GITHUB_ENV"
 
-      - name: Create GitHub Release with zip attached
+      # llms-full.txt is not committed (it is over the Claude directory's
+      # 256 KiB per-file limit and the plugin folder is the repository root).
+      # Built here from the tagged commit and attached below, which is what
+      # makes releases/latest/download/llms-full.txt (linked from llms.txt)
+      # resolve. The script fails if the render is incomplete.
+      - name: Build llms-full.txt
+        run: bash scripts/build-llms-full.sh
+
+      - name: Create GitHub Release with zip and llms-full.txt attached
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65  # v2.6.2
         with:
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          files: ${{ env.ZIP_NAME }}
+          files: |
+            ${{ env.ZIP_NAME }}
+            llms-full.txt
           generate_release_notes: true
           body: |
             ## Cloud FinOps Skill & MCP ${{ github.ref_name }}
 
             The attached `cloud-finops-${{ github.ref_name }}.zip` is the skill bundle for upload into Claude Desktop / claude.ai (Settings → Skills → Upload).
+
+            The attached `llms-full.txt` is the whole library (entry point, references, playbooks) in one file, built from this tag; `llms.txt` links to the latest-release copy.
 
             For Claude Code users (and 11 other tools), see [INSTALLATION.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/INSTALLATION.md) for the cross-tool installer and the model-agnostic response contract.
