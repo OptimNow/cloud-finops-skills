@@ -168,11 +168,3 @@ ol.checklist input:checked + span { color: var(--fg-muted); text-decoration: lin
   font-size: 12px; text-decoration: underline; text-decoration-color: var(--accent);
   text-underline-offset: 2px; color: inherit;
 }
-
-/* Discreet brand mark - one small muted link, right-aligned. */
-.brand-note { text-align: right; font-size: 10.5px; margin-top: 12px; }
-.brand-note a {
-  color: var(--fg-muted); text-decoration: none;
-  border-bottom: 1px solid var(--border);
-}
-.brand-note a:hover { color: var(--fg); border-bottom-color: var(--accent); }

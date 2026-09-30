@@ -281,6 +281,31 @@ async def test_every_tool_declares_title_and_read_only_annotations() -> None:
         assert ann.destructiveHint is False, f"{tool.name} lacks destructiveHint=False"
 
 
+async def test_model_facing_text_names_no_product_and_no_override() -> None:
+    """The connector's model-facing text carries no OptimNow URL and no "override".
+
+    The directory review criteria reject descriptions that promote products or
+    services, or that attempt to override system instructions. The server
+    ``instructions`` used to route price questions to the OptimNow AI Pricing
+    Hub by URL and to open its routing rules with "override instinct"; both
+    were removed for the 2026-09-30 connector submission. This pins the
+    instructions, every tool title and description, and every resource name and
+    description, so neither pattern comes back through an edit.
+    """
+    texts: dict[str, str] = {"instructions": server.mcp.instructions or ""}
+    for tool in await server.mcp.list_tools():
+        texts[f"tool {tool.name} title"] = tool.title or ""
+        texts[f"tool {tool.name} description"] = tool.description or ""
+    for res in await server.mcp.list_resources():
+        texts[f"resource {res.uri} name"] = res.name or ""
+        texts[f"resource {res.uri} description"] = res.description or ""
+    assert texts["instructions"], "server publishes no instructions"
+    for where, text in texts.items():
+        lowered = text.lower()
+        assert "optimnow.io" not in lowered, f"{where} links an optimnow.io URL"
+        assert "override" not in lowered, f"{where} uses 'override' wording"
+
+
 async def test_every_tool_description_says_when_to_use_it() -> None:
     """A description that only says WHAT a tool does reads as interchangeable.
 

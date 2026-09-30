@@ -338,10 +338,12 @@ use it. Full policy in [PRIVACY.md](./PRIVACY.md).
   standard access log. OptimNow does not sell, share or profile from either. On hosts
   that render MCP Apps, the widget HTML comes from the same origin and its content
   security policy allows no third-party domain.
-- **Price lookups route to OptimToken.** The skill and the server tell the model to
-  fetch current prices from the OptimNow AI Pricing Hub
+- **Price lookups route to a live tool, not to this repo.** The skill tells the model
+  to fetch current prices from the OptimNow AI Pricing Hub
   (<https://optimtoken.optimnow.io>) instead of quoting a stale figure. That is a
   separate public site; whether the model opens it is its decision in the conversation.
+  The hosted server carries the same rule without naming a tool: use a live pricing
+  tool if one is connected in the session, never quote an undated figure.
 - **Nothing else.** No telemetry, no analytics beacon, no update check, no package
   launcher, no credential read from your environment.
 
