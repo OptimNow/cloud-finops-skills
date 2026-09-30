@@ -4,13 +4,14 @@ Step-by-step for listing this repository in Anthropic's Claude directory
 (<https://claude.ai/directory>), written for a first submission. Two listings are
 involved, and the portal treats them as separate submissions:
 
-1. **Plugin bundle** - this GitHub repository (skill + bundled connector reference).
+1. **Plugin bundle** - this GitHub repository (the skill only; it declares no MCP server).
 2. **MCP connector** - the hosted server at `https://cloud-finops-mcp.fly.dev/mcp`.
 
-Anthropic's documentation asks for both even though the plugin already references
-the server: the connector listing gives the server its own dashboard (health, usage
-per tool) and lets the two listings be paired when they come from the same
-organisation. Source pages, read on 2026-09-26:
+The two are kept separate on purpose (decision of 2026-09-30): the plugin does not
+bundle the connector, because both serve the same library and bundling would load
+the tool definitions in every session next to the skill. The connector listing gives
+the server its own dashboard (health, usage per tool) and lets the two listings be
+paired when they come from the same organisation. Source pages, read on 2026-09-26:
 
 - Publish overview: <https://claude.com/docs/directory/publish>
 - Submit a plugin: <https://claude.com/docs/plugins/submit>
@@ -40,9 +41,11 @@ not carry over.
 claude plugin validate ./cloud-finops-skills
 ```
 
-Expected: `Validation passed` with one warning saying `CLAUDE.md` at the plugin root
-is not loaded as project context. That warning is benign; the file is for
-contributors, not for the plugin.
+Expected (Claude Code 2.1.285, run 2026-09-30): a line `Validating marketplace
+manifest: .../.claude-plugin/marketplace.json` followed by `Validation passed`, with
+no warnings. The command picks the marketplace manifest because the folder holds
+one. An earlier version printed a benign warning about `CLAUDE.md` not being loaded
+as project context; it no longer appears.
 
 **Hosted server check.** The portal syncs the tool list from the live server, and
 Verified review calls every tool. Confirm the deployment serves what you expect before
@@ -124,7 +127,7 @@ their meaning:
 
 | Expected finding | Result | Why, and what to do |
 |---|---|---|
-| `llms-full.txt` over 256 KiB | Held for a reviewer | The one-fetch library inline is 1.2 MB. Not blocking; a reviewer reads the version before it goes live. Accept for the first submission |
+| A file over 256 KiB | None expected | `llms-full.txt` (1.2 MB) left the tree on 2026-09-30; it is built at release time and attached to the GitHub Release. `scripts/check-plugin-file-limits.sh` fails CI if any tracked non-image file crosses the limit again |
 | Name made only of generic words (`cloud-finops`) | Possibly held for a reviewer | Decision taken 2026-09-26: keep the name, since renaming breaks every `cloud-finops@optimnow` install. `displayName` is "Cloud FinOps by OptimNow" so the listing is not mistaken for an official one |
 | Name is taken | Blocks | Only if another organisation already holds `cloud-finops`. If so, stop and decide on a rename; do not submit under a look-alike |
 
@@ -143,7 +146,7 @@ new version.
 | Question | Answer |
 |---|---|
 | Reads or stores personal data | No. Static skill files; the connector has no accounts, no database and no per-user state |
-| Sends data to services other than its declared connectors | No. The only endpoint is the declared connector. The skill directs the model to a public pricing site (optimtoken.optimnow.io) for current prices; that is a link the model may open in the conversation, not a call the plugin makes |
+| Sends data to services other than its declared connectors | No. The plugin declares no connector and calls no endpoint. The skill directs the model to a public pricing site (optimtoken.optimnow.io) for current prices; that is a link the model may open in the conversation, not a call the plugin makes |
 | Retention | None by the plugin. The hosted server keeps a coverage log of zero-result facet queries (no conversation text); the hosting platform keeps the standard web access log. See PRIVACY.md |
 | Intended for people under 18 | No |
 
@@ -292,7 +295,7 @@ who add both see one set of tools.
   undated figure), and the hub is OptimNow's own, first-party and free. It is disclosed
   in the README "Data handling" section and in PRIVACY.md.
 - **Plugin folder is the repository root.** Installers receive `mcp_server/`,
-  `scripts/`, `.github/` and `llms-full.txt` along with the skill. Moving the plugin to
+  `scripts/` and `.github/` along with the skill. Moving the plugin to
   a subfolder would break the existing marketplace path (`source: "./"`) and every
   current install. Accepted.
 
@@ -300,10 +303,13 @@ who add both see one set of tools.
 
 - Merging to `main` is the release: the directory scans the commit and publishes
   under the auto-publish setting. Nothing to do in the portal.
-- A content PR still regenerates `llms-full.txt`; the 256 KiB hold recurs on each
-  version until a reviewer clears it.
-- A connector-URL change touches four places: `server.py`
-  (`CANONICAL_CONNECTOR_ORIGIN`), README.md, INSTALLATION.md and `.mcp.json`. The
-  connector listing's URL is edited in the portal separately.
+- No tracked file may exceed 256 KiB and the tree stays under 480 files
+  (`scripts/check-plugin-file-limits.sh`). `llms-full.txt` is built at release time
+  and attached to the GitHub Release, never committed.
+- The plugin stays skill-only (`scripts/check-plugin-skill-only.sh`): no `.mcp.json`
+  in the tree, no `mcpServers` key in `plugin.json`.
+- A connector-URL change touches three places: `server.py`
+  (`CANONICAL_CONNECTOR_ORIGIN`), README.md and INSTALLATION.md. The connector
+  listing's URL is edited in the portal separately.
 - Delisting is a request from the plugin's page menu; relisting is also a request and
   can be declined. Prefer publishing a fix over delisting.

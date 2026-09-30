@@ -14,14 +14,10 @@
 #   playbook-coverage.md  <- scripts/playbook-coverage.sh
 #   assets/*.svg          <- scripts/render-fcp-heatmap.py,
 #                            scripts/render-coverage-heatmap.py
+# (llms-full.txt used to be listed here too; since September 2026 it is built
+# at release time and not committed, so it needs no attribute.)
 fcp-coverage.md text eol=lf
 playbook-coverage.md text eol=lf
 assets/*.svg text eol=lf
-
-# llms-full.txt is the whole content library inlined (scripts/build-llms-full.sh),
-# so it is over a megabyte and it regenerates on every content change. Marked
-# -diff and linguist-generated so GitHub collapses it in a pull request instead
-# of burying the actual content edit under a 1MB regenerated blob.
-llms-full.txt text eol=lf -diff linguist-generated
 
 # Other markdown stays platform-default; YAML/JSON inherit git's auto-detection.

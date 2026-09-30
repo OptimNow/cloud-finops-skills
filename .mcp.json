@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "cloud-finops": {
-      "type": "http",
-      "url": "https://cloud-finops-mcp.fly.dev/mcp"
-    }
-  }
-}

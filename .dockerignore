@@ -1,5 +1,6 @@
 # Keep the build context to what the Dockerfile copies. Everything else in
-# the repo (pipeline/, assets/, llms-full.txt, .git, dist/) is noise here.
+# the repo (pipeline/, assets/, a locally built llms-full.txt, .git, dist/)
+# is noise here.
 *
 !.claude-plugin/plugin.json
 !skills/cloud-finops/references/

@@ -46,9 +46,6 @@ cloud-finops-skills/
 ├── fly.toml               <- Fly.io app config (app cloud-finops-mcp, region cdg,
 │                             scale-to-zero); .dockerignore trims the build context
 ├── .claude-plugin/        <- plugin.json + marketplace.json (versions bump together)
-├── .mcp.json              <- Bundles the hosted connector into the plugin (remote
-│                             http entry; its url must equal CANONICAL_CONNECTOR_URL
-│                             in server.py byte for byte)
 ├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
 │                             publish-mcp, publish-registry, mcp-install-smoke,
 │                             release, dependabot-automerge
@@ -132,30 +129,38 @@ cloud-finops-skills/
 │                             `render-coverage-heatmap.py` and
 │                             `render-fcp-heatmap.py` (emit the README SVGs,
 │                             --check gated in CI), `build-llms-full.sh`
-│                             (inlines the whole library into llms-full.txt;
-│                             --check gated in CI) plus the guards:
+│                             (inlines the whole library into llms-full.txt
+│                             at release time; --smoke gated in CI, the file
+│                             itself is not committed) plus the guards:
 │                             check-artefact-size, check-docs-drift,
 │                             check-footers (every reference and playbook
 │                             ends with the OptimNow / CC BY-SA footer),
-│                             check-llms-txt, check-skill-description,
+│                             check-llms-txt, check-plugin-file-limits (no
+│                             tracked non-image file over 256 KiB, at most
+│                             480 files: both are Claude directory holds),
+│                             check-plugin-skill-only (no .mcp.json, no
+│                             mcpServers in plugin.json),
+│                             check-skill-description,
 │                             check-skill-power-parity (diffs the shared
 │                             SKILL.md / POWER.md body so the routing tables
 │                             cannot drift apart) and check-marketplace-version
-│                             - all twelve run by the `CI` workflow, and
+│                             - all fourteen run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow
 ├── fcp-coverage.md        <- Generated FCP coverage matrix (22 caps; CI-gated)
 ├── playbook-coverage.md   <- Generated waste-playbook matrix (category x
 │                             scope, gaps listed; CI-gated)
-├── llms-full.txt          <- Generated: the whole library (entry point + all
-│                             references + all playbooks) inlined for
-│                             one-fetch ingestion, ~1.2MB, CI-gated. Marked
-│                             -diff in .gitattributes so it does not bury the
-│                             real change in a content PR
+├── (llms-full.txt)        <- NOT committed: the whole library (entry point +
+│                             all references + all playbooks) inlined for
+│                             one-fetch ingestion, ~1.2MB, so over the Claude
+│                             directory's 256 KiB per-file limit. The release
+│                             workflows build it and attach it to each GitHub
+│                             Release (releases/latest/download/llms-full.txt);
+│                             a local build lands here and is gitignored
 ├── .gitattributes         <- Force LF on *.sh and on every generated artefact
 │                             (fcp-coverage.md, playbook-coverage.md, the
-│                             SVGs, llms-full.txt) for Windows checkouts with
+│                             SVGs) for Windows checkouts with
 │                             core.autocrlf=true
 └── pipeline/              <- Content update pipeline (gitignored, private)
     ├── run_scan.py        <- Fortnightly scan entry point
@@ -382,8 +387,9 @@ rules, which you need before touching `mcp_server/src/cloud_finops_mcp/server.py
   `.claudemcpcontent.com`, and pinned by tests. Never hash an internal path such as
   `/mcp` - that wrong-input variant is what broke `ai-pricing-hub-mcp` and then this
   server. The constant must stay byte-for-byte identical to the connector URL
-  documented in README.md and INSTALLATION.md, and to the `url` in `.mcp.json`
-  (the plugin-bundled entry, since September 2026).
+  documented in README.md and INSTALLATION.md. (From September 2026 to 2026-09-30
+  a root `.mcp.json` carried a fourth copy; the plugin is skill-only now and has
+  none - see "Claude directory listing".)
 - **Keep the Skybridge-parity shape** (PR #174): every widget registered twice - an
   apps-sdk variant (mime `text/html+skybridge`, `openai/*` meta, tool
   `openai/outputTemplate`) alongside the SEP-1865 spec variant
@@ -491,8 +497,9 @@ the maintainer-local doctrine:
   pipeline credits, and the same fan-out absorbed that cycle's rotating pricing
   re-verification pass.
 
-Two smaller things the pipeline does not do and the PR author must: regenerate
-`llms-full.txt` (the `build-llms-full.sh --check` gate fails otherwise), and
+Two smaller things the pipeline did not do and the PR author had to: regenerate
+`llms-full.txt` (no longer a step since 2026-09-30, when the file stopped being
+committed and became a release asset built by the release workflows), and
 expect a test that pins a content count to break when a catalogue grows
 (`test_section_match_tolerates_word_order` no longer pins the networking
 pattern count, since PR #192).
@@ -626,12 +633,13 @@ Follow these six steps whenever you add a new domain:
    contains no such step - verified, it never mentions either target. Treat
    both routing tables as hand-checked.
 
-   Then regenerate the three artefacts that change whenever content lands:
+   Then regenerate the two artefacts that change whenever content lands:
    `./scripts/fcp-coverage.sh` and `python scripts/render-fcp-heatmap.py` (the
-   FCP coverage matrix and its heat map, which move when frontmatter changes),
-   and `./scripts/build-llms-full.sh` (llms-full.txt, which moves when any
-   reference or playbook body changes at all). All three are `--check` gated
-   in CI.
+   FCP coverage matrix and its heat map, which move when frontmatter changes).
+   Both are `--check` gated in CI. `llms-full.txt` is no longer one of them:
+   since 2026-09-30 it is not committed, the release workflows build it and
+   attach it to the GitHub Release, and CI only smoke-tests the build
+   (`./scripts/build-llms-full.sh --smoke`).
 
 6. **Do NOT bump versions in the content PR (release-train rule, 2026-08)**
    - Content PRs never touch `.claude-plugin/plugin.json`,
@@ -787,7 +795,7 @@ So the check is one-directional. Before merging, if the PR touches any of these:
 | The `provenance` contract (tier semantics, `upstreamTimestamp` / `eloAsOf`, the stale notice) | `ai-pricing-hub-mcp` | "Price figures" rule 5, in SKILL.md, POWER.md and the INSTALLATION.md response contract |
 | An MCP tool name or parameter of the ROI calculator | `ai-roi-calculator-mcp` | INSTALLATION.md companion section |
 | A value method, an input's meaning, or a documented trap | `ai-roi-calculator` METHODOLOGY.md | `references/finops-ai-value-management.md` |
-| Any `*.fly.dev`, `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, server.json, `.mcp.json`, PRIVACY.md |
+| Any `*.fly.dev`, `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, server.json, PRIVACY.md |
 
 Two standing rules that follow from the map:
 
@@ -809,12 +817,15 @@ step-by-step, the prefilled portal answers and the reviewer holds to expect are 
 [`docs/directory-submission.md`](docs/directory-submission.md). Four rules that follow
 from how the directory works:
 
-- **`.mcp.json` is part of the plugin.** Since September 2026 the plugin bundles the
-  hosted connector, so a Claude Code or claude.ai plugin install also registers the
-  server. Its `url` is a fourth copy of the connector URL, alongside `server.py`,
-  README.md and INSTALLATION.md. It must be the remote `http` entry, never the
-  `uvx cloud-finops-mcp` stdio form: chat ignores local servers and the directory
-  holds any package launcher for review.
+- **The plugin is skill-only (decision of 2026-09-30).** It declares no MCP
+  server: no `.mcp.json` anywhere in the tree, no `mcpServers` key in
+  `plugin.json`. The hosted connector is submitted as its own directory listing
+  and users add it separately. The two serve the same library, and a plugin that also declared
+  the server would load the six tool definitions in every session next to the
+  skill and put the same content into context twice. (From September 2026 to
+  2026-09-30 a root `.mcp.json` did bundle the connector; it was removed for the
+  submission.) Gated by `scripts/check-plugin-skill-only.sh`; the user-facing
+  statement is the README "Plugin and connector" section.
 - **Every merge to `main` is a directory version.** The directory scans each commit
   on the tracked branch and publishes it under the listing's auto-publish setting.
   Nothing changes in how content PRs are made, but a commit that breaks the plugin
@@ -824,10 +835,15 @@ from how the directory works:
   `cloud-finops@optimnow` install. The directory may hold a generic name for a
   reviewer; `displayName` ("Cloud FinOps by OptimNow") is the label to change, not
   `name`.
-- **One file is always held for a reviewer**: `llms-full.txt` (over the 256 KiB
-  per-file limit). Accepted, because the plugin folder is the
-  repository root and moving it would break the marketplace path. Do not "fix" this
-  by shrinking or dropping `llms-full.txt`; it is the one-fetch ingestion artefact.
+- **No tracked file over 256 KiB, at most 480 files.** The plugin folder is the
+  repository root, so every tracked file is scanned, and a non-image, non-font file
+  over 256 KiB or more than 512 files puts each new version on hold for a reviewer,
+  which would stop the twice-monthly content releases from auto-publishing.
+  `llms-full.txt` (~1.2 MB) was that file: since 2026-09-30 it is not committed,
+  the release workflows build it from the tagged commit and attach it to the GitHub
+  Release, and llms.txt points at `releases/latest/download/llms-full.txt`. Gated
+  by `scripts/check-plugin-file-limits.sh`. Do not bring a large generated artefact
+  back into the tree; build it at release time instead.
 
 ---
 
@@ -848,10 +864,13 @@ from how the directory works:
       workflow, so this can't drift silently). AGENTS.md needs no change: it
       shows a truncated tree and defers to CLAUDE.md rather than enumerating
       references.
-- [ ] `llms-full.txt` regenerated (`./scripts/build-llms-full.sh`) if ANY
-      reference or playbook body changed, not just when a file is added. It
-      inlines every body, so a one-word content edit makes it stale and CI
-      fails on the `--check`.
+- [ ] `llms-full.txt` NOT committed. It is gitignored; the release workflows
+      build it and attach it to the GitHub Release. A local build at the
+      repository root stays out of the commit.
+- [ ] Plugin folder still skill-only and within the directory file limits
+      (CI-gated by `scripts/check-plugin-skill-only.sh` and
+      `scripts/check-plugin-file-limits.sh`: no `.mcp.json`, no `mcpServers`,
+      no tracked non-image file over 256 KiB, at most 480 tracked files)
 - [ ] install.sh per-tool routing updated: ChatGPT inline routing table, Gemini
       grouped knowledge, and Cursor description must mention the new domain
 - [ ] File ends with the OptimNow / CC BY-SA footer. References use
@@ -918,9 +937,9 @@ from how the directory works:
 - [ ] SKILL.md description stays under 1024 characters (CI-gated by
       `scripts/check-skill-description.sh`, which also warns above 950 so the
       ceiling is visible before it is hit)
-- [ ] **Connector URL changed? Move all four copies together**: `server.py`
-      (`CANONICAL_CONNECTOR_ORIGIN`), README.md, INSTALLATION.md and `.mcp.json`
-      (plus PRIVACY.md, which names the host). The directory connector listing's URL
+- [ ] **Connector URL changed? Move all three copies together**: `server.py`
+      (`CANONICAL_CONNECTOR_ORIGIN`), README.md and INSTALLATION.md (plus
+      PRIVACY.md, which names the host). The directory connector listing's URL
       is edited in the portal, not in the repo. Nothing in CI catches this
 - [ ] **Cross-repo impact checked.** If the PR quotes another OptimNow repo's tool
       names, parameters, endpoint URLs, `provenance` fields, or ROI methodology, it was

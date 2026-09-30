@@ -37,6 +37,12 @@ skills/cloud-finops/references/.backups/
 # Distribution archive
 cloud-finops.zip
 
+# Whole-library inline (scripts/build-llms-full.sh). Not committed since
+# September 2026: at ~1.2 MB it is over the Claude plugin directory's 256 KiB
+# per-file limit and put every directory version on hold. The release
+# workflows build it and attach it to each GitHub Release instead.
+llms-full.txt
+
 # Installer build output (./install.sh --tool chatgpt|gemini|claude-projects
 # writes here; a chatgpt build alone is ~57 untracked files)
 dist/
