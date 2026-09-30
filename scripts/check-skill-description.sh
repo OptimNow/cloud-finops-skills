@@ -15,7 +15,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SKILL_MD="$REPO_ROOT/skills/cloud-finops/SKILL.md"
+SKILL_MD="$REPO_ROOT/plugins/cloud-finops/skills/cloud-finops/SKILL.md"
 
 HARD_LIMIT=1024
 WARN_LIMIT=950

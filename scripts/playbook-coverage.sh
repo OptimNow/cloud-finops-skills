@@ -5,7 +5,7 @@
 #
 # Mirror of fcp-coverage.sh for the playbook surface. Reads scope,
 # waste_category and confidence from the YAML frontmatter of every playbook
-# under skills/cloud-finops/playbooks/ and renders the coverage matrix the
+# under plugins/cloud-finops/skills/cloud-finops/playbooks/ and renders the coverage matrix the
 # 2026-08-19 connector field test produced by hand: which category/provider
 # cells have playbooks, which are coverage gaps. A zero cell is a decision
 # input (write it, or defer it knowingly in docs/ROADMAP.md), not an error.
@@ -33,7 +33,7 @@ cd "$REPO_ROOT"
 CHECK_MODE=""
 [[ "${1:-}" == "--check" ]] && CHECK_MODE=1
 
-PB_DIR="skills/cloud-finops/playbooks"
+PB_DIR="plugins/cloud-finops/skills/cloud-finops/playbooks"
 OUT_FILE="playbook-coverage.md"
 
 RENDER_FILE="$(mktemp "${TMPDIR:-/tmp}/playbook-coverage.XXXXXX")"

@@ -307,7 +307,7 @@ def phase4_content_stamp() -> None:
     if "version unknown" in summary:
         print(
             "[phase 4] WARNING: the stamp records version 'unknown' - built "
-            "without .claude-plugin/plugin.json in reach."
+            "without plugins/cloud-finops/.claude-plugin/plugin.json in reach."
         )
 
 

@@ -143,10 +143,10 @@ MCP connector is optional and documented in its own repository; see
 | **FinOps disciplines** | The FinOps Framework (22 capabilities, maturity model), tagging governance, allocation and showback (FOCUS), chargeback (Finance / tax prerequisites), anomaly management, KPIs and benchmarking, workload onboarding and M&A, Kubernetes (EKS / GKE / AKS) |
 | **SaaS & licensing** | SaaS asset management (SMPs, shadow IT, renewals), ITAM collaboration (BYOL, marketplace governance, entitlements) |
 | **GreenOps** | Cloud carbon measurement, carbon-aware workloads, region selection, GHG Protocol reporting |
-| **Waste detection** | OptimNow's eight-category waste taxonomy, two-signal classification, three-tier confidence, WasteLine appliance for AWS - plus named-pattern runbooks across AWS, Azure, GCP and cross-cloud (full catalogue in [playbooks/README.md](./skills/cloud-finops/playbooks/README.md)) |
+| **Waste detection** | OptimNow's eight-category waste taxonomy, two-signal classification, three-tier confidence, WasteLine appliance for AWS - plus named-pattern runbooks across AWS, Azure, GCP and cross-cloud (full catalogue in [playbooks/README.md](./plugins/cloud-finops/skills/cloud-finops/playbooks/README.md)) |
 
 The per-file catalogue with routing lives in
-[SKILL.md](./skills/cloud-finops/SKILL.md) - one row per reference, one row per
+[SKILL.md](./plugins/cloud-finops/skills/cloud-finops/SKILL.md) - one row per reference, one row per
 playbook family.
 
 ### Coverage, published deliberately
@@ -206,7 +206,7 @@ side; gaps it finds land in the same public backlog.
   tends to substitute slideware for those outputs. In the agentic era this matters
   more, not less: agents execute discipline, not culture.
 
-These principles will grow into a `skills/cloud-finops/doctrine/` directory of
+These principles will grow into a `plugins/cloud-finops/skills/cloud-finops/doctrine/` directory of
 opposable theses with their own primary sources.
 
 ---
@@ -248,11 +248,14 @@ cloud-finops-skills/
 ├── llms.txt                     <- LLM discovery index (cross-agent)
 ├── install.sh                   <- Cross-tool installer (12 targets)
 ├── mcp_server/                  <- cloud-finops-mcp PyPI package
-└── skills/cloud-finops/         <- The skill - install this folder
-    ├── SKILL.md                 <- Entry point + per-file routing catalogue
-    ├── POWER.md                 <- Kiro IDE entry point (same references)
-    ├── references/              <- The reference library, one file per domain
-    └── playbooks/               <- Named-pattern runbooks (~3-8 KB each) + catalogue
+└── plugins/cloud-finops/        <- The Claude plugin: only what a user installs
+    ├── .claude-plugin/plugin.json
+    ├── README.md / LICENSE
+    └── skills/cloud-finops/     <- The skill - install this folder
+        ├── SKILL.md             <- Entry point + per-file routing catalogue
+        ├── POWER.md             <- Kiro IDE entry point (same references)
+        ├── references/          <- The reference library, one file per domain
+        └── playbooks/           <- Named-pattern runbooks (~3-8 KB each) + catalogue
 ```
 
 ---

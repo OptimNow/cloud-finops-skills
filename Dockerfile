@@ -14,9 +14,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # plugin.json is the version holder the content stamp reads.
-COPY .claude-plugin/plugin.json .claude-plugin/plugin.json
-COPY skills/cloud-finops/references/ skills/cloud-finops/references/
-COPY skills/cloud-finops/playbooks/ skills/cloud-finops/playbooks/
+COPY plugins/cloud-finops/.claude-plugin/plugin.json plugins/cloud-finops/.claude-plugin/plugin.json
+COPY plugins/cloud-finops/skills/cloud-finops/references/ plugins/cloud-finops/skills/cloud-finops/references/
+COPY plugins/cloud-finops/skills/cloud-finops/playbooks/ plugins/cloud-finops/skills/cloud-finops/playbooks/
 COPY mcp_server/ mcp_server/
 
 RUN python mcp_server/scripts/sync_references.py \

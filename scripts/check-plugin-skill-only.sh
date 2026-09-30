@@ -14,9 +14,10 @@
 # maintainer rule.
 #
 # Two ways a plugin declares an MCP server, both refused here:
-#   1. a `.mcp.json` file anywhere in the tree (Claude Code loads the one at
-#      the plugin root; a stray copy deeper down is a mistake waiting to move);
-#   2. an `mcpServers` key in .claude-plugin/plugin.json.
+#   1. a `.mcp.json` file anywhere under the plugin folder, plugins/cloud-finops/
+#      (Claude Code loads the one at the plugin root; a stray copy deeper down
+#      is a mistake waiting to move);
+#   2. an `mcpServers` key in plugins/cloud-finops/.claude-plugin/plugin.json.
 #
 # The plugin.json check is a plain text match on the key, on purpose: it needs
 # no jq or python, and the key is wrong wherever it appears in the manifest
@@ -28,25 +29,26 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-MANIFEST=".claude-plugin/plugin.json"
+PLUGIN_DIR="plugins/cloud-finops"
+MANIFEST="$PLUGIN_DIR/.claude-plugin/plugin.json"
 errors=0
 
-# 1. No .mcp.json, tracked or sitting untracked at the root.
-tracked="$(git ls-files -z | tr '\0' '\n' | grep -E '(^|/)\.mcp\.json$' || true)"
+# 1. No .mcp.json under the plugin folder, tracked or sitting untracked at its root.
+tracked="$(git ls-files -z -- "$PLUGIN_DIR" | tr '\0' '\n' | grep -E '(^|/)\.mcp\.json$' || true)"
 if [[ -n "$tracked" ]]; then
   while IFS= read -r p; do
     echo "REFUSED: $p is tracked; the plugin must not declare an MCP server" >&2
   done <<<"$tracked"
   errors=$((errors + 1))
 fi
-if [[ -e ".mcp.json" ]] && ! grep -qxF ".mcp.json" <<<"$tracked"; then
-  echo "REFUSED: .mcp.json exists at the repository root (untracked); the plugin must not declare an MCP server" >&2
+if [[ -e "$PLUGIN_DIR/.mcp.json" ]] && ! grep -qxF "$PLUGIN_DIR/.mcp.json" <<<"$tracked"; then
+  echo "REFUSED: $PLUGIN_DIR/.mcp.json exists (untracked); the plugin must not declare an MCP server" >&2
   errors=$((errors + 1))
 fi
 
 # 2. No mcpServers key in the manifest.
 if [[ ! -f "$MANIFEST" ]]; then
-  echo "FAIL: $MANIFEST not found; the plugin manifest must exist at the repository root." >&2
+  echo "FAIL: $MANIFEST not found; the plugin manifest must exist in the plugin folder." >&2
   exit 1
 fi
 if grep -q '"mcpServers"' "$MANIFEST"; then
@@ -70,4 +72,4 @@ MSG
   exit 1
 fi
 
-echo "OK: no .mcp.json in the tree and no mcpServers key in $MANIFEST; the plugin is skill-only."
+echo "OK: no .mcp.json under $PLUGIN_DIR and no mcpServers key in $MANIFEST; the plugin is skill-only."

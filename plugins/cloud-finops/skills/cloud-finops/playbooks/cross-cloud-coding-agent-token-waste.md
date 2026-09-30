@@ -47,10 +47,13 @@ Both are ai-ml-inefficiency, but the detection surface and the levers differ.
 Coding-agent spend lives in local session logs, not the cloud bill, so detection
 uses agent-log meters rather than CUR / Cost Management queries.
 
+Install each tool from its own repository (linked below), pinning the release
+you audited, before running the commands.
+
 ```bash
 # 1. Team-wide readout from local agent logs: tokens, cache ratio, cost by model.
 #    ccusage reads the logs the coding agents already write locally.
-npx ccusage@latest            # daily / session breakdown across detected agents
+ccusage                       # daily / session breakdown across detected agents
 
 # Flag:
 #   cache-read tokens << input tokens        -> caching off or prefix broken
@@ -62,7 +65,6 @@ npx ccusage@latest            # daily / session breakdown across detected agents
 # 2. Per-session drill-down: route the agent through a local proxy meter to see
 #    per-tool token spend, including large tool results that get re-sent into
 #    every later turn and silently multiply the input bill.
-uv tool install token-viewer     # or: pipx install token-viewer
 tokview show --watch             # terminal 1: live dashboard
 tokview wrap claude              # terminal 2: run the agent through the proxy
 ```
@@ -71,8 +73,8 @@ tokview wrap claude              # terminal 2: run the agent through the proxy
 # 3. Named waste detectors, priced in dollars. CodeBurn reads the session files
 #    the agents already write and scans for low cache-hit ratios, unused MCP
 #    servers, and bloated context files, with copy-paste fixes.
-npx codeburn                     # interactive dashboard by task / model / tool
-npx codeburn optimize            # waste scan with estimated token and $ savings
+codeburn                         # interactive dashboard by task / model / tool
+codeburn optimize                # waste scan with estimated token and $ savings
 ```
 
 All three read local session data - no API keys leave the machine, which is

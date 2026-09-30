@@ -41,8 +41,8 @@ playbook. Both paths are first-class.
   match the latest contract terms. Cite the primary source (provider doc, your
   invoice, an enrollment agreement) so the change is verifiable.
 - **New named playbook.** A waste pattern you see in the field that is not yet in
-  `skills/cloud-finops/playbooks/`. Follow the format documented in
-  [`playbooks/README.md`](./skills/cloud-finops/playbooks/README.md): symptoms /
+  `plugins/cloud-finops/skills/cloud-finops/playbooks/`. Follow the format documented in
+  [`playbooks/README.md`](./plugins/cloud-finops/skills/cloud-finops/playbooks/README.md): symptoms /
   detection query / fix / anti-pattern / sources, ~3-8 KB. Examples we'd love:
   Lambda cold-start sprawl, Bedrock model proliferation, Snowflake warehouse
   fragmentation, Databricks all-purpose-cluster default-on, Cloud Run min-instance

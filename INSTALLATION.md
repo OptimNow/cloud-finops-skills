@@ -242,7 +242,7 @@ exists). Aider auto-reads `CONVENTIONS.md`. This is a routing file; add specific
 references at runtime with:
 
 ```bash
-aider --read skills/cloud-finops/references/finops-bedrock.md ...
+aider --read plugins/cloud-finops/skills/cloud-finops/references/finops-bedrock.md ...
 ```
 
 ### GitHub Copilot
