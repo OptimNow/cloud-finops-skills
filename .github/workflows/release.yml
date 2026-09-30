@@ -22,10 +22,11 @@ jobs:
           cd "${GITHUB_WORKSPACE}"
           # Exclude local-only directories that may exist in worktrees
           # (e.g. .claude/settings.local.json from Claude Code worktrees).
-          # cd into skills/ so the zip root contains `cloud-finops/...` rather
-          # than `skills/cloud-finops/...`. Backward-compatible with the
-          # Claude.ai / Claude Desktop upload path (Settings -> Skills -> Upload).
-          (cd skills && zip -r "../${ZIP_NAME}" cloud-finops \
+          # cd into the plugin's skills/ so the zip root contains
+          # `cloud-finops/...` rather than the repository path. Backward-compatible
+          # with the Claude.ai / Claude Desktop upload path (Settings -> Skills ->
+          # Upload) and unchanged by the 2026-10-01 move to plugins/cloud-finops/.
+          (cd plugins/cloud-finops/skills && zip -r "../../../${ZIP_NAME}" cloud-finops \
             -x 'cloud-finops/.claude/*' \
             -x 'cloud-finops/**/.backups/*' \
             -x 'cloud-finops/.git/*')

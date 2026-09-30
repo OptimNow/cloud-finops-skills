@@ -62,9 +62,10 @@ jobs:
       - name: Installer artefacts within the size ceiling
         run: bash scripts/check-artefact-size.sh
 
-      # The plugin folder is the repository root, so every tracked file is part
-      # of the Claude directory listing. Two holds to keep off: a non-image,
-      # non-font file over 256 KiB, or more than 512 files (ceiling 480 here).
+      # The plugin folder is plugins/cloud-finops/ (since 2026-10-01), and every
+      # file under it is part of the Claude directory listing. Two holds to keep
+      # off: a non-image, non-font file over 256 KiB, or more than 512 files
+      # (ceiling 480 here).
       - name: Plugin folder within the Claude directory file limits
         run: bash scripts/check-plugin-file-limits.sh
 
@@ -72,6 +73,13 @@ jobs:
       # connector is listed separately. No .mcp.json, no mcpServers key.
       - name: Plugin is skill-only (no bundled MCP server)
         run: bash scripts/check-plugin-skill-only.sh
+
+      # The directory's security scan holds a version for a reviewer on an image
+      # or other non-text file, a $VAR beside a URL, a curl-pipe-to-shell line or
+      # a package launcher. The first root-folder validation (2026-10-01) raised
+      # 13 such holds from developer tooling; the plugin folder must stay clean.
+      - name: Plugin folder free of directory scanner triggers
+        run: bash scripts/check-plugin-content.sh
 
       # Also gated by its own marketplace-version-check workflow, but that one
       # is path-filtered: it fires only when plugin.json or marketplace.json

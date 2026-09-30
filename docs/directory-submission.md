@@ -38,21 +38,20 @@ not carry over.
 **Local check.** From the folder that contains the repository, run:
 
 ```bash
-claude plugin validate ./cloud-finops-skills
+claude plugin validate ./cloud-finops-skills/plugins/cloud-finops
 ```
 
-Expected (Claude Code 2.1.285, run 2026-09-30): a line `Validating marketplace
-manifest: .../.claude-plugin/marketplace.json` followed by `Validation passed`, with
-no warnings. The command picks the marketplace manifest because the folder holds
-one. An earlier version printed a benign warning about `CLAUDE.md` not being loaded
-as project context; it no longer appears.
+Expected (Claude Code 2.1.286, run 2026-10-01): a line `Validating plugin manifest:
+.../plugins/cloud-finops/.claude-plugin/plugin.json` followed by `Validation passed`,
+with no warnings. Running it on the repository root instead validates the marketplace
+manifest, which is a different check.
 
 **Hosted server check.** The portal syncs the tool list from the live server, and
 Verified review calls every tool. Confirm the deployment serves what you expect before
 submitting (the 2026-08 audits found it four releases behind, twice).
 
 `serverInfo.version` in the `initialize` reply names the deployed release since
-1.37.0; it must equal `version` in `.claude-plugin/plugin.json` at the tag you
+1.37.0; it must equal `version` in `plugins/cloud-finops/.claude-plugin/plugin.json` at the tag you
 deployed. It is a first check, not proof. Before 1.37.0 `server.py` set no version and
 the field reported the `mcp` library version instead (it read `1.30.0` while the
 server was serving 1.36.0 content), so a deployment that answers `1.30.0` predates
@@ -113,7 +112,7 @@ bundle**.
 | Field | Value |
 |---|---|
 | Repository | `OptimNow/cloud-finops-skills` |
-| Plugin path | leave empty (the manifest is at the repository root) |
+| Plugin path | `plugins/cloud-finops` (the manifest is in that folder; the repository root holds the marketplace, the installer, the MCP server and the tooling, none of which the plugin ships) |
 | Branch or tag | leave empty to follow `main` (see the note below) |
 
 **Which branch to track.** The directory scans every new commit on the tracked branch
@@ -134,7 +133,8 @@ their meaning:
 
 | Expected finding | Result | Why, and what to do |
 |---|---|---|
-| A file over 256 KiB | None expected | `llms-full.txt` (1.2 MB) left the tree on 2026-09-30; it is built at release time and attached to the GitHub Release. `scripts/check-plugin-file-limits.sh` fails CI if any tracked non-image file crosses the limit again |
+| A file over 256 KiB | None expected | `llms-full.txt` (1.2 MB) left the tree on 2026-09-30; it is built at release time and attached to the GitHub Release. `scripts/check-plugin-file-limits.sh` fails CI if any file in the plugin folder crosses the limit again |
+| `UNREAD_ASSET_REFERENCED`, `MCP_FORWARDS_CREDENTIAL_ENV`, `RUNTIME_FETCH_EXEC`, `ROOT_CLAUDE_MD` | None expected | The first validation (2026-10-01, plugin path empty) returned 13 holds and 6 warnings under these codes, every one raised by files outside the skill: CLAUDE.md, INSTALLATION.md, install.sh, the guard scripts and the workflows. The plugin path now points at `plugins/cloud-finops`, which holds the manifest, a README, LICENSE and the skill only; the one in-skill trigger (`$ANTHROPIC_ADMIN_KEY` beside an API URL in a playbook) became a placeholder, and the three `npx` launcher lines in another playbook became install pointers. `scripts/check-plugin-content.sh` fails CI if any of the four patterns comes back |
 | Name made only of generic words (`cloud-finops`) | Possibly held for a reviewer | Decision taken 2026-09-26: keep the name, since renaming breaks every `cloud-finops@optimnow` install. `displayName` is "Cloud FinOps by OptimNow" so the listing is not mistaken for an official one |
 | Name is taken | Blocks | Only if another organisation already holds `cloud-finops`. If so, stop and decide on a rename; do not submit under a look-alike |
 
@@ -339,20 +339,27 @@ who add both see one set of tools.
   the data-quality rule alone: use a live pricing tool if one is connected, never quote
   an undated figure. The skill keeps its pricing-hub routing; the plugin is reviewed
   under different rules.
-- **Plugin folder is the repository root.** Installers receive `mcp_server/`,
-  `scripts/` and `.github/` along with the skill. Moving the plugin to
-  a subfolder would break the existing marketplace path (`source: "./"`) and every
-  current install. Accepted.
+- **Plugin folder.** Until 2026-10-01 the plugin folder was the repository root, on
+  the reasoning that moving it would break the marketplace path and every install.
+  The first portal validation showed the real cost: 13 holds from developer tooling,
+  each of which would send every content release to a human reviewer. The plugin
+  moved to `plugins/cloud-finops/`; the marketplace entry's `source` follows it, the
+  plugin `name` and the marketplace name are unchanged, and the 1.39.0 version bump is
+  what makes existing `cloud-finops@optimnow` installs fetch the new layout.
 
 ## 4. Keeping the listing current
 
 - Merging to `main` is the release: the directory scans the commit and publishes
   under the auto-publish setting. Nothing to do in the portal.
-- No tracked file may exceed 256 KiB and the tree stays under 480 files
-  (`scripts/check-plugin-file-limits.sh`). `llms-full.txt` is built at release time
-  and attached to the GitHub Release, never committed.
+- No file in `plugins/cloud-finops/` may exceed 256 KiB and the folder stays under
+  480 files (`scripts/check-plugin-file-limits.sh`). `llms-full.txt` is built at
+  release time and attached to the GitHub Release, never committed.
 - The plugin stays skill-only (`scripts/check-plugin-skill-only.sh`): no `.mcp.json`
-  in the tree, no `mcpServers` key in `plugin.json`.
+  in the plugin folder, no `mcpServers` key in `plugin.json`.
+- The plugin folder holds markdown, LICENSE and the manifest only, with no
+  uppercase `$VAR` beside a URL, no curl-pipe-to-shell and no package launcher
+  (`scripts/check-plugin-content.sh`). Developer tooling stays at the repository
+  root, where the scanner never reads it.
 - A connector-URL change touches three places: `server.py`
   (`CANONICAL_CONNECTOR_ORIGIN`), README.md and INSTALLATION.md. The connector
   listing's URL is edited in the portal separately.

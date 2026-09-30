@@ -1,7 +1,7 @@
 name: marketplace version in sync
 
 # Fails if .claude-plugin/marketplace.json metadata.version drifts from
-# .claude-plugin/plugin.json version. Runs only when a version-bearing file
+# plugins/cloud-finops/.claude-plugin/plugin.json version. Runs only when a version-bearing file
 # changes, so it is cheap and targeted.
 #
 # This is how metadata.version is "automated": a bot cannot commit the sync to
@@ -14,13 +14,13 @@ on:
   push:
     branches: [main]
     paths:
-      - '.claude-plugin/plugin.json'
+      - 'plugins/cloud-finops/.claude-plugin/plugin.json'
       - '.claude-plugin/marketplace.json'
       - 'scripts/check-marketplace-version.sh'
       - '.github/workflows/marketplace-version-check.yml'
   pull_request:
     paths:
-      - '.claude-plugin/plugin.json'
+      - 'plugins/cloud-finops/.claude-plugin/plugin.json'
       - '.claude-plugin/marketplace.json'
       - 'scripts/check-marketplace-version.sh'
       - '.github/workflows/marketplace-version-check.yml'

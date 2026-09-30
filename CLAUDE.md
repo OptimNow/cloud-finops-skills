@@ -6,7 +6,7 @@ Project context for AI assistants and human contributors working on this reposit
 
 ## What this repo is
 
-A structured, model-agnostic FinOps knowledge skill for AI agents. The `skills/cloud-finops/`
+A structured, model-agnostic FinOps knowledge skill for AI agents. The `plugins/cloud-finops/skills/cloud-finops/`
 folder contains reference files that give any LLM accurate Cloud FinOps expertise -
 Claude, GPT, Gemini, or any MCP-compatible agent.
 
@@ -45,7 +45,8 @@ cloud-finops-skills/
 │                             from this checkout; bundled data synced at build time)
 ├── fly.toml               <- Fly.io app config (app cloud-finops-mcp, region cdg,
 │                             scale-to-zero); .dockerignore trims the build context
-├── .claude-plugin/        <- plugin.json + marketplace.json (versions bump together)
+├── .claude-plugin/        <- marketplace.json only (the plugin manifest lives in
+│                             plugins/cloud-finops/; both versions bump together)
 ├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
 │                             publish-mcp, publish-registry, mcp-install-smoke,
 │                             release, dependabot-automerge
@@ -55,6 +56,8 @@ cloud-finops-skills/
 │                             the generated playbook-coverage.svg and
 │                             fcp-coverage.svg heat maps (embedded in
 │                             README.md; both CI-gated)
+├── skills/cloud-finops/   <- One README stub pointing at the new location, so the
+│                             old links do not 404. Outside the plugin folder
 ├── docs/
 │   ├── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
 │   │                         (split out of CLAUDE.md, Aug 2026)
@@ -67,7 +70,13 @@ cloud-finops-skills/
 │                             (awesome-mcp-servers, awesome-agent-skills, ...):
 │                             verified facts, exact entry lines, PR bodies,
 │                             hand-fill form drafts and the spacing schedule
-├── skills/cloud-finops/          <- The skill (this is what gets installed)
+├── plugins/cloud-finops/  <- The Claude plugin folder: what the directory scans and
+│                             what `cloud-finops@optimnow` installs, and nothing else.
+│                             Holds .claude-plugin/plugin.json (the version holder),
+│                             README.md (the listing's description), LICENSE and the
+│                             skill below. Text files only: no images, no scripts,
+│                             no `${VAR}` next to a URL, no download-and-execute
+├── plugins/cloud-finops/skills/cloud-finops/   <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
 │   └── references/        <- reference files, all with YAML FCP frontmatter
@@ -110,7 +119,7 @@ cloud-finops-skills/
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
 │       └── finops-waste-detection-playbooks.md  <- Eight-category waste taxonomy + WasteLine
-├── skills/cloud-finops/playbooks/   <- named-pattern runbooks (`<scope>-<pattern>.md`,
+├── plugins/cloud-finops/skills/cloud-finops/playbooks/  <- named-pattern runbooks (`<scope>-<pattern>.md`,
 │                                ~3-8 KB each, average ~5 KB;
 │                                Problem/Symptoms/Detection/Fix/
 │                                Anti-pattern/See also format) +
@@ -140,11 +149,15 @@ cloud-finops-skills/
 │                             480 files: both are Claude directory holds),
 │                             check-plugin-skill-only (no .mcp.json, no
 │                             mcpServers in plugin.json),
+│                             check-plugin-content (the plugin folder holds
+│                             markdown and the licence only: no image, no
+│                             `$VAR` beside a URL, no curl-pipe-to-shell, no
+│                             package launcher),
 │                             check-skill-description,
 │                             check-skill-power-parity (diffs the shared
 │                             SKILL.md / POWER.md body so the routing tables
 │                             cannot drift apart) and check-marketplace-version
-│                             - all fourteen run by the `CI` workflow, and
+│                             - all fifteen run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow
@@ -263,7 +276,7 @@ A truncated file looks valid in `git diff` review (the diff stops where the file
 the only signal was the missing footer at the end, which no automated check verified.
 
 **Guard rails added (`pipeline/applier/file_updater.py`):**
-- Before each apply, snapshot the file to `skills/cloud-finops/references/.backups/` with
+- Before each apply, snapshot the file to `plugins/cloud-finops/skills/cloud-finops/references/.backups/` with
   a timestamped name
 - After each apply, run `validate_post_apply`:
   - **Deletion threshold**: reject any update whose net change is < -20% of the
@@ -597,7 +610,7 @@ discount mechanics.
 
 Follow these six steps whenever you add a new domain:
 
-1. **Create the reference file** in `skills/cloud-finops/references/`
+1. **Create the reference file** in `plugins/cloud-finops/skills/cloud-finops/references/`
    - Name it `finops-{domain}.md` (or `{category}-{domain}.md` for non-FinOps topics like `greenops-cloud-carbon.md`)
    - Follow the structure of an existing reference file as a template
    - Include practical guidance, not abstract theory
@@ -646,7 +659,7 @@ Follow these six steps whenever you add a new domain:
    (`./scripts/build-llms-full.sh --smoke`).
 
 6. **Do NOT bump versions in the content PR (release-train rule, 2026-08)**
-   - Content PRs never touch `.claude-plugin/plugin.json`,
+   - Content PRs never touch `plugins/cloud-finops/.claude-plugin/plugin.json`,
      `.claude-plugin/marketplace.json` versions, or `mcp_server/pyproject.toml`.
      Every `plugin.json` bump that reaches main triggers one tag + GitHub
      Release + PyPI publish, so per-PR bumps mean one publish per content PR
@@ -707,7 +720,7 @@ Why this matters:
 
 Do **not** add a `description` field to reference-file frontmatter. The visible blockquote
 description on line 3 (after the H1) already serves that role; a frontmatter description
-would render twice in some tools. The exception is `skills/cloud-finops/SKILL.md` which DOES need
+would render twice in some tools. The exception is `plugins/cloud-finops/skills/cloud-finops/SKILL.md` which DOES need
 a `description` field for the Claude.ai upload skill loader (see "Content rules" below).
 
 ---
@@ -839,15 +852,33 @@ from how the directory works:
   `cloud-finops@optimnow` install. The directory may hold a generic name for a
   reviewer; `displayName` ("Cloud FinOps by OptimNow") is the label to change, not
   `name`.
-- **No tracked file over 256 KiB, at most 480 files.** The plugin folder is the
-  repository root, so every tracked file is scanned, and a non-image, non-font file
-  over 256 KiB or more than 512 files puts each new version on hold for a reviewer,
-  which would stop the twice-monthly content releases from auto-publishing.
-  `llms-full.txt` (~1.2 MB) was that file: since 2026-09-30 it is not committed,
-  the release workflows build it from the tagged commit and attach it to the GitHub
-  Release, and llms.txt points at `releases/latest/download/llms-full.txt`. Gated
-  by `scripts/check-plugin-file-limits.sh`. Do not bring a large generated artefact
-  back into the tree; build it at release time instead.
+- **The plugin folder is `plugins/cloud-finops/`, not the repository root
+  (decision of 2026-10-01).** The first portal validation, with the root as the
+  plugin folder, returned 13 policy holds and 6 warnings, all raised by developer
+  tooling no plugin user ever runs: image files named from CLAUDE.md, INSTALLATION.md
+  and the guard scripts, `$VAR` references next to URLs in install.sh and CLAUDE.md,
+  curl-pipe-to-shell lines in the READMEs and workflows, and CLAUDE.md itself at the
+  plugin root. A hold does not block, but it sends every new version to a human
+  reviewer, which ends auto-publishing of the twice-monthly content releases. So the
+  plugin folder now holds only what a user installs: the manifest, a plugin README,
+  LICENSE and the skill. Everything else stays at the root and is invisible to the
+  scanner. The marketplace entry's `source` points at the folder; the plugin `name`
+  and the marketplace name are unchanged, so existing installs update in place. The
+  old path `skills/cloud-finops/` keeps a README stub so external links resolve.
+- **No file over 256 KiB, at most 480 files, markdown only, inside the plugin
+  folder.** A non-image, non-font file over 256 KiB or more than 512 files puts each
+  new version on hold for a reviewer. `llms-full.txt` (about 1.2 MB) used to be that file:
+  since 2026-09-30 it is not committed, the release workflows build it from the tagged
+  commit and attach it to the GitHub Release, and llms.txt points at
+  `releases/latest/download/llms-full.txt`. Gated by
+  `scripts/check-plugin-file-limits.sh` (limits), `scripts/check-plugin-skill-only.sh`
+  (no MCP server) and `scripts/check-plugin-content.sh` (no image or other
+  non-markdown file, no `$VAR` or `${VAR}` on a line with a URL, no curl-pipe-to-shell,
+  no `npx` / `uvx` / `pipx run` / `uv run` launcher), all three scoped to the plugin
+  folder. A runbook that needs a credential writes a placeholder such as
+  `<ANTHROPIC_ADMIN_KEY>`; a tool it recommends is installed from its own repository,
+  never launched with `npx`. Do not bring a large generated artefact back into the
+  tree; build it at release time instead.
 
 ---
 
@@ -871,10 +902,13 @@ from how the directory works:
 - [ ] `llms-full.txt` NOT committed. It is gitignored; the release workflows
       build it and attach it to the GitHub Release. A local build at the
       repository root stays out of the commit.
-- [ ] Plugin folder still skill-only and within the directory file limits
-      (CI-gated by `scripts/check-plugin-skill-only.sh` and
-      `scripts/check-plugin-file-limits.sh`: no `.mcp.json`, no `mcpServers`,
-      no tracked non-image file over 256 KiB, at most 480 tracked files)
+- [ ] Plugin folder (`plugins/cloud-finops/`) still skill-only, within the
+      directory file limits and free of scanner triggers (CI-gated by
+      `scripts/check-plugin-skill-only.sh`, `scripts/check-plugin-file-limits.sh`
+      and `scripts/check-plugin-content.sh`: no `.mcp.json`, no `mcpServers`,
+      no file over 256 KiB, at most 480 files, markdown and LICENSE only, no
+      `$VAR` beside a URL, no curl-pipe-to-shell, no package launcher). Nothing
+      that is not for the end user goes into that folder
 - [ ] install.sh per-tool routing updated: ChatGPT inline routing table, Gemini
       grouped knowledge, and Cursor description must mention the new domain
 - [ ] File ends with the OptimNow / CC BY-SA footer. References use
@@ -882,7 +916,7 @@ from how the directory works:
       `> *Cloud FinOps Playbook by [OptimNow]... CC BY-SA 4.0...*`. No
       truncation mid-sentence or mid-table.
 - [ ] If adding a new playbook, follow the format in
-      `skills/cloud-finops/playbooks/README.md` (frontmatter schema, Problem /
+      `plugins/cloud-finops/skills/cloud-finops/playbooks/README.md` (frontmatter schema, Problem /
       Symptoms / Detection / Fix / Anti-pattern / See also sections, OptimNow
       CC BY-SA footer), add it to that README's catalogue table (CI-gated by
       `scripts/check-docs-drift.sh`), regenerate `playbook-coverage.md`
@@ -900,7 +934,7 @@ from how the directory works:
       hardcoded "N references / N playbooks" counts; use "the reference library"
       phrasing. `llms.txt` is the one list to keep current.)
 - [ ] **Content PR: no version bump.** All four version-carrying files are
-      untouched: `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`
+      untouched: `plugins/cloud-finops/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`
       `metadata.version`, `mcp_server/pyproject.toml`, and `server.json` (both of
       its version fields) - the release-train rule, see step 6
       of "How to add a new reference file"). A `plugin.json` bump reaching main

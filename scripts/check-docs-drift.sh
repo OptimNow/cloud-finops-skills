@@ -14,9 +14,9 @@
 # listing individual reference files, extend this script to cover it.
 #
 # Three checks, the first two mirroring check-llms-txt.sh:
-#   1. Every skills/cloud-finops/references/*.md appears in the CLAUDE.md tree.
+#   1. Every plugins/cloud-finops/skills/cloud-finops/references/*.md appears in the CLAUDE.md tree.
 #   2. Every reference filename in that tree block exists on disk.
-#   3. Every skills/cloud-finops/playbooks/*.md appears in the catalogue table
+#   3. Every plugins/cloud-finops/skills/cloud-finops/playbooks/*.md appears in the catalogue table
 #      of playbooks/README.md, and every catalogue entry exists on disk.
 #
 # Check 3 exists because SKILL.md and POWER.md carry representative examples
@@ -32,7 +32,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
-REF_DIR="skills/cloud-finops/references"
+REF_DIR="plugins/cloud-finops/skills/cloud-finops/references"
 CLAUDE_MD="CLAUDE.md"
 errors=0
 
@@ -85,7 +85,7 @@ fi
 echo "OK: CLAUDE.md structure tree lists all $count references, no stale entries."
 
 # ---- Check 3: playbooks/README.md catalogue ---------------------------------
-PB_DIR="skills/cloud-finops/playbooks"
+PB_DIR="plugins/cloud-finops/skills/cloud-finops/playbooks"
 PB_README="$PB_DIR/README.md"
 
 # Catalogue rows are markdown links of the form [slug](slug.md) in a table.

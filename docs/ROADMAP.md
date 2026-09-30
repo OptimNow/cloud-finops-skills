@@ -44,7 +44,7 @@ maintainer file.
      module's contract (inputs, outputs, side effects, failure modes), the
      LLM prompts in use, and any place where the pipeline takes a destructive
      action. Identify implicit assumptions and any other module besides
-     `applier/` that can write to `skills/cloud-finops/references/` or `skills/cloud-finops/playbooks/`
+     `applier/` that can write to `plugins/cloud-finops/skills/cloud-finops/references/` or `plugins/cloud-finops/skills/cloud-finops/playbooks/`
      - if anything else writes there, it must inherit the same guard-rail
      contract.
   2. **Harden (week 1-2).** Bring code-level validators to the modules that
@@ -148,7 +148,7 @@ maintainer file.
   1. **Build from the repo root, never from `mcp_server/` in isolation.** The bundled
      `data/*.md` are gitignored, so a fresh clone has none. They are produced at build
      time by the `hatch-build-scripts` hook running `scripts/sync_references.py`, which
-     resolves the repo root from `__file__` and reads `skills/cloud-finops/`. Point the
+     resolves the repo root from `__file__` and reads `plugins/cloud-finops/skills/cloud-finops/`. Point the
      build at `mcp_server/` alone and it will happily build a server with an empty
      catalogue - a silent failure, not a build error.
   2. **The start command must name the transport explicitly.** Alpic detects Python
@@ -512,7 +512,7 @@ These files shipped during the white-space analysis follow-up (PRs #48, #50, #51
   as it is pipeline damage.
 
 - YAML FCP frontmatter pass across all 22 pre-existing references (PR #53)
-- `skills/cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - RAG-friendly
+- `plugins/cloud-finops/skills/cloud-finops/playbooks/` directory (PRs #64, #66, #67, #83) - RAG-friendly
   named-pattern playbooks (`<scope>-<pattern>.md`, ~2-3KB each,
   Problem/Symptoms/Detection/Fix/Anti-pattern/See also format) covering AWS (incl. SageMaker + GPU), Azure, GCP, and cross-cloud waste patterns.
   Routed from SKILL.md and POWER.md "named waste pattern" rows

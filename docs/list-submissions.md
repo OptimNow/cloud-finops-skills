@@ -135,7 +135,7 @@ at the END of that subcategory, after the last entry, which on 2026-09-26 was
 Entry line (nine words after the dash, their limit is ten):
 
 ```markdown
-- **[OptimNow/cloud-finops-skills](https://github.com/OptimNow/cloud-finops-skills/tree/main/skills/cloud-finops)** - FinOps knowledge: cloud billing mechanics, commitments, allocation, AI spend
+- **[OptimNow/cloud-finops-skills](https://github.com/OptimNow/cloud-finops-skills/tree/main/plugins/cloud-finops/skills/cloud-finops)** - FinOps knowledge: cloud billing mechanics, commitments, allocation, AI spend
 ```
 
 PR body:
@@ -143,7 +143,7 @@ PR body:
 ```markdown
 This adds one line at the end of Community Skills > Specialized Domains.
 
-The skill folder is `skills/cloud-finops/` in the linked repository: a SKILL.md router plus reference files on cloud, SaaS and AI cost management, written from how the providers actually bill (commitment mechanics, allocation and chargeback, waste patterns with detection queries). It has been public since February 2026 and is updated twice a month.
+The skill folder is `plugins/cloud-finops/skills/cloud-finops/` in the linked repository: a SKILL.md router plus reference files on cloud, SaaS and AI cost management, written from how the providers actually bill (commitment mechanics, allocation and chargeback, waste patterns with detection queries). It has been public since February 2026 and is updated twice a month.
 
 Usage outside the maintainer's own account, all checkable on GitHub:
 
@@ -267,7 +267,7 @@ The link `https://clau.de/plugin-directory-submission` redirects to
 `https://claude.com/docs/directory/publish`. The submission itself is made in the
 developer portal at `https://claude.ai/directory/manage` (Submit new > Plugin bundle);
 the earlier Console form is no longer supported. The portal reads name, description
-and author from `.claude-plugin/plugin.json` and the marketplace manifest from
+and author from `plugins/cloud-finops/.claude-plugin/plugin.json` and the marketplace manifest from
 `.claude-plugin/marketplace.json`; there is no free-text form to fill for those. What
 to enter or check:
 

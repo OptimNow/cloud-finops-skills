@@ -61,13 +61,14 @@ Explorer / CUR - good for after-the-fact ownership, too coarse for live alerts.
 (`bucket_width=1m`; data appears within ~5 minutes). Group by `api_key_id` or
 `model` to isolate the identity holding a flat line. The cost endpoint
 `/v1/organizations/cost_report` is daily-only and cannot see the pattern.
-Requires an Admin API key (`sk-ant-admin01-...`):
+Requires an Admin API key (`sk-ant-admin01-...`); replace the placeholder below
+with yours:
 
 ```bash
 curl "https://api.anthropic.com/v1/organizations/usage_report/messages?\
 starting_at=2026-07-20T00:00:00Z&ending_at=2026-07-20T02:00:00Z&\
 bucket_width=1m&group_by[]=api_key_id" \
-  -H "anthropic-version: 2023-06-01" -H "x-api-key: $ANTHROPIC_ADMIN_KEY"
+  -H "anthropic-version: 2023-06-01" -H "x-api-key: <ANTHROPIC_ADMIN_KEY>"
 ```
 
 **Azure OpenAI** - Azure Monitor metrics on the Cognitive Services account at
