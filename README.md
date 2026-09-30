@@ -21,7 +21,7 @@
 
 | Tool | One-step install |
 |---|---|
-| <img src="https://img.shields.io/badge/-Claude%20Code-D97757?logo=anthropic&logoColor=white" alt="Claude Code" height="22"/> | At the Claude Code prompt: `/plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git` then `/plugin install cloud-finops@optimnow`. The plugin bundles the hosted MCP connector below (`.mcp.json`), so the skill and the six retrieval tools install together |
+| <img src="https://img.shields.io/badge/-Claude%20Code-D97757?logo=anthropic&logoColor=white" alt="Claude Code" height="22"/> | At the Claude Code prompt: `/plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git` then `/plugin install cloud-finops@optimnow`. The plugin is the skill only; for the six retrieval tools, add the hosted MCP connector separately (row below) |
 | <img src="https://img.shields.io/badge/-Claude.ai%20%2F%20Desktop-D97757?logo=anthropic&logoColor=white" alt="Claude.ai / Claude Desktop" height="22"/> | [Download the latest release zip](https://github.com/OptimNow/cloud-finops-skills/releases/latest), then **Settings -> Skills -> Upload zip** |
 | <img src="https://img.shields.io/badge/-ChatGPT-10A37F?logo=openai&logoColor=white" alt="ChatGPT" height="22"/> | Self-host: `./install.sh --tool chatgpt --grouped` _(a public Cloud FinOps GPT is on the Roadmap)_ |
 | <img src="https://img.shields.io/badge/-Gemini-4285F4?logo=googlegemini&logoColor=white" alt="Gemini" height="22"/> | Self-host: `./install.sh --tool gemini` _(a public Cloud FinOps Gem is on the Roadmap)_ |
@@ -97,6 +97,24 @@ asking for the library by name is the one-turn fix.
 Using a non-Claude model through an API? Add the **response contract** from
 [INSTALLATION.md](./INSTALLATION.md) ("API integration / Recommended response
 contract") to your system prompt so answers stay structured and billing-grounded.
+
+## Plugin and connector
+
+The Claude plugin built from this repository contains text files only: the skill
+instructions in `SKILL.md`, the reference files and the playbooks. It runs no code,
+declares no MCP server and sends no data anywhere. Installing it puts FinOps
+knowledge into the model's context, and nothing else.
+
+The hosted MCP connector is optional and is installed separately: as a custom
+connector in Claude.ai or Claude Desktop, or with `claude mcp add` in Claude Code
+(the "MCP hosted" row in the install table above). It serves the same library
+through six read-only tools and, on hosts that render MCP Apps, as interactive
+views. It is offered separately, as an MCP connector, not as part of the plugin,
+on purpose: the two carry the same content, and a plugin that also declared the
+server would load the tool definitions in every session next to the skill and put
+the same library into context twice. Use the plugin when you want the doctrine
+loaded up front, the connector when you want on-demand retrieval or the views, and
+both only when you want both.
 
 ---
 
@@ -307,8 +325,9 @@ use it. Full policy in [PRIVACY.md](./PRIVACY.md).
   endpoint and carry no credentials. The playbooks contain detection queries (billing
   export SQL, CLI commands) that *you* run in your own cloud account; nothing in this
   repository reads a cloud account.
-- **The bundled MCP connector sends tool calls to `cloud-finops-mcp.fly.dev`.** When
-  the model calls one of the six tools, the tool arguments (a reference or playbook
+- **The hosted MCP connector, if you add it, sends tool calls to
+  `cloud-finops-mcp.fly.dev`.** It is not part of the plugin (see "Plugin and
+  connector" above). When the model calls one of the six tools, the tool arguments (a reference or playbook
   name, a section phrase, facet filters such as domain or scope) travel over HTTPS to
   that server and the matching library content comes back. The server requires no
   account and no authentication, holds no database and no per-user state, and serves

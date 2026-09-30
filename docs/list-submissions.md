@@ -255,9 +255,9 @@ submission.
 | Link | `https://github.com/OptimNow/cloud-finops-skills` |
 | Author Name | `Jean Latiere (OptimNow)` |
 | Author Link | `https://github.com/OptimNow` |
-| Description | A Claude Code plugin and skill that gives the agent Cloud FinOps knowledge: reference files on cloud and AI billing mechanics, commitments, allocation and chargeback, plus named waste-pattern playbooks that carry a detection query. Installs with `/plugin marketplace add` and bundles a read-only MCP server over the same library. |
+| Description | A Claude Code plugin and skill that gives the agent Cloud FinOps knowledge: reference files on cloud and AI billing mechanics, commitments, allocation and chargeback, plus named waste-pattern playbooks that carry a detection query. Installs with `/plugin marketplace add`; a read-only MCP server over the same library is available separately. |
 
-The description is 329 characters (their range is 10 to 500), three sentences at
+The description is 342 characters (their range is 10 to 500), three sentences at
 most, descriptive, and does not address the reader. Tick the five required boxes;
 leave the sixth ("Do not check the following box") unchecked as instructed.
 
