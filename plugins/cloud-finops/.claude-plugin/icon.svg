@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Cloud FinOps by OptimNow">
+  <rect width="1024" height="1024" fill="#2C2C2C"/>
+  <!-- grey nodes: neutral paths -->
+  <g fill="none" stroke="#C1C1C1" stroke-width="18" stroke-linecap="round">
+    <line x1="277" y1="277" x2="352" y2="352"/>
+    <circle cx="246" cy="246" r="34"/>
+    <line x1="722" y1="452" x2="798" y2="452"/>
+    <circle cx="840" cy="450" r="34"/>
+  </g>
+  <!-- the system: a white circle split three ways -->
+  <circle cx="512" cy="475" r="195" fill="#FFFFFF"/>
+  <g fill="none" stroke="#E8E8E8" stroke-width="10" stroke-linecap="round">
+    <line x1="512" y1="475" x2="512" y2="668"/>
+    <line x1="512" y1="475" x2="345" y2="378"/>
+    <line x1="512" y1="475" x2="679" y2="378"/>
+  </g>
+  <!-- the green signal: the governed path -->
+  <line x1="390" y1="612" x2="280" y2="722" stroke="#ACE849" stroke-width="20" stroke-linecap="round"/>
+  <rect x="228" y="708" width="84" height="84" rx="18" fill="#ACE849"/>
+  <circle cx="405" cy="596" r="38" fill="#2C2C2C"/>
+  <circle cx="405" cy="596" r="26" fill="#ACE849"/>
+</svg>

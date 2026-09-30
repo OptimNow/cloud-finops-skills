@@ -96,7 +96,7 @@ session):
 | Privacy policy URL | `https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md` | In repo; contact line names jean@optimnow.io |
 | Documentation URL | `https://github.com/OptimNow/cloud-finops-skills#readme` (plugin) and `https://github.com/OptimNow/cloud-finops-skills/blob/main/mcp_server/README.md` (connector) | Exists |
 | Support contact | `jean@optimnow.io` | Decided 2026-09-26 |
-| Icon | `assets/icon.png` (96x96 PNG, square) | In repo. If the portal asks for a larger size, export the same artwork from its source; do not upscale this file |
+| Icon | Plugin: `plugins/cloud-finops/.claude-plugin/icon.svg`, picked up by the portal without a manifest field (the validator warned "Add .claude-plugin/icon.svg (square, >=128px) or set icon in plugin.json" on 2026-10-01). Connector: `assets/icon.png` (96x96 PNG, square), uploaded in the portal | The SVG redraws the favicon mark in the brand palette; the raster favicon is 868 KB and would ship in every install |
 | Listing texts | Section 2.3 below | Drafted |
 | Test account | Not applicable, no authentication | Say so in the Test & launch step |
 
