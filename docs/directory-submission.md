@@ -272,6 +272,29 @@ is what a reviewer would then see. This sequence was run against the live server
 `list_playbooks()` before pasting; they change when the catalogue grows. Confirm the "I have run every tool" box only after
 doing it on the deployment that is live that day.
 
+**Routing check after a description change.** No harness in the repository measures
+tool routing; the probe battery is maintainer-local and read by hand from claude.ai
+transcripts. After any deploy that changes the tool descriptions or the
+`instructions` string, run these five prompts in fresh claude.ai chats with the
+connector on and memory off, twice each because routing is stochastic, and record
+whether a tool-call block appears and which tool it names:
+
+1. "How do I detect cold data sitting in S3 Standard?" (P11 class, the control:
+   grounded before the change, must stay grounded)
+2. "My NAT gateway processes 10TB a month to S3, what should I do?" (P13, the
+   symptom phrasing that converted only under imperative wording, so the one most
+   at risk)
+3. "Should I delete these old EBS snapshots?" (P31, never converted before: a free
+   upside if it does now)
+4. "Which of my RIs are about to expire?" (P12, closed as structural: expect no
+   call, and note whether the model still offers to check the library)
+5. "How much should we commit in Savings Plans for our EC2 fleet?" (P05, the
+   advisory phrasing that flipped after PRs #171 and #176)
+
+A drop on prompt 2 across both runs while prompt 1 still grounds is the signal that
+the wording change cost routing. Baselines per probe are in the routing entry of
+`docs/ROADMAP.md` (cycles 4 to 7).
+
 ### 2.9 Compliance
 
 Seven acknowledgements (directory guidelines, first-party API, no financial
@@ -289,14 +312,23 @@ who add both see one set of tools.
 
 ## 3. Things a reviewer may raise, and the position taken
 
-- **Imperative tool descriptions.** `get_reference` says to call it "ALWAYS before
-  answering an advisory question", and the server `instructions` string carries two
-  routing rules. The review criteria reject descriptions that "tell Claude how to
-  behave" in ways unrelated to the tool's function. These rules are about when to call
-  the tool itself, were measured to be the only placement that works (CLAUDE.md,
-  probe cycles 4-7), and describe the tool's function. Keep them unless a reviewer
-  objects; if one does, move the sentence into the tool's "Use this when" paragraph
-  rather than deleting it.
+- **Imperative tool descriptions.** Until 2026-09-30 `find_playbooks` opened with
+  "ALWAYS call this before answering ...", `get_playbook` and the server
+  `instructions` told the model what not to reply ("never reply that you lack account
+  access", "do NOT ask for a data export first"), and `get_reference` said "ALWAYS
+  before answering an advisory question". The review criteria reject descriptions that
+  "tell Claude how to behave" beyond the tool's function. Those sentences were the
+  August 2026 routing work (PRs #171, #176, #184, #187), each answering a measured
+  under-calling in the probe cycles, and imperative placement was the wording that
+  converted probe P13. They were rewritten the same day as neutral descriptions of
+  what each tool returns and which questions it serves (the detection query is
+  written to be run in the user's account, so an account-data question does not need
+  an export), keeping the service-noun vocabulary the host's tool-search indexes. A
+  test in `mcp_server/tests/test_conformance.py` pins the absence of ALWAYS / NEVER /
+  MUST / "do NOT" / "IS the answer". The cost is a possible drop in spontaneous
+  routing on symptom phrasings; the manual five-prompt check in section 2.8 measures
+  it after each deploy, and the README already tells users to ask for the library by
+  name when an answer arrives without a tool call.
 - **Routing to OptimToken.** The criteria reject descriptions that "promote products
   and services", and the data-handling step asks for "Sponsored or promoted content:
   No". The server `instructions` used to route current prices to the OptimNow AI
