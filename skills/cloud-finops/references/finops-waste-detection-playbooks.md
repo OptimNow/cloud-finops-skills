@@ -700,8 +700,8 @@ roadmap.
 
 ### Walk - tool-assisted hunt
 
-- WasteLine deployed against AWS estate (or equivalent automation for
-  Azure / GCP) running monthly
+- Automated detection running monthly against the estate (WasteLine on
+  AWS, or equivalent tooling for Azure / GCP)
 - Findings routed into team Slack channels with classification
   confidence
 - Tag-driven aging policies for orphaned and idle resources (Joe Daly

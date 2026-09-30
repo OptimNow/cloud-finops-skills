@@ -312,7 +312,7 @@ methodology questions - not for routine billing-mechanics queries.
 | Kubernetes FinOps, K8s cost allocation, OpenCost, Kubecost, GKE Cost Allocation, EKS Split Cost Allocation, AKS Cost Analysis, FOCUS-emitting K8s allocation, container rightsizing (VPA, p95/p99 with safety margins), node-level autoscaling (Karpenter, Cluster Autoscaler), Pod Disruption Budgets, Spot diversification, idle node cost, node efficiency KPI | `references/finops-kubernetes.md` |
 | Waste detection playbooks, orphaned resources, idle resources, overprovisioned resources, commitment mismatches, schedule blindness, modernization opportunities, AI/ML inefficiency, egress / data transfer waste, cross-AZ egress cost, two-signal classification, classification confidence (obvious / likely / possible), realised vs potential savings, WasteLine appliance, OptimNow waste taxonomy | `references/finops-waste-detection-playbooks.md` |
 | Named waste pattern (e.g. zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, orphan Azure disks, Log Analytics ingestion sprawl, idle GKE Autopilot, idle SageMaker endpoint, oversized GPU instance, agent-loop flat-line burn, expiring commitment without a renewal decision, unused Azure reservation, GCP CUD mismatch, S3 lifecycle gaps - incomplete multipart uploads, noncurrent version sprawl, cold data in Standard) | `playbooks/<slug>.md` (see `playbooks/README.md` for the full pattern list) |
-| What does model X / instance Y cost right now - a current price figure rather than a billing mechanic | Not a reference. Call a live pricing tool if one is available in the session, otherwise send the user to <https://optimtoken.optimnow.io> (OptimNow AI Pricing Hub - live LLM token rates and compute instance rates across seven providers, each carrying its own as-of date). Never answer this from a figure remembered from a reference file. |
+| What does model X / instance Y cost right now - a current price figure rather than a billing mechanic | Not a reference. Use a live pricing tool if one is connected in the session; otherwise point the user at a live source such as <https://optimtoken.optimnow.io>. A figure remembered from a reference file is illustrative and dated, not a current price. |
 | Multi-domain query | Load all relevant references, synthesise |
 
 ### Reasoning sequence (apply to every response)
@@ -332,14 +332,11 @@ methodology questions - not for routine billing-mechanics queries.
 Billing **mechanics** are durable and are what these references are for. Price
 **figures** are volatile and go stale here within weeks. Treat the two differently.
 
-1. **Prefer a live source.** If a pricing tool is available in the session (for
-   example the OptimNow AI Pricing Hub: `compare-llm-models`, `estimate-llm-cost`,
-   `compare-compute-pricing`), call it before quoting any token or instance price.
-   If no such tool is available, point the user at <https://optimtoken.optimnow.io>
-   rather than quoting from memory. A connected pricing tool outranks web
-   browsing: fetching a provider's pricing page is the fallback when no tool is
-   connected, not an alternative to it - the hub adds provenance, verification,
-   and cross-provider comparability that a web page does not.
+1. **Prefer a live source.** If a pricing tool is connected in the session, use it
+   before quoting any token or instance price. If none is connected, point the user
+   at a live source such as <https://optimtoken.optimnow.io>, or at the provider's
+   own pricing page, rather than quoting from memory. Either way the figure carries
+   its source and date (rule 2).
 2. **Every figure carries its as-of date and source.** Write `$X per 1M input tokens
    (list price, <source>, <date>)`, not `$X per 1M input tokens`. A figure with no
    date cannot be used in a client deliverable.
