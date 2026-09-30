@@ -17,8 +17,10 @@
 # free of the same patterns.
 #
 # Refused inside plugins/cloud-finops/:
-#   1. any file that is not markdown, except the LICENSE, plugin.json and the
-#      plugin README (so: no image, no script, no font, no archive);
+#   1. any file that is not markdown, except the LICENSE, plugin.json, the
+#      plugin README and the listing icon at .claude-plugin/icon.svg (an SVG
+#      is a text file the scanner reads; the portal warns when no icon is
+#      present). So: no raster image, no script, no font, no archive;
 #   2. an uppercase `$NAME` or `${NAME}` shell variable on a line that also
 #      carries a URL (the scan reads that as a credential forwarded to a host;
 #      a runbook writes a placeholder such as `<ANTHROPIC_ADMIN_KEY>` instead).
@@ -48,7 +50,7 @@ fi
 while IFS= read -r -d '' path; do
   rel="${path#"$PLUGIN_DIR"/}"
   case "$rel" in
-    LICENSE|README.md|.claude-plugin/plugin.json) continue ;;
+    LICENSE|README.md|.claude-plugin/plugin.json|.claude-plugin/icon.svg) continue ;;
     *.md) continue ;;
   esac
   echo "REFUSED: $path is not a markdown file; the plugin folder ships text content only" >&2
@@ -91,4 +93,4 @@ MSG
   exit 1
 fi
 
-echo "OK: $PLUGIN_DIR holds markdown, LICENSE and the manifest only, with no credential variable beside a URL, no curl-pipe-to-shell and no package launcher."
+echo "OK: $PLUGIN_DIR holds markdown, LICENSE, the manifest and the SVG icon only, with no credential variable beside a URL, no curl-pipe-to-shell and no package launcher."

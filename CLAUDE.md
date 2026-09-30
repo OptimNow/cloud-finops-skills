@@ -73,9 +73,11 @@ cloud-finops-skills/
 ├── plugins/cloud-finops/  <- The Claude plugin folder: what the directory scans and
 │                             what `cloud-finops@optimnow` installs, and nothing else.
 │                             Holds .claude-plugin/plugin.json (the version holder),
-│                             README.md (the listing's description), LICENSE and the
-│                             skill below. Text files only: no images, no scripts,
-│                             no `${VAR}` next to a URL, no download-and-execute
+│                             README.md (the listing's description), LICENSE, the
+│                             listing icon (.claude-plugin/icon.svg, a text file)
+│                             and the skill below. Text files only: no raster
+│                             image, no script, no `${VAR}` next to a URL, no
+│                             download-and-execute
 ├── plugins/cloud-finops/skills/cloud-finops/   <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
