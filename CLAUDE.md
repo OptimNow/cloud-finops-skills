@@ -382,12 +382,13 @@ overturned: [`docs/mcp-apps-lessons.md`](docs/mcp-apps-lessons.md). The operatio
 rules, which you need before touching `mcp_server/src/cloud_finops_mcp/server.py`:
 
 - **`ui.domain` is required** on every `ui://` widget resource. It is derived in
-  `server.py` from the ROOT connector URL **including its trailing slash**
-  (`CANONICAL_CONNECTOR_ORIGIN + "/"`), sha256'd, first 32 hex chars +
-  `.claudemcpcontent.com`, and pinned by tests. Never hash an internal path such as
-  `/mcp` - that wrong-input variant is what broke `ai-pricing-hub-mcp` and then this
-  server. The constant must stay byte-for-byte identical to the connector URL
-  documented in README.md and INSTALLATION.md. (From September 2026 to 2026-09-30
+  `server.py` from the documented connector URL exactly as users paste it
+  (`CANONICAL_CONNECTOR_ORIGIN + "/mcp"`, no trailing slash, since the Fly move),
+  sha256'd, first 32 hex chars + `.claudemcpcontent.com`, and pinned by tests down
+  to the literal value. Hashing any other form of the URL (on Alpic it was the
+  root-with-slash form, and hashing `/mcp` there broke `ai-pricing-hub-mcp` and
+  then this server) leaves a blank frame. The constant must stay byte-for-byte
+  identical to the connector URL documented in README.md and INSTALLATION.md. (From September 2026 to 2026-09-30
   a root `.mcp.json` carried a fourth copy; the plugin is skill-only now and has
   none - see "Claude directory listing".)
 - **Keep the Skybridge-parity shape** (PR #174): every widget registered twice - an
@@ -399,9 +400,12 @@ rules, which you need before touching `mcp_server/src/cloud_finops_mcp/server.py
   before building the infrastructure that depends on it.** An hour in MCPJam, costing
   nothing and requiring no deployment, produced a finding that would otherwise have
   surfaced at the end of a multi-day hosting project.
-- **Status: rendering for this connector is still unconfirmed** as of the last
-  recorded test. Treat it as unproven, not as shipped, and do not count it as a
-  benefit when justifying the hosted deployment.
+- **Status: rendering for this connector still does not happen** as of the
+  2026-09-30 test on claude.ai at the canonical URL (`docs/mcp-apps-lessons.md`,
+  last entry): tool calls work, the sandbox domain was verified correct by calling
+  the server, and the host still surfaced no `ui://` resource to the model. Treat
+  it as unproven, not as shipped, and do not count it as a benefit when justifying
+  the hosted deployment.
 
 ### A packaged artefact cannot own volatile data (2026-08-17)
 
