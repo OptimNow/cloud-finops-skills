@@ -125,8 +125,12 @@ uvx cloud-finops-mcp
 The server is deployed at:
 
 ```
-https://cloud-finops-mcp.fly.dev/mcp
+https://mcp.optimnow.io/mcp
 ```
+
+(Until 30 September 2026 it was `https://cloud-finops-mcp.fly.dev/mcp`. That host
+still answers tool calls but no longer renders widgets; re-add the connector with the
+URL above.)
 
 Add it via **Settings -> Connectors -> Add custom connector** and paste exactly that
 URL - the `/mcp` path, no trailing slash; the widget sandbox domain is derived from it.
@@ -141,7 +145,7 @@ enough startup latency to blow Desktop's initialize timeout.
 Claude Code can use the same hosted URL without any install:
 
 ```bash
-claude mcp add --transport http cloud-finops https://cloud-finops-mcp.fly.dev/mcp
+claude mcp add --transport http cloud-finops https://mcp.optimnow.io/mcp
 ```
 
 For the local clients below, install the package first, then point the client at the

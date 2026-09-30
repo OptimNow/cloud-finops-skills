@@ -795,7 +795,7 @@ So the check is one-directional. Before merging, if the PR touches any of these:
 | The `provenance` contract (tier semantics, `upstreamTimestamp` / `eloAsOf`, the stale notice) | `ai-pricing-hub-mcp` | "Price figures" rule 5, in SKILL.md, POWER.md and the INSTALLATION.md response contract |
 | An MCP tool name or parameter of the ROI calculator | `ai-roi-calculator-mcp` | INSTALLATION.md companion section |
 | A value method, an input's meaning, or a documented trap | `ai-roi-calculator` METHODOLOGY.md | `references/finops-ai-value-management.md` |
-| Any `*.fly.dev`, `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, server.json, PRIVACY.md |
+| Any `mcp.optimnow.io`, `*.fly.dev`, `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, mcp_server/README.md, server.json, llms.txt, PRIVACY.md, fly.toml, docs/ |
 
 Two standing rules that follow from the map:
 
@@ -925,7 +925,7 @@ from how the directory works:
       on 2026-09-09 (HTTP 402). Assume the redeploy did not happen unless you called
       the endpoint and saw otherwise. After the PyPI publish, run `fly deploy` from
       the repo root on the tagged commit (the image builds from the checkout), then
-      call the hosted endpoint (`https://cloud-finops-mcp.fly.dev/mcp`) and confirm
+      call the hosted endpoint (`https://mcp.optimnow.io/mcp`) and confirm
       it serves the released content: the server's startup log names the bundle stamp
       (`data/content_version.txt`, version + sync date, written by
       `mcp_server/scripts/sync_references.py` since 1.32), or compare a `list_references` line count
@@ -937,10 +937,16 @@ from how the directory works:
 - [ ] SKILL.md description stays under 1024 characters (CI-gated by
       `scripts/check-skill-description.sh`, which also warns above 950 so the
       ceiling is visible before it is hit)
-- [ ] **Connector URL changed? Move all three copies together**: `server.py`
-      (`CANONICAL_CONNECTOR_ORIGIN`), README.md and INSTALLATION.md (plus
-      PRIVACY.md, which names the host). The directory connector listing's URL
-      is edited in the portal, not in the repo. Nothing in CI catches this
+- [ ] **Connector URL changed? Move every copy together**: `server.py`
+      (`CANONICAL_CONNECTOR_ORIGIN`, and the pinned hash in
+      `mcp_server/tests/test_ui.py`), README.md, INSTALLATION.md,
+      `mcp_server/README.md`, `server.json` (`remotes`, republished to the MCP
+      Registry by the next release), llms.txt, PRIVACY.md, the `fly.toml`
+      comment and the two `docs/*-submission*.md` guides. `git grep` the old
+      host before merging. The directory connector listing's URL is edited in
+      the portal, not in the repo. Nothing in CI catches this. Canonical since
+      2026-09-30: `https://mcp.optimnow.io/mcp` (the fly.dev host still answers
+      tool calls but is deprecated)
 - [ ] **Cross-repo impact checked.** If the PR quotes another OptimNow repo's tool
       names, parameters, endpoint URLs, `provenance` fields, or ROI methodology, it was
       verified against that repo. See "Cross-repo dependencies" above and

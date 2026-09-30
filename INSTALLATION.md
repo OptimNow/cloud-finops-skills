@@ -66,7 +66,7 @@ nothing under `/mcp`. If you also want the six retrieval tools, add the hosted
 connector separately:
 
 ```bash
-claude mcp add --transport http cloud-finops https://cloud-finops-mcp.fly.dev/mcp
+claude mcp add --transport http cloud-finops https://mcp.optimnow.io/mcp
 ```
 
 The two are kept apart on purpose: they serve the same library, and a plugin that
@@ -305,16 +305,29 @@ There are two ways to reach it.
 #### Hosted (nothing to install)
 
 ```bash
-claude mcp add --transport http cloud-finops https://cloud-finops-mcp.fly.dev/mcp
+claude mcp add --transport http cloud-finops https://mcp.optimnow.io/mcp
 ```
 
 For Claude.ai / Claude Desktop, **Settings -> Connectors -> Add custom connector** and
-paste exactly `https://cloud-finops-mcp.fly.dev/mcp` - the `/mcp` path, no trailing
+paste exactly `https://mcp.optimnow.io/mcp` - the `/mcp` path, no trailing
 slash. The widget sandbox domain (MCP Apps) is derived from the URL as entered, so a
 variant form (the bare origin, or a trailing slash) connects fine but silently disables
 widget rendering.
 Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry pointing at the
 same URL.
+
+**Deprecated URL.** Until 30 September 2026 the connector was published as
+`https://cloud-finops-mcp.fly.dev/mcp`. That host still answers tool calls, but the
+widget sandbox domain is derived from the canonical URL, so a connector added under
+the old URL renders no widgets. Change this one line in your configuration:
+
+```
+https://cloud-finops-mcp.fly.dev/mcp   ->   https://mcp.optimnow.io/mcp
+```
+
+In Claude Code that is `claude mcp remove cloud-finops` followed by the `claude mcp add`
+line above; in Claude.ai / Desktop, remove the custom connector and add it again with
+the new URL.
 
 This is the same code as the package below, deployed on Fly.io and redeployed on each
 release - not a live mirror of `main`. The content version it is actually serving is

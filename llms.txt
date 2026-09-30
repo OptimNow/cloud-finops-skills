@@ -71,5 +71,5 @@ Hub at https://optimtoken.optimnow.io.
 - [DEPENDENCIES.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/DEPENDENCIES.md): cross-repo dependency map for the five OptimNow repos, and which repos a change ripples into
 - [Repository](https://github.com/OptimNow/cloud-finops-skills): source, installer, and MCP server
 - [MCP server on PyPI](https://pypi.org/project/cloud-finops-mcp/): `pip install cloud-finops-mcp`
-- [Hosted MCP endpoint](https://cloud-finops-mcp.fly.dev/mcp): streamable HTTP, nothing to install
+- [Hosted MCP endpoint](https://mcp.optimnow.io/mcp): streamable HTTP, nothing to install
 - [OptimNow](https://optimnow.io): the authors. Content licensed CC BY-SA 4.0
