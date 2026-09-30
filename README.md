@@ -75,8 +75,9 @@ use them (field-tested with the same battery of practitioner questions through b
 - **Fetched on demand** - the MCP server. The model must decide to call a tool per
   question, and that decision is this surface's real limit. Measured behaviour
   (August 2026 probe cycles): lookup and discovery questions ("show me the idle waste
-  runbooks") route reliably; advisory and specific-symptom questions route since the
-  tool descriptions carry imperative routing rules, though not on every phrasing.
+  runbooks") route reliably; advisory and specific-symptom questions route on some
+  phrasings and not others, and the tool descriptions name the questions each tool
+  serves to move that probability, not to force the call.
   Its strengths: distribution (paste one URL - the right path for non-technical users
   and for hosts with neither skill support nor an installer target), faceted queries
   over the library's metadata, and interactive widgets on hosts that render MCP Apps.
