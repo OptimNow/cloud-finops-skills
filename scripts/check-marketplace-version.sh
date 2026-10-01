@@ -25,7 +25,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
-PLUGIN=".claude-plugin/plugin.json"
+PLUGIN="plugins/cloud-finops/.claude-plugin/plugin.json"
 MARKET=".claude-plugin/marketplace.json"
 
 plugin_ver="$(python3 -c "import json; print(json.load(open('$PLUGIN'))['version'])")"

@@ -2,9 +2,9 @@
 # the repo (pipeline/, assets/, a locally built llms-full.txt, .git, dist/)
 # is noise here.
 *
-!.claude-plugin/plugin.json
-!skills/cloud-finops/references/
-!skills/cloud-finops/playbooks/
+!plugins/cloud-finops/.claude-plugin/plugin.json
+!plugins/cloud-finops/skills/cloud-finops/references/
+!plugins/cloud-finops/skills/cloud-finops/playbooks/
 !mcp_server/
 mcp_server/.venv
 mcp_server/**/__pycache__

@@ -7,7 +7,7 @@
 # no stale paths.
 #
 # Two checks:
-#   1. Every skills/cloud-finops/references/*.md is listed in llms.txt.
+#   1. Every plugins/cloud-finops/skills/cloud-finops/references/*.md is listed in llms.txt.
 #   2. Every references/*.md path mentioned in llms.txt actually exists
 #      (catches stale paths left after a rename or restructure).
 #
@@ -23,7 +23,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
-REF_DIR="skills/cloud-finops/references"
+REF_DIR="plugins/cloud-finops/skills/cloud-finops/references"
 LLMS="llms.txt"
 errors=0
 
@@ -45,7 +45,7 @@ while IFS= read -r path; do
     echo "STALE: $LLMS lists $path which does not exist" >&2
     errors=$((errors + 1))
   }
-done < <(grep -oE 'skills/cloud-finops/references/[A-Za-z0-9._-]+\.md' "$LLMS" | sort -u)
+done < <(grep -oE 'plugins/cloud-finops/skills/cloud-finops/references/[A-Za-z0-9._-]+\.md' "$LLMS" | sort -u)
 
 count="$(find "$REF_DIR" -maxdepth 1 -name '*.md' -type f | wc -l | tr -d ' ')"
 if [[ $errors -gt 0 ]]; then

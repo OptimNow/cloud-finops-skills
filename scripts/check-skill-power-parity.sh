@@ -56,8 +56,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
-SKILL="skills/cloud-finops/SKILL.md"
-POWER="skills/cloud-finops/POWER.md"
+SKILL="plugins/cloud-finops/skills/cloud-finops/SKILL.md"
+POWER="plugins/cloud-finops/skills/cloud-finops/POWER.md"
 
 for f in "$SKILL" "$POWER"; do
   if [[ ! -f "$f" ]]; then

@@ -37,7 +37,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SKILL_DIR="$REPO_ROOT/skills/cloud-finops"
+SKILL_DIR="$REPO_ROOT/plugins/cloud-finops/skills/cloud-finops"
 OUTPUT="$REPO_ROOT/llms-full.txt"
 
 SMOKE_MODE=0
@@ -101,7 +101,7 @@ emit_file() {
 
   printf '\n\n---\n\n'
   printf '## %s: %s\n\n' "$kind" "$base"
-  printf 'Source: skills/cloud-finops/%s\n' "${path#"$SKILL_DIR"/}"
+  printf 'Source: plugins/cloud-finops/skills/cloud-finops/%s\n' "${path#"$SKILL_DIR"/}"
   if [[ -n "$facets" ]]; then
     printf '%s\n' "$facets"
   fi
@@ -123,7 +123,7 @@ lives; this file inlines all of them, so an agent can ingest the whole library i
 a single fetch. Content is licensed CC BY-SA 4.0 by OptimNow (https://optimnow.io).
 
 GENERATED FILE - do not edit by hand. Produced by scripts/build-llms-full.sh from
-the files under skills/cloud-finops/ at release time and attached to the GitHub
+the files under plugins/cloud-finops/skills/cloud-finops/ at release time and attached to the GitHub
 Release. Edit the source files instead.
 
 How to read it: an entry point first, then the long-form reference files (billing

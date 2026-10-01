@@ -38,21 +38,20 @@ not carry over.
 **Local check.** From the folder that contains the repository, run:
 
 ```bash
-claude plugin validate ./cloud-finops-skills
+claude plugin validate ./cloud-finops-skills/plugins/cloud-finops
 ```
 
-Expected (Claude Code 2.1.285, run 2026-09-30): a line `Validating marketplace
-manifest: .../.claude-plugin/marketplace.json` followed by `Validation passed`, with
-no warnings. The command picks the marketplace manifest because the folder holds
-one. An earlier version printed a benign warning about `CLAUDE.md` not being loaded
-as project context; it no longer appears.
+Expected (Claude Code 2.1.286, run 2026-10-01): a line `Validating plugin manifest:
+.../plugins/cloud-finops/.claude-plugin/plugin.json` followed by `Validation passed`,
+with no warnings. Running it on the repository root instead validates the marketplace
+manifest, which is a different check.
 
 **Hosted server check.** The portal syncs the tool list from the live server, and
 Verified review calls every tool. Confirm the deployment serves what you expect before
 submitting (the 2026-08 audits found it four releases behind, twice).
 
 `serverInfo.version` in the `initialize` reply names the deployed release since
-1.37.0; it must equal `version` in `.claude-plugin/plugin.json` at the tag you
+1.37.0; it must equal `version` in `plugins/cloud-finops/.claude-plugin/plugin.json` at the tag you
 deployed. It is a first check, not proof. Before 1.37.0 `server.py` set no version and
 the field reported the `mcp` library version instead (it read `1.30.0` while the
 server was serving 1.36.0 content), so a deployment that answers `1.30.0` predates
@@ -97,7 +96,7 @@ session):
 | Privacy policy URL | `https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md` | In repo; contact line names jean@optimnow.io |
 | Documentation URL | `https://github.com/OptimNow/cloud-finops-skills#readme` (plugin) and `https://github.com/OptimNow/cloud-finops-skills/blob/main/mcp_server/README.md` (connector) | Exists |
 | Support contact | `jean@optimnow.io` | Decided 2026-09-26 |
-| Icon | `assets/icon.png` (96x96 PNG, square) | In repo. If the portal asks for a larger size, export the same artwork from its source; do not upscale this file |
+| Icon | Plugin: `plugins/cloud-finops/.claude-plugin/icon.svg`, picked up by the portal without a manifest field (the validator warned "Add .claude-plugin/icon.svg (square, >=128px) or set icon in plugin.json" on 2026-10-01). Connector: `assets/icon.png` (96x96 PNG, square), uploaded in the portal | The SVG redraws the favicon mark in the brand palette; the raster favicon is 868 KB and would ship in every install |
 | Listing texts | Section 2.3 below | Drafted |
 | Test account | Not applicable, no authentication | Say so in the Test & launch step |
 
@@ -113,7 +112,7 @@ bundle**.
 | Field | Value |
 |---|---|
 | Repository | `OptimNow/cloud-finops-skills` |
-| Plugin path | leave empty (the manifest is at the repository root) |
+| Plugin path | `plugins/cloud-finops` (the manifest is in that folder; the repository root holds the marketplace, the installer, the MCP server and the tooling, none of which the plugin ships) |
 | Branch or tag | leave empty to follow `main` (see the note below) |
 
 **Which branch to track.** The directory scans every new commit on the tracked branch
@@ -134,7 +133,8 @@ their meaning:
 
 | Expected finding | Result | Why, and what to do |
 |---|---|---|
-| A file over 256 KiB | None expected | `llms-full.txt` (1.2 MB) left the tree on 2026-09-30; it is built at release time and attached to the GitHub Release. `scripts/check-plugin-file-limits.sh` fails CI if any tracked non-image file crosses the limit again |
+| A file over 256 KiB | None expected | `llms-full.txt` (1.2 MB) left the tree on 2026-09-30; it is built at release time and attached to the GitHub Release. `scripts/check-plugin-file-limits.sh` fails CI if any file in the plugin folder crosses the limit again |
+| `UNREAD_ASSET_REFERENCED`, `MCP_FORWARDS_CREDENTIAL_ENV`, `RUNTIME_FETCH_EXEC`, `ROOT_CLAUDE_MD` | None expected | The first validation (2026-10-01, plugin path empty) returned 13 holds and 6 warnings under these codes, every one raised by files outside the skill: CLAUDE.md, INSTALLATION.md, install.sh, the guard scripts and the workflows. The plugin path now points at `plugins/cloud-finops`, which holds the manifest, a README, LICENSE and the skill only; the one in-skill trigger (`$ANTHROPIC_ADMIN_KEY` beside an API URL in a playbook) became a placeholder, and the three `npx` launcher lines in another playbook became install pointers. `scripts/check-plugin-content.sh` fails CI if any of the four patterns comes back |
 | Name made only of generic words (`cloud-finops`) | Possibly held for a reviewer | Decision taken 2026-09-26: keep the name, since renaming breaks every `cloud-finops@optimnow` install. `displayName` is "Cloud FinOps by OptimNow" so the listing is not mistaken for an official one |
 | Name is taken | Blocks | Only if another organisation already holds `cloud-finops`. If so, stop and decide on a rename; do not submit under a look-alike |
 
@@ -168,6 +168,45 @@ for its schedule. Setting up the webhook needs admin access on the GitHub reposi
 it can be done later from the plugin's **Settings** tab. Leave **Auto-publish** as
 offered; for a new listing an Anthropic reviewer publishes each version anyway until
 they change the setting.
+
+**Setting up the push webhook** (done 2026-10-01; the `ping` delivery answered 200).
+The portal supplies the two values, GitHub holds the webhook, and nothing in this
+repository changes. Without it the directory still finds a new commit on `main`, at
+its scheduled check about every 6 hours; with it, within minutes of the push.
+
+1. In the portal, on the **Plugin submitted for review** page (or later: the plugin's
+   **Settings** tab, **Updates**, **Set up**), select **Generate secret**. The next
+   screen shows a **Payload URL** and a **secret**. The secret is shown once: keep the
+   tab open until the GitHub side is saved, and paste it nowhere else.
+2. In a second tab, open
+   <https://github.com/OptimNow/cloud-finops-skills/settings/hooks> and select
+   **Add webhook**. The page needs admin rights on the repository; a member without
+   them does not see it.
+3. Fill in the form:
+
+   | Field | Value |
+   |---|---|
+   | Payload URL | the URL from the portal, unchanged |
+   | Content type | `application/json` |
+   | Secret | the secret from the portal. GitHub signs every delivery with it; the directory rejects a delivery it cannot verify |
+   | SSL verification | leave **Enable SSL verification** |
+   | Which events | **Just the push event**; the directory listens to pushes on the tracked branch and nothing else |
+   | Active | checked |
+
+4. Select **Add webhook**. GitHub sends a `ping` delivery at once.
+5. Open the webhook, then **Recent deliveries**: the `ping` row must show a green
+   check and a `200` response. A `401` or `403` means the secret was copied wrong, a
+   `404` a truncated Payload URL; fix the field with **Edit**, then **Redeliver** on
+   that row.
+6. Back in the portal, finish the screen.
+
+If the secret is lost before the GitHub side is saved, **Set up** on the plugin's
+**Settings** tab generates a new one; replace it in the GitHub webhook (**Edit**,
+**Secret**), the old value stops working.
+
+The webhook changes detection, not publication: while the auto-publish setting reads
+"an Anthropic reviewer publishes each version", every new version still waits for a
+**Publish** click and the reviewer.
 
 ### 1.7 After submission
 
@@ -228,8 +267,8 @@ edited by Anthropic afterwards):
 >
 > The server holds no account, no credential and no user data; it cannot see your
 > cloud environment and hands over the detection query instead. Price figures are
-> not served here: the tools carry mechanics and ratios and route current prices to
-> the OptimNow AI Pricing Hub. Content is refreshed twice a month from primary
+> not served here: the tools carry mechanics and ratios, and any figure in a
+> reference is illustrative and dated inline. Content is refreshed twice a month from primary
 > provider sources and published under CC BY-SA 4.0. Built by OptimNow, a FinOps
 > consultancy, from enterprise delivery experience.
 
@@ -272,6 +311,29 @@ is what a reviewer would then see. This sequence was run against the live server
 `list_playbooks()` before pasting; they change when the catalogue grows. Confirm the "I have run every tool" box only after
 doing it on the deployment that is live that day.
 
+**Routing check after a description change.** No harness in the repository measures
+tool routing; the probe battery is maintainer-local and read by hand from claude.ai
+transcripts. After any deploy that changes the tool descriptions or the
+`instructions` string, run these five prompts in fresh claude.ai chats with the
+connector on and memory off, twice each because routing is stochastic, and record
+whether a tool-call block appears and which tool it names:
+
+1. "How do I detect cold data sitting in S3 Standard?" (P11 class, the control:
+   grounded before the change, must stay grounded)
+2. "My NAT gateway processes 10TB a month to S3, what should I do?" (P13, the
+   symptom phrasing that converted only under imperative wording, so the one most
+   at risk)
+3. "Should I delete these old EBS snapshots?" (P31, never converted before: a free
+   upside if it does now)
+4. "Which of my RIs are about to expire?" (P12, closed as structural: expect no
+   call, and note whether the model still offers to check the library)
+5. "How much should we commit in Savings Plans for our EC2 fleet?" (P05, the
+   advisory phrasing that flipped after PRs #171 and #176)
+
+A drop on prompt 2 across both runs while prompt 1 still grounds is the signal that
+the wording change cost routing. Baselines per probe are in the routing entry of
+`docs/ROADMAP.md` (cycles 4 to 7).
+
 ### 2.9 Compliance
 
 Seven acknowledgements (directory guidelines, first-party API, no financial
@@ -289,32 +351,54 @@ who add both see one set of tools.
 
 ## 3. Things a reviewer may raise, and the position taken
 
-- **Imperative tool descriptions.** `get_reference` says to call it "ALWAYS before
-  answering an advisory question", and the server `instructions` string carries two
-  routing rules. The review criteria reject descriptions that "tell Claude how to
-  behave" in ways unrelated to the tool's function. These rules are about when to call
-  the tool itself, were measured to be the only placement that works (CLAUDE.md,
-  probe cycles 4-7), and describe the tool's function. Keep them unless a reviewer
-  objects; if one does, move the sentence into the tool's "Use this when" paragraph
-  rather than deleting it.
+- **Imperative tool descriptions.** Until 2026-09-30 `find_playbooks` opened with
+  "ALWAYS call this before answering ...", `get_playbook` and the server
+  `instructions` told the model what not to reply ("never reply that you lack account
+  access", "do NOT ask for a data export first"), and `get_reference` said "ALWAYS
+  before answering an advisory question". The review criteria reject descriptions that
+  "tell Claude how to behave" beyond the tool's function. Those sentences were the
+  August 2026 routing work (PRs #171, #176, #184, #187), each answering a measured
+  under-calling in the probe cycles, and imperative placement was the wording that
+  converted probe P13. They were rewritten the same day as neutral descriptions of
+  what each tool returns and which questions it serves (the detection query is
+  written to be run in the user's account, so an account-data question does not need
+  an export), keeping the service-noun vocabulary the host's tool-search indexes. A
+  test in `mcp_server/tests/test_conformance.py` pins the absence of ALWAYS / NEVER /
+  MUST / "do NOT" / "IS the answer". The cost is a possible drop in spontaneous
+  routing on symptom phrasings; the manual five-prompt check in section 2.8 measures
+  it after each deploy, and the README already tells users to ask for the library by
+  name when an answer arrives without a tool call.
 - **Routing to OptimToken.** The criteria reject descriptions that "promote products
-  and services". The pricing-hub pointer is a data-quality rule (never quote an
-  undated figure), and the hub is OptimNow's own, first-party and free. It is disclosed
-  in the README "Data handling" section and in PRIVACY.md.
-- **Plugin folder is the repository root.** Installers receive `mcp_server/`,
-  `scripts/` and `.github/` along with the skill. Moving the plugin to
-  a subfolder would break the existing marketplace path (`source: "./"`) and every
-  current install. Accepted.
+  and services", and the data-handling step asks for "Sponsored or promoted content:
+  No". The server `instructions` used to route current prices to the OptimNow AI
+  Pricing Hub by URL; a reviewer can read a first-party link as promotion, so since
+  2026-09-30 the connector's model-facing text names no OptimNow product and no
+  `optimnow.io` URL (the widgets lost their footer link at the same time; a test in
+  `mcp_server/tests/test_conformance.py` pins both). The instruction that remains is
+  the data-quality rule alone: use a live pricing tool if one is connected, never quote
+  an undated figure. The skill keeps its pricing-hub routing; the plugin is reviewed
+  under different rules.
+- **Plugin folder.** Until 2026-10-01 the plugin folder was the repository root, on
+  the reasoning that moving it would break the marketplace path and every install.
+  The first portal validation showed the real cost: 13 holds from developer tooling,
+  each of which would send every content release to a human reviewer. The plugin
+  moved to `plugins/cloud-finops/`; the marketplace entry's `source` follows it, the
+  plugin `name` and the marketplace name are unchanged, and the 1.39.0 version bump is
+  what makes existing `cloud-finops@optimnow` installs fetch the new layout.
 
 ## 4. Keeping the listing current
 
 - Merging to `main` is the release: the directory scans the commit and publishes
   under the auto-publish setting. Nothing to do in the portal.
-- No tracked file may exceed 256 KiB and the tree stays under 480 files
-  (`scripts/check-plugin-file-limits.sh`). `llms-full.txt` is built at release time
-  and attached to the GitHub Release, never committed.
+- No file in `plugins/cloud-finops/` may exceed 256 KiB and the folder stays under
+  480 files (`scripts/check-plugin-file-limits.sh`). `llms-full.txt` is built at
+  release time and attached to the GitHub Release, never committed.
 - The plugin stays skill-only (`scripts/check-plugin-skill-only.sh`): no `.mcp.json`
-  in the tree, no `mcpServers` key in `plugin.json`.
+  in the plugin folder, no `mcpServers` key in `plugin.json`.
+- The plugin folder holds markdown, LICENSE and the manifest only, with no
+  uppercase `$VAR` beside a URL, no curl-pipe-to-shell and no package launcher
+  (`scripts/check-plugin-content.sh`). Developer tooling stays at the repository
+  root, where the scanner never reads it.
 - A connector-URL change touches three places: `server.py`
   (`CANONICAL_CONNECTOR_ORIGIN`), README.md and INSTALLATION.md. The connector
   listing's URL is edited in the portal separately.

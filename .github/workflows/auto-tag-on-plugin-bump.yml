@@ -1,6 +1,6 @@
 name: Auto-tag and release on plugin.json bump
 
-# When a push to main changes .claude-plugin/plugin.json, read the version
+# When a push to main changes plugins/cloud-finops/.claude-plugin/plugin.json, read the version
 # field, create a matching v<version> tag (if one does not already exist),
 # build the cloud-finops-v<version>.zip artefact, create the GitHub Release
 # with the zip attached, publish the wheel to PyPI, and announce the new
@@ -27,7 +27,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '.claude-plugin/plugin.json'
+      - 'plugins/cloud-finops/.claude-plugin/plugin.json'
 
 permissions:
   contents: write   # required to push the new tag and create the release
@@ -131,7 +131,7 @@ jobs:
       - name: Verify server.json versions match plugin.json
         run: |
           set -euo pipefail
-          plugin_version=$(jq -r '.version' .claude-plugin/plugin.json)
+          plugin_version=$(jq -r '.version' plugins/cloud-finops/.claude-plugin/plugin.json)
           top_version=$(jq -r '.version' server.json)
           pkg_version=$(jq -r '.packages[0].version' server.json)
 
@@ -163,7 +163,7 @@ jobs:
         working-directory: mcp_server
         run: |
           set -euo pipefail
-          version=$(jq -r '.version' ../.claude-plugin/plugin.json)
+          version=$(jq -r '.version' ../plugins/cloud-finops/.claude-plugin/plugin.json)
           VERSION="$version" python - <<'PY'
           import os, pathlib, re
           version = os.environ["VERSION"]
@@ -219,7 +219,7 @@ jobs:
         id: read_version
         run: |
           set -euo pipefail
-          version=$(jq -r '.version' .claude-plugin/plugin.json)
+          version=$(jq -r '.version' plugins/cloud-finops/.claude-plugin/plugin.json)
           if [[ -z "$version" || "$version" == "null" ]]; then
             echo "::error::plugin.json has no .version field"
             exit 1
@@ -256,7 +256,7 @@ jobs:
 
           # Single-line tag message; the user-facing release notes are
           # auto-populated below by softprops/action-gh-release.
-          git tag -a "$tag" -m "Auto-tagged from .claude-plugin/plugin.json bump to $version"
+          git tag -a "$tag" -m "Auto-tagged from plugins/cloud-finops/.claude-plugin/plugin.json bump to $version"
 
           git push origin "$tag"
           echo "Pushed tag $tag"
@@ -270,10 +270,11 @@ jobs:
           ZIP_NAME="cloud-finops-${tag}.zip"
           # Same exclusions as release.yml so the artefact is identical
           # whether it comes from auto-tag or from a manual tag push.
-          # cd into skills/ so the zip root contains `cloud-finops/...` rather
-          # than `skills/cloud-finops/...`. Backward-compatible with the
-          # Claude.ai / Claude Desktop upload path (Settings -> Skills -> Upload).
-          (cd skills && zip -r "../${ZIP_NAME}" cloud-finops \
+          # cd into the plugin's skills/ so the zip root contains
+          # `cloud-finops/...` rather than the repository path. Backward-compatible
+          # with the Claude.ai / Claude Desktop upload path (Settings -> Skills ->
+          # Upload) and unchanged by the 2026-10-01 move to plugins/cloud-finops/.
+          (cd plugins/cloud-finops/skills && zip -r "../../../${ZIP_NAME}" cloud-finops \
             -x 'cloud-finops/.claude/*' \
             -x 'cloud-finops/**/.backups/*' \
             -x 'cloud-finops/.git/*')

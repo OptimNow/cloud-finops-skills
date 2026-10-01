@@ -3,8 +3,8 @@
 # check-plugin-file-limits.sh - keep every tracked file inside the Claude plugin
 # directory's per-file and file-count limits.
 #
-# The plugin folder is the repository root (it holds .claude-plugin/plugin.json),
-# so the directory scans every tracked file on each commit it picks up from
+# The plugin folder is plugins/cloud-finops/ (it holds .claude-plugin/plugin.json),
+# and the directory scans every file under it on each commit it picks up from
 # `main`. Two of its checks do not block a submission but put every new version
 # on hold for a reviewer, which is what would stop the twice-monthly content
 # releases from auto-publishing:
@@ -31,6 +31,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
+PLUGIN_DIR="plugins/cloud-finops"
 MAX_FILE_BYTES=262144   # 256 KiB, the directory's per-file ceiling
 MAX_FILES=480           # directory holds a version above 512; fail early
 
@@ -53,7 +54,7 @@ while IFS= read -r -d '' path; do
     echo "TOO BIG: $path is $size bytes (ceiling $MAX_FILE_BYTES); the directory holds every version carrying it for a reviewer" >&2
     errors=$((errors + 1))
   fi
-done < <(git ls-files -z)
+done < <(git ls-files -z -- "$PLUGIN_DIR")
 
 if (( count > MAX_FILES )); then
   echo "TOO MANY: $count tracked files (ceiling $MAX_FILES; the directory holds a version above 512)" >&2
@@ -65,14 +66,14 @@ if (( errors > 0 )); then
 
 FAIL: the plugin folder breaks a Claude directory file limit.
 
-Every tracked file is part of the plugin, because the plugin folder is the
-repository root. A non-image, non-font file over 256 KiB, or more than 512
-files, puts each new directory version on hold for a reviewer and stops
-auto-publishing. Move a generated artefact out of the tree (build it in the
-release workflow, as llms-full.txt is), split a reference, or prune files;
-do not raise the ceilings. See CLAUDE.md "Claude directory listing".
+Every tracked file under plugins/cloud-finops/ is part of the plugin. A
+non-image, non-font file over 256 KiB, or more than 512 files, puts each new
+directory version on hold for a reviewer and stops auto-publishing. Move a
+generated artefact out of the folder (build it in the release workflow, as
+llms-full.txt is), split a reference, or prune files; do not raise the
+ceilings. See CLAUDE.md "Claude directory listing".
 MSG
   exit 1
 fi
 
-echo "OK: $count tracked files (ceiling $MAX_FILES), none over $MAX_FILE_BYTES bytes outside images and fonts."
+echo "OK: $count tracked files under $PLUGIN_DIR (ceiling $MAX_FILES), none over $MAX_FILE_BYTES bytes outside images and fonts."

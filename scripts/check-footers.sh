@@ -21,11 +21,11 @@
 # that would push contributors to edit it.
 #
 # Files covered:
-#   skills/cloud-finops/references/*.md   (all)
-#   skills/cloud-finops/playbooks/*.md    (all, README.md included - it carries
+#   plugins/cloud-finops/skills/cloud-finops/references/*.md   (all)
+#   plugins/cloud-finops/skills/cloud-finops/playbooks/*.md    (all, README.md included - it carries
 #                                          the same Playbook footer)
-#   skills/cloud-finops/SKILL.md          (entry point, same footer shape)
-#   skills/cloud-finops/POWER.md          (ditto)
+#   plugins/cloud-finops/skills/cloud-finops/SKILL.md          (entry point, same footer shape)
+#   plugins/cloud-finops/skills/cloud-finops/POWER.md          (ditto)
 #
 # What it does NOT check: that the footer text is byte-identical across files,
 # that the licence URL resolves, or anything about the body above the footer.
@@ -43,7 +43,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
-SKILL_DIR="skills/cloud-finops"
+SKILL_DIR="plugins/cloud-finops/skills/cloud-finops"
 TAIL_BYTES=300
 errors=0
 checked=0

@@ -138,17 +138,18 @@ commitment before optimising it.
 
 ## OptimNow tools and assets
 
-Reference these when they are genuinely relevant to the problem at hand. Do not promote
-them in every response.
+Context on what OptimNow builds, so the methodology above can be read alongside its
+tooling. Mention one only when it is genuinely relevant to the problem at hand; do not
+promote them in responses.
 
-| Tool | What it does | When to reference |
-|---|---|---|
-| **AI Cost Readiness Assessment** | Evaluates an organisation's readiness to manage AI workloads costs across visibility, unit economics, governance, and ROI | When an organisation is starting AI cost management or doesn't know where to begin |
-| **Tagging Policy Generator** | Generates structured tagging policies from organisational inputs | When a customer needs to design or standardize a tagging strategy |
-| **MCP for Tagging** | MCP server that enables AI agents to read, validate, and apply resource tags via natural language | When discussing automated tagging governance or agentic FinOps workflows |
-| **AI ROI Calculator** | Three-layer ROI model (infrastructure + harness + business value) for AI initiatives | When a customer needs to evaluate or justify AI investment |
-| **FinOps Pilot (Agent Smith)** | Agentic FinOps assistant combining real-time cost intelligence, MCP tools, and FinOps domain expertise | When discussing agentic FinOps implementation or real-time AI cost visibility |
-| **FinOps Maturity Assessment** | Structured assessment of FinOps practice maturity across all 22 capabilities | When an organisation needs a baseline before starting or expanding a FinOps practice |
+| Tool | What it does |
+|---|---|
+| **AI Cost Readiness Assessment** | Evaluates an organisation's readiness to manage AI workloads costs across visibility, unit economics, governance, and ROI |
+| **Tagging Policy Generator** | Generates structured tagging policies from organisational inputs |
+| **MCP for Tagging** | MCP server that enables AI agents to read, validate, and apply resource tags via natural language |
+| **AI ROI Calculator** | Three-layer ROI model (infrastructure + harness + business value) for AI initiatives |
+| **FinOps Pilot (Agent Smith)** | Agentic FinOps assistant combining real-time cost intelligence, MCP tools, and FinOps domain expertise |
+| **FinOps Maturity Assessment** | Structured assessment of FinOps practice maturity across all 22 capabilities |
 
 ---
 

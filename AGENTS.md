@@ -10,7 +10,7 @@ project context, this one is just shorter.
 ## What this repo is
 
 A structured, model-agnostic FinOps knowledge skill for AI agents. The
-`skills/cloud-finops/` folder contains reference files that give any LLM accurate
+`plugins/cloud-finops/skills/cloud-finops/` folder contains reference files that give any LLM accurate
 Cloud FinOps expertise - Claude, GPT, Gemini, Codex, or any
 MCP-compatible agent.
 
@@ -39,7 +39,9 @@ cloud-finops-skills/
 ├── llms.txt               <- llms.txt index for cross-agent discovery
 ├── assets/                <- Installation-guide screenshots + social preview
 ├── docs/ROADMAP.md        <- Deliberately-deferred work + trigger to revisit
-├── skills/cloud-finops/          <- The skill (this is what gets installed)
+├── plugins/cloud-finops/  <- The Claude plugin folder: manifest, README, LICENSE and
+│                             the skill, nothing else (the directory scans only this)
+├── plugins/cloud-finops/skills/cloud-finops/   <- The skill (this is what gets installed)
 │   ├── SKILL.md           <- Entry point + domain router
 │   ├── POWER.md           <- Kiro IDE entry point
 │   └── references/        <- reference files, all with YAML FCP frontmatter
@@ -97,7 +99,7 @@ Quick rules:
   behaviour). Product/framework names keep their official spelling.
 - All reference files carry YAML FCP frontmatter mapping the file to the FinOps
   Framework Capability it serves
-- Do NOT bump versions in content PRs. Version bumps (`.claude-plugin/plugin.json`
+- Do NOT bump versions in content PRs. Version bumps (`plugins/cloud-finops/.claude-plugin/plugin.json`
   + `marketplace.json` `metadata.version` + `mcp_server/pyproject.toml` +
   `server.json`, which carries the version twice, all together) happen only in a
   dedicated release PR, because every `plugin.json` bump reaching main triggers a

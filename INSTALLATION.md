@@ -242,7 +242,7 @@ exists). Aider auto-reads `CONVENTIONS.md`. This is a routing file; add specific
 references at runtime with:
 
 ```bash
-aider --read skills/cloud-finops/references/finops-bedrock.md ...
+aider --read plugins/cloud-finops/skills/cloud-finops/references/finops-bedrock.md ...
 ```
 
 ### GitHub Copilot
@@ -415,31 +415,23 @@ This skill deliberately does not carry current price figures. Billing mechanics 
 durable and belong in the reference files; absolute prices are volatile and go stale
 inside a packaged skill within weeks. See "Price figures" in `SKILL.md` for the rule.
 
-The AI Pricing Hub is where those figures live: <https://optimtoken.optimnow.io>. The
+The AI Pricing Hub is one place those figures live: <https://optimtoken.optimnow.io>. The
 website is usable on its own and needs no setup. Adding its MCP connector lets the model
 fetch a figure mid-answer instead of telling the user to go and look it up.
 
-**It is a remote server, so there is nothing to install.** Point your client at the
-endpoint:
+**It is a remote server, so there is nothing to install.** Its endpoint URL is owned
+by the hub's own repository and is not repeated here, so that it cannot go stale in
+this file: take it from the "Connect" section of
+<https://github.com/OptimNow/ai-pricing-hub-mcp#readme>, then:
 
-```
-https://ai-pricing-hub-mcp-9604f763.alpic.live/
-```
-
-For Claude.ai / Claude Desktop, **Settings -> Connectors -> Add custom connector** and
-paste the URL. Do not wire it through `claude_desktop_config.json`: Desktop silently
-drops `"type": "http"` entries from that file, and the `npx mcp-remote` bridge adds
-enough startup latency to blow Desktop's initialize timeout - both paths end in a
-connector that never answers.
-
-Claude Code:
-
-```bash
-claude mcp add --transport http ai-pricing-hub https://ai-pricing-hub-mcp-9604f763.alpic.live/
-```
-
-For clients with no native remote-MCP support, `npx mcp-remote <url>` remains the
-fallback (on Windows, wrap it: `"command": "cmd"`, `"args": ["/c", "npx", "mcp-remote", "<url>"]`).
+- Claude.ai / Claude Desktop: **Settings -> Connectors -> Add custom connector** and
+  paste the URL. Do not wire it through `claude_desktop_config.json`: Desktop silently
+  drops `"type": "http"` entries from that file, and the `npx mcp-remote` bridge adds
+  enough startup latency to blow Desktop's initialize timeout - both paths end in a
+  connector that never answers.
+- Claude Code: `claude mcp add --transport http ai-pricing-hub <url>`.
+- Clients with no native remote-MCP support: `npx mcp-remote <url>` (on Windows, wrap
+  it: `"command": "cmd"`, `"args": ["/c", "npx", "mcp-remote", "<url>"]`).
 
 **Five tools (all read-only):**
 
@@ -623,9 +615,9 @@ PRICE FIGURES
 - Never quote a price without its as-of date and source: "$X per 1M input tokens
   (list price, <source>, <date>)". A figure with no date is not usable in a client
   deliverable.
-- If a live pricing tool is available, call it before quoting any token or instance
-  price. Otherwise refer the user to https://optimtoken.optimnow.io and mark any
-  figure you give as illustrative.
+- If a live pricing tool is connected, use it before quoting any token or instance
+  price. Otherwise refer the user to a live source such as
+  https://optimtoken.optimnow.io and mark any figure you give as illustrative.
 - Quote mechanics and ratios (batch discount, cache-read multiplier, commitment term
   structure) with confidence. Date every absolute number.
 - Never interpolate a missing price from a neighbouring model, a previous generation,

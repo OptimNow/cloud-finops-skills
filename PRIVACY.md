@@ -57,10 +57,11 @@ domain.
 
 ## Other sites the library points to
 
-The skill and the server instruct the model to look up current prices on the OptimNow
-AI Pricing Hub (<https://optimtoken.optimnow.io>) rather than quote a stale figure.
-That is a separate site; whether the model opens it is decided in your conversation,
-and any visit is governed by that site's own notice.
+The skill instructs the model to look up current prices on the OptimNow AI Pricing
+Hub (<https://optimtoken.optimnow.io>) rather than quote a stale figure. That is a
+separate site; whether the model opens it is decided in your conversation, and any
+visit is governed by that site's own notice. The hosted server names no site: it
+tells the model to use a live pricing tool if one is connected in the session.
 
 ## Your rights
 

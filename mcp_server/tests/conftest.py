@@ -18,8 +18,8 @@ from cloud_finops_mcp import metadata
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = Path(__file__).resolve().parents[1] / "src" / "cloud_finops_mcp" / "data"
 PLAYBOOKS_DIR = DATA_DIR / "playbooks"
-REFERENCES_SOURCE = REPO_ROOT / "skills" / "cloud-finops" / "references"
-PLAYBOOKS_SOURCE = REPO_ROOT / "skills" / "cloud-finops" / "playbooks"
+REFERENCES_SOURCE = REPO_ROOT / "plugins" / "cloud-finops" / "skills" / "cloud-finops" / "references"
+PLAYBOOKS_SOURCE = REPO_ROOT / "plugins" / "cloud-finops" / "skills" / "cloud-finops" / "playbooks"
 
 
 def _ensure_dir(dest: Path, source: Path, *, skip: set[str]) -> None:
