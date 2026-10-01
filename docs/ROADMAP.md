@@ -46,7 +46,10 @@ becomes a routing item, not a reason to write more.
 1. Triage the scan output as above.
 2. Rotating re-verification: one domain cluster's dated figures and mechanics
    claims against provider docs (rotation table in the maintainer-local
-   `pipeline/MONTHLY_WORKFLOW.md`).
+   `pipeline/MONTHLY_WORKFLOW.md`). This moves the pass from the 1st, where
+   it sat before October 2026, to the 15th, so that each half-month carries
+   one heavy step; the "Content update pipeline" section of `CLAUDE.md` says
+   the same, and the maintainer-local doctrine needs the same edit.
 3. One probe cycle: the four controls (P11, P12, P13, P31) plus one probe
    targeting the lot shipped on the 1st, on both surfaces, with the
    visible-evidence discipline. Record the verdicts in
@@ -299,7 +302,8 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
      folds rule 4, expire-don't-transition, into its Fix/Anti-pattern). *Azure Blob
      and GCS ported 2026-10-01* as two playbooks per cloud (garbage collection at
      `likely`, cold-data tiering at `possible`); the incomplete-multipart file stays
-     AWS-only because S3 bills those under a separate rule.
+     AWS-only: the GCS abort rule rides its garbage-collection playbook, and Azure
+     discards uncommitted blocks on its own after a week.
   2. **Commitment-mismatch x3 providers** - CLOSED 2026-08-21, see the entry above.
   3. **NAT-to-gateway-endpoint substitution (AWS)** - the high-traffic end of the NAT
      distribution, which the zombie-NAT playbook deliberately scopes out: a NAT moving

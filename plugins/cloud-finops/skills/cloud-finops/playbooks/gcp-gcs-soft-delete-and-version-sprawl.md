@@ -11,8 +11,8 @@ confidence: likely
 ## Problem
 
 Three mechanisms keep bytes billable after the application is done with
-them. **Soft delete** is on by default on every bucket, with a 7-day
-retention (configurable up to 90 days, or 0 to disable): every deleted or
+them. **Soft delete** is on by default on every bucket that supports it, with
+a 7-day retention (configurable from 7 to 90 days, or 0 to disable): every deleted or
 overwritten object is retained and billed at the bucket's storage-class
 rate for the whole window. **Object versioning**, once enabled, keeps every
 overwritten object as a noncurrent version with no expiry unless a
@@ -20,10 +20,11 @@ lifecycle rule deletes it. **Abandoned XML API multipart uploads** keep
 their parts billable until aborted. On a high-churn bucket (Dataflow
 staging, Composer and Spark scratch, CI artefacts, model checkpoints,
 Terraform state) the retained bytes can exceed the live bytes. The soft
-delete case is the one that surprised most estates: it arrived enabled on
-existing buckets, so a scratch bucket that deletes and rewrites its whole
-contents daily now pays for roughly seven extra copies with no
-configuration change anyone made.
+delete case is the one that surprises estates: it needs no configuration,
+so a scratch bucket that deletes and rewrites its whole contents daily
+pays for roughly seven extra copies of them. Soft-deleted objects also
+trigger the early-deletion charge of Nearline, Coldline and Archive when
+deleted inside the class minimum, so a colder class does not escape it.
 
 ## Symptoms
 
@@ -71,13 +72,20 @@ and `multipart-upload`. In Metrics Explorer, group by `bucket_name` and
 sum by (bucket_name, type) (storage_googleapis_com:storage_v2_total_bytes{type!="live-object"})
 ```
 
-The metric is daily and lags about a day, so an empty series on a new
-bucket is "no data", not "no waste". Classification is `likely`: act on
+Sourcing note: the `type` label and its four values come from the Cloud
+Monitoring metric list and were not confirmed against the published
+metrics page when this playbook was written. If the metric picker does
+not show the label, size the bucket from a Storage Insights inventory
+report instead. The metric is daily and lags about a day, so an empty
+series on a new bucket is "no data", not "no waste". Soft-delete
+mechanics: <https://docs.cloud.google.com/storage/docs/soft-delete>
+(default 7 days, range 7 to 90, 0 disables, lifecycle rules do not act
+on soft-deleted objects), read 1 October 2026. Classification is `likely`: act on
 the missing rule or oversized retention AND retained bytes above roughly
 20% of live bytes. The blocker check keeps it from `obvious`: a bucket
-retention policy or lock, a `Bucket Lock` compliance hold, Turbo
-replication or a dual-region bucket used as the surviving copy, and any
-documented point-in-time recovery need all legitimately keep history.
+retention policy (locked or not), event-based or temporary object holds,
+a dual-region bucket used as the surviving copy, and any documented
+point-in-time recovery need all legitimately keep history.
 
 ## Fix
 
@@ -87,11 +95,10 @@ documented point-in-time recovery need all legitimately keep history.
 2. Set soft-delete retention to the recovery need. For scratch, staging and
    rebuildable buckets that is 0 (disabled); for data of value keep 7
    days. The retention duration is the whole lever: soft-deleted objects
-   are purged when it expires, lifecycle rules do not touch them. Set the
-   organisation-level default for new buckets through the
-   `storage.softDeletePolicySeconds` constraint so the next scratch bucket
-   does not inherit 7 days (confirm the constraint name in the current
-   organisation policy catalogue).
+   are purged when it expires, and lifecycle rules can neither delete nor
+   re-class them. Use the `storage.softDeletePolicySeconds` organisation
+   policy constraint to govern which retention durations projects may
+   set, so scratch projects are not left on the default.
 3. Add a lifecycle rule `Delete` with `isLive: false` and
    `daysSinceNoncurrentTime` at 30 to 90 days, plus `numNewerVersions` where
    the team needs rollback depth rather than a time window.

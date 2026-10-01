@@ -52,7 +52,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 ## Rate structure: Claude models
 
-> *Illustrative rates, list price, as of September 2026 (Anthropic model documentation).
+> *Illustrative rates, list price, as of 1 October 2026 (Anthropic pricing page).
 > Prices move and this file does not. For a current figure, call a live pricing tool or
 > check <https://optimtoken.optimnow.io>. What is durable below is the tier structure and
 > the multipliers, not the absolute numbers.*

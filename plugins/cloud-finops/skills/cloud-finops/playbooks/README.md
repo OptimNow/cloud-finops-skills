@@ -88,7 +88,10 @@ garbage-collection playbook at `likely` (retained versions, soft-deleted
 data, abandoned multipart uploads: realised saving, no access study) and a
 cold-data tiering playbook at `possible` (needs access evidence, carries
 the prerequisite-finding pattern). AWS adds a third, obvious-tier file for
-incomplete multipart uploads because S3 bills them under a separate rule.
+incomplete multipart uploads, which S3 keeps until a lifecycle rule aborts
+them. On GCS the equivalent abort rule rides the garbage-collection
+playbook, and Azure needs none: uncommitted blocks are discarded
+automatically after a week.
 
 ## How playbooks differ from reference files
 

@@ -1145,9 +1145,12 @@ stores).
 
 ### Soft delete and versioning - default-on cost traps
 
-New storage accounts have **soft delete enabled by default** (containers, blobs,
-file shares) with 7-day retention. Versioning, when enabled, retains every
-overwrite as a separate billable version.
+Storage accounts created in the Azure portal have **soft delete enabled by
+default** (containers, blobs, file shares) with 7-day retention; accounts created
+with the CLI, PowerShell or a template have it off unless the template sets it.
+Without versioning, blob soft delete also keeps every overwrite as a soft-deleted
+snapshot. Versioning, when enabled, retains every overwrite as a separate billable
+version with no expiry of its own.
 
 Both are valuable safety features and both **accumulate cost silently** if no
 lifecycle rule prunes old versions and soft-deleted blobs. On busy workspaces, the

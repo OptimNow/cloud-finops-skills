@@ -10,11 +10,15 @@ confidence: likely
 
 ## Problem
 
-Two default-on safety features keep bytes alive after the application has
-overwritten or deleted them. **Blob soft delete** (on by default for new
-accounts, 7-day retention, configurable to 365) holds deleted blobs and
-versions at the full rate of their tier until the retention window
-expires. **Blob versioning**, once enabled, turns every overwrite into a
+Two safety features keep bytes alive after the application has
+overwritten or deleted them. **Blob soft delete** (on by default, with
+7-day retention, for accounts created in the Azure portal; off for
+accounts created with the CLI, PowerShell or a template unless set;
+configurable from 1 to 365 days) holds deleted blobs at the full rate of
+their tier until the retention window expires. Without versioning, it
+also turns every overwrite into a soft-deleted snapshot of the previous
+content, so a high-churn container pays for its history even when nobody
+switched versioning on. **Blob versioning**, once enabled, turns every overwrite into a
 retained previous version with no expiry at all unless a lifecycle rule
 deletes it. On a high-churn container (Terraform state, nightly exports,
 ML checkpoints, log shippers that rewrite whole files) the retained history
@@ -111,6 +115,12 @@ floor for any rule you add.
    module, and add an Azure Policy audit effect on
    `Microsoft.Storage/storageAccounts/blobServices` for versioning enabled
    without a management policy.
+
+Sources: <https://learn.microsoft.com/en-us/azure/storage/blobs/soft-delete-blob-overview>
+(billing at the active-data rate, overwrite behaviour, purge at retention
+expiry) and
+<https://learn.microsoft.com/en-us/azure/storage/blobs/soft-delete-blob-enable>
+(portal default versus CLI and PowerShell), both read 1 October 2026.
 
 ## Anti-pattern
 

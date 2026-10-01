@@ -64,10 +64,15 @@ grouped by resource with a meter filter on `Hot` capacity gives the same
 ranking. The per-account tier split is also one metric call:
 
 ```bash
-# Capacity by tier for one account, last datapoint. Read-only.
+# Capacity by tier for one account. Read-only. Capacity metrics have a
+# one-hour grain but refresh about once a day, so most hourly points are
+# empty: look back 48 hours and keep the last non-empty value per tier.
 az monitor metrics list --resource "$ACCOUNT_ID/blobServices/default" \
-  --metric BlobCapacity --interval PT1H --aggregation Average \
-  --filter "Tier eq '*'" --query "value[0].timeseries[].{tier:metadatavalues[0].value, bytes:data[-1].average}" -o table
+  --metric BlobCapacity --interval PT1H --offset 48h --aggregation Average \
+  --filter "Tier eq '*'" -o json \
+  | jq -r '.value[0].timeseries[]
+           | [.metadatavalues[0].value,
+              ([.data[] | select(.average != null) | .average] | last)] | @tsv'
 ```
 
 Stage 2 prerequisites, both account settings and both a finding in their
