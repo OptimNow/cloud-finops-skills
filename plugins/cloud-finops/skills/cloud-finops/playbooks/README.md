@@ -48,6 +48,8 @@ set with its facets.
 | Playbook | Pattern | Waste category | Confidence |
 |---|---|---|---|
 | [azure-app-service-overprovisioned](azure-app-service-overprovisioned.md) | App Service Plan Overprovisioned | overprovisioned | likely |
+| [azure-blob-cold-data-in-hot](azure-blob-cold-data-in-hot.md) | Blob Cold Data Sitting in Hot | overprovisioned | possible |
+| [azure-blob-version-and-soft-delete-sprawl](azure-blob-version-and-soft-delete-sprawl.md) | Blob Version and Soft-Delete Sprawl | orphaned | likely |
 | [azure-idle-sql-database](azure-idle-sql-database.md) | Idle SQL Database | idle | likely |
 | [azure-idle-vm](azure-idle-vm.md) | Idle VM (Stopped but Not Deallocated) | idle | obvious |
 | [azure-log-analytics-sprawl](azure-log-analytics-sprawl.md) | Log Analytics Ingestion Sprawl | overprovisioned | likely |
@@ -62,6 +64,8 @@ set with its facets.
 |---|---|---|---|
 | [gcp-cloud-functions-cold-starts](gcp-cloud-functions-cold-starts.md) | Cloud Functions Cold Starts | overprovisioned | possible |
 | [gcp-cud-mismatch](gcp-cud-mismatch.md) | Resource-Based CUD Mismatch | commitment-mismatch | likely |
+| [gcp-gcs-cold-data-in-standard](gcp-gcs-cold-data-in-standard.md) | GCS Cold Data Sitting in Standard | overprovisioned | possible |
+| [gcp-gcs-soft-delete-and-version-sprawl](gcp-gcs-soft-delete-and-version-sprawl.md) | GCS Soft-Delete and Noncurrent Version Sprawl | orphaned | likely |
 | [gcp-idle-gke-autopilot](gcp-idle-gke-autopilot.md) | Idle GKE Autopilot Cluster | idle | likely |
 | [gcp-orphan-persistent-disks](gcp-orphan-persistent-disks.md) | Orphan Persistent Disks | orphaned | obvious |
 
@@ -78,6 +82,16 @@ The `commitment-mismatch` category is served by one playbook per provider
 (`aws-expiring-commitment-no-decision`, `azure-unused-reservation`,
 `gcp-cud-mismatch`); the deeper sizing and portfolio reasoning behind each
 stays in the commitments reference files, which those playbooks link.
+
+Object-storage lifecycle is served by the same split on every provider: a
+garbage-collection playbook at `likely` (retained versions, soft-deleted
+data, abandoned multipart uploads: realised saving, no access study) and a
+cold-data tiering playbook at `possible` (needs access evidence, carries
+the prerequisite-finding pattern). AWS adds a third, obvious-tier file for
+incomplete multipart uploads, which S3 keeps until a lifecycle rule aborts
+them. On GCS the equivalent abort rule rides the garbage-collection
+playbook, and Azure needs none: uncommitted blocks are discarded
+automatically after a week.
 
 ## How playbooks differ from reference files
 

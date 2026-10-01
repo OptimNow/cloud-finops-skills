@@ -84,10 +84,55 @@ Fabric does not have a general-purpose autoscale across all workload types.
 **Fabric Autoscale Billing for Spark** exists for Spark-specific overage - Spark
 jobs that would otherwise throttle can be billed as autoscale CU consumption above
 the F-SKU's base capacity. This is opt-in per workspace and bills separately on
-the Azure invoice. Outside Spark, the capacity ceiling is the F-SKU; over-runs
-throttle, they do not auto-scale.
+the Azure invoice. Outside Spark, the capacity ceiling is the F-SKU and over-runs
+throttle - unless **capacity overage** (next section) is on, which it is by default
+on new capacities.
 
 Source: https://learn.microsoft.com/en-us/fabric/data-engineering/autoscale-billing-for-spark-overview
+
+### Capacity overage - default-on, billed at 3x pay-as-you-go
+
+**Capacity overage** pays for usage that would otherwise throttle, at **three times
+the pay-as-you-go CU rate**, on a separate meter (`Capacity Overage Capacity Usage
+CU` in Cost Management). It is **enabled by default when a Fabric capacity is
+created** (configurable at creation or later in the Admin portal) and available on
+F SKUs only. This changes the cost model: an F-SKU is no longer a ceiling, and a
+capacity can bill above its SKU without anyone having opted in.
+
+Mechanics that matter for sizing and for reading the bill:
+
+- **Trigger point is the throttling point.** Overage activates when smoothed usage
+  exceeds 100% of capacity (the interactive-delay threshold), so it sits after the
+  24-hour smoothing described above. It pays off the carry-forward debt at that
+  moment and keeps the capacity in a non-throttled state. It does not add compute:
+  jobs run at SKU speed, they are just not delayed or rejected.
+- **The threshold is a spending threshold, not a cap.** The admin sets a rolling
+  24-hour CU-hour threshold, evaluated every five minutes. In-flight operations
+  continue past it and overage accrued before the capacity entered overage is also
+  billed, so actual charges can exceed the threshold. Once reached, overage stops
+  and throttling resumes until older overage ages out of the window.
+- **The threshold consumes Fabric quota** at 1/24th of its value (a 48 CU-hour
+  threshold needs 2 CUs of quota); if quota is short, overage cannot be enabled
+  until the threshold is lowered or quota raised.
+- **Break-even against scaling up is one third of daily CU-hours.** Microsoft's own
+  guidance: keep the threshold below one third of the SKU's daily CU-hours (F64 is
+  1,536 CU-hours per day, so about 512), because at 3x that is the point where
+  overage costs roughly the same as the next SKU. Frequent overage is a sizing
+  signal, not a billing feature to tune.
+- **Two traps.** Enabling overage during a throttling event bills the entire
+  accumulated carry-forward immediately. Scaling a capacity *down* with overage on
+  can convert the former headroom into billed overage at 3x; disable or re-threshold
+  before scaling down.
+- **Visibility.** Capacity Metrics app logs processed overage and CU-hours billed;
+  Cost Management isolates it on the meter above; Real-Time Hub capacity events
+  can alert on activation. No standing charge when it never triggers.
+
+Operating rule: treat the overage meter as an anomaly feed. A non-zero line on a
+capacity that is not expected to spike means the SKU is under-sized or a workload
+has changed, and the 3x rate makes it the most expensive way to buy CU-hours.
+
+Source: https://learn.microsoft.com/en-us/fabric/enterprise/capacity-overage-overview
+(Microsoft Learn, page updated 29 September 2026).
 
 ---
 

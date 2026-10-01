@@ -14,6 +14,96 @@ This file is the public subset of the roadmap: the entries that concern contribu
 users of the skill. Internal product and positioning work is tracked in a private
 maintainer file.
 
+## Fortnightly operating rhythm (adopted 2026-10-01)
+
+The 1st and 15th scans already exist (see the "Content update pipeline" section
+of `CLAUDE.md`). From October 2026 each half-month also carries one *lot*,
+alternating in shape so that no single kind of debt accumulates. Every lot
+assumes hand-written content from primary sources: the applier stays frozen,
+and the September 2026 batch showed that correcting its output costs more than
+writing the item by hand (nine applied items, nine corrections).
+
+The constraint this rhythm is built around comes from probe cycles 4 to 7
+(the routing entry below): **content closes a gap only where the phrasing
+already routes.** So roughly a third of the budget goes to measurement and
+routing rather than new files, and a lot that does not convert its probe
+becomes a routing item, not a reason to write more.
+
+**Run on the 1st (scan plus content):**
+
+1. Triage the scan output; hand-write the accepted items from the provider's
+   primary page.
+2. Ship one content lot from the ranked list below: two to three playbooks, or
+   one reference section.
+3. Regenerate the two coverage matrices and the heat maps, update the
+   `install.sh` named-pattern routing, open the PR.
+4. Before merge, fan out one read-only agent per applied claim to verify it
+   against the primary source (the step that caught all nine September
+   corrections).
+
+**Run on the 15th (scan plus quality):**
+
+1. Triage the scan output as above.
+2. Rotating re-verification: one domain cluster's dated figures and mechanics
+   claims against provider docs (rotation table in the maintainer-local
+   `pipeline/MONTHLY_WORKFLOW.md`). This moves the pass from the 1st, where
+   it sat before October 2026, to the 15th, so that each half-month carries
+   one heavy step; the "Content update pipeline" section of `CLAUDE.md` says
+   the same, and the maintainer-local doctrine needs the same edit.
+3. One probe cycle: the four controls (P11, P12, P13, P31) plus one probe
+   targeting the lot shipped on the 1st, on both surfaces, with the
+   visible-evidence discipline. Record the verdicts in
+   `pipeline/coverage-probes.md`.
+4. Hygiene pass: footers, as-of dates older than two quarters, the price-figure
+   grep as a review prompt, and the cross-repo table in `CLAUDE.md` for any
+   pricing-hub or ROI-calculator claim touched since the last pass.
+
+**Once a quarter, on a 1st:** a release PR after the content lots, a Fly
+redeploy verified by calling the endpoint, and a re-read of this file to
+re-rank the list below against what engagements actually asked.
+
+### Ranked content list (recoverable spend first, demand evidence second, matrix zeros last)
+
+Written against the 2026-09-30 state: 35 references, 37 playbooks (AWS 21,
+Azure 8, GCP 4, cross-cloud 4), 13 of 22 FCP capabilities with a primary owner.
+
+1. **Storage tiering for Azure Blob and GCS - SHIPPED 2026-10-01** (lot of
+   the 1st). Four playbooks porting the AWS split:
+   `azure-blob-version-and-soft-delete-sprawl` (likely),
+   `azure-blob-cold-data-in-hot` (possible),
+   `gcp-gcs-soft-delete-and-version-sprawl` (likely),
+   `gcp-gcs-cold-data-in-standard` (possible). Probe for the 15th: a
+   detect-phrased question on GCS soft delete (the default-on trap is the
+   one practitioners have not internalised).
+2. **Kubernetes over-requested resources and orphaned persistent volumes.**
+   Cross-cloud playbooks with per-provider detection queries. The largest
+   waste class with one runbook (`gcp-idle-gke-autopilot`).
+3. **Schedule blindness beyond compute.** Non-production data platforms always
+   on: SQL serverless auto-pause, Fabric capacity pause, Snowflake
+   auto-suspend. One cross-cloud playbook plus per-provider variants closes a
+   whole zero row of the matrix.
+4. **Issue #97 as a mechanics section**, not a table, in
+   `finops-azure-openai.md` and `finops-genai-capacity.md` (Lot B item 1
+   below). The only open user request, waiting since June.
+5. **`finops-forecasting.md`.** Budget season is the trigger named in the
+   deferred table, and it is now. Moves Forecasting from secondary-only to a
+   primary owner in the FCP matrix.
+6. **`finops-gcp-patterns.md` split.** The GCP file carries 12 enumerated
+   patterns inline against a 1,495-line AWS catalogue; the split mirrors the
+   AWS and Azure structure and is a token-efficiency fix as much as a
+   coverage one. Priority depends on how much GCP engagements see.
+
+Depth items that ride a quality lot when a content lot is light: OCI (182
+lines, six patterns: deepen or label it a foundations file in the routing
+table), the GreenOps Azure and GCP pass below, and any further split of
+`finops-azure.md` (1,817 lines, above the 1,500-line structural-edit
+threshold) before adding to it.
+
+Deliberately not on the list: the last FCP cell (Education & Enablement) and
+the modernization and egress zero cells for Azure and GCP, which score well
+on the matrices and poorly on recoverable spend; unfreezing the applier; and
+non-cloud domains such as the IoT and unmanned-retail request in issue #200.
+
 ## In-flight (write when prerequisites land)
 
 - **P1 - Audit, harden, stabilise, and publish the refresh pipeline.** The pipeline
@@ -209,9 +299,11 @@ maintainer file.
      P11 seed: `aws-s3-incomplete-multipart-uploads` (obvious),
      `aws-s3-noncurrent-version-sprawl` (likely), `aws-s3-cold-data-in-standard`
      (possible, carries the prerequisite-finding pattern - rule 3 of the seed - and
-     folds rule 4, expire-don't-transition, into its Fix/Anti-pattern). Azure Blob
-     access tiers and GCS storage classes remain open; port the same three-way split
-     rather than one catch-all playbook.
+     folds rule 4, expire-don't-transition, into its Fix/Anti-pattern). *Azure Blob
+     and GCS ported 2026-10-01* as two playbooks per cloud (garbage collection at
+     `likely`, cold-data tiering at `possible`); the incomplete-multipart file stays
+     AWS-only: the GCS abort rule rides its garbage-collection playbook, and Azure
+     discards uncommitted blocks on its own after a week.
   2. **Commitment-mismatch x3 providers** - CLOSED 2026-08-21, see the entry above.
   3. **NAT-to-gateway-endpoint substitution (AWS)** - the high-traffic end of the NAT
      distribution, which the zombie-NAT playbook deliberately scopes out: a NAT moving
@@ -254,9 +346,11 @@ maintainer file.
      to 8 playbooks and from 2 to 5 obvious-tier.
   3. `aws-gp2-to-gp3` (modernization, obvious - pure gain, no risk) and, second,
      `aws-graviton-candidate` (likely) - backlog item 6.
-  Then, in later batches: storage tiering ported to Azure Blob and GCS (one playbook
-  per cloud: soft-delete/versions and abandoned resumable uploads as the GC rules,
-  cold Hot/Standard data at `possible`); `cross-cloud-nonprod-data-platform-always-on`
+  Then, in later batches: storage tiering ported to Azure Blob and GCS (*done
+  2026-10-01*, two playbooks per cloud rather than one: the GC rules and the
+  cold-data decision carry different confidence tiers and different blockers, so
+  one catch-all file would have had to be `possible` throughout);
+  `cross-cloud-nonprod-data-platform-always-on`
   (schedule blindness beyond compute: SQL serverless auto-pause, Fabric pause,
   Snowflake auto-suspend - backlog item 5); Kubernetes `eks-aks-overrequested-resources`
   and `orphaned-persistent-volumes` (backlog item 9).

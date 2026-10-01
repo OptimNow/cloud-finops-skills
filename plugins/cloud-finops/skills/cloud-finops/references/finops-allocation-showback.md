@@ -204,6 +204,25 @@ attribution. If it does not, configure that attribution before showback
 goes live. An ingress allocation that cannot survive a "where did this
 number come from?" question will be the first dispute.
 
+### Provider support fees
+
+A premium support plan is priced as a percentage of eligible spend and
+invoiced to the payer, so it lands as one line with no resource behind it.
+Allocate it in proportion to each account's eligible spend, which is what
+the provider itself does. On AWS this is no longer a support-case question:
+since 25 September 2026 the Billing API breaks Enterprise Support down per
+linked account (`get-enterprise-support-contract-details` for the tier
+rules, `get-enterprise-support-charge-summary` for the month's total with
+an `isEstimated` flag that says whether the charge is final, and
+`list-enterprise-support-linked-account-charges` for the per-account split).
+The split is prorated by time on the plan: `billableSeconds / totalSeconds`
+applied to each account's eligible spend, so an account that joined
+mid-month carries a partial share. Feed that output into the showback table
+as its own charge category rather than folding it into compute; it is the
+line Finance will ask about. Source:
+https://aws.amazon.com/blogs/aws-cloud-financial-management/programmatically-understand-your-aws-enterprise-support-charges-with-the-aws-billing-api/
+(AWS Cloud Financial Management blog, 25 September 2026).
+
 ---
 
 ## Showback - the first delivery vehicle on top of allocation

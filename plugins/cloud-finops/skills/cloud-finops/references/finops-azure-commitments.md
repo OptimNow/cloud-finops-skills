@@ -531,6 +531,17 @@ conversations.
   multi-Billing-Profile MCAs the Shared scope is bounded by the Billing Profile that
   owns the recommendation, not the whole company. Advisor does not warn about this
   scope boundary.
+- **Recommendation scope has caught up with purchase scope (29 September 2026).**
+  Savings plan and reservation recommendations, including P3 reservations, are now
+  produced at **management group** scope in the portal purchase flows and through
+  the savings-plan and reservation recommendations REST endpoints. They aggregate the
+  steady-state usage of every subscription under the group, which is the right input
+  for a management-group-scoped purchase and removes the old workaround of summing
+  per-subscription recommendations by hand (and over-committing, because each one
+  targeted its own 80-90%). The calibration points above still apply: the figure is
+  backward-looking, gross of AHB, and silent on planned decommissions. Source:
+  https://techcommunity.microsoft.com/blog/finopsblog/now-available-management-group%E2%80%93scoped-savings-plan-and-reservation-recommendatio/4560869
+  (Microsoft FinOps blog, 29 September 2026).
 - **Conservative coverage targeting.** Recommendations target ~80-90% of observed usage.
   If the customer wants lower coverage for liquidity reasons (more PAYG buffer for
   workload changes), Advisor does not propose that profile.

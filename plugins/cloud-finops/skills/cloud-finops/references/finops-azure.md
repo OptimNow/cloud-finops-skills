@@ -1145,9 +1145,12 @@ stores).
 
 ### Soft delete and versioning - default-on cost traps
 
-New storage accounts have **soft delete enabled by default** (containers, blobs,
-file shares) with 7-day retention. Versioning, when enabled, retains every
-overwrite as a separate billable version.
+Storage accounts created in the Azure portal have **soft delete enabled by
+default** (containers, blobs, file shares) with 7-day retention; accounts created
+with the CLI, PowerShell or a template have it off unless the template sets it.
+Without versioning, blob soft delete also keeps every overwrite as a soft-deleted
+snapshot. Versioning, when enabled, retains every overwrite as a separate billable
+version with no expiry of its own.
 
 Both are valuable safety features and both **accumulate cost silently** if no
 lifecycle rule prunes old versions and soft-deleted blobs. On busy workspaces, the
@@ -1171,8 +1174,14 @@ Lifecycle rule pattern (Bicep) for version pruning:
 }
 ```
 
-For soft delete, a similar rule prunes deleted blobs after a fixed window. Match
+Soft-deleted blobs are not pruned by lifecycle rules: they are purged when the
+retention window expires, so the retention setting itself is the lever. Match
 the window to the actual incident-recovery use case, not a default 365 days.
+Detection loop, sizing via Blob Inventory and the blocker list (point-in-time
+restore, object replication, immutability) are in the playbook
+[azure-blob-version-and-soft-delete-sprawl](../playbooks/azure-blob-version-and-soft-delete-sprawl.md);
+the tier-down decision on the bytes that survive is in
+[azure-blob-cold-data-in-hot](../playbooks/azure-blob-cold-data-in-hot.md).
 
 ### Ephemeral OS disks for stateless VMs
 

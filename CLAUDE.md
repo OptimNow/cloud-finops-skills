@@ -213,8 +213,9 @@ monthly cadence leaves coverage blind spots. It was briefly monthly (May to
 August 2026, when each run needed 2-4 hours of human review) and restored to
 twice-monthly on 2026-08-10 for that reason.
 
-**Rotating AI-pricing re-verification pass.** The 1st-of-month run additionally
-carries a re-verification pass (one domain cluster per month, full surface
+**Rotating AI-pricing re-verification pass.** The 15th-of-month run (the 1st
+until October 2026; see the "Fortnightly operating rhythm" section of
+`docs/ROADMAP.md`) additionally carries a re-verification pass (one domain cluster per month, full surface
 quarterly). It exists because the scan detects news from sources but cannot
 detect silent staleness in figures already sitting in the reference files - which
 is how the June 2025 AWS GPU price cuts went uncorrected for 14 months (fixed in
