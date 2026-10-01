@@ -678,8 +678,15 @@ Follow these six steps whenever you add a new domain:
      checklist until the 1.30.0 release); since August 2026 the `verify-package`
      job in `auto-tag-on-plugin-bump.yml` fails the release if either of its two
      version fields disagrees with `plugin.json`, before any tag is pushed.
-     Update the marketplace plugin
-     description topic list in the same release PR if new domains shipped.
+     The marketplace plugin description (`.claude-plugin/marketplace.json`,
+     `plugins[0].description`) is the public store listing, written for
+     buyers, not an inventory. Keep it under 180 words, in four blocks: one
+     value sentence, four coverage lines (Cloud, AI, Data platforms, FinOps
+     practice), waste playbooks, good to know. When a release ships a new
+     domain, add it to an existing coverage line only if a buyer would search
+     for it; never list file names, file structure, or pattern-level detail.
+     Update the playbook count if it changed. Plain text only, no markdown,
+     no em dashes.
      The version number is decided at release time, never pre-assigned on
      content branches. Natural release moment: after the monthly content
      batch, or whenever accumulated merged content should ship.
@@ -971,9 +978,13 @@ from how the directory works:
       `mcp_server/scripts/sync_references.py` since 1.32), or compare a `list_references` line count
       against the tag. Do not tick this from the source alone - the audit found the
       staleness only by calling the surface.
-- [ ] Marketplace description in `.claude-plugin/marketplace.json` reflects the new
-      topic list (can ride the release PR). It carries no reference count by design -
-      see the no-hardcoded-counts rule above.
+- [ ] Release PR only: marketplace description in `.claude-plugin/marketplace.json`
+      still follows the store-listing rule in step 6 of "How to add a new reference
+      file" (under 180 words, four blocks, no file names or pattern-level detail).
+      A new domain joins an existing coverage line only if a buyer would search for
+      it; the playbook count is the one figure it carries, so update it when the
+      playbook catalogue changed. It carries no reference count by design - see the
+      no-hardcoded-counts rule above.
 - [ ] SKILL.md description stays under 1024 characters (CI-gated by
       `scripts/check-skill-description.sh`, which also warns above 950 so the
       ceiling is visible before it is hit)
