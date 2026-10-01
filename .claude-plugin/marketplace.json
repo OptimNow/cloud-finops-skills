@@ -6,12 +6,12 @@
   },
   "metadata": {
     "description": "Cloud FinOps Skill & MCP by OptimNow: reference library, named-pattern playbooks, and a queryable MCP server.",
-    "version": "1.39.0"
+    "version": "1.40.0"
   },
   "plugins": [
     {
       "name": "cloud-finops",
-      "description": "Expert FinOps guidance for cloud, AI, SaaS and data-platform spend. Ask Claude how to reduce a bill, size a commitment, allocate shared costs or justify AI spend, and it answers with billing mechanics, decision rules and worked examples, not generic advice.\n\nCloud: AWS, Azure, GCP, OCI and Kubernetes, including Savings Plans, Reserved Instances and Azure Hybrid Benefit.\nAI: Anthropic, Bedrock, Azure OpenAI, Vertex AI, open-weight model APIs, AI coding tools, agent cost per task, self-hosted vs managed inference.\nData platforms: Databricks, Snowflake, Microsoft Fabric.\nFinOps practice: allocation, showback and chargeback, tagging, anomalies, KPIs, workload onboarding, SaaS and IT asset management, GreenOps.\n\nWaste playbooks: 37 runbooks for specific waste patterns such as idle NAT gateways, orphaned disks, snapshot sprawl, unused reservations, oversized GPUs and coding-agent token waste. Each gives a detection query to run in your own account, the fix, and a confidence level.\n\nGood to know: this plugin adds instructions only and does not connect to your cloud accounts. Open source (CC BY-SA 4.0), maintained by OptimNow and updated twice a month.",
+      "description": "Expert FinOps guidance for cloud, AI, SaaS and data-platform spend. Ask Claude how to reduce a bill, size a commitment, allocate shared costs or justify AI spend, and it answers with billing mechanics, decision rules and worked examples, not generic advice.\n\nCloud: AWS, Azure, GCP, OCI and Kubernetes, including Savings Plans, Reserved Instances and Azure Hybrid Benefit.\nAI: Anthropic, Bedrock, Azure OpenAI, Vertex AI, open-weight model APIs, AI coding tools, agent cost per task, self-hosted vs managed inference.\nData platforms: Databricks, Snowflake, Microsoft Fabric.\nFinOps practice: allocation, showback and chargeback, tagging, anomalies, KPIs, workload onboarding, SaaS and IT asset management, GreenOps.\n\nWaste playbooks: 41 runbooks for specific waste patterns such as idle NAT gateways, orphaned disks, snapshot sprawl, unused reservations, oversized GPUs and coding-agent token waste. Each gives a detection query to run in your own account, the fix, and a confidence level.\n\nGood to know: this plugin adds instructions only and does not connect to your cloud accounts. Open source (CC BY-SA 4.0), maintained by OptimNow and updated twice a month.",
       "source": "./plugins/cloud-finops",
       "strict": true
     }
