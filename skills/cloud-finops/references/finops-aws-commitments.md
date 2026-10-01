@@ -538,7 +538,10 @@ organisations can achieve an overall effective discount of 40-70% off On-Demand 
   subsequent years of the contract
 - Mandatory Enterprise Support (3-10% of monthly usage). For mid-sized
   organisations, support fees can erode a significant portion of the EDP savings
-  if not factored into the financial model
+  if not factored into the financial model. Since September 2026 the Billing API
+  returns the charge per linked account, prorated by time on the plan, which is
+  what makes it allocatable in showback - see the "Provider support fees" section
+  of `finops-allocation-showback.md`
 
 **Discount tiers and negotiation leverage:**
 Discount rates are determined by annual commitment level and contract duration.

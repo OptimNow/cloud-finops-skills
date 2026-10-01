@@ -42,7 +42,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 | Performance tier | Standard vs Fast mode - 2x price multiplier, and only on the models that offer it |
 | Context length | **Per-model**: the current generation prices flat across a 1M-token window with no long-context premium. Older models applied premium rates above 200K input tokens. Verify per model rather than assuming either behaviour. |
 | Data residency | US-only inference adds a 1.1× multiplier |
-| Prompt caching | Writes are priced (1.25× or 2×), reads are discounted (0.1×; 0.025× on Fable 5.1) |
+| Prompt caching | Writes are priced (1.25× or 2×), reads are discounted (0.1×; 0.05× on Opus 5.5; 0.025× on Fable 5.1) |
 | Tool usage | Web search and code execution have separate meters |
 | Batch processing | 50% discount via Batch API (Fast mode excluded) |
 | Service tier | Standard, Priority, or Batch - affects capacity and pricing |
@@ -61,21 +61,29 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 | Model | Input ($/MTok) | Output ($/MTok) | Context | Notes |
 |---|---|---|---|---|
-| Claude Fable 5 | $10 | $50 | 1M | Most capable widely released model; above Opus-tier pricing |
-| Claude Opus 5 | $5 | $25 | 1M | Current Opus. Same price as Opus 4.8 - a drop-in upgrade |
+| Claude Fable 5.1 | $10 | $50 | 1M | Most capable widely released model; above Opus-tier pricing. Cache reads at 0.025x |
+| Claude Fable 5 | $10 | $50 | 1M | Previous Fable; cache reads at the standard 0.1x |
+| Claude Opus 5.5 | $4 | $20 | 1M | Launched 22 September 2026 at 0.8x the Opus 5 rate, with cache reads at 0.05x (half the standard multiplier). 128K max output, always-on adaptive thinking |
+| Claude Opus 5 | $5 | $25 | 1M | Same price as Opus 4.8 - a drop-in upgrade |
 | Claude Opus 4.8 | $5 | $25 | 1M | Previous Opus |
 | Claude Opus 4.7 | $5 | $25 | 1M | |
 | Claude Opus 4.6 | $5 | $25 | 1M | |
+| Claude Sonnet 5.5 | $2 | $10 | 1M | Launched 28 September 2026 at the Sonnet 5 rate. Carries breaking API changes from Sonnet 5 (thinking-mode and forced-tool-use behaviour), so the upgrade is an engineering change at constant unit cost |
 | Claude Sonnet 5 | $2 | $10 | 1M | Launched at an introductory rate; Anthropic made it the standard price in August 2026 and cancelled the scheduled 1 September increase |
 | Claude Sonnet 4.6 | $3 | $15 | 1M | |
-| Claude Haiku 4.5 | $1 | $5 | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (the still-active Opus 4.5 and Sonnet 4.5 are likewise 200K) |
+| Claude Sonnet 4.5 | $3 | $15 | 200K | Deprecated 30 September 2026; retirement on the Claude API scheduled for 30 November 2026. Plan the migration to Sonnet 5 or 5.5 (0.67x the rate) before then |
+| Claude Haiku 4.5 | $1 | $5 | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (the still-active Opus 4.5 is likewise 200K) |
 
-**Two FinOps consequences of this table.** First, the Opus tier has held $5/$25 across
-five generations (4.5 through 5), so a model upgrade inside that tier is a capability change at
-constant unit cost - there is no rate negotiation to run, and no reason to stay on an
-older Opus for price reasons. Second, Fable 5 sits at 2x Opus pricing, which makes
-"use the most capable model" a materially different decision from "use the newest
-Opus": route to Fable 5 on evidence, not by default.
+**Three FinOps consequences of this table.** First, the Opus tier held $5/$25 across
+five generations (4.5 through 5), and Opus 5.5 is the first break in that line: 0.8x
+the rate with cache reads at half the standard multiplier, so moving a cache-heavy
+agentic workload from Opus 5 to Opus 5.5 is a rate cut as well as a capability change.
+Second, the cache-read multiplier is no longer one number across the catalogue (0.1x
+standard, 0.05x Opus 5.5, 0.025x Fable 5.1): the caching break-even below has to be
+computed per model, and a routing layer that mixes models is mixing cache economics.
+Third, Fable sits at 2x Opus-5 pricing (2.5x Opus 5.5), which makes "use the most
+capable model" a materially different decision from "use the newest Opus": route to
+Fable on evidence, not by default.
 
 **The Sonnet 5 introductory rate became the standard rate.** The $2/$10 launch
 price was announced as temporary, with a 50% increase scheduled for 1 September
@@ -93,6 +101,7 @@ is narrow enough that it is easy to over-plan for:
 
 | Model | Standard | Fast mode | Premium |
 |---|---|---|---|
+| Claude Opus 5.5 | $4 / $20 | $8 / $40 | 2x |
 | Claude Opus 5 | $5 / $25 | $10 / $50 | 2x |
 | Claude Opus 4.8 | $5 / $25 | $10 / $50 | 2x |
 
@@ -118,8 +127,9 @@ an hour; the ceiling is 24 hours. Results are retained 29 days.
 
 | Model | Input ($/MTok) | Output ($/MTok) |
 |---|---|---|
+| Claude Opus 5.5 Batch | $2 | $10 |
 | Claude Opus 5 Batch | $2.50 | $12.50 |
-| Claude Sonnet 5 Batch | $1 | $5 |
+| Claude Sonnet 5.5 / Sonnet 5 Batch | $1 | $5 |
 | Claude Haiku 4.5 Batch | $0.50 | $2.50 |
 
 Batch is the single largest rate lever available without a commercial negotiation.
@@ -133,15 +143,22 @@ completion - which makes it a workload-classification exercise, not a procuremen
   parameter is set
 - **5-minute cache writes**: x1.25 on base input price
 - **1-hour cache writes**: x2 on base input price
-- **Cache reads**: x0.1 on base input price (90% discount). Fable 5.1 reads at
-  x0.025 (97.5% discount), which moves the cache break-even for that tier
+- **Cache reads**: x0.1 on base input price (90% discount) as the standard. Two
+  models read cheaper: Opus 5.5 at x0.05 (95% discount) and Fable 5.1 at x0.025
+  (97.5% discount). Each moves the cache break-even for its tier
 - **Modifiers stack** - Fast mode plus US-only inference compounds
 
 **Cache break-even depends on the TTL, and the 1-hour TTL is not a free upgrade.**
 At the 5-minute TTL a prefix pays for itself on the second request (1.25x write +
 0.1x read = 1.35x, versus 2x uncached). At the 1-hour TTL the doubled write cost
 needs at least two reads (2x + 0.2x = 2.2x versus 3x uncached). Choose the 1-hour
-TTL for bursty traffic with gaps longer than five minutes, not as a default.
+TTL for bursty traffic with gaps longer than five minutes, not as a default. On the
+reduced-read models the write side is unchanged (1.25x and 2x), so the break-even
+point in *requests* barely moves; what changes is the steady-state cost of a long
+agentic session, where reads dominate: at 0.05x a 100K-token cached prefix re-read
+on every turn costs half what it does at 0.1x. Verify the multiplier for the model
+in use on the pricing page before quoting a session cost (list, Anthropic pricing
+page, 1 October 2026).
 
 ### Tool charges
 

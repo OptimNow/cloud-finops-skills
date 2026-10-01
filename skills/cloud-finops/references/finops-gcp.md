@@ -616,6 +616,7 @@ Buckets without Autoclass enabled can accumulate infrequently accessed data in m
 - Identify GCS buckets where Autoclass is not enabled
 - Review object access patterns to confirm a mix of frequently and infrequently accessed data
 - Assess current storage class distribution to identify potential inefficiencies
+- Runbook, including the three gates (access floor, 128 KiB object-size floor, minimum-duration stability) and the Autoclass-versus-lifecycle choice: [gcp-gcs-cold-data-in-standard](../playbooks/gcp-gcs-cold-data-in-standard.md)
 
 **Over Retained Exported Object Versions In Gcs Versioning Buckets**
 Service: GCP GCS | Type: Over-Retention of Data
@@ -625,6 +626,7 @@ When GCS object versioning is enabled, every overwrite or delete operation creat
 - Implement lifecycle policies to delete noncurrent versions after a defined period
 - Transition noncurrent versions to colder storage classes (e.g., Archive) if needed for compliance
 - Audit versioned buckets periodically to ensure alignment with data governance and cost goals
+- The same bucket usually carries the two other retained-bytes leaks, default-on soft delete (7-day retention, billed at the class rate) and abandoned XML API multipart uploads; the `storage/v2/total_bytes` metric splits all three by `type`. Runbook: [gcp-gcs-soft-delete-and-version-sprawl](../playbooks/gcp-gcs-soft-delete-and-version-sprawl.md)
 
 **Inactive Gcs Bucket**
 Service: GCP GCS | Type: Unused Resource

@@ -1172,8 +1172,14 @@ Lifecycle rule pattern (Bicep) for version pruning:
 }
 ```
 
-For soft delete, a similar rule prunes deleted blobs after a fixed window. Match
+Soft-deleted blobs are not pruned by lifecycle rules: they are purged when the
+retention window expires, so the retention setting itself is the lever. Match
 the window to the actual incident-recovery use case, not a default 365 days.
+Detection loop, sizing via Blob Inventory and the blocker list (point-in-time
+restore, object replication, immutability) are in the playbook
+[azure-blob-version-and-soft-delete-sprawl](../playbooks/azure-blob-version-and-soft-delete-sprawl.md);
+the tier-down decision on the bytes that survive is in
+[azure-blob-cold-data-in-hot](../playbooks/azure-blob-cold-data-in-hot.md).
 
 ### Ephemeral OS disks for stateless VMs
 
