@@ -73,12 +73,20 @@ AzureMetrics
 2. **Backup before delete** (Azure SQL point-in-time restore retention is
    configurable from 1 to 35 days and defaults to 7; a long-term retention
    backup is cheap insurance). Note that PITR backups are deleted with the
-   database - only an LTR backup survives the drop.
+   database - only an LTR backup survives the drop. This step is for the
+   delete path only: on a database you keep and move to Serverless, an LTR
+   policy stops it from ever auto-pausing (step 3).
 3. **Move long-tail dev databases to Basic tier or Serverless** - Basic
    is ~$5/month per DB, Serverless auto-pauses after inactivity (Gen5
    1-vCore can drop to ~$15/month for idle workloads). Both figures are
    illustrative list rates as at May 2026 and vary by region - verify
    against the Azure pricing page before sizing a business case.
+   Before counting the auto-pause saving, remove what blocks the pause:
+   long-term backup retention, geo-replication, failover groups and a
+   server DNS alias all prevent it, and open sessions are the most common
+   reason a database fails to pause, per the Microsoft Learn auto-pause
+   page (read 2 October 2026). With any of them in place, the move saves
+   only the autoscale gap.
 4. **For permanent decommissions, drop the database AND the parent SQL
    Server** if no other DB lives on it - the server itself has no charge
    but littered server objects multiply your management overhead.
@@ -90,8 +98,12 @@ AzureMetrics
   to DB B if DB A is unreachable") and the failure mode is silent
   until quarterly reporting breaks.
 - Migrating idle production DBs to Serverless without testing the
-  cold-start latency. The first connection after auto-pause can take
-  30-60 s, which times out short-window batch jobs.
+  resume path. Resume generally takes about a minute and the first
+  connection fails with error 40613, which breaks short-window batch
+  jobs that have no retry logic.
+- Moving a database to Serverless while keeping its long-term retention
+  policy, geo-replica or failover group. It never pauses, so the expected
+  saving never appears and the move looks like a failed optimisation.
 
 ## See also
 

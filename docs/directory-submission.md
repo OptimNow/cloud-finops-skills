@@ -124,7 +124,9 @@ whose `version` is unchanged is not documented. The release-train rule in CLAUDE
 keeps content PRs free of version bumps, so if the directory turns out to ignore
 same-version commits, the fix is to track a tag that the release workflow moves
 (a `Settings > Tracked branch or tag` change, no resubmission) rather than to start
-bumping versions per PR. Start with `main`.
+bumping versions per PR. Start with `main`. Observed since 1 October 2026:
+same-version content commits are scanned and served (see 1.7), so tracking `main`
+works as intended.
 
 ### 1.2 Validate
 
@@ -166,8 +168,9 @@ Check the contact email, then select all four acknowledgements.
 Keep **GitHub push webhook** (default) so the directory scans a push without waiting
 for its schedule. Setting up the webhook needs admin access on the GitHub repository;
 it can be done later from the plugin's **Settings** tab. Leave **Auto-publish** as
-offered; for a new listing an Anthropic reviewer publishes each version anyway until
-they change the setting.
+offered; for a new listing an Anthropic reviewer publishes each version until they
+change the setting. For this listing they did: on 1 October 2026 the Overview tab read
+"Auto-publish: On: versions that pass go live automatically".
 
 **Setting up the push webhook** (done 2026-10-01; the `ping` delivery answered 200).
 The portal supplies the two values, GitHub holds the webhook, and nothing in this
@@ -204,15 +207,24 @@ If the secret is lost before the GitHub side is saved, **Set up** on the plugin'
 **Settings** tab generates a new one; replace it in the GitHub webhook (**Edit**,
 **Secret**), the old value stops working.
 
-The webhook changes detection, not publication: while the auto-publish setting reads
-"an Anthropic reviewer publishes each version", every new version still waits for a
-**Publish** click and the reviewer.
+The webhook changes detection, not publication. While the auto-publish setting read
+"an Anthropic reviewer publishes each version", every new version waited for a
+**Publish** click and the reviewer. Since auto-publish was switched on (seen
+1 October 2026), a version that passes the scan goes live on its own, and the listing
+notes that an update "can take up to an hour to show". A version found by the
+scheduled check rather than the push still publishes the same way; only detection is
+slower. The 1.40.0 release on 1 October was found that way although its push delivery
+succeeded, probably because the previous version was still scanning.
 
 ### 1.7 After submission
 
-The **Versions** tab shows each scanned commit. A version that passes is not live
-until you select **Publish**. Ten submissions per 24 hours per organisation, drafts
-and withdrawals included.
+The **Versions** tab shows each scanned commit, its version label, its state
+(Scanning, Serving, Superseded) and whether it arrived via push or scheduled check.
+With auto-publish on, a version that passes goes live without a **Publish** click; if
+the setting is ever turned off again, a passing version waits for that click. A
+content commit keeps the previous version label (content PRs never bump `plugin.json`),
+so several rows can share one label: the newest commit is the one serving. Ten
+submissions per 24 hours per organisation, drafts and withdrawals included.
 
 ---
 

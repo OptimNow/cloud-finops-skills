@@ -76,19 +76,33 @@ to be layered, not chosen in isolation.
    notice and no SLA. It belongs in the compute cost strategy but should not be compared
    directly against commitment instruments.
 
-7. **VM series lifecycle impacts reservation strategy.** With the July 1, 2026 retirement
-   of one-year Reserved VM Instances for select older VM series, factor VM generation
-   lifecycle into commitment decisions. For older VM series approaching retirement,
-   either plan migration to newer generations or use three-year reservations if the
-   workload will remain on the legacy series.
+7. **Legacy VM series can no longer be reserved at all.** As of the Learn retirement page
+   (updated 25 September 2026), new and renewed one-year **and** three-year Reserved VM
+   Instances are unavailable for the affected A, B, D, E, F and L variants of the v1 to
+   v3 series. Existing reservations run to term and cannot be renewed; when they expire,
+   coverage falls to pay-as-you-go unless a Compute Savings Plan absorbs it. The series also retire outright: Dv3, Dsv3, Ev3 and
+   Esv3 (32 sizes) cannot be created, resized into, run or purchased after 15 November
+   2029 (this retirement does not apply to Azure Government, 21Vianet or sovereign cloud
+   regions). The other affected v1 and v2 series retire earlier: D, Ds, Dv2, Dsv2 and Ls
+   on 1 May 2028, and Av2/Amv2, B (v1), F, Fs, Fsv2, G, Gs and Lsv2 on 15 November 2028,
+   per the Learn retirement page.
+   Capacity growth restrictions apply in the meantime (no new subscriptions, no quota
+   increases), and a reservation gives no capacity assurance, so use an on-demand capacity
+   reservation where capacity matters. The practical move is to migrate to v5 or later and
+   exchange the reservation to the new series on the way (exchanges are unrestricted until
+   1 February 2027; after that date each eligible reservation bought before it keeps one
+   final exchange), or trade it in for a savings plan, rather than letting the reservation
+   run out on a series that cannot be re-reserved. Source:
+   https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/lifecycle/retirements-and-capacity-restrictions
+   (read 2 October 2026).
 
-**Reservation and Savings Plan liquidity mechanics (verified against Microsoft Learn, July 2026):**
+**Reservation and Savings Plan liquidity mechanics (verified against Microsoft Learn, July 2026; exchange and trade-in rows re-checked 2 October 2026):**
 
 | Mechanic | Fee | Annual cap | Notes |
 |---|---|---|---|
-| **Reservation exchange** | None | None | Same product family only. Does not count against the refund cap. **Retiring 1 February 2027 for services also covered by a savings plan** (VMs, Dedicated Host, App Service, and the covered databases). Reservations purchased before that date keep the right to one final exchange, granted per quantity. Because an exchange is processed as a cancel, refund, and repurchase, an exchange done after that date yields a non-exchangeable reservation. Reservations for services with no savings plan (such as Azure VMware Solution) keep exchange. |
+| **Reservation exchange** | None | None | Same product family only. Does not count against the refund cap. **Retiring 1 February 2027 for services also covered by a savings plan** (VMs, Dedicated Host, App Service, and the covered databases). Reservations purchased before that date keep the right to one final exchange each. Because an exchange is processed as a cancel, refund, and repurchase, an exchange done after that date yields a non-exchangeable reservation. Reservations for services with no savings plan (such as Azure VMware Solution), for products that are deprecated and approaching end-of-life, and in clouds that do not support savings plans keep exchange. The end-of-life exclusion and the legacy VM retirement page (point 7) describe the v1 to v3 series differently; treat their exchange status as unsettled until Microsoft aligns the two pages. |
 | **Reservation refund (cancellation)** | None today | $50,000 per 12-month rolling window per Billing Profile (MCA) or enrollment (EA). **The cap restores day-by-day** - 365 days after a refund, the original $50K is fully reinstated. | "Refund" and "cancellation" are the same operation in current docs. Microsoft reserves the right to introduce a 12% early-termination fee in future - verify before relying on liquidity. |
-| **Reservation trade-in to Savings Plan** | None | None | Convert RI to Savings Plan credit. No time limit. |
+| **Reservation trade-in to Savings Plan** | None today | None | Convert RI to Savings Plan credit. No time limit, and the trade-in policy is unchanged by the 2027 exchange retirement. Up to 100 reservations per trade-in; the new savings plan's lifetime commitment must be at least the remaining commitment of the reservations returned. Microsoft does not charge an early-termination fee on trade-ins today but reserves the right to add one. Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/savings-plan/reservation-trade-in |
 | **Savings Plan cancel / exchange / refund** | N/A | N/A | Not allowed. SPs are non-refundable, non-exchangeable, non-cancellable. |
 
 Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations

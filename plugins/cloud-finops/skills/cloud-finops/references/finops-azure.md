@@ -817,14 +817,20 @@ Azure SQL Database Serverless tier scales compute automatically and **pauses to
 zero compute charge** after an idle period:
 
 - Min vCore configurable from 0.5
-- Auto-pause delay - default 60 min, range 1 hour to 7 days, or disabled
+- Auto-pause delay - General Purpose: 15 minutes to 7 days (default 60); Hyperscale
+  (auto-pause in preview as of 2 October 2026): 60 minutes to 7 days; `-1` disables
 - Storage continues to bill while paused; compute charges drop to zero
+- **Several features silently prevent auto-pause**: long-term backup retention (LTR),
+  geo-replication, failover groups and a server DNS alias. Open sessions are the most
+  common blocker in practice. A database that never pauses only saves the autoscale gap,
+  so check these before counting the pause in a business case
 
 **Best fit:** dev/test databases, intermittent internal tools, departmental apps,
 QA environments.
 
-**Common trap:** cold-start adds 30-60 seconds. Not appropriate for latency-sensitive
-production workloads or any workload behind a user-facing transaction.
+**Common trap:** resume generally takes about a minute, and the first connection after a
+pause fails with error 40613, so clients need retry logic. Not appropriate for
+latency-sensitive production workloads or any workload behind a user-facing transaction.
 
 ```bash
 # Convert a Provisioned database to Serverless with 1h auto-pause
@@ -840,7 +846,9 @@ az sql db update \
   --auto-pause-delay 60
 ```
 
-**Source:** https://learn.microsoft.com/en-us/azure/azure-sql/database/serverless-tier-overview
+**Sources:** https://learn.microsoft.com/en-us/azure/azure-sql/database/serverless-tier-overview
+and https://learn.microsoft.com/en-us/azure/azure-sql/database/serverless-tier-auto-pause-resume
+(both read 2 October 2026).
 
 ### Elastic Pool sizing
 
@@ -869,6 +877,11 @@ service tier decouples storage from compute:
 - Per-vCore compute cost similar to Business Critical, but storage is materially
   cheaper at scale
 - Backup is snapshot-based (faster, cheaper than General Purpose for large DBs)
+- **Serverless Hyperscale can pause** to storage-only billing (preview as of 2 October
+  2026), with a 60-minute minimum delay, and named replicas are not supported with
+  auto-pause. A General Purpose serverless database with a delay under 60 minutes comes
+  out of an upgrade to Hyperscale with auto-pause disabled; reset the delay after the
+  upgrade
 
 **Threshold rule:** consider Hyperscale once a database is >4 TB or when read
 replica scale-out is genuinely needed. Below that, General Purpose or Business

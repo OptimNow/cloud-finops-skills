@@ -61,7 +61,7 @@ benchmark on per-token cost without weighing operational reality.
 | Vendor | Pricing dimension | Optimisation levers |
 |---|---|---|
 | Anthropic API | Input/output tokens, separate caches, separate batch | Prompt caching (1h TTL, 90% off reads), Batch API (50% off), model selection (Haiku/Sonnet/Opus). Note: Fast mode is a speed *premium* (2x, Opus-tier only, research preview), not a cost lever |
-| OpenAI API | Input/output tokens, cached tokens, batch, fine-tuned variants | Cached tokens (auto), Batch API (50% off), model selection, fine-tuning vs prompting tradeoff |
+| OpenAI API | Input/output tokens, cached tokens, cache writes (GPT-5.6+), batch, fine-tuned variants | Prompt caching (implicit by default; writes billed at 1.25x input from GPT-5.6, reads discounted), Batch and Flex (50% off), model selection, fine-tuning vs prompting tradeoff. Note: Fast (2x) and Ultrafast (6x, generally available on GPT-6 Astra) are speed *premiums*, not cost levers |
 | AWS Bedrock | Input/output tokens, provisioned throughput (model units), batch | On-demand vs PT, Application Inference Profiles for cost allocation, prompt caching, batch inference |
 | Azure OpenAI | Input/output tokens, PTU reservations, batch | PTU reservations with locality constraint, AOAI spillover, regional placement, fine-tuning costs |
 | Vertex AI | Input/output tokens, provisioned throughput, batch | Provisioned throughput with default-PAYG spillover, batch prediction, model garden alternatives |

@@ -160,6 +160,30 @@ on every turn costs half what it does at 0.1x. Verify the multiplier for the mod
 in use on the pricing page before quoting a session cost (list, Anthropic pricing
 page, 1 October 2026).
 
+### Refusals and fallback billing
+
+Since 24 September 2026, a refusal that arrives **before any output** is billed at the
+model's normal rates when its `stop_details.category` is `bio`, `frontier_llm` or
+`reasoning_extraction`. Pre-output refusals in other categories are still not billed,
+and a refusal that arrives **mid-stream** was always billed. The rule applies on every
+platform that serves Claude: the Claude API, Claude Platform on AWS, Amazon Bedrock,
+Google Cloud and Microsoft Foundry. Refused requests also count against rate limits.
+
+When a fallback model retries a refused request, the refused attempt is billed in
+addition to the retry whenever it was mid-stream or in a billed category. Fallback
+credit is unchanged: it offsets only the retry's prompt-cache miss, not the refused
+attempt. Two practical consequences:
+
+- **Reconcile from `usage.iterations`**, the per-attempt billing record, not from the
+  top-level `usage` block, which can understate a request that fell back.
+- **Treat the billed-category list as volatile.** Anthropic states it may change; a
+  workload with a high refusal rate in those categories should be cost-monitored on
+  refusals specifically, not just on tokens.
+
+Sources: <https://platform.claude.com/docs/en/release-notes/api> (24 September 2026)
+and <https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback>
+(read 2 October 2026).
+
 ### Tool charges
 
 | Tool | Pricing |

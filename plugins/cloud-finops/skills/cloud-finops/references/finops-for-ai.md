@@ -491,9 +491,17 @@ September 2026).
 **Caching:**
 - Cache system prompts and static context (Anthropic and OpenAI support prompt caching)
 - Check whether the provider bills cache **writes** before treating caching as free.
-  Anthropic and Bedrock always have; Azure OpenAI does from the GPT-5.6 family onwards
-  (1.25x the input rate, as of 20 September 2026), while Vertex AI writes at the standard
-  input rate. Where writes carry a premium, a prefix that is never re-read costs more
+  Anthropic always has. OpenAI direct and Azure OpenAI do from the GPT-5.6 family onwards
+  (1.25x the input rate, and on OpenAI direct that includes the Batch and Flex tiers, at
+  1.25x their discounted input rate; GPT-5.5 and earlier carry no write charge). Bedrock
+  depends on the model: Claude writes at 1.25x or 2x by TTL, recent OpenAI models and
+  Kimi K3 at 1.25x, older OpenAI models at no premium. Vertex AI writes at the standard
+  input rate. Read rates vary too: 0.1x on most models, 0.05x on GPT-6.1 Sol and Claude
+  Opus 5.5, 0.025x on Claude Fable 5.1 and Mythos 5.1 (as of 2 October 2026). On OpenAI
+  GPT-5.6 and later, implicit mode (the default) places a breakpoint at the latest
+  eligible message and writes it whenever that prefix is not already cached, so
+  one-shot workloads should use explicit-only mode with no breakpoints. Where writes
+  carry a premium, a prefix that is never re-read costs more
   than not caching - see the provider files for break-even and cache-mode controls
 - Cache embedding results for repeated documents in RAG systems
 - Cache responses for deterministic or near-deterministic queries
