@@ -83,7 +83,8 @@ AzureMetrics
    against the Azure pricing page before sizing a business case.
    Before counting the auto-pause saving, remove what blocks the pause:
    long-term backup retention, geo-replication, failover groups and a
-   server DNS alias all prevent it, per the Microsoft Learn auto-pause
+   server DNS alias all prevent it, and open sessions are the most common
+   reason a database fails to pause, per the Microsoft Learn auto-pause
    page (read 1 October 2026). With any of them in place, the move saves
    only the autoscale gap.
 4. **For permanent decommissions, drop the database AND the parent SQL

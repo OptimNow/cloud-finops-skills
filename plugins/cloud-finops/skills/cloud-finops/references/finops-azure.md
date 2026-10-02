@@ -818,7 +818,7 @@ zero compute charge** after an idle period:
 
 - Min vCore configurable from 0.5
 - Auto-pause delay - General Purpose: 15 minutes to 7 days (default 60); Hyperscale
-  (auto-pause in preview since September 2026): 60 minutes to 7 days; `-1` disables
+  (auto-pause in preview as at 1 October 2026): 60 minutes to 7 days; `-1` disables
 - Storage continues to bill while paused; compute charges drop to zero
 - **Several features silently prevent auto-pause**: long-term backup retention (LTR),
   geo-replication, failover groups and a server DNS alias. Open sessions are the most
@@ -877,8 +877,9 @@ service tier decouples storage from compute:
 - Per-vCore compute cost similar to Business Critical, but storage is materially
   cheaper at scale
 - Backup is snapshot-based (faster, cheaper than General Purpose for large DBs)
-- **Serverless Hyperscale can pause** to storage-only billing (preview, September 2026),
-  with a 60-minute minimum delay and no named replicas. A General Purpose serverless
+- **Serverless Hyperscale can pause** to storage-only billing (preview as at 1 October
+  2026), with a 60-minute minimum delay, and named replicas are not supported with
+  auto-pause. A General Purpose serverless
   database with a delay under 60 minutes comes out of an upgrade to Hyperscale with
   auto-pause disabled; reset the delay after the upgrade
 
