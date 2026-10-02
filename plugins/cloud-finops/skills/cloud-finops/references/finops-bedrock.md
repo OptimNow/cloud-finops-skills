@@ -24,8 +24,8 @@ fcp_maturity_entry: "Walk"
 ## AWS Bedrock billing model overview
 
 AWS Bedrock is a managed inference service that provides access to foundation models
-from multiple publishers (Anthropic, Meta, Mistral, Amazon, Cohere, AI21, and others)
-through a unified API.
+from multiple publishers (Anthropic, OpenAI, Meta, Mistral, Amazon, Cohere, AI21,
+Moonshot, and others) through a unified API.
 
 ### Billing dimensions
 
@@ -35,7 +35,8 @@ through a unified API.
 | Output tokens | Tokens generated in the response |
 | Model choice | Each model has its own per-token rate |
 | Capacity model | On-demand (PAYG) vs Provisioned Throughput |
-| Cross-region inference | Routes to alternate regions for availability; may affect cost. For Claude 4.5+ models, regional endpoints carry a 10% premium over global endpoints |
+| Cross-region inference | Routes to alternate regions for availability; may affect cost. For Claude 4.5+ models, regional endpoints carry a 10% premium over global endpoints. OpenAI models carry the same 10% premium on In-Region and Geo cross-region inference, while Global cross-region inference matches OpenAI's own rate |
+| Service tier | Standard, Priority (+75%) and Flex (50% off), chosen per request; some models add a speed tier (see "Service tiers and speed tiers" below) |
 | Batch inference | Asynchronous processing at discounted rates |
 
 **Key cost driver:** output tokens are billed at roughly 4-5x the input rate on
@@ -411,12 +412,20 @@ Input token volume is directly controllable:
 ### Prompt caching - direct FinOps lever for long-context and agentic workloads
 
 Bedrock supports prompt caching for selected models, with two distinct token types
-that bill differently from regular input tokens:
+that bill differently from regular input tokens. **The shape depends on the model
+family**, so do not carry the Claude numbers across the catalogue (as of 1 October 2026):
 
-| Token type | Description | Pricing relative to regular input |
-|---|---|---|
-| **Cache write** | First time a cache breakpoint is created | ~1.25x base input price (5-min TTL) or ~2x (1-hour TTL) |
-| **Cache read** | Subsequent requests that hit the cached prefix | ~0.1x base input price |
+| Model family on Bedrock | Cache write | Cache read | TTL |
+|---|---|---|---|
+| Claude | ~1.25x base input (5-min TTL) or ~2x (1-hour TTL) | ~0.1x | 5 minutes or 1 hour |
+| OpenAI GPT-5.6 and later, GPT-6 Astra | 1.25x | 0.1x | single 30-minute TTL |
+| OpenAI GPT-5.5 and earlier | no write premium | discounted | per model |
+| Kimi K3 (first open-weight model with explicit caching, September 2026) | 1.25x | 0.1x | single 30-minute TTL |
+
+Sources: <https://aws.amazon.com/bedrock/pricing/>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html>. The user
+guide's caching table lagged the pricing page for Kimi K3 when read; trust the pricing
+page.
 
 **TTL options.** Selected Claude models on Bedrock support both **5-minute** and
 **1-hour** cache TTLs. The 1-hour duration was announced for Bedrock prompt caching
@@ -449,6 +458,28 @@ between economic and uneconomic at scale.
 - Models that do not support caching (verify per model in the Bedrock docs)
 
 Sources: https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html, https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-bedrock-one-hour-duration-prompt-caching/
+
+### Service tiers and speed tiers
+
+Bedrock prices the same model differently by service tier, selected per request:
+**Priority** at +75% over Standard for latency-critical traffic, and **Flex** at 50% off
+for work that tolerates slower, lower-priority processing. Flex is the cheaper
+sibling of batch for workloads that still need a synchronous API.
+
+Some models add a **speed tier** on top. GPT-6 Astra's **Ultrafast** tier (30 September
+2026) is priced at six times Standard on every token type, cache writes and reads
+included, and is selected with `service_tier: "ultrafast"`; Priority, Flex and Reserved
+are not available on that model. It is the Bedrock counterpart of Anthropic Fast mode:
+a per-request latency premium that one misconfigured client can turn into a 6x bill.
+Govern it the same way - allow-list the callers that may set it, keep it out of batch,
+CI and evaluation jobs, and alert on any Ultrafast usage line in CUR.
+
+The same model card adds a long-context rule: above 272K input tokens the whole request
+is repriced (2x input, cache write and cache read; 1.5x output). Output tokens also burn
+down the TPM quota at 10x, which matters when sizing quotas, not the bill.
+
+Source: <https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-6-astra.html>
+(read 1 October 2026).
 
 ### Context window management
 

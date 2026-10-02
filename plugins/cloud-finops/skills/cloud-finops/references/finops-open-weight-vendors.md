@@ -107,7 +107,7 @@ FinOps consequence.
 | Peak windows | 01:00-04:00 and 06:00-10:00 UTC, Monday to Friday. Seven peak hours per weekday |
 | Off-peak | All other hours. Weekends are off-peak all day |
 | Multiplier | Peak is exactly 2x off-peak, on input and output alike |
-| Cache hits | Priced at roughly **3% of the cache-miss input rate** - materially deeper than the ~10% multiplier at OpenAI, Anthropic and Moonshot |
+| Cache hits | Priced at roughly **3% of the cache-miss input rate** - materially deeper than the ~5-10% multiplier at OpenAI, Anthropic and Moonshot |
 
 Illustrative off-peak rates per 1M tokens (input cache-miss / output), read
 23 August 2026: DeepSeek V4 Flash $0.22 / $0.66; V4 Pro $0.66 / $1.98. Peak is double
@@ -155,12 +155,13 @@ own pricing documentation states 50%, verified 23 August 2026.)*
 | Flagship rate | Kimi K3, illustrative and read 23 August 2026: $3.00 per 1M input tokens on a cache miss, $15.00 per 1M output tokens |
 | Cache hits | $0.30 per 1M input tokens - 10% of the cache-miss rate, in line with Western vendors and three times shallower than DeepSeek's |
 | Context | ~1M tokens (1,048,576), single tier, no long-context premium band published |
+| On Bedrock | Since 18 September 2026 Kimi K3 is also on Amazon Bedrock, the first open-weight model there with explicit prompt caching. Bedrock bills a 30-minute cache write at 1.25x input next to the 0.1x read, a write charge Moonshot direct does not list. Model the write when comparing the two channels |
 | Taxes | The rate card is quoted excluding applicable taxes, assessed at checkout by jurisdiction. Budget gross, not net |
 
 **This is the single most useful data point in the file for a client conversation.** K3
-at $3 / $15 sits exactly at Claude Sonnet 5's list rate of $3 / $15, and 50% above the
-introductory $2 / $10 that Sonnet 5 carries through 31 August 2026 (see
-`finops-anthropic.md`). An open-weight flagship from a Chinese lab is priced at or above
+at $3 / $15 sits 50% above Claude Sonnet 5's list rate of $2 / $10, which Anthropic made
+standard in August 2026 when it cancelled the scheduled rise to $3 / $15 (see
+`finops-anthropic.md`; both rates read 1 October 2026). An open-weight flagship from a Chinese lab is priced at or above
 a Western mid-tier managed model. Any business case whose premise is "we switch to open
 weights and cut inference cost" has to survive that comparison first.
 

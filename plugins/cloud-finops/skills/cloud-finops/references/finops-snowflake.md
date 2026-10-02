@@ -142,8 +142,9 @@ recipients, and Snowflake enforces or alerts based on cumulative consumption.
 - **AI feature budgets** (GA April 2026) - a dedicated budget type that caps
   Cortex AI consumption (LLM functions, vector search, document AI, etc.)
   separately from warehouse compute. Important: Cortex spend is otherwise
-  invisible to resource monitors (see below) - AI feature budgets are the only
-  built-in mechanism to cap it.
+  invisible to resource monitors (see below). AI feature budgets and per-user
+  quotas (see "Cortex AI cost governance") are the built-in mechanisms to cap it:
+  the budget caps a scope, the quota caps a person.
 
 Sources: https://docs.snowflake.com/en/user-guide/budgets, https://docs.snowflake.com/en/release-notes/2026/other/2026-04-10-budgets-ai-features-ga
 
@@ -183,7 +184,33 @@ differences from warehouse compute:
    no autoscaler to tune. The optimisation lever is **prompt design and model
    selection**, not infrastructure.
 3. **Resource monitors do not cover Cortex.** Use AI feature budgets (above) for
-   spend caps.
+   scope-level caps and per-user quotas (below) for per-person caps.
+
+**Per-user quotas.** A quota object (`CREATE SNOWFLAKE.CORE.QUOTA`) caps the credits
+each user can spend in a domain: AI functions, Snowflake Intelligence, Cortex Agents,
+Cortex Code, the AI Gateway (preview) and warehouses. Daily, weekly and monthly
+cycles can be set on the same quota, and a user is blocked as soon as they reach any
+of them. Since 16 September 2026 the weekly cycle follows the ISO week and resets on
+Monday at 00:00 UTC (`CALL my_quota!SET_PER_USER_LIMIT(500, 'WEEKLY')`). Enforcement
+runs a few minutes behind consumption, so a user can briefly pass the limit before
+the block lands: size the quota with that overrun in mind, and keep a budget above
+it as the hard ceiling. This is the right control for the "one analyst ran an agent
+loop overnight" pattern, which a scope-level budget only catches once the whole team
+has paid for it.
+
+**Cortex AI Gateway (public preview, 15 September 2026).** The gateway is a governed
+endpoint through which applications and third-party agents reach models, accepting
+OpenAI Chat Completions and Anthropic Messages request formats. Its consumption is
+recorded per request (gateway, user, model, tokens) in
+`SNOWFLAKE.ACCOUNT_USAGE.AI_GATEWAY_USAGE_HISTORY`, which is the attribution source
+for showback. Snowflake's guidance is to govern it by adding the gateway to a custom
+budget as a shared resource and capping individuals with per-user quotas. Treat it as
+preview: check the release notes for changes before building chargeback on the view.
+
+Sources: https://docs.snowflake.com/en/user-guide/budgets/per-user-quotas,
+https://docs.snowflake.com/en/release-notes/2026/other/2026-09-16-weekly-per-user-quota-limits,
+https://docs.snowflake.com/en/release-notes/2026/other/2026-09-15-cortex-ai-gateway
+(read 1 October 2026).
 
 Surface Cortex consumption via `QUERY_ATTRIBUTION_HISTORY` filtered to Cortex-
 related warehouses or via the dedicated Cortex usage views. Tag Cortex calls with

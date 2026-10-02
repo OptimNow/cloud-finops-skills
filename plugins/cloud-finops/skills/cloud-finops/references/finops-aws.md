@@ -1067,6 +1067,15 @@ documents is **Invoice Configuration** (invoice units), launched December 2024.
 | **Separate AWS Organizations (one payer per BU)** | A separate payer, contract and invoice per business unit | Accounts are moved between organisations (leave then invite) | **One invoice per organisation**, natively | Not shared across the boundary. Volume tiering restarts per org; Savings Plans and RI sharing stop at the org edge | No AWS fee. The cost is the lost consolidation |
 | *(multi-org case)* **Custom billing views / billing transfer** | Cost visibility and payment responsibility across several organisations | See "AWS Multi-Organisation Billing Features" below | Billing transfer moves who pays; billing views do not touch the invoice | See that section | See that section |
 
+**Billing Conductor pricing rules can now carry an absolute rate (15 September 2026).**
+Until then a pricing rule could only mark public on-demand rates up or down, on AWS's
+predefined usage tiers. SKU-scoped rules can now take a custom rate and custom usage-tier
+thresholds instead. A reseller or a central IT team can mirror a negotiated or internal
+rate card exactly in the pro forma view, with no back-calculated percentage that drifts
+when AWS changes a public price. It still changes only the pro forma (showback and
+chargeback) view, never the AWS invoice. Not available in the China Regions. Source:
+<https://aws.amazon.com/about-aws/whats-new/2026/09/AWS-Billing-Conductor-custom-rates-usage-tier/>.
+
 ### Three sentences that anchor the hierarchy
 
 1. **Invoices happen at the invoice unit level**, or at the payer level if no invoice
@@ -1263,12 +1272,23 @@ Billing transfer is a delegation mechanism that allows one payer account (the "b
   no hourly granularity on pro forma data in Cost Explorer.
 - An AWS managed pricing plan is free: "There is no cost to use AWS Billing Conductor,
   when you choose an AWS managed pricing plan." A customer managed (custom) pricing plan
-  is charged at $50 per AWS organisation per month, and AWS states the charge starts on
+  is charged per AWS organisation per month (illustrative: $50, read from the pricing
+  page in August 2026; check the page before quoting it), and AWS states the charge starts on
   1 June 2026, after a free trial through 31 May 2026, with two months of free usage for
   customers newly opting in after that date
   ([AWS Billing Conductor pricing](https://aws.amazon.com/aws-cost-management/aws-billing-conductor/pricing/)).
   The earlier edition of this section dated the charge to June 2025; that is not what the
   pricing page says and has been corrected.
+
+- **Reconcile against the billing context that applied, not the one that applies now.**
+  The `ListBillingViewSegments` API (25 September 2026) returns an account's billing
+  context over a chosen period, split into time segments with effective date ranges.
+  Each segment shows how the account sat in the billing hierarchy (management account,
+  member account or billing-group primary) and the settings that applied. Run it before
+  reconciling any month in which an account changed organisation, joined or left a
+  billing transfer, or moved billing group; otherwise one allocation run mixes costs from
+  two billing contexts. Source:
+  <https://aws.amazon.com/about-aws/whats-new/2026/09/aws-billing-and-cost-management-billing-context-api/>.
 
 **Typical use cases:** AWS channel partners managing resale relationships; enterprises consolidating invoicing after acquisitions; large organisations that want subsidiaries to retain governance autonomy while centralising finance operations.
 
