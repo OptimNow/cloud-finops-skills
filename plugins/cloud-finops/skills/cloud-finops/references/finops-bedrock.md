@@ -35,7 +35,7 @@ Moonshot, and others) through a unified API.
 | Output tokens | Tokens generated in the response |
 | Model choice | Each model has its own per-token rate |
 | Capacity model | On-demand (PAYG) vs Provisioned Throughput |
-| Cross-region inference | Routes to alternate regions for availability; may affect cost. For Claude 4.5+ models, regional endpoints carry a 10% premium over global endpoints. OpenAI models carry the same 10% premium on In-Region and Geo cross-region inference, while Global cross-region inference matches OpenAI's own rate |
+| Cross-region inference | Routes to alternate regions for availability; may affect cost. For Claude 4.5+ models, regional endpoints carry a 10% premium over global endpoints. OpenAI GPT-5.6 and GPT-6 family models carry the same 10% premium on In-Region and Geo cross-region inference, while Global cross-region inference matches OpenAI's first-party Standard rate (per model card) |
 | Service tier | Standard, Priority (+75%) and Flex (50% off), chosen per request; some models add a speed tier (see "Service tiers and speed tiers" below) |
 | Batch inference | Asynchronous processing at discounted rates |
 
@@ -418,7 +418,7 @@ family**, so do not carry the Claude numbers across the catalogue (as of 1 Octob
 | Model family on Bedrock | Cache write | Cache read | TTL |
 |---|---|---|---|
 | Claude | ~1.25x base input (5-min TTL) or ~2x (1-hour TTL) | ~0.1x | 5 minutes or 1 hour |
-| OpenAI GPT-5.6 and later, GPT-6 Astra | 1.25x | 0.1x | single 30-minute TTL |
+| OpenAI GPT-5.6 and later, GPT-6 Astra | 1.25x | 0.1x (0.05x on GPT-6.1 Sol) | single 30-minute TTL |
 | OpenAI GPT-5.5 and earlier | no write premium | discounted | per model |
 | Kimi K3 (first open-weight model with explicit caching, September 2026) | 1.25x | 0.1x | single 30-minute TTL |
 
@@ -463,8 +463,8 @@ Sources: https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.htm
 
 Bedrock prices the same model differently by service tier, selected per request:
 **Priority** at +75% over Standard for latency-critical traffic, and **Flex** at 50% off
-for work that tolerates slower, lower-priority processing. Flex is the cheaper
-sibling of batch for workloads that still need a synchronous API.
+for work that tolerates slower, lower-priority processing. Flex is priced like batch
+(both 50% off Standard) but keeps a synchronous API.
 
 Some models add a **speed tier** on top. GPT-6 Astra's **Ultrafast** tier (30 September
 2026) is priced at six times Standard on every token type, cache writes and reads
@@ -472,11 +472,13 @@ included, and is selected with `service_tier: "ultrafast"`; Priority, Flex and R
 are not available on that model. It is the Bedrock counterpart of Anthropic Fast mode:
 a per-request latency premium that one misconfigured client can turn into a 6x bill.
 Govern it the same way - allow-list the callers that may set it, keep it out of batch,
-CI and evaluation jobs, and alert on any Ultrafast usage line in CUR.
+CI and evaluation jobs, and alert on Ultrafast usage (confirm the CUR usage type name
+before building the alert).
 
 The same model card adds a long-context rule: above 272K input tokens the whole request
-is repriced (2x input, cache write and cache read; 1.5x output). Output tokens also burn
-down the TPM quota at 10x, which matters when sizing quotas, not the bill.
+is repriced (2x input, cache write and cache read; 1.5x output). On the bedrock-runtime
+endpoint, output tokens also burn down the TPM quota at 10x, which matters when sizing
+quotas, not the bill.
 
 Source: <https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-6-astra.html>
 (read 1 October 2026).

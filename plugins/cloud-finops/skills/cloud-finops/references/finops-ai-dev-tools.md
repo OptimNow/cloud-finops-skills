@@ -444,10 +444,11 @@ generation, or codebase analysis tasks.
 
 **OpenAI side (Codex in API key mode)** - three mechanics change the bill, as of
 1 October 2026. Cache writes cost 1.25x input from GPT-5.6 onwards, and implicit caching
-writes on every eligible request. A request above 272K input tokens is repriced in full
-(2x input, 1.5x output), so long agent contexts can double their cost at one boundary.
-And the speed tiers are premiums: Fast at 2x and Ultrafast at 6x (GPT-6 Astra only),
-chosen per request with `service_tier`. Govern them as Anthropic Fast mode is governed:
+(the default) writes the prefix up to the latest eligible message on every request that
+misses the cache. A request above 272K input tokens is repriced in full (2x input, 1.5x
+output), so long agent contexts can double their cost at one boundary. And the speed
+tiers are premiums: Fast at 2x and Ultrafast at 6x (generally available on GPT-6 Astra;
+GPT-5.6 Sol in preview only), chosen per request with `service_tier`. Govern them as Anthropic Fast mode is governed:
 allow-list, never default. Source: <https://developers.openai.com/api/docs/pricing>.
 
 **LiteLLM budget caps** - set hard or soft budget limits per team or project at the proxy
