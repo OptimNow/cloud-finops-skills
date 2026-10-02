@@ -79,9 +79,8 @@ to be layered, not chosen in isolation.
 7. **Legacy VM series can no longer be reserved at all.** As of the Learn retirement page
    (updated 25 September 2026), new and renewed one-year **and** three-year Reserved VM
    Instances are unavailable for the affected A, B, D, E, F and L variants of the v1 to
-   v3 series. Existing reservations run
-   to term and cannot be renewed; when they expire, coverage falls to pay-as-you-go unless
-   a Compute Savings Plan absorbs it. The series also retire outright: Dv3, Dsv3, Ev3 and
+   v3 series. Existing reservations run to term and cannot be renewed; when they expire,
+   coverage falls to pay-as-you-go unless a Compute Savings Plan absorbs it. The series also retire outright: Dv3, Dsv3, Ev3 and
    Esv3 (32 sizes) cannot be created, resized into, run or purchased after 15 November
    2029 (this retirement does not apply to Azure Government, 21Vianet or sovereign cloud
    regions). The other affected v1 and v2 series retire earlier: D, Ds, Dv2, Dsv2 and Ls
@@ -95,9 +94,9 @@ to be layered, not chosen in isolation.
    final exchange), or trade it in for a savings plan, rather than letting the reservation
    run out on a series that cannot be re-reserved. Source:
    https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/lifecycle/retirements-and-capacity-restrictions
-   (read 1 October 2026).
+   (read 2 October 2026).
 
-**Reservation and Savings Plan liquidity mechanics (verified against Microsoft Learn, July 2026; exchange and trade-in rows re-checked 1 October 2026):**
+**Reservation and Savings Plan liquidity mechanics (verified against Microsoft Learn, July 2026; exchange and trade-in rows re-checked 2 October 2026):**
 
 | Mechanic | Fee | Annual cap | Notes |
 |---|---|---|---|

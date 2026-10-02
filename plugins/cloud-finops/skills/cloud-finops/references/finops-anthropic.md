@@ -182,7 +182,7 @@ attempt. Two practical consequences:
 
 Sources: <https://platform.claude.com/docs/en/release-notes/api> (24 September 2026)
 and <https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback>
-(read 1 October 2026).
+(read 2 October 2026).
 
 ### Tool charges
 

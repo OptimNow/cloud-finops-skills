@@ -134,7 +134,7 @@ budget object, attach it to a scope, set a spending limit and notification
 recipients, and Snowflake alerts as cumulative consumption crosses thresholds. A
 budget can also trigger a custom action (a stored procedure), but the spending limit
 itself is "used for alerting and notification purposes only" and does not block
-spend, and actions can take up to eight hours to fire.
+spend, and actions can take up to 8 hours to fire.
 
 **Three useful patterns:**
 - **Account-level safety net** - one budget at the account level with alerts at 80%
@@ -206,9 +206,9 @@ ISO week and resets on Monday at 00:00 UTC
 minutes of a spend event, not at request time, so a user can briefly pass the limit
 before the block lands, and a single large request (an AI function over a big table)
 can overshoot further. Size the quota with that overrun in mind, and keep a budget
-above it to alert on the total: the budget does not block, the quota does. This is the right control for the "one analyst ran an agent
-loop overnight" pattern, which a scope-level budget only catches once the whole team
-has paid for it.
+above it to alert on the total, since a budget alerts but never blocks. The quota is
+the right control for the "one analyst ran an agent loop overnight" pattern, which a
+scope-level budget only catches once the whole team has paid for it.
 
 **Cortex AI Gateway (public preview, 15 September 2026).** The gateway is a governed
 endpoint through which applications and third-party agents reach models, accepting
@@ -222,7 +222,7 @@ preview: check the release notes for changes before building chargeback on the v
 Sources: https://docs.snowflake.com/en/user-guide/budgets/per-user-quotas,
 https://docs.snowflake.com/en/release-notes/2026/other/2026-09-16-weekly-per-user-quota-limits,
 https://docs.snowflake.com/en/release-notes/2026/other/2026-09-15-cortex-ai-gateway
-(read 1 October 2026).
+(read 2 October 2026).
 
 Surface Cortex consumption via `QUERY_ATTRIBUTION_HISTORY` filtered to Cortex-
 related warehouses or via the dedicated Cortex usage views. Tag Cortex calls with

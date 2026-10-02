@@ -137,7 +137,7 @@ provisioned-throughput sizing for ones consistently below 50% utilisation.
 **External models and negotiated rates.** For external model provider services, the
 spend estimates Databricks shows are computed at list rates. Since September 2026 a
 **price multiplier** can be set on the model provider service so those estimates
-reflect a negotiated discount. Set it before the estimates feed
+match a negotiated discount. Set it before the estimates feed
 showback; otherwise external-model spend is overstated by exactly the discount.
 The multiplier is the contracted fraction of list price (0.8 for a 20% discount) and
 flows into `system.ai_gateway.external_model_spend`. It applies only to requests made
@@ -403,7 +403,7 @@ warehouse owner. Tags do not appear in `system.billing.usage`; the join is by wa
 and time window.
 
 Sources: <https://docs.databricks.com/aws/en/release-notes/product/2026/september>,
-<https://docs.databricks.com/aws/en/sql/user/queries/query-tags> (read 1 October 2026).
+<https://docs.databricks.com/aws/en/sql/user/queries/query-tags> (read 2 October 2026).
 
 ### The Azure VM Reservation vs DBU clarification
 

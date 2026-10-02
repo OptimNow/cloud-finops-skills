@@ -497,10 +497,11 @@ September 2026).
   depends on the model: Claude writes at 1.25x or 2x by TTL, recent OpenAI models and
   Kimi K3 at 1.25x, older OpenAI models at no premium. Vertex AI writes at the standard
   input rate. Read rates vary too: 0.1x on most models, 0.05x on GPT-6.1 Sol and Claude
-  Opus 5.5, 0.025x on Claude Fable 5.1 and Mythos 5.1 (as of 1 October 2026). On OpenAI
+  Opus 5.5, 0.025x on Claude Fable 5.1 and Mythos 5.1 (as of 2 October 2026). On OpenAI
   GPT-5.6 and later, implicit mode (the default) places a breakpoint at the latest
   eligible message and writes it whenever that prefix is not already cached, so
-  one-shot workloads should use explicit-only mode with no breakpoints. Where writes carry a premium, a prefix that is never re-read costs more
+  one-shot workloads should use explicit-only mode with no breakpoints. Where writes
+  carry a premium, a prefix that is never re-read costs more
   than not caching - see the provider files for break-even and cache-mode controls
 - Cache embedding results for repeated documents in RAG systems
 - Cache responses for deterministic or near-deterministic queries

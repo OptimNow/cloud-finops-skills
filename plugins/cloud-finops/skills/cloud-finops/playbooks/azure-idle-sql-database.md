@@ -85,7 +85,7 @@ AzureMetrics
    long-term backup retention, geo-replication, failover groups and a
    server DNS alias all prevent it, and open sessions are the most common
    reason a database fails to pause, per the Microsoft Learn auto-pause
-   page (read 1 October 2026). With any of them in place, the move saves
+   page (read 2 October 2026). With any of them in place, the move saves
    only the autoscale gap.
 4. **For permanent decommissions, drop the database AND the parent SQL
    Server** if no other DB lives on it - the server itself has no charge

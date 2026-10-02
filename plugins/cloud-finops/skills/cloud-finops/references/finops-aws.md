@@ -1273,7 +1273,7 @@ Billing transfer is a delegation mechanism that allows one payer account (the "b
 - An AWS managed pricing plan is free for billing transfer: "For Billing Transfer
   customers, there is no cost to use AWS Billing Conductor, when you choose an AWS
   managed pricing plan." A customer managed (custom) pricing plan is charged per AWS
-  organisation per month (illustrative: $50, re-read on the pricing page 2 October 2026;
+  organisation per month (illustrative: $50, read on the pricing page 2 October 2026;
   check the page before quoting it), and AWS states the charge starts on
   1 June 2026, after a free trial through 31 May 2026, with two months of free usage for
   customers newly opting in after that date

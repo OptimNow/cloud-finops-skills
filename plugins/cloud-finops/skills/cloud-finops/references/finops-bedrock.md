@@ -413,11 +413,11 @@ Input token volume is directly controllable:
 
 Bedrock supports prompt caching for selected models, with two distinct token types
 that bill differently from regular input tokens. **The shape depends on the model
-family**, so do not carry the Claude numbers across the catalogue (as of 1 October 2026):
+family**, so do not carry the Claude numbers across the catalogue (as of 2 October 2026):
 
 | Model family on Bedrock | Cache write | Cache read | TTL |
 |---|---|---|---|
-| Claude | ~1.25x base input (5-min TTL) or ~2x (1-hour TTL) | ~0.1x | 5 minutes or 1 hour |
+| Claude | 1.25x base input (5-minute TTL) or 2x (1-hour TTL) | 0.1x | 5 minutes or 1 hour |
 | OpenAI GPT-5.6 and later, GPT-6 Astra | 1.25x | 0.1x (0.05x on GPT-6.1 Sol) | single 30-minute TTL |
 | OpenAI GPT-5.5 and earlier | no write premium | discounted | per model |
 | Kimi K3 (first open-weight model with explicit caching, September 2026) | 1.25x | 0.1x | single 30-minute TTL |
@@ -467,7 +467,7 @@ for work that tolerates slower, lower-priority processing. Flex is priced like b
 (both 50% off Standard) but keeps a synchronous API.
 
 Some models add a **speed tier** on top. GPT-6 Astra's **Ultrafast** tier (30 September
-2026) is priced at six times Standard on every token type, cache writes and reads
+2026) is priced at 6x Standard on every token type, cache writes and reads
 included, and is selected with `service_tier: "ultrafast"`; Priority, Flex and Reserved
 are not available on that model. It is the Bedrock counterpart of Anthropic Fast mode:
 a per-request latency premium that one misconfigured client can turn into a 6x bill.
@@ -481,7 +481,7 @@ endpoint, output tokens also burn down the TPM quota at 10x, which matters when 
 quotas, not the bill.
 
 Source: <https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-6-astra.html>
-(read 1 October 2026).
+(read 2 October 2026).
 
 ### Context window management
 
