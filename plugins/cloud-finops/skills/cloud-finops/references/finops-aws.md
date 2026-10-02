@@ -1063,7 +1063,7 @@ documents is **Invoice Configuration** (invoice units), launched December 2024.
 |---|---|---|---|---|---|
 | **Cost Categories** | Reporting groupings in Cost Explorer, Budgets, CUR / Data Exports, Cost Anomaly Detection | Rules matching linked accounts (explicit list, most reliable) or cost allocation tags on resources. Split charge rules spread shared-cost accounts proportionally, evenly or by fixed percentage | **None** | Unchanged. Can present an amortised view, cannot change who receives the discount | See the AWS Cost Management pricing page |
 | **Invoice Configuration (invoice units)** | Produces a separate invoice document per unit, inside one AWS Organization and one contract | Explicit list of member accounts plus one invoice receiver account. No OU selection, no account-tag selection. Maintained by hand or via the `invoicing` API (`CreateInvoiceUnit`, `UpdateInvoiceUnit`, `ListInvoiceUnits`) | **One invoice per unit**, issued to the receiver. Consolidated billing and volume tiering across the org are preserved | Not controlled here. Sharing is set **per account in Billing Preferences** | See the AWS Billing pricing page |
-| **Billing Conductor** | A **pro forma** version of costs per billing group, with custom pricing plans, custom line items and credits | Billing groups holding explicit account lists, each with a primary account | **None.** Billing Conductor configurations do not affect the customer's existing invoices from AWS, nor credit and commitment sharing | Real sharing unchanged. The pro forma view can model a different rate, a margin or an EDP the receiving entity should not see | Standard billing groups are charged, billing-transfer billing groups are free. See the AWS Billing Conductor pricing page for the current rate |
+| **Billing Conductor** | A **pro forma** version of costs per billing group, with custom pricing plans, custom line items and credits | Billing groups holding explicit account lists, each with a primary account | **None.** Billing Conductor configurations do not affect the customer's existing invoices from AWS, nor credit and commitment sharing | Real sharing unchanged. The pro forma view can model a different rate, a margin or an EDP the receiving entity should not see | Standard billing groups are charged. Billing-transfer billing groups are free on an AWS managed pricing plan; a customer managed plan carries a monthly fee per organisation. See the AWS Billing Conductor pricing page for the current rate |
 | **Separate AWS Organizations (one payer per BU)** | A separate payer, contract and invoice per business unit | Accounts are moved between organisations (leave then invite) | **One invoice per organisation**, natively | Not shared across the boundary. Volume tiering restarts per org; Savings Plans and RI sharing stop at the org edge | No AWS fee. The cost is the lost consolidation |
 | *(multi-org case)* **Custom billing views / billing transfer** | Cost visibility and payment responsibility across several organisations | See "AWS Multi-Organisation Billing Features" below | Billing transfer moves who pays; billing views do not touch the invoice | See that section | See that section |
 
@@ -1270,10 +1270,11 @@ Billing transfer is a delegation mechanism that allows one payer account (the "b
   and Anomaly Detection data for the bill source, CUR configurations going `Unhealthy`
   and needing reconfiguration, no Cost Anomaly Detection for bill source accounts, and
   no hourly granularity on pro forma data in Cost Explorer.
-- An AWS managed pricing plan is free: "There is no cost to use AWS Billing Conductor,
-  when you choose an AWS managed pricing plan." A customer managed (custom) pricing plan
-  is charged per AWS organisation per month (illustrative: $50, read from the pricing
-  page in August 2026; check the page before quoting it), and AWS states the charge starts on
+- An AWS managed pricing plan is free for billing transfer: "For Billing Transfer
+  customers, there is no cost to use AWS Billing Conductor, when you choose an AWS
+  managed pricing plan." A customer managed (custom) pricing plan is charged per AWS
+  organisation per month (illustrative: $50, re-read on the pricing page 2 October 2026;
+  check the page before quoting it), and AWS states the charge starts on
   1 June 2026, after a free trial through 31 May 2026, with two months of free usage for
   customers newly opting in after that date
   ([AWS Billing Conductor pricing](https://aws.amazon.com/aws-cost-management/aws-billing-conductor/pricing/)).
@@ -1283,8 +1284,12 @@ Billing transfer is a delegation mechanism that allows one payer account (the "b
 - **Reconcile against the billing context that applied, not the one that applies now.**
   The `ListBillingViewSegments` API (25 September 2026) returns an account's billing
   context over a chosen period, split into time segments with effective date ranges.
-  Each segment shows how the account sat in the billing hierarchy (management account,
-  member account or billing-group primary) and the settings that applied. Run it before
+  Each segment names the management account, the billing transfer account and the
+  billing-group primary account that applied, and whether the data was billable or pro
+  forma (`domain`). It returns billing context only, not cost data; it works on primary
+  billing views only (custom billing views are not supported) and omits hidden
+  segments, so the segments may not cover the whole period. API reference:
+  <https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_billing_ListBillingViewSegments.html>. Run it before
   reconciling any month in which an account changed organisation, joined or left a
   billing transfer, or moved billing group; otherwise one allocation run mixes costs from
   two billing contexts. Source:

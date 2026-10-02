@@ -124,7 +124,9 @@ whose `version` is unchanged is not documented. The release-train rule in CLAUDE
 keeps content PRs free of version bumps, so if the directory turns out to ignore
 same-version commits, the fix is to track a tag that the release workflow moves
 (a `Settings > Tracked branch or tag` change, no resubmission) rather than to start
-bumping versions per PR. Start with `main`.
+bumping versions per PR. Start with `main`. Observed since 1 October 2026:
+same-version content commits are scanned and served (see 1.7), so tracking `main`
+works as intended.
 
 ### 1.2 Validate
 

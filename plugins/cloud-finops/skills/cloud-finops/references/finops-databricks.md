@@ -137,8 +137,12 @@ provisioned-throughput sizing for ones consistently below 50% utilisation.
 **External models and negotiated rates.** For external model provider services, the
 spend estimates Databricks shows are computed at list rates. Since September 2026 a
 **price multiplier** can be set on the model provider service so those estimates
-reflect a negotiated discount. Set it to the contracted ratio before the estimates feed
+reflect a negotiated discount. Set it before the estimates feed
 showback; otherwise external-model spend is overstated by exactly the discount.
+The multiplier is the contracted fraction of list price (0.8 for a 20% discount) and
+flows into `system.ai_gateway.external_model_spend`. It applies only to requests made
+after it is set, and not to Databricks-hosted partner models. Source:
+<https://docs.databricks.com/aws/en/ai-gateway/create-model-provider-services>.
 
 ---
 
@@ -383,7 +387,7 @@ executor query above stops at "the warehouse" and cannot say which team's querie
 drove the bill. Two features, both GA in September 2026, close that gap:
 
 - **`system.query.history`** records every query run on a SQL warehouse or serverless
-  compute, with its duration and resource metrics.
+  compute, with its execution status, duration metrics and query source.
 - **Query tags** attach key-value pairs to a query, set with `SET QUERY_TAGS` in SQL or
   the connector's `query_tags` session parameter. Limits: at most 20 tags per query,
   128 characters per key or value, 10 KB per session. Tags land in the `query_tags`

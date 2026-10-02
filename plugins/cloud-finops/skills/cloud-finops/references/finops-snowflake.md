@@ -128,23 +128,29 @@ Source: https://docs.snowflake.com/en/sql-reference/account-usage/query_attribut
 
 ### Snowflake Budgets - programmable spend governance
 
-Snowflake Budgets (GA 2024, AI feature budgets GA April 2026) provide spend caps
-with alerts at the account, database, schema, or feature level. The mechanic:
-define a budget object, attach it to a scope, set spend limits and notification
-recipients, and Snowflake enforces or alerts based on cumulative consumption.
+Snowflake Budgets (GA 2024, AI feature budgets GA April 2026) track spend against a
+limit at the account, database, schema, or feature level. The mechanic: define a
+budget object, attach it to a scope, set a spending limit and notification
+recipients, and Snowflake alerts as cumulative consumption crosses thresholds. A
+budget can also trigger a custom action (a stored procedure), but the spending limit
+itself is "used for alerting and notification purposes only" and does not block
+spend, and actions can take up to eight hours to fire.
 
 **Three useful patterns:**
-- **Account-level safety net** - one budget at the account level with alert at 80%
-  of monthly target, hard limit at 100%. This is the floor - every customer should
-  have it.
+- **Account-level safety net** - one budget at the account level with alerts at 80%
+  and 100% of the monthly target, plus a custom action at 100% if something must
+  happen automatically (for example suspending non-production warehouses). This is
+  the floor - every customer should have it.
 - **Per-database or per-schema budgets** - aligns spend with logical workload
   boundaries, useful where database = team or database = product.
-- **AI feature budgets** (GA April 2026) - a dedicated budget type that caps
+- **AI feature budgets** (GA April 2026) - a dedicated budget type that tracks
   Cortex AI consumption (LLM functions, vector search, document AI, etc.)
   separately from warehouse compute. Important: Cortex spend is otherwise
   invisible to resource monitors (see below). AI feature budgets and per-user
-  quotas (see "Cortex AI cost governance") are the built-in mechanisms to cap it:
-  the budget caps a scope, the quota caps a person.
+  quotas (see "Cortex AI cost governance") are the built-in controls for it: the
+  budget tracks and alerts on a scope (and can run a custom action), the quota
+  blocks a person. Snowflake's governance guidance calls quotas the only AI cost
+  control with built-in enforcement.
 
 Sources: https://docs.snowflake.com/en/user-guide/budgets, https://docs.snowflake.com/en/release-notes/2026/other/2026-04-10-budgets-ai-features-ga
 
@@ -184,17 +190,23 @@ differences from warehouse compute:
    no autoscaler to tune. The optimisation lever is **prompt design and model
    selection**, not infrastructure.
 3. **Resource monitors do not cover Cortex.** Use AI feature budgets (above) for
-   scope-level caps and per-user quotas (below) for per-person caps.
+   scope-level alerting and custom actions, and per-user quotas (below) for
+   per-person blocking.
 
 **Per-user quotas.** A quota object (`CREATE SNOWFLAKE.CORE.QUOTA`) caps the credits
-each user can spend in a domain: AI functions, Snowflake Intelligence, Cortex Agents,
-Cortex Code, the AI Gateway (preview) and warehouses. Daily, weekly and monthly
-cycles can be set on the same quota, and a user is blocked as soon as they reach any
-of them. Since 16 September 2026 the weekly cycle follows the ISO week and resets on
-Monday at 00:00 UTC (`CALL my_quota!SET_PER_USER_LIMIT(500, 'WEEKLY')`). Enforcement
-runs a few minutes behind consumption, so a user can briefly pass the limit before
-the block lands: size the quota with that overrun in mind, and keep a budget above
-it as the hard ceiling. This is the right control for the "one analyst ran an agent
+each user can spend in AI domains: AI functions, Snowflake Intelligence (now Snowflake
+CoWork), Cortex Agents, Cortex Code (now Snowflake CoCo) and the AI Gateway (preview).
+Warehouse spend can be tracked in a separate quota (one quota cannot mix warehouse and
+AI domains), but warehouses are never blocked. Daily, weekly and monthly cycles can be
+set on the same quota and are evaluated independently; once block enforcement is
+enabled (`CALL my_quota!SET_BLOCK_ENFORCEMENT_ENABLED(TRUE, TRUE)`), a user is blocked
+as soon as they reach any of them. The weekly limit (GA 16 September 2026) follows the
+ISO week and resets on Monday at 00:00 UTC
+(`CALL my_quota!SET_PER_USER_LIMIT(500, 'WEEKLY')`). Enforcement is evaluated within
+minutes of a spend event, not at request time, so a user can briefly pass the limit
+before the block lands, and a single large request (an AI function over a big table)
+can overshoot further. Size the quota with that overrun in mind, and keep a budget
+above it to alert on the total: the budget does not block, the quota does. This is the right control for the "one analyst ran an agent
 loop overnight" pattern, which a scope-level budget only catches once the whole team
 has paid for it.
 
