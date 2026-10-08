@@ -467,14 +467,17 @@ The skill covers how to *govern* an AI investment - the Investment Council, stag
 incremental funding - and, in `finops-ai-value-management.md`, how to choose and defend a
 value method. It does not compute the business case. This connector does.
 
-Hosted, nothing to install:
+Hosted, nothing to install. The URL is owned by the calculator's own repository (the
+"Connect" section of <https://github.com/OptimNow/ai-roi-calculator-mcp#readme>); since
+2026-10-08 it is:
 
 ```bash
-claude mcp add --transport http ai-roi-calculator https://ai-roi-calculator-mc-e9dd36e7.alpic.live/mcp
+claude mcp add --transport http ai-roi-calculator https://airoicalculator-mcp.optimnow.io/mcp
 ```
 
 For Claude.ai / Claude Desktop, **Settings -> Connectors -> Add custom connector** and
-paste the same URL. Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry
+paste the same URL exactly, with `/mcp` and no trailing slash: the widget renders only
+for that form. Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry
 pointing at it.
 
 **Four tools (all read-only, no credentials):**
