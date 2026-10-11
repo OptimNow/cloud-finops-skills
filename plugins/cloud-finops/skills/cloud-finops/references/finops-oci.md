@@ -1,8 +1,8 @@
 ---
 name: finops-oci
-fcp_domain: "Understand Usage & Cost"
-fcp_capability: "Data Ingestion"
-fcp_capabilities_secondary: ["Anomaly Management", "Usage Optimization"]
+fcp_domain: "Optimize Usage & Cost"
+fcp_capability: "Usage Optimization"
+fcp_capabilities_secondary: ["Data Ingestion", "Rate Optimization", "Anomaly Management"]
 fcp_phases: ["Inform", "Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Finance"]

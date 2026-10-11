@@ -4,7 +4,7 @@
 <text x="16" y="58" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370">Understand Usage &amp; Cost</text>
 <rect x="24" y="73" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="84" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Data Ingestion</text>
-<text x="682" y="84" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">2 primary + 3 secondary</text>
+<text x="682" y="84" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary + 4 secondary</text>
 <rect x="24" y="97" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="108" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Allocation</text>
 <text x="682" y="108" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">3 primary + 5 secondary</text>
@@ -36,10 +36,10 @@
 <text x="682" y="360" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">3 primary + 9 secondary</text>
 <rect x="24" y="373" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="384" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Usage Optimization</text>
-<text x="682" y="384" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">8 primary + 14 secondary</text>
+<text x="682" y="384" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">9 primary + 13 secondary</text>
 <rect x="24" y="397" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="408" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Rate Optimization</text>
-<text x="682" y="408" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">10 primary + 4 secondary</text>
+<text x="682" y="408" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">10 primary + 5 secondary</text>
 <rect x="24" y="421" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="432" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Licensing &amp; SaaS</text>
 <text x="682" y="432" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">2 primary + 1 secondary</text>
