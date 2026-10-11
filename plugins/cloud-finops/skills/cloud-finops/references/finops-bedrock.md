@@ -129,17 +129,53 @@ capacity spun up for a burst.
 
 ### Cost Explorer integration
 
-AWS Bedrock costs appear in AWS Cost Explorer under the Bedrock service namespace.
-Key dimensions available for filtering and grouping:
+AWS Bedrock costs appear in AWS Cost Explorer under the Bedrock service namespace,
+with the usual dimensions (usage type, operation such as InvokeModel,
+InvokeModelWithResponseStream or BatchInference, Region, linked account).
 
-- Model ID
-- Operation type (InvokeModel, InvokeModelWithResponseStream, BatchInference)
-- Region
-- Account (for multi-account organisations)
+**Bedrock product attributes (since 8 October 2026).** Cost Explorer, AWS Budgets and
+Cost Management Dashboards can group and filter Bedrock cost by four standardised
+attributes, at no extra charge, in all commercial Regions except GovCloud and China:
 
-**Limitation:** native Cost Explorer does not provide token-level granularity. For
-unit economics (cost per 1,000 tokens, cost per API call), you need to combine billing
-data with application-level metrics from CloudWatch or your own instrumentation.
+| Attribute (API key) | Values look like |
+|---|---|
+| Model (`model`) | Claude Sonnet 5, Claude Haiku 4.5, Nova Lite |
+| Model provider (`provider`) | Anthropic, Cohere, OpenAI |
+| Inference type (`inferenceType`) | input tokens, output tokens, cache read, cache write, with "global" variants for cross-region inference |
+| Feature (`feature`) | On-demand inference, batch, reranker |
+
+In the API they are the `PRODUCT_ATTRIBUTE` group-by type and the `ProductAttributes`
+filter (`aws ce get-dimension-values --dimension PRODUCT_ATTRIBUTE` lists the keys).
+Attribute data starts on **1 September 2026**: a query on an earlier date fails with
+`DataUnavailableException`, so a 13-month model-level trend is not available before
+September 2027. The attributes combine with cost allocation tags on Application
+Inference Profiles, Projects or Workspaces and with IAM principal tags, which is what
+turns "spend by model" into "spend by model by team".
+
+The same four attributes reached **CUR 2.0 through AWS Data Exports on 20 July 2026**:
+model provider, model name, inference type and feature sit in the `product` map
+column, pricing unit is its own column, and a unified "Amazon Bedrock" product family
+groups every Bedrock line. A warehouse built on CUR 2.0 therefore has model-level
+attribution without parsing usage-type strings; the FOCUS 1.2 export was not named in
+the announcement, so check the table dictionary before assuming the attributes are
+there too.
+
+Two things seen in early hands-on use (a practitioner write-up, October 2026, not AWS
+documentation; verify in your own account): some models carry an empty `provider`
+value, so a filter on Model provider silently drops them, and grouping by model inside
+a SERVICE filter on "Amazon Bedrock" returned a subset of models where grouping without
+the SERVICE filter returned all of them. Build model-level reports by grouping on the
+attribute without a service filter, and check for the empty-provider bucket.
+
+**What this does and does not close.** Model-level dollars and token-type dollars are
+now native. Per-request cost, cost per conversation or per feature call, and anything
+that needs the prompt itself still come from model invocation logging and application
+telemetry (see "Bedrock model invocation logging" below); the native path's finest
+grain remains per usage type per day.
+
+Sources: <https://aws.amazon.com/about-aws/whats-new/2026/10/aws-bedrock-attributes-in-cost-explorer/>,
+<https://aws.amazon.com/about-aws/whats-new/2026/07/aws-data-exports-amazon-bedrock-product-metadata/>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-management.html>
 
 ### Cost Anomaly Detection for Bedrock foundation models
 
@@ -499,7 +535,7 @@ Candidates: document enrichment, bulk classification, evaluation pipelines, repo
 
 ## Governance checklist
 
-- [ ] Enable Cost Explorer for Bedrock and set up daily cost anomaly alerts
+- [ ] Enable Cost Explorer for Bedrock, group by the Bedrock product attributes (model, provider, inference type, feature) and set up daily cost anomaly alerts; set a Budget per model provider or per model where one dominates spend
 - [ ] Define model selection policy - default to lower-cost tiers unless justified
 - [ ] Instrument applications with token counts per request (input + output)
 - [ ] Separate accounts or use tags for team/product cost attribution
