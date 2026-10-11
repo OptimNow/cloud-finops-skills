@@ -15,8 +15,10 @@ fcp_maturity_entry: "Crawl"
 > does not, the version ladder from 1.0 to 1.4, how AWS, Azure and GCP exports still
 > diverge under the same version label (tags, precision, column sets, invoice
 > timing), a pull-based ingestion architecture with workload identity federation,
-> month-end finalisation and reconciliation, and a Crawl / Walk / Run path from a
-> manual export to a governed multi-cloud dataset.
+> month-end finalisation and reconciliation, the parallel-run migration pattern, the
+> pre-built consolidators (CID, FinOps hubs), SaaS and on-premises sources, the
+> procurement lever, and a Crawl / Walk / Run path from a manual export to a governed
+> multi-cloud dataset.
 
 ---
 
@@ -137,7 +139,10 @@ Three things to take from the table:
 - **GCP's status is the one that changed most recently** and is the row most references
   written before mid-2026 get wrong, describing GCP as a 1.0 SQL view only. The
   dedicated export is in preview and is the right target for a new pipeline, with the
-  conformance report read first.
+  conformance report read first. Two mechanics on that export matter for a pipeline:
+  the dataset is Google-provided and immutable (you do not own the table), and it
+  carries a **two-year time-to-live**. History older than two years is deleted, so a
+  pipeline that wants more than two years copies rows into a table it owns.
 
 ---
 
@@ -231,6 +236,11 @@ Two issues, one confirmed and one not:
   disagree by roughly the last seven to eight hours of usage, the timezone is the
   cause and daylight-saving transitions will move it twice a year.
 
+The pattern is not specific to Google. Alibaba Cloud documents its FOCUS export
+timestamps in Beijing time, which the FinOps Foundation's Alibaba pipeline write-up
+confirms from a real export. Assume every new provider has a timezone decision until
+its documentation says otherwise.
+
 Whatever the cause, the pipeline rule is the same: carry `BillingPeriodStart`,
 `BillingPeriodEnd` and `InvoiceId` through untouched, reconcile per provider on the
 provider's own billing period, and only then present a calendar-month view with a
@@ -262,10 +272,13 @@ GCP Cloud Billing ───────export─> BigQuery ─────┘   
 
 Four decisions the diagram encodes:
 
-1. **Pull, do not push.** Each provider writes to its own storage on its own schedule.
-   One scheduled job in one place reads all three. Push designs (a Lambda on S3 put, a
-   Blob trigger, a Pub/Sub on BigQuery) mean three triggers, three retry semantics and
-   three places where a late file is handled differently.
+1. **Prefer one scheduled pull over three push triggers.** Each provider writes to its
+   own storage on its own schedule, and one job in one place that reads all three has
+   one retry policy and one place where a late file is handled. Push designs work (A2A,
+   an Italian utility, ingests its Azure exports with an event-driven Lambda into the
+   same Glue pipeline, documented with AWS in July 2026) and are the right choice when
+   a file must be visible within minutes of landing. They cost three trigger
+   definitions and three failure modes to monitor; take that on deliberately.
 2. **Run the ETL inside a cloud provider, not on a laptop or a generic VM.** The reason
    is identity (next subsection): a job running on a cloud compute identity can
    federate into the other two providers without a stored secret.
@@ -280,6 +293,30 @@ Four decisions the diagram encodes:
    or a Kubernetes CronJob on a cluster that already has idle capacity. The ETL itself
    is a few hundred lines in a dataframe library (Polars, pandas, or Spark above a few
    hundred million rows a month). Choose the one the team already runs.
+
+### Hygiene the field accounts agree on
+
+Five small things that every published build either did or wished it had done:
+
+- **Keep raw deliveries untouched and versioned.** Storage versioning or an
+  append-only landing prefix. Reprocessing after a column-map change, and the
+  snapshot-every-delivery pattern in the finalisation section, both depend on it.
+- **Track incremental loads with a metadata table**, not by file name. The Microsoft
+  FinOps toolkit's Google ingestion keeps a BigQuery table of export timestamps and
+  fetches only newer rows; the same idea works for S3 and Blob listings. On GCP
+  specifically, the FOCUS table is append-only and carries an export time per row.
+- **Normalise nulls before loading.** The FOCUS Sandbox team found values "that
+  represent nulls like empty strings" in real exports; the Alibaba write-up found
+  nulls in columns the spec marks mandatory. Decide the rule once (empty string to
+  null, and a `conformance_gap` flag on the row when a mandatory column is null).
+- **Set string lengths from observed maxima, then monitor.** The spec sets no
+  maximum for string columns. Engines that need a length (and the Sandbox team's
+  MySQL did) truncate silently if the length is guessed too short. Take the longest
+  observed value per column from the first month and alert on growth.
+- **No long-lived keys, even in a prototype.** The Alibaba write-up shipped with
+  long-lived access keys and flagged them for replacement before production. The
+  federation pattern in the next subsection removes the class of problem; start
+  with it rather than retrofitting it.
 
 ### Identity: workload identity federation, no stored keys
 
@@ -367,6 +404,147 @@ the net change) and **Ledger** (a reversal row and a re-entry row, keeping an au
 trail). A pipeline that assumes Replacement and receives Delta double-counts; one that
 assumes Delta and receives Replacement loses history. Until providers document which
 they use, the snapshot-every-delivery pattern in step 1 is the defence.
+
+---
+
+## Build, borrow or buy the consolidation layer
+
+Two pre-built consolidators exist and both are maintained by a provider's own FinOps
+tooling team. Evaluate them before writing the ETL, because each already encodes the
+divergence catalogue above for the providers it covers.
+
+| Option | Covers | What it gives | Constraints to know before choosing |
+|---|---|---|---|
+| **AWS Cloud Intelligence Dashboards (CID), FOCUS Dashboard** | AWS natively; collectors for Azure, GCP and OCI | A consolidation view in Athena that unions FOCUS tables of **different versions** (1.0 and 1.2 in one view), Quick dashboards on top, Terraform and CloudFormation deployment | Lives in AWS; the other providers' collectors pull via API with credentials in Secrets Manager rather than federation; first Data Exports delivery takes 24 to 48 hours; AWS's own FAQ says FOCUS is not the dataset for cost optimisation detail (see below) |
+| **Microsoft FinOps toolkit, FinOps hubs** | Azure natively; documented Google Cloud ingestion via Data Factory | Storage, Data Explorer or Fabric back end, Power BI reports aligned to FOCUS, FOCUS 1.2 preview support | Requires FOCUS exports, so pay-as-you-go (MOSA) subscriptions are unsupported from hubs 0.2; the price export must run before the cost export or the ETL re-runs to fill prices; direct Power BI reports do not scale to large or long histories (Data Explorer or Fabric is the documented answer); 1.2 support renamed columns (`InvoiceId`, `PricingCurrency`, `SkuMeter`), which broke reports built on 1.0 names |
+
+Practitioners who chose one and said so: Australian Retirement Trust (FinOps hubs,
+Azure plus GCP), A2A (CID, three clouds), Zoom and the European Parliament (their own
+Athena-based builds on the same shape). The decision rule: if the FinOps team sits in
+one of the two ecosystems and the other providers are minor, borrow the matching
+consolidator and spend the saved time on enrichment. Build your own when a SaaS or
+on-premises source is a first-class input, or when the warehouse is already Snowflake,
+BigQuery or Databricks and the data team owns it.
+
+Sources: CID FOCUS Dashboard
+(<https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/focus-dashboard.html>),
+FinOps hubs overview
+(<https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/finops-hubs-overview>).
+
+### What FOCUS is not the dataset for
+
+AWS's CID team answers the question "can we replace the CUR dashboards with FOCUS" with
+a documented no: the FOCUS format "does not currently include important information
+like lineItem/Operation that is critical for FinOps use cases", so they "cannot
+recommend FOCUS for Cost Optimization scenarios" and position it for "high-level
+reporting use cases". Split cost allocation for ECS and EKS is likewise a CUR 2.0
+feature, not a FOCUS 1.2 one on AWS.
+
+The consequence for the pipeline: the FOCUS table is the **reporting, allocation and
+reconciliation** dataset. Keep each provider's native export enabled next to it, and
+route optimisation questions (rightsizing, commitment coverage at the usage-type level,
+the waste playbooks' detection queries) to the native data or to the provider console.
+The provider files in this library already say "configure FOCUS alongside, not instead
+of"; this is the reason.
+
+---
+
+## Replacing an existing pipeline: the parallel run
+
+Most organisations adopting FOCUS already have a cost pipeline, usually one provider
+deep. Every published migration account used the same pattern, and none reported a
+clean cutover without it.
+
+STMicroelectronics (two FinOps staff, Azure, presented at FinOps X Europe in November
+2024) cloned the nightly Amortized Cost pipeline, pointed the clone at the FOCUS export,
+and ran both "for a few months" until the two produced the same cost results, then
+switched Finance's chargeback to the FOCUS flow in January 2025 and turned the legacy
+dataset off. GitLab closed the residual gap between its FOCUS pipeline and the previous
+numbers with manual adjustments rather than waiting for a perfect match. The FinOps
+Foundation's own adoption guide describes the stages as decide, design, build, test,
+and expects "build, test, rebuild" before launch.
+
+The cutover criteria to write down before the parallel run starts, so the end of the
+run is a fact and not a feeling:
+
+1. **Per provider, per billing period, `SUM(BilledCost)` matches the legacy pipeline's
+   invoice-basis total** within a stated tolerance (the 0.5% drift rule from
+   `finops-allocation-showback.md` is the practitioner default) for N consecutive closed
+   periods, three being the common choice.
+2. **Per provider, `SUM(EffectiveCost)` matches the legacy amortised total** within the
+   same tolerance, which catches commitment amortisation differences between the two
+   schemas (the AWS legacy mapping table in the allocation file is where most of these
+   come from).
+3. **Every allocation key the legacy pipeline produced is reproducible** from the FOCUS
+   `Tags` column plus the enrichment rules, with the unallocated share no worse than
+   before.
+4. **Finance has run one chargeback cycle from the new data in shadow** and signed off
+   on the differences, each of which has a written cause (invoice timing, precision,
+   a column-map choice).
+
+Then set a date, cut over, and keep the legacy pipeline readable but not running for
+one more quarter. Expect the differences found during the run to be real findings about
+the old pipeline as often as defects in the new one.
+
+---
+
+## Beyond the three clouds
+
+The published adoption stories are not three-cloud stories. GitLab's FOCUS table takes
+seven sources (Google Cloud, OCI, AWS, Elasticsearch, Cloudflare, Grafana, Anthropic).
+UnitedHealth Group put VMware on-premises, MongoDB Atlas and Snowflake next to three
+clouds to compare network cost on one basis. Heineken's inputs include IBM and a private
+cloud; Zoom's include its own datacentres; the European Parliament's include Equinix and
+IBM Cloud, and it uses FOCUS as the **exchange format** between EU institutions, with
+the Commission's data converted to FOCUS before the merge. The value of the normalised
+table grows with each non-cloud source, and so does the work, because that is where the
+exports are young or absent.
+
+Three classes of source, in increasing order of effort:
+
+- **Vendors with a native FOCUS export.** As of October 2026 these include Grafana Cloud
+  (1.2, since June 2025), Snowflake (a 1.3 view, `SNOWFLAKE.BILLING.FOCUS_COST_USAGE_V1_3`,
+  daily grain, history from January 2026, several conditional columns empty and
+  `InvoiceId` populated only after month end for on-demand accounts), Databricks and
+  Alibaba Cloud. Treat each like a fourth cloud: read its conformance notes, write its
+  column map, expect nulls where the spec says mandatory. The Alibaba export, for
+  example, arrived with tags as JSON strings, numeric identifiers in name columns and
+  nulls in `ContractedCost`; the pipeline that landed it carries those rows with a
+  conformance flag rather than dropping them.
+- **Vendors with an invoice and a usage API but no FOCUS export.** The bulk of SaaS.
+  The pipeline writes a converter: invoice lines to `BilledCost` rows at the invoice
+  period, usage API to `ConsumedQuantity`, a `ServiceCategory` chosen by hand. The
+  FinOps Foundation's converter project covers the legacy formats of the big providers
+  (CUR, older Azure exports) and is the model for a home-grown SaaS converter.
+- **On-premises and private cloud.** No export exists; the organisation defines the
+  charge rows itself (an allocated share of a host, a storage tier, a network port) and
+  emits them in FOCUS shape. The Foundation's FinOps for Data Center working group
+  publishes the modelling guidance, and Heineken's and UHG's talks are the practitioner
+  accounts. Schema-wise this is the easiest source: the hard part is agreeing the cost
+  model, not the columns.
+
+Whatever the source, the rule from the divergence catalogue holds: pin the version,
+write the column map, keep the provider's `x_` columns, flag conformance gaps on the
+row.
+
+### The procurement lever
+
+Delivery Hero's FinOps team found monthly SaaS billing too stale for business-unit
+decisions and made two moves that cost nothing to engineer: **FOCUS compliance became a
+vendor-selection criterion, and FOCUS-conformant billing data is written into contracts
+and renewals.** They then worked with Grafana Labs' teams on Grafana's own export, which
+shipped as a 1.2 preview in June 2025 (presented at FinOps X 2025; Grafana's
+announcement names the collaboration).
+
+The FinOps Foundation also **certifies** billing-data generators against the
+specification (the programme validates conformance to 1.2 as of October 2026; AWS and
+Nebius were the first badge holders, announced around FinOps X 2026). "A certified
+FOCUS export, or a dated roadmap to one" is now a concrete clause to put in front of a
+vendor, and the
+renewal checkpoint in `finops-sam.md` and the pre-renewal review in `finops-itam.md`
+are where it belongs. One customer asking changes little; a vendor's conformance,
+once published by the Foundation, is available to every customer, which is why the
+ask compounds.
 
 ---
 
@@ -472,6 +650,10 @@ cannot:
 | Marking a month final on the 1st because the dashboard says so | Providers write into a closed month for days | Stable-sum-across-N-deliveries plus invoice issued, published as a status |
 | Promoting every FOCUS column on day one | A table nobody can explain; a schema that breaks on every provider change | Minimum viable schema, promote on request |
 | Treating the normalised table as the deliverable | It answers no business question on its own | Enrichment with `tag_source`, unallocated share tracked as a KPI |
+| Cutting over from the legacy pipeline on a date rather than on a criterion | Finance finds the difference after the first chargeback cycle | Parallel run with the four written cutover criteria |
+| Using the FOCUS table for rightsizing and usage-type analysis | Operation-level detail is not in the schema (AWS's own CID guidance) | Native export stays enabled; FOCUS serves reporting, allocation, reconciliation |
+| Quoting an adoption story's outcome figure as a benchmark | The published figures (allocation coverage, hours saved) are vendor-mediated and unsourced | Cite the mechanism, not the number |
+| Hand-building Azure plus GCP ingestion when the team lives in one ecosystem | Months of per-vendor modelling that a maintained consolidator already encodes | Evaluate CID or FinOps hubs first; build when SaaS or on-prem is first-class |
 
 ---
 
@@ -493,6 +675,25 @@ cannot:
   <https://docs.cloud.google.com/billing/docs/how-to/export-data-bigquery-tables/focus-export>
   and the FOCUS project's Google Cloud data-generator page (version support and the
   conformance report): <https://focus.finops.org/docs/implementation/data-generators/google-cloud/>
+- First-hand adoption accounts cited above, all from October 2024 or later: the FinOps
+  Foundation's practitioner adoption page, which links the STMicroelectronics, European
+  Parliament, GitLab, Zoom, UnitedHealth Group and Heineken talks
+  (<https://focus.finops.org/adoption/finops-practitioners/>); the FOCUS Sandbox build
+  notes (<https://www.finops.org/insights/focus-sandbox/>); the Alibaba Cloud FOCUS
+  pipeline write-up
+  (<https://www.finops.org/assets/building-a-focus-data-export-pipeline-for-alibaba-cloud/>);
+  A2A's multi-cloud platform on AWS
+  (<https://aws.amazon.com/blogs/aws-cloud-financial-management/automating-multi-cloud-cost-management-at-scale-a2as-finops-platform-powered-by-aws/>);
+  Delivery Hero's SaaS approach as reported by The ITAM Review
+  (<https://itassetmanagement.net/2025/06/05/addressing-the-saas-data-gap-in-finops-focus-2-1/>)
+  and in Grafana Labs' FOCUS announcement
+  (<https://grafana.com/blog/simple-cloud-cost-management-grafana-labs-integrates-open-standard-focus-specification-for-cloud-billing-data/>).
+  The talks are summarised from the Foundation's write-ups; the outcome figures some of
+  them carry are not independently sourced and are not repeated here as benchmarks.
+- Snowflake FOCUS view:
+  <https://docs.snowflake.com/en/sql-reference/billing/focus_cost_usage_v1_3>
+- FOCUS certification for data generators:
+  <https://www.finops.org/certification-for-organizations/>
 - Lead for the divergence catalogue and the ingestion architecture: Arjun Kaushal,
   Trident Consulting, "Configuring Multi-Cloud FOCUS Data Ingestion", lightning talk,
   FinOps X 2026 (<https://www.youtube.com/watch?v=WawKDHXAdGI>). Mechanics claims above

@@ -689,7 +689,7 @@ Use these knowledge files for the following query types:
 | Chargeback, soft-to-hard maturity, Finance and accounting prerequisites (ERP, transfer pricing, cross-border tax, SOX), chargeback-revolt anti-pattern | finops-chargeback.md |
 | Onboarding workloads, migration-time cost hygiene, intake gate, 60-90 day forecast-then-commit rule, double-bubble cost, M&A integration | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, FOCUS-emitting K8s allocation, container rightsizing, Karpenter, Spot diversification | finops-kubernetes.md |
-| FOCUS, multi-cloud cost data normalisation, FOCUS versions 1.0-1.4, provider export differences (Tags shape, precision, x_ columns), billing data ingestion pipeline, workload identity federation, month-end finalisation | finops-focus.md |
+| FOCUS, multi-cloud cost data normalisation, FOCUS versions 1.0-1.4, provider export differences (Tags shape, precision, x_ columns), billing data ingestion pipeline, workload identity federation, month-end finalisation, parallel-run migration, FOCUS for SaaS and on-prem sources, FinOps hubs, CID FOCUS dashboard | finops-focus.md |
 | Waste detection playbooks, eight-category waste taxonomy, two-signal classification, egress / data transfer waste, WasteLine appliance | finops-waste-detection-playbooks.md |
 EOF
   emit_named_pattern_row 'playbook-<slug>.md (e.g. playbook-aws-zombie-nat-gateway.md)'
