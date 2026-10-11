@@ -1,0 +1,82 @@
+order	id	set	duration_s	status	digest	title
+1	KacOh4sKhZU	Tokenomicon FinOps X (Amsterdam)	1659	pending		What Does It Really Cost to Serve an AI Product?
+2	gzqak-gAv-o	Tokenomicon FinOps X (Amsterdam)	491	pending		Can You Trust an AI FinOps Agent?
+3	JKC-5ZhJmeM	Tokenomicon FinOps X (Amsterdam)	592	pending		Implementing AI Cost Controls: From Runaway Token Spend to Responsible AI Usage
+4	vZrELViIXNA	Tokenomicon FinOps X (Amsterdam)	549	pending		The Five-Minute Budget: Moving FinOps Budgeting Down to Engineers
+5	tjskeeu8YhI	Tokenomicon FinOps X (Amsterdam)	1414	pending		Price the Outcome, Not the Seat: FinOps for AI Drug Discovery
+6	-lB_aoiJzo4	FinOps X 2026	545	pending		One Budget, Many Meters: FinOps Lessons from 100 Teams on Databricks
+7	C8ArskzKb18	FinOps X 2026	506	pending		Cost Attribution for Meta's Ads Platform, Without Multi-Tenancy
+8	WWRrkAlbqEA	FinOps X 2026	506	pending		Managing Data & AI Costs in the Public Sector (Communities Foundation of Texas)
+9	4X9KnPChH_Q	FinOps X 2026	676	pending		FinOps as Code: Automating Cloud Value (Equifax)
+10	VGMzYCWIVRg	FinOps X 2026	635	pending		Intro to the Cloud Efficiency Hub
+11	WawKDHXAdGI	FinOps X 2026	653	pending		Configuring Multi-Cloud FOCUS Data Ingestion (Trident Consulting)
+12	TJiUX0xvlek	FinOps X 2026	639	pending		Designing Human-AI Workflows That Actually Work (SHI)
+13	tuUntH9lbpQ	FinOps X 2026	544	pending		The Human OS of FinOps (Fujitsu North America)
+14	xNygJ4jhlEA	FinOps X 2026	649	pending		Hybrid Cost Transparency on PlayStation, with Sony
+15	LEEmIXUpE34	FinOps X 2026	774	pending		Build Once, Serve Any BI Tool: FOCUS and the Semantic Layer
+16	870i5zAbFv4	FinOps X 2026	414	pending		Why FinOps Needs Forecasts That Actually Hold, with FastBridge Fiber
+17	DEYV6EbNa-k	FinOps X 2026	591	pending		Correlating AI Expenses with Business Outcomes, with Meilynx
+18	CujC8JYRtPg	FinOps X 2026	457	pending		Fewer Tokens, Better Outcomes: FinOps for AI on Snowflake
+19	EyMyBa6K5Ek	FinOps X 2026	661	pending		The incremental path to shifting FinOps left
+20	_vce-4Gisxg	FinOps X 2026	596	pending		Your AI Forecast Is Lying: ITFM Lessons, with MagicOrange
+21	QQtZmh9guXA	FinOps X 2026	379	pending		The FinOps Automation Gap: Why Tools Alone Aren't Enough (OpenOps)
+22	NzZobIH0f0Y	FinOps X 2026	635	pending		Start Small to Bring Simplicity into FinOps, with StitcherAI
+23	ZRmscu-PWvY	FinOps X 2026	551	pending		Implementing Full Stack AI Cost Attribution, with Mavvrik
+24	42QeNnt--sM	FinOps X 2026	2557	pending		FOCUS as the Data Layer for AI-Enabled FinOps (FinOps Foundation)
+25	P6Vc_a-Ld7o	FinOps X 2026	2027	pending		FinOps + ITFM: One Version of the Truth, Two Speeds of Value (FinOps Foundation)
+26	xLdEmKVhzaw	FinOps X 2026	2622	pending		Cloud Was Just the Beginning: Extending FinOps to On-Prem (Target)
+27	uSVvDKYxo_A	FinOps X 2026	2205	pending		saveMoney(): A Developer's Guide to Unit Economics (Equifax)
+28	cg1b0Mr4j6s	FinOps X 2026	2583	pending		Managing Capacity at the Feature Level, with Meta
+29	FmTO0rMBzsE	FinOps X 2026	2168	pending		The Cost of Cognition: Why Your AI Budget Will Break (Palo Alto Networks)
+30	4CZ7dZwPKPw	FinOps X 2026	650	pending		What FinOps-Mature DevOps Leaders Do Differently (Cast AI)
+31	CM2zvwIcH0c	FinOps X 2026	2462	pending		How Gerdau FinOps Unified Multi-Cloud and SaaS Allocation and Unit Economics at Scale
+32	DRdtF7QeG58	FinOps X 2026	2629	pending		Personalized FinOps for Data Cloud Platforms, with 84.51°
+33	OlokYyy5rLw	FinOps X 2026	2613	pending		Beyond the Tokens: Building the CTO's AI Control Plane (SAP AI & Data Science)
+34	-NwbwwS7vI8	FinOps X 2026	2569	pending		From Specialist Bottleneck to AI-Powered Scale, with Grainger
+35	jNF3SP95NQo	FinOps X 2026	607	pending		Making Unit Economics Actionable, with Anastassia Storozhev
+36	VsZhFJ0uWe8	FinOps X 2026	2701	pending		When Building FinOps Tooling Finally Makes Sense (Fannie Mae)
+37	qWb11ELwk64	FinOps X 2026	2360	pending		Eliminating Shadow Waste in Data Cloud Platforms (GoodRx)
+38	00lI2XSdilA	FinOps X 2026	2647	pending		FinOps for Observability: Taming Telemetry Tsunamis (Warner Hotels)
+39	-TdB2qK9jAA	FinOps X 2026	2681	pending		Running FinOps at Scale With a Small Team, with World Kinect
+40	Qt8xkg7SFZM	FinOps X 2026	631	pending		Measuring the Business Value of Agents (Pay-i)
+41	KdGmZZHJojA	FinOps X 2026	2528	pending		Data Mesh and FinOps: Driving Cost Accountability (JP Morgan Chase)
+42	-I6xy5CzqIE	FinOps X 2026	2585	pending		Surviving AWS Chargeback Without Tagging, with Aviv Group
+43	auWW6p-Eezk	FinOps X 2026	2336	pending		The Frozen Metric: Avoiding the KPI Trap (Capital One)
+44	nN1ZPRScknY	FinOps X 2026	2633	pending		Onboarding Your AI Hire: A FinOps Foundation Playbook
+45	IkhTYERL8T0	FinOps X 2026	500	pending		Tokenomics Layer Cake: How Pinterest Engineering Thinks About Token Efficiency
+46	Trskm1Ux8WU	FinOps X 2026	2199	pending		Regaining Control Over Databricks Costs, with Thales
+47	Blxbi_z1AOA	FinOps X 2026	1763	pending		Maximizing Financial Efficiency Through FinOps, with Checkout.com
+48	PdMBE52IXHw	FinOps X 2026	2744	pending		FOCUS as the Backbone: Making Multi-Cloud FinOps Reporting Boring (Avaloq)
+49	virEjSuYcIg	FinOps X 2026	2556	pending		From Reactive to Autonomous FinOps: Agentic AI Rightsizing at S&P Global
+50	OQQcA9W2Veo	FinOps X 2026	727	pending		Cost- and Tokenomics-Aware Cultures for GenAI, with NVIDIA
+51	ERrQl6kVchk	FinOps X 2026	2327	pending		Engineering Cost per Feature at Canva with OpenTelemetry
+52	vWOyIjMDWKE	FinOps X 2026	2062	pending		Hitting Every Note: A Playbook for Vendor Management and Cost Clarity (Sweetwater Sound)
+53	pCHS_pz-KtA	FinOps X 2026	2630	pending		Turning AI Cost Data into Strategic Decision Insights (Shutterstock)
+54	t_rLbqeSCrU	FinOps X 2026	2494	pending		AI for FinOps: From Hype to Helpful (Squarespace)
+55	6wMSfXvqK_0	FinOps X 2026	2472	pending		50 Years of FinOps: The More Things Change, the More They Stay the Same
+56	C9zJRXDe0Mg	FinOps X 2026	2740	pending		Advanced AI Optimization with AWS and Captial One
+57	RiOHNtrh5cw	FinOps X 2026	2641	pending		Agentic (and AI) Governance that Developers and FinOps Leaders Love
+58	NBEMP1DnFyM	FinOps X 2026	2220	pending		FinOps Has a Data Cloud Problem
+59	iuIzsWvUjCg	FinOps X 2026	2526	pending		From Legacy Applications to AI at Scale: An AI Driven Journey with FinOps Practices Applied
+60	khDYOb9r15s	FinOps X 2026	2202	pending		From On Demand to Optimized: Your Guide to Smarter Cloud Commitment Strategies
+61	aMRJC0EF2xU	FinOps X 2026	2818	pending		Governing AI Costs and Proving ROI: From Black Box to Board Slide
+62	vEXovktGTSg	FinOps X 2026	2717	pending		How Bayer Eliminates Shadow Waste & Inefficiencies in Cloud, Code, Runtime and AI
+63	YSvCbeaCbm0	FinOps X 2026	2822	pending		How to Make Usage Optimization a Boardroom Topic
+64	OCOB-T24eOM	FinOps X 2026	2364	pending		Making FOCUS Work in Practice: Lessons from Elo's FinOps Journey Beyond Cloud
+65	MOI4S-Plvf0	FinOps X 2026	2636	pending		Managing Cloud and AI Spend in the Age of Converging Disciplines
+66	-dlZDGuwEbE	FinOps X 2026	2481	pending		The Last Cloud Bill: Where We're Going, You Won't Need One
+67	dcTddQ6_uTo	FinOps X 2026	2241	pending		When Your DIY FinOps Tool Stops Scaling (Lyft feat. Finout)
+68	3VNQyw9AwVY	FinOps X 2026	1256	pending		Building Powerful, Personal FinOps Agents with Oracle Cloud MCP
+69	UFYmi_pYQpE	FinOps X 2026	2012	pending		Deeper Visibility and Stronger Control for Your GenAI Costs
+70	8WV-kOsagXg	FinOps X 2026	2004	pending		Oracle and Paramount: Driving Executive Decisions (with FinOps)
+71	jPSwKyXhbWc	FinOps X 2026	2614	pending		Optimizing for Value: FinOps at Cummins
+72	BE3Mj3PI0Rw	FinOps X 2026	2234	pending		Spreadsheets to Autopilot: UiPath's Multi-Cloud Rate Optimization
+73	I3eWSPVADZ4	FinOps X 2026	2631	pending		AI FinOps != Cloud FinOps: Building Observability for AI Spend
+74	o8REzGR1uQw	FinOps X 2026	2690	pending		This Ain't Your Old Flexera: Autonomous Rate and Workload Optimization, AI for FinOps, & Data Cloud
+75	NoxBuO-Wz9M	FinOps X 2026	2725	pending		FinOps for Autonomous Systems: Token Economics, Agentic Protocols, and the New SaaS Math
+76	vJsuyKoWTwI	FinOps X 2026	2556	pending		Earning a Seat at the Executive Table: Positioning FinOps as a Strategic Business Enabler
+77	b7TiwS4_Ytw	FinOps X 2026	2089	pending		AI for FinOps on Azure: Smarter Cloud Operations with Agentic AI
+78	P5CC-WMwm8w	FinOps X 2026	2565	pending		AWS FinOps Feature Launches & Enhancements: Idle Recommendations, Credit Controls, AWS FinOps Agent
+79	12vHtuQkPYE	FinOps X 2026	2197	pending		Building Autonomous FinOps Agents for Cost Optimization: Revolutionizing FinOps through AI
+80	e55pjEuL5NQ	FinOps X 2026	2632	pending		Embedding FinOps into Everyday Decisions at Global Scale
+81	8GdoRW_tgKw	FinOps X 2026	2634	pending		How Estée Lauder Shifted FinOps Left (All the Way to the AI Code Generator)

@@ -12,6 +12,45 @@ one `git mv` if it is better kept private.
 
 ---
 
+## Scope decision (2026-10-11, after the first read of this document)
+
+The maintainer narrowed the first pass to two sets, in this order:
+
+| Set | Playlist | Videos | Hours | Uploaded |
+|---|---|---|---|---|
+| Tokenomicon FinOps X (Amsterdam) | "Tokenomicon FinOps X" | 5 | 1.3 | about 12 days before 2026-10-11 |
+| FinOps X 2026 | "FinOps X 2026 Keynotes, Breakout Sessions, and Lightning Talks" | 76 | 39.7 | about 3 months before 2026-10-11 |
+| **Total** | no overlap between the two | **81** | **41** | |
+
+Cadence: **five videos per day**, Tokenomicon first, then FinOps X 2026 in channel
+order (newest upload first). That is 16 daily batches with 6 in the last, or 17 with
+one. The processing order and status live in `digests/_queue.tsv`; each day's output
+is one file, `digests/YYYY-MM-DD.md`, holding for each of its videos:
+
+1. **Summary**: 150 to 250 words in our own words, with speaker, organisation,
+   event and upload date.
+2. **Takeaways**: three to six bullets, each tied to a timestamp in the talk.
+3. **Skill changes**: what to add or update, naming the target reference file and
+   section (or the new playbook or reference to create), with the proposed text
+   and, for every billing mechanic, the primary page it was verified against or
+   the explicit note that it is unconfirmed. "Nothing to add" is a valid verdict
+   and is written as such, with the reason.
+
+The one manual step is unchanged, but it is now about six minutes: the 81
+transcripts are fetched from a laptop with
+
+```powershell
+python fetch_youtube_transcripts.py --catalogue channel-catalogue.tsv --playlist Tokenomicon --playlist "FinOps X 2026" --out transcripts
+```
+
+and the `transcripts` folder (about 10 MB, 81 JSON files) is placed in a private
+Google Drive folder shared with the account the cloud session uses. A daily routine
+in the cloud then reads the next five from Drive, writes the digest, verifies the
+mechanics, commits to this branch and sends the day's digest as a notification. The
+tier system below stays as the map for anything beyond these two sets.
+
+---
+
 ## Verdict
 
 - **Feasible, with one manual step.** The channel enumerates fine from a cloud
@@ -45,8 +84,9 @@ one `git mv` if it is better kept private.
   Economics, Governance, Executive alignment, Intersecting Disciplines. The gap map
   below is the first deliverable of this review and needed no transcript.
 
-The recommendation is a scoped first pass, not the whole channel: **tier 1 (301
-videos, 160 hours)**, then the rest only if tier 1 yields.
+The original recommendation was a scoped first pass over tier 1 (301 videos, 160
+hours). The maintainer narrowed it further to the 81-video scope above; the tiers
+remain the map for any later extension.
 
 ---
 
@@ -437,6 +477,8 @@ Transcripts are never pushed to this repository, in either option.
 |---|---|
 | `README.md` | this document |
 | `channel-catalogue.tsv` | the 570 videos as listed on 2026-10-11: `id` (the video URL is `https://www.youtube.com/watch?v=<id>`), `duration_s`, `view_count`, `year_hint` (from the title only, blank for most; the fetch adds the real upload date), `tier`, `playlists` (the Foundation's playlists the video belongs to, `; `-separated), `title` |
+| `digests/_queue.tsv` | the 81 videos of the 2026-10-11 scope in processing order, with a `status` column (`pending`, `done`, `skipped`) and the date of the digest that covered each one |
+| `digests/YYYY-MM-DD.md` | one file per daily batch of five: summary, takeaways and proposed skill changes per video |
 | `fetch_youtube_transcripts.py` | the phase 1 script: enumerates the channel or reads the catalogue, fetches the English caption track (human-made preferred, auto-generated otherwise, translated as a last resort) and per-video metadata, writes one JSON per video, resumes on rerun, stops cleanly on an IP block |
 
 To refresh the catalogue after new uploads, run the script without `--catalogue`:

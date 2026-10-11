@@ -17,6 +17,8 @@ Usage:
     python fetch_youtube_transcripts.py --out transcripts                # whole channel
     python fetch_youtube_transcripts.py --out transcripts --catalogue channel-catalogue.tsv --tiers 1
                                                                          # committed listing, tier 1 only
+    python fetch_youtube_transcripts.py --out transcripts --catalogue channel-catalogue.tsv \
+        --playlist Tokenomicon --playlist "FinOps X 2026"                # the 81-video scope of 2026-10-11
     python fetch_youtube_transcripts.py --out transcripts --no-metadata  # transcripts only, faster
 
 The run is resumable: a video that already has <out>/<id>.json is skipped, so
@@ -67,10 +69,11 @@ def enumerate_channel(url):
     return rows
 
 
-def load_catalogue(path, tiers=None):
+def load_catalogue(path, tiers=None, playlists=None):
     """Accept the committed channel-catalogue.tsv (header + columns) or a raw yt-dlp listing.
 
-    tiers: optional set of tier numbers to keep (the committed catalogue has a tier column)."""
+    tiers: optional set of tier numbers to keep (the committed catalogue has a tier column).
+    playlists: optional list of substrings; keep a row whose playlists column contains any of them."""
     rows = []
     lines = Path(path).read_text(encoding="utf-8").splitlines()
     header = lines[0].split("\t") if lines else []
@@ -82,6 +85,10 @@ def load_catalogue(path, tiers=None):
                 continue
             if tiers and "tier" in idx and p[idx["tier"]] not in tiers:
                 continue
+            if playlists and "playlists" in idx:
+                cell = p[idx["playlists"]].lower()
+                if not any(x.lower() in cell for x in playlists):
+                    continue
             rows.append(
                 {
                     "id": p[idx["id"]],
@@ -187,6 +194,11 @@ def main():
         help="with --catalogue channel-catalogue.tsv: keep only these tiers, e.g. 1 or 1,2",
     )
     ap.add_argument(
+        "--playlist",
+        action="append",
+        help="with --catalogue channel-catalogue.tsv: keep only videos in a playlist whose name contains this text; repeatable",
+    )
+    ap.add_argument(
         "--no-metadata",
         action="store_true",
         help="skip the per-video yt-dlp metadata call",
@@ -198,7 +210,7 @@ def main():
 
     if args.catalogue:
         tiers = {t.strip() for t in args.tiers.split(",")} if args.tiers else None
-        rows = load_catalogue(args.catalogue, tiers)
+        rows = load_catalogue(args.catalogue, tiers, args.playlist)
     else:
         print(f"Enumerating {args.channel} ...", flush=True)
         rows = enumerate_channel(args.channel)

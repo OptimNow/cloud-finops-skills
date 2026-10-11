@@ -73,9 +73,11 @@ cloud-finops-skills/
 │   └── youtube-review/    <- FinOps Foundation YouTube channel review kit
 │                             (Oct 2026): feasibility and plan (README.md), the
 │                             570-video catalogue tagged by Foundation playlist
-│                             (channel-catalogue.tsv) and the transcript fetch
+│                             (channel-catalogue.tsv), the transcript fetch
 │                             script, which must run on a laptop (YouTube
-│                             refuses cloud IPs). Transcripts are never committed
+│                             refuses cloud IPs), and digests/ (the 81-video
+│                             queue and one digest file per daily batch of
+│                             five). Transcripts are never committed
 ├── plugins/cloud-finops/  <- The Claude plugin folder: what the directory scans and
 │                             what `cloud-finops@optimnow` installs, and nothing else.
 │                             Holds .claude-plugin/plugin.json (the version holder),
