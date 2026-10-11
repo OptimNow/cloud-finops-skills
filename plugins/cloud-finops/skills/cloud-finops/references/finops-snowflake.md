@@ -88,6 +88,21 @@ practitioner's toolbox is no longer just `WAREHOUSE_METERING_HISTORY` and resour
 monitors - there are now per-query attribution views, programmable budgets, and AI
 feature governance.
 
+### `FOCUS_COST_USAGE_V1_3` - the FOCUS-conformant billing view
+
+Since 2026 Snowflake exposes a FOCUS 1.3 view, `SNOWFLAKE.BILLING.FOCUS_COST_USAGE_V1_3`
+(preview, organisation-enabled accounts, `ORGANIZATION_BILLING_VIEWER` role). One row per
+day per sub-account, service and charge type; refreshed hourly with up to 72 hours of
+late usage; history from 1 January 2026. It is the right feed for a multi-cloud FOCUS
+table (see `finops-focus.md`), with three limits to know: `InvoiceId` is empty for
+capacity-contract customers and populated only after month end for on-demand ones;
+`ResourceId`, the `CommitmentDiscount*` and `Sku*` columns are not populated; and
+`ConsumedQuantity` (metered, TiB-days) and `PricingQuantity` (priced, TiB-months) use
+different units for storage. Per-query attribution stays in `QUERY_ATTRIBUTION_HISTORY`
+below; the FOCUS view does not go below the daily service grain.
+
+Source: https://docs.snowflake.com/en/sql-reference/billing/focus_cost_usage_v1_3
+
 ### `QUERY_ATTRIBUTION_HISTORY` - per-query credit attribution
 
 The right starting point for "which query consumed which credit" analysis.

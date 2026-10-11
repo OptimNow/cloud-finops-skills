@@ -65,7 +65,8 @@ generally available - the canonical path for FOCUS-conformant cost data on AWS.
 - FOCUS 1.2 data flows into the same S3-backed pattern: configure once, query via Athena
   or any FOCUS-aware tool.
 - For multi-cloud customers, the FOCUS 1.2 schema aligns with Azure Cost Management's
-  FOCUS 1.2 export and GCP's FOCUS 1.0 export, enabling true cross-cloud
+  FOCUS 1.2 preview and GCP's FOCUS 1.0 / 1.2 preview export (the exports still
+  diverge in Tags shape, precision and column set; see `finops-focus.md`), enabling cross-cloud
   normalisation in a single warehouse.
 
 **Cross-account delivery (March 2026, GA).** AWS Data Exports now supports

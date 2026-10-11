@@ -4,13 +4,13 @@
 <text x="16" y="58" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370">Understand Usage &amp; Cost</text>
 <rect x="24" y="73" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="84" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Data Ingestion</text>
-<text x="682" y="84" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary + 3 secondary</text>
+<text x="682" y="84" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">2 primary + 3 secondary</text>
 <rect x="24" y="97" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="108" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Allocation</text>
-<text x="682" y="108" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">3 primary + 4 secondary</text>
+<text x="682" y="108" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">3 primary + 5 secondary</text>
 <rect x="24" y="121" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
 <text x="48" y="132" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Reporting &amp; Analytics</text>
-<text x="682" y="132" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (5)</text>
+<text x="682" y="132" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (6)</text>
 <rect x="24" y="145" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="156" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Anomaly Management</text>
 <text x="682" y="156" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary + 5 secondary</text>
@@ -61,7 +61,7 @@
 <text x="682" y="582" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">deferred (ROADMAP)</text>
 <rect x="24" y="595" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="606" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Invoicing &amp; Chargeback</text>
-<text x="682" y="606" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary</text>
+<text x="682" y="606" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary + 1 secondary</text>
 <rect x="24" y="619" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
 <text x="48" y="630" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">FinOps Assessment</text>
 <text x="682" y="630" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (1)</text>

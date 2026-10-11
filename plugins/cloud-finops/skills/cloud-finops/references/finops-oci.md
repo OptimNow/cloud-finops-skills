@@ -45,9 +45,9 @@ Source: https://docs.oracle.com/iaas/Content/Billing/Concepts/costusagereportsov
 ### FOCUS Reports - the cross-cloud-conformant export
 
 OCI publishes a **FOCUS-conformant cost export** alongside the legacy Cost Reports.
-As of March 2026, OCI supports FOCUS v1.0, while AWS and Azure have progressed to
-v1.2, with additional providers like Databricks, Vercel, and Grafana Cloud joining
-the FOCUS ecosystem. This is the path for multi-cloud customers who want OCI cost
+As of October 2026, OCI supports FOCUS v1.0, while AWS and Azure have progressed to
+v1.2 and GCP offers a 1.0 / 1.2 export in preview (cross-provider status and
+normalisation in `finops-focus.md`). This is the path for multi-cloud customers who want OCI cost
 data in a standardised schema for cross-cloud normalisation. Coexistence pattern:
 enable both - FOCUS for multi-cloud normalisation into a unified warehouse, legacy
 Cost Reports for OCI-native columns the FOCUS schema doesn't surface.

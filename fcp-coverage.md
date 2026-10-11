@@ -15,9 +15,9 @@ Marker legend:
 
 ## Understand Usage & Cost
 
-- [x] **Data Ingestion** - finops-oci.md _(secondary: finops-aws.md; finops-azure.md; finops-gcp.md)_
-- [x] **Allocation** - finops-allocation-showback.md; finops-kubernetes.md; finops-tagging.md _(secondary: finops-ai-dev-tools.md; finops-databricks.md; finops-for-ai.md; finops-onboarding-workloads.md)_
-- [~] **Reporting & Analytics** _(secondary: finops-allocation-showback.md; finops-aws.md; finops-azure.md; finops-gcp.md; finops-kpis-benchmarking.md)_
+- [x] **Data Ingestion** - finops-focus.md; finops-oci.md _(secondary: finops-aws.md; finops-azure.md; finops-gcp.md)_
+- [x] **Allocation** - finops-allocation-showback.md; finops-kubernetes.md; finops-tagging.md _(secondary: finops-ai-dev-tools.md; finops-databricks.md; finops-focus.md; finops-for-ai.md; finops-onboarding-workloads.md)_
+- [~] **Reporting & Analytics** _(secondary: finops-allocation-showback.md; finops-aws.md; finops-azure.md; finops-focus.md; finops-gcp.md; finops-kpis-benchmarking.md)_
 - [x] **Anomaly Management** - finops-anomaly-management.md _(secondary: finops-agentic.md; finops-aws-patterns.md; finops-azure-patterns.md; finops-oci.md; finops-waste-detection-playbooks.md)_
 
 ## Quantify Business Value
@@ -42,7 +42,7 @@ Marker legend:
 - [x] **FinOps Practice Operations** - finops-framework.md; optimnow-methodology.md _(secondary: finops-ai-value-management.md; finops-onboarding-workloads.md)_
 - [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-tagging.md)_
 - [ ] **FinOps Education & Enablement** - **GAP** (see docs/ROADMAP.md for deferred capabilities)
-- [x] **Invoicing & Chargeback** - finops-chargeback.md
+- [x] **Invoicing & Chargeback** - finops-chargeback.md _(secondary: finops-focus.md)_
 - [~] **FinOps Assessment** _(secondary: finops-framework.md)_
 - [~] **Automation, Tools & Services** _(secondary: finops-tagging.md; finops-waste-detection-playbooks.md)_
 - [~] **Intersecting Disciplines** _(secondary: finops-itam.md)_
