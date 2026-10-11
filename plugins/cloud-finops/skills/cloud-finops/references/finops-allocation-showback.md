@@ -59,7 +59,7 @@ translation.
 | **`ListCost`** | List rate × Pricing Quantity, no discounts. | Measuring rate-optimisation savings |
 | **`ContractedCost`** | Negotiated rate × Pricing Quantity, before commitment discounts. | Measuring commitment-specific savings |
 
-> **Note on FOCUS adoption**: As of March 2026, FOCUS v1.2 is available for AWS and Azure, v1.0 for GCP and Oracle, with newer providers like Vercel, Grafana Cloud, Redis, and Databricks also supporting various FOCUS versions. This expanded ecosystem significantly simplifies multi-cloud allocation by providing consistent cost columns across providers.
+> **Note on FOCUS adoption**: As of October 2026, FOCUS v1.2 is generally available on AWS and in preview on Azure, GCP offers a 1.0 / 1.2 export in preview, and OCI ships v1.0, with newer providers like Vercel, Grafana Cloud, Redis, and Databricks also supporting various FOCUS versions. This expanded ecosystem significantly simplifies multi-cloud allocation by providing consistent cost columns across providers. The cost columns normalise; the Tags encoding, numeric precision and column set do not (see `finops-focus.md` before building the pipeline).
 
 **Use `EffectiveCost` for allocation.** Allocation is an accrual concept: a
 workload that consumes 10% of cluster capacity in March should be allocated
@@ -94,8 +94,8 @@ If your billing pipeline only exposes one cost column, configure it to surface
 the amortised view (Azure: amortized cost export; AWS: Cost Explorer amortised
 view or CUR `line_item_amortized_cost`; GCP: BigQuery export's amortised cost
 columns). FOCUS-conformant exports surface both `EffectiveCost` and
-`BilledCost` natively. With the expanded FOCUS ecosystem (AWS v1.2, Azure v1.2,
-GCP v1.0, and newer providers supporting various versions), organisations can
+`BilledCost` natively. With the expanded FOCUS ecosystem (AWS v1.2, Azure v1.2 preview,
+GCP v1.0 / 1.2 preview, and newer providers supporting various versions), organisations can
 increasingly rely on FOCUS exports as their primary data source for multi-cloud
 allocation, reducing the complexity of maintaining provider-specific mappings.
 

@@ -170,9 +170,11 @@ specific columns the FOCUS spec does not surface.
 
 For multi-cloud customers normalising AWS / Azure / GCP cost in one warehouse, the
 FOCUS export is the path that aligns with AWS Data Exports for FOCUS 1.2 and
-Azure Cost Management's FOCUS 1.2 support. Note that GCP currently supports FOCUS 1.0
-while AWS and Azure have moved to v1.2, with additional providers like Databricks,
-Vercel, and Grafana Cloud also joining the FOCUS ecosystem.
+Azure Cost Management's FOCUS 1.2 support. As of October 2026 GCP offers a dedicated
+FOCUS export to a Google-provided immutable BigQuery dataset, in preview for both 1.0
+and 1.2, with a published conformance-gap report; the earlier SQL view over the
+standard export mapped to 1.0 only. Cross-provider normalisation (Tags shape,
+precision, column drift, invoice timing) is covered in `finops-focus.md`.
 
 Source: https://cloud.google.com/billing/docs/how-to/export-data-bigquery-focus
 
