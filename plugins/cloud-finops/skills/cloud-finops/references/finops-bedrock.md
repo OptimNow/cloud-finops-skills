@@ -191,8 +191,12 @@ anomaly-detection path rather than requiring custom CloudWatch alarms on token m
 **FinOps positioning:** use native Cost Anomaly Detection as the first line of spend-spike
 detection for Bedrock foundation models, and complement it with usage-telemetry-based
 detection (token-count metrics, invocation logging) for the token-level granularity that
-billing-based anomaly detection does not provide. See `finops-anomaly-management.md`
-for the AI/token-workload anomaly approach.
+billing-based anomaly detection does not provide. A project spend limit in AWS
+Settings (limited release, October 2026) with the pause-top-cost-drivers control adds a
+monthly ceiling for sandbox projects; it pauses Bedrock by denying every invocation in
+the project and acts on the billing forecast, so it is a backstop behind quotas and
+token alarms, not a detector (see `finops-aws.md`, spend limits). See
+`finops-anomaly-management.md` for the AI/token-workload anomaly approach.
 
 Source: https://aws.amazon.com/about-aws/whats-new/2026/08/aws-cost-anomaly-detection-bedrock-3P/
 

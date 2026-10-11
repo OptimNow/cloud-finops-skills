@@ -217,8 +217,10 @@ total. Both fail for token spend.
 and CUR land 24-48 hours after the usage happens, and provider cost reports are
 typically daily-grained. Token *usage* telemetry, by contrast, lands in minutes. For a
 workload where a misconfigured agent can burn thousands of dollars within hours, waiting
-for the cost export is waiting too long. **Detect AI spend on usage telemetry, not
-billing data.** The usage surfaces to watch:
+for the cost export is waiting too long. The same holds for the new AWS Settings spend
+limit, which is a type of AWS Budgets and reads the same feed: it caps the month, it
+does not shorten detection (see `finops-aws.md`, spend limits). **Detect AI spend on
+usage telemetry, not billing data.** The usage surfaces to watch:
 
 - **AWS Bedrock** - CloudWatch runtime metrics in the `AWS/Bedrock` namespace
   (`InputTokenCount`, `OutputTokenCount`, `Invocations`, `InvocationThrottles`), per

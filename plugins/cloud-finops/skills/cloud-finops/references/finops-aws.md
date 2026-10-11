@@ -559,6 +559,59 @@ Configure at minimum:
 lead for the relevant account. FinOps-only alerts create a bottleneck; engineering-only
 alerts lack financial context.
 
+### Spend limits in AWS Settings (limited release)
+
+Checked 11 October 2026: AWS is releasing this to "a limited number of customers" inside
+the new AWS Settings experience, where a project wraps one AWS account. Treat
+availability as account-specific until the banner on the AWS docs page comes down.
+
+A spend limit is a monthly, pre-tax ceiling set per project, excluding credits, and AWS
+describes it as "a type of AWS Budgets". It needs a Paid Plan, applies to at most 10
+projects, and the minimum is the greater of $20 or AWS's own conservative estimate of
+the project's likely spend, so a project already running several instances cannot set a
+tight limit without stopping them first. Notifications fire at 50%, 75% and 90% of
+actual cost and when the forecast reaches the limit within 10 days.
+
+**At the limit, AWS pauses the project and stops all its resources.** Data is kept; the
+owner reactivates by raising the limit and may have to restart resources by hand. A
+project left paused for 90 days has its data permanently deleted. The documentation does
+not say which charges continue during a pause; assume storage, snapshots and anything
+not stopped still bills, and treat the ceiling as covering compute-shaped spend.
+
+Three optional early controls act on the forecast rather than the actual:
+
+| Control | When | What it does | Mechanism |
+|---|---|---|---|
+| Stop new resource launches | About 7 days before the forecast limit | New launches fail; running resources stay. Auto scaling cannot scale out | An AWS-managed SCP denying create and start actions across compute, database, storage and SageMaker |
+| Pause idle resources | About 5 days before | Stops EC2 instances, RDS MySQL and PostgreSQL instances and SageMaker endpoints that meet Compute Optimizer's 14-day idle criteria | Compute Optimizer recommendations |
+| Pause top cost drivers | About 4 days before | Pauses the highest-cost active resources among EC2, RDS, Lambda, Bedrock and SageMaker. AWS calls it disruptive and opt-in | For Lambda, Bedrock and SageMaker inference, the published managed SCPs deny the invoke actions, so "pause" means every call in the project is refused |
+
+**Latency, stated as an inference.** The docs give no evaluation cadence. AWS Budgets
+data refreshes up to three times a day, 8 to 12 hours apart, and Cost Anomaly Detection
+reads Cost Explorer data with up to 24 hours of delay. A spend limit sits on the same
+feed, so it bounds the month but does not see a burst earlier than an anomaly alert
+does. For the fast-burn services, the earlier levers stay in place: Bedrock
+tokens-per-minute quotas act on every request, CloudWatch alarms on `AWS/Bedrock` token
+metrics act within minutes, invocation logging names the caller, and a Budgets Action or
+the spend limit is the backstop (see `finops-anomaly-management.md` and the
+agent-loop playbook).
+
+**Where it fits.** Sandboxes, training accounts, side projects and dev or test
+environments that can tolerate a stop measured in hours: enable the limit with the first
+two controls, and put a reminder before day 90 on any paused project. Production is a
+poor fit by AWS's own framing ("when it is acceptable to have a brief pause"): the
+trigger is a forecast on billing data, so a revenue spike pauses the service, and the
+third control pauses the resource that is the product. For production, keep the Budgets
+Actions and cost-preventive SCPs above, with quotas and alarms on the fast-burn
+services. The Vertex AI file documents Google's project cap with the same warning: a
+shared ceiling turns a runaway prototype into a production outage on a billing
+threshold.
+
+Sources: <https://docs.aws.amazon.com/accounts/latest/reference/create-spend-limit.html>,
+<https://docs.aws.amazon.com/accounts/latest/reference/update-spend-limit.html>,
+<https://docs.aws.amazon.com/accounts/latest/reference/scps-and-rcps-for-projects.html#scps-for-spend-limits>,
+<https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html>
+
 ### AWS FinOps Agent and the automation ladder
 
 AWS introduced the **AWS FinOps Agent** at FinOps X 2026; it is in **public preview** as
