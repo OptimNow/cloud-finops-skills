@@ -191,7 +191,7 @@ RACI matrices that reinforce boundaries.
 |---|---|---|
 | Joint cost and compliance review | Review spend trends, licence utilisation, compliance posture, and upcoming renewals | Monthly |
 | Marketplace channel review | Assess marketplace pipeline, spend vs commitment targets, entitlement gaps | Monthly |
-| Pre-renewal checkpoint | Validate usage data, entitlement position, and negotiation strategy before vendor renewals | Pre-renewal (60-90 days before) |
+| Pre-renewal checkpoint | Validate usage data, entitlement position, and negotiation strategy before vendor renewals; put a FOCUS-conformant billing export on the term sheet (see `finops-focus.md`) | Pre-renewal (60-90 days before) |
 | Vendor strategy review | Review channel mix, marketplace volume, EA performance, and consolidation opportunities per strategic vendor | Quarterly |
 | Deal Desk engagement | Joint FinOps-ITAM-Procurement review for any commitment above a defined threshold | As needed |
 
