@@ -66,10 +66,16 @@ cloud-finops-skills/
 │   ├── directory-submission.md <- Step-by-step for the two Claude directory
 │   │                         listings (plugin bundle + MCP connector), with the
 │   │                         prefilled portal answers and the holds to expect
-│   └── list-submissions.md <- Submission kit for the curated GitHub lists
-│                             (awesome-mcp-servers, awesome-agent-skills, ...):
-│                             verified facts, exact entry lines, PR bodies,
-│                             hand-fill form drafts and the spacing schedule
+│   ├── list-submissions.md <- Submission kit for the curated GitHub lists
+│   │                         (awesome-mcp-servers, awesome-agent-skills, ...):
+│   │                         verified facts, exact entry lines, PR bodies,
+│   │                         hand-fill form drafts and the spacing schedule
+│   └── youtube-review/    <- FinOps Foundation YouTube channel review kit
+│                             (Oct 2026): feasibility and plan (README.md), the
+│                             570-video catalogue tagged by Foundation playlist
+│                             (channel-catalogue.tsv) and the transcript fetch
+│                             script, which must run on a laptop (YouTube
+│                             refuses cloud IPs). Transcripts are never committed
 ├── plugins/cloud-finops/  <- The Claude plugin folder: what the directory scans and
 │                             what `cloud-finops@optimnow` installs, and nothing else.
 │                             Holds .claude-plugin/plugin.json (the version holder),
