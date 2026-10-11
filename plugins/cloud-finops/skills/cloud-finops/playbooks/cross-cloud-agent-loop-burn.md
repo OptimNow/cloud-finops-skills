@@ -100,7 +100,9 @@ outputs, and `max_retries` / `max_iterations` exhaustion in agent-framework logs
    the detection layer spike-based cost monitors miss.
 4. **Kill-switch runbook.** Document who can disable the offending API key,
    deployment, or agent, and how. Disabling stops the burn in seconds, well ahead
-   of any billing signal.
+   of any billing signal. On AWS, a project spend limit in AWS Settings (limited
+   release) is the backstop for sandbox projects: it pauses Bedrock on a billing
+   forecast days later, not minutes.
 5. **Track cost-per-completed-task.** A rising cost-per-task with a flat
    cost-per-token is the economic tell; wire it into the weekly unit-economics
    review (`finops-for-ai.md`).
