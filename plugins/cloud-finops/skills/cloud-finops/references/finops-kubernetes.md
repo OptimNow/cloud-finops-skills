@@ -333,7 +333,7 @@ Detection and mitigation (a named pattern since September 2026):
   https://awsfundamentals.com/blog/cross-az-traffic-karpenter - a practitioner
   write-up, not AWS documentation.
 
-### Pod Disruption Budgets are non-negotiable
+### Pod Disruption Budgets make consolidation safe
 
 PDBs are the prerequisite for safe consolidation. Give every workload with an
 SLO a PDB: without one, the cluster autoscaler (Karpenter or CA) drains nodes
