@@ -287,11 +287,6 @@ phrasing, and the reachable ceiling is the model offering to check the library.
     per provider. The trade-off tables, four-quadrant cost-vs-carbon framework, and CSRD
     stakeholder roles already apply across all three providers.
 
-- **Doctrine directory.** The README's design principles are meant to grow into
-  `plugins/cloud-finops/skills/cloud-finops/doctrine/`: one file per opposable
-  thesis, each with its own primary sources. No trigger is recorded yet; set one
-  when this is scheduled.
-
 ## Deferred reference files
 
 These files were identified in the white-space analysis (May 2026) and explicitly deferred,

@@ -217,9 +217,6 @@ side; gaps it finds land in the same public backlog.
   tends to substitute slideware for those outputs. In the agentic era this matters
   more, not less: agents execute discipline, not culture.
 
-These principles will grow into a `plugins/cloud-finops/skills/cloud-finops/doctrine/` directory of
-opposable theses with their own primary sources (tracked in [docs/ROADMAP.md](docs/ROADMAP.md)).
-
 ---
 
 ## Usage examples
