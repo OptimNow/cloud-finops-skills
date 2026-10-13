@@ -109,8 +109,9 @@ knowledge into the model's context, and nothing else.
 
 The plugin is listed in the [Claude directory](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory),
 where it installs in one click and is kept current from this repository. The
-hosted MCP connector has been submitted to the same directory as its own listing
-and is awaiting validation; until it is listed, add it by URL as described below.
+hosted MCP connector passed validation for its own listing in the same directory
+and is back in review after a category change; until the listing is live, add it
+by URL as described below.
 
 The hosted MCP connector is optional and is installed separately: as a custom
 connector in Claude.ai or Claude Desktop, or with `claude mcp add` in Claude Code
@@ -243,7 +244,7 @@ them, particularly on billing mechanics and capacity economics.
 - "We have $80K/month in EC2. Reserved Instances or Savings Plans - and what quick wins come first?"
 - "Our client wants separate AWS invoices per business unit. Their AWS contact suggested Cost Categories - is that right?"
 - "We're migrating from EA to MCA - what FinOps work do we need to do before the switch?"
-- "Which VMs run for nothing, and which runbook finds them?"
+- "Which of our VMs run for nothing, and how do we find them?"
 - "We need to start reporting our cloud carbon emissions - where do we begin?"
 - "Our Snowflake bill doubled in a quarter. Is it the warehouses, storage or Cortex, and what do we check first?"
 - "Finance wants to charge teams for shared Kubernetes clusters. What has to be true before we move from showback to chargeback?"

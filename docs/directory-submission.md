@@ -343,7 +343,7 @@ whether a tool-call block appears and which tool it names:
    advisory phrasing that flipped after PRs #171 and #176)
 
 A drop on prompt 2 across both runs while prompt 1 still grounds is the signal that
-the wording change cost routing. Baselines per probe are in the routing entry of
+the wording change cost routing. Baselines per probe are in the routing record of
 `docs/ROADMAP.md` (cycles 4 to 7).
 
 ### 2.9 Compliance

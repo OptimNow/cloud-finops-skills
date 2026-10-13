@@ -529,7 +529,7 @@ pattern count, since PR #192).
 
 Probe cycles 4-7 (per-probe record in the maintainer-local
 `pipeline/coverage-probes.md`; the arc's public summary in the
-`docs/ROADMAP.md` routing entry) measured how the same library grounds
+`docs/ROADMAP.md` routing record) measured how the same library grounds
 answers through the MCP connector versus the uploaded skill on claude.ai,
 across three interventions: new playbooks (PRs #177, #182) and two rounds
 of routing work (PRs #184, #187). The mechanics that emerged are durable

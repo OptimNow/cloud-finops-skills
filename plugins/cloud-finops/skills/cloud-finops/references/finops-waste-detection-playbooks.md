@@ -42,7 +42,7 @@ fix-safety posture.
 | **Commitment mismatches** | RIs / Savings Plans / CUDs underutilised, expiring soon, or covering the wrong things | High dollar, low complexity to fix | Usually obvious in the data; political to act on |
 | **Schedule blindness** | Workload runs 24/7 with a clear business-hours pattern | Variable; 60-70% savings on dev / test environments | Usually likely; depends on workload sensitivity |
 | **Modernization opportunities** | Workload runs on older-generation instances or pre-Graviton x86_64 when ARM equivalents exist | 10-40% per workload, low risk | Usually possible; revalidation required |
-| **AI / ML inefficiency** | SageMaker endpoints idle, Bedrock provisioned throughput underutilised, training jobs on-demand instead of Spot | High per-workload, growing rapidly | Usually likely; product team has the context |
+| **AI / ML inefficiency** | Waste with no generic infrastructure equivalent: token waste, agent loops, model over-selection. AI infrastructure waste (idle SageMaker endpoints, oversized GPUs, underused provisioned throughput) is filed under its mechanism - idle, overprovisioned, commitment mismatch - and indexed in Category 7 | High per-workload, growing rapidly | Usually likely; product team has the context |
 | **Egress / data transfer** | Traffic is billed for crossing a boundary (AZ, region, VPC, internet) that the architecture did not need to cross | High and compounding at scale; frequently a top-5 line item | Usually possible; needs traffic attribution before anyone will act |
 
 These categories are not equal in priority. **Orphaned and idle** are where
@@ -508,6 +508,11 @@ patterns that traditional FinOps tooling does not catch. Idle endpoints,
 unused notebook instances, training jobs on-demand instead of Spot, and
 provisioned throughput locked to the wrong model version are the
 high-frequency patterns.
+
+This section groups AI waste by workload so it can be found from the AI side.
+The linked playbooks are filed under the mechanism they share with non-AI
+waste (idle, overprovisioned, modernization); only token and agent waste
+carries the `ai-ml-inefficiency` category.
 
 For broader AI cost-management discipline (token economics, agentic
 patterns, ROI frameworks), see `finops-for-ai.md`,
