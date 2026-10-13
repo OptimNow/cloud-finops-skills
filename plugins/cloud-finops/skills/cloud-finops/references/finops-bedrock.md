@@ -248,7 +248,7 @@ bedrock-mantle traffic once caller-identity allocation is enabled.
 
 - **CUR size grows significantly.** Row count multiplies roughly by the number of distinct
   calling principals per model per day. Budget for larger S3 storage, longer Athena scans,
-  and potentially higher query cost on CUR
+  and higher Athena query cost in proportion to the extra rows
 - Tags only become visible after the principal has made at least one API call - new roles
   will not appear in cost allocation UI until used
 - Follow standard tag hygiene: avoid high-cardinality values (session IDs, timestamps,
@@ -369,7 +369,7 @@ Without it, several optimisation decisions are guesswork. With it, the logs answ
 |---|---|
 | Are the same prompts (or prefixes) recurring? | Prompt caching candidacy - quantify expected hit rate before enabling |
 | Which roles/services call which models, at what avg token counts? | Model right-sizing per workload, chargeback sanity checks |
-| Is prompt routing actually sending traffic to the cheaper model? | Verify routing policies deliver the promised mix |
+| Is prompt routing sending traffic to the cheaper model? | Verify routing policies deliver the promised mix |
 | What is the real input:output token ratio per application? | Capacity and commitment sizing (ratios drive provisioned throughput maths) |
 
 **Operational notes:**
@@ -389,7 +389,8 @@ Without it, several optimisation decisions are guesswork. With it, the logs answ
 
 ### Model right-sizing
 
-The highest-impact optimisation. Before committing to a model tier:
+The optimisation with the widest range of outcomes, because of the rate spread between
+tiers. Before committing to a model tier:
 - Define a quality benchmark for your specific task (not a generic leaderboard score)
 - Test Haiku, Sonnet, and Opus (or equivalent tiers for other publishers) against that benchmark
 - Use the lowest-cost model that meets your quality threshold

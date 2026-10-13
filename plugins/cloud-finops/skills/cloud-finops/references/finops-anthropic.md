@@ -41,8 +41,8 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 | Model choice | Base token rate anchor (see "Rate structure: Claude models" below) |
 | Performance tier | Standard vs Fast mode - 2x price multiplier, and only on the models that offer it |
 | Context length | **Per-model**: the current generation prices flat across a 1M-token window with no long-context premium. Older models applied premium rates above 200K input tokens. Verify per model rather than assuming either behaviour. |
-| Data residency | US-only inference adds a 1.1× multiplier |
-| Prompt caching | Writes are priced (1.25× or 2×), reads are discounted (0.1×; 0.05× on Opus 5.5; 0.025× on Fable 5.1) |
+| Data residency | US-only inference adds a 1.1x multiplier |
+| Prompt caching | Writes are priced (1.25x or 2x), reads are discounted (0.1x; 0.05x on Opus 5.5; 0.025x on Fable 5.1) |
 | Tool usage | Web search and code execution have separate meters |
 | Batch processing | 50% discount via Batch API (Fast mode excluded) |
 | Service tier | Standard, Priority, or Batch - affects capacity and pricing |
@@ -132,19 +132,20 @@ an hour; the ceiling is 24 hours. Results are retained 29 days.
 | Claude Sonnet 5.5 / Sonnet 5 Batch | $1 | $5 |
 | Claude Haiku 4.5 Batch | $0.50 | $2.50 |
 
-Batch is the single largest rate lever available without a commercial negotiation.
-The gating question is never price, it is whether the workload tolerates asynchronous
-completion - which makes it a workload-classification exercise, not a procurement one.
+Batch is the largest rate lever on this rate card that needs no commercial negotiation:
+50% off, against a 2x Fast premium or a 1.1x residency multiplier. The gating question
+is not price but whether the workload tolerates asynchronous completion, which makes it
+a workload-classification exercise rather than a procurement one.
 
 ### Modifiers
 
-- **US-only inference** (`inference_geo`): x1.1 on all token categories.
+- **US-only inference** (`inference_geo`): 1.1x on all token categories.
   Claude 4.6 and later models only - earlier models return a 400 error if the
   parameter is set
-- **5-minute cache writes**: x1.25 on base input price
-- **1-hour cache writes**: x2 on base input price
-- **Cache reads**: x0.1 on base input price (90% discount) as the standard. Two
-  models read cheaper: Opus 5.5 at x0.05 (95% discount) and Fable 5.1 at x0.025
+- **5-minute cache writes**: 1.25x on base input price
+- **1-hour cache writes**: 2x on base input price
+- **Cache reads**: 0.1x on base input price (90% discount) as the standard. Two
+  models read cheaper: Opus 5.5 at 0.05x (95% discount) and Fable 5.1 at 0.025x
   (97.5% discount). Each moves the cache break-even for its tier
 - **Modifiers stack** - Fast mode plus US-only inference compounds
 
@@ -308,7 +309,7 @@ as of June 2026:
   the maximum, with no beta header and no long-context premium. For these models the
   "1M context cliff" no longer exists.
 - **Haiku 4.5** remains on a 200K window. That is a capacity limit, not a pricing
-  tier: there is no premium band above it, the request simply cannot exceed it.
+  tier: there is no premium band above it, the request cannot exceed it.
 - **Older models reached 1M via a beta header and did apply premium rates above 200K
   input tokens.** Any estate still pinned to one of those is on the old cliff, and the
   migration to a current model removes a pricing tier as well as a capability limit.
@@ -376,7 +377,7 @@ re-cached, warm or cold), with a matching `prompt_cache` object for status-line
 scripts; it covers the main conversation only, not subagents. That signal ties
 directly into the cache multiplier mechanics documented above (5-minute writes at
 1.25x, 1-hour writes at 2x, reads at 0.1x): it lets teams confirm that prefixes are
-actually being read back rather than silently re-written at full rate - the exact
+being read back rather than silently re-written at full rate - the exact
 break-even question raised in the "Modifiers" section. The same release added a
 spend-limit bar to `/usage` and a `rate_limits.spend_limit` status field, but only
 for developers behind a self-hosted Claude apps gateway with spend limits

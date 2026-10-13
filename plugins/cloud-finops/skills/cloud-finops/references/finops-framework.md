@@ -62,7 +62,8 @@ organisation has left "Inform" for another.
 - Set up data ingestion (AWS CUR / Azure Cost Export / GCP BigQuery billing export / FOCUS exports)
 - Implement cost allocation - by account, subscription, project, or tag
 - Build executive dashboards showing top cost drivers and trends
-- Configure anomaly alerts (recommended threshold: >20% daily change)
+- Configure anomaly alerts (a Crawl-stage starting threshold is >20% daily change;
+  tune it down as allocation and baselines improve)
 - Establish a shared cost allocation methodology
 
 **Crawl targets:** >50% of spend allocated, basic dashboards live, alerts configured
@@ -77,7 +78,9 @@ organisation has left "Inform" for another.
 - Rightsize compute resources (EC2, VMs, containers, databases)
 - Implement commitment discounts (Reserved Instances, Savings Plans, CUDs)
 - Eliminate waste - unattached volumes, idle resources, zombie features
-- Schedule non-production environments (60-70% savings on dev/test)
+- Schedule non-production environments (an environment off nights and weekends runs
+  about a third of the hours, so 60-70% of its compute is the arithmetic ceiling;
+  the realised figure depends on how much of it can be stopped)
 - Implement lifecycle policies for storage and data
 
 **Crawl targets:** Obvious waste eliminated, basic rightsizing started

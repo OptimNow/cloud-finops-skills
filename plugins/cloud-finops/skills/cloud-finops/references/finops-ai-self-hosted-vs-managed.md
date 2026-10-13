@@ -17,22 +17,23 @@ fcp_maturity_entry: "Walk"
 > patterns, and a maturity-driven decision rubric. Use this reference whenever a client raises
 > "should we self-host our LLM?" or "build vs buy" for inference workloads.
 >
-> Built by OptimNow. Grounded in hands-on enterprise delivery, not abstract frameworks.
+> Built by OptimNow from hands-on enterprise FinOps delivery.
 
 ---
 
 ## TL;DR
 
-Self-hosted inference looks cheaper on paper at every TCO calculator. It rarely is in
-practice, because the calculators omit the operational maturity tax. The right question is
+Self-hosted inference looks cheaper on paper at every TCO calculator. In the business
+cases OptimNow has reviewed it rarely is, because the calculators omit the operational
+maturity tax. The right question is
 not "what is cheaper per million tokens?" but "does the client have the in-house expertise
 to operate this stack at production grade without burning the savings on incident response,
 re-tuning, and migration debt?"
 
-For most organisations in 2026, managed APIs (Bedrock, Anthropic, OpenAI, Azure OpenAI,
-Vertex AI) are the right default. Self-hosting earns its place only when a client has
-genuine ML-Ops maturity in-house, runs predictable high-volume workloads, and has compliance
-or cost arbitrage reasons that managed APIs cannot meet.
+In OptimNow's view, managed APIs (Bedrock, Anthropic, OpenAI, Azure OpenAI, Vertex AI)
+are the right default for most organisations in 2026. Self-hosting earns its place only
+when a client has genuine ML-Ops maturity in-house, runs predictable high-volume
+workloads, and has compliance or cost arbitrage reasons that managed APIs cannot meet.
 
 ## Why this matters now
 
@@ -46,7 +47,7 @@ Three drivers make this conversation more common in 2026:
    stability is not the same as permanence.
 2. **Open-weight models have closed the quality gap** for many use cases. Qwen3.6, Llama 4,
    GLM-5.1, Gemma 4 deliver production-grade quality across reasoning, coding, multimodal.
-   Self-hosting a capable model is a real option, not a research experiment.
+   Self-hosting a capable model is now a production option.
 3. **Cloud GPU rental markets are mature**. RunPod, Lambda, CoreWeave, Modal, AWS Capacity
    Blocks, Azure GPU spot. A100/H100/B200 are rentable on-demand or reserved at competitive
    per-hour rates.
@@ -72,7 +73,8 @@ updates, security patches, all included in the per-token price.
 ### Self-hosted (per-hour)
 
 You rent or own GPUs. You pay 24/7 for the time the GPU is allocated, regardless of
-utilisation.
+utilisation. The rates below are working estimates as of 2026, not vendor quotes or a
+benchmark; pull current figures from the providers before building a model.
 
 | Cost line | Per-hour rate (typical 2026) | Notes |
 |---|---|---|
@@ -97,6 +99,8 @@ their savings. In five-layer terms (the Tokenomics Foundation stack referenced i
 `finops-for-ai.md`), self-hosting means taking ownership of L2, L3 and L4 - capacity,
 inference stack, model and quantisation - while a managed API leaves you only L5,
 routing and governance. Everything below is the operational bill for those three layers.
+The figures in this section are working estimates, not measurements: indicative ranges
+to replace with the client's own numbers.
 
 ### Operational costs
 
@@ -147,7 +151,8 @@ routing and governance. Everything below is the operational bill for those three
 At scale, self-hosting rarely means one GPU provider. Supply is tight enough that teams
 running open-weight models in production spread across several GPU and managed-inference
 vendors just to cover peak, and each added vendor is chosen on its hourly rate. Three
-costs sit outside that rate and decide whether the cheap vendor is actually cheap:
+costs sit outside that rate and decide whether the cheap vendor is cheap once everything
+is counted:
 
 | Hidden cost | What it looks like | What to check before signing |
 |---|---|---|
@@ -229,11 +234,12 @@ AWS-generated cost allocation tags
 ## Where self-hosted wins (when it does)
 
 When the conditions align, self-hosted is meaningfully cheaper and operationally sensible.
-The conditions are stricter than vendors of GPU compute would have you believe.
+The conditions are stricter than GPU vendors' marketing suggests.
 
 1. **High-volume, predictable workloads.** A workload that consistently consumes
    100M+ tokens per day, 24/7, with low variance, justifies dedicated GPU capacity. The
-   per-token math tips around 200-500M tokens/day depending on model size and quant.
+   per-token math tips around 200-500M tokens/day depending on model size and quant (a
+   working estimate; run the model with the estate's own rates).
 2. **Strict latency SLOs.** Sub-100ms TTFT requirements that cross-region API calls cannot
    meet. Dedicated GPU close to your application stack wins on tail latency.
 3. **Compliance requirements that managed APIs do not satisfy.** Air-gapped environments,
@@ -252,7 +258,8 @@ The conditions are stricter than vendors of GPU compute would have you believe.
    on managed APIs, expensive to replicate self-hosted.
 3. **Frontier model requirements.** Anthropic Claude Opus, OpenAI GPT-5, Google Gemini 3 Pro
    are not available as open weights. Self-hosting cannot replicate them.
-4. **Limited engineering bandwidth.** Most organisations cannot dedicate 1-2 FTE to ML-Ops.
+4. **Limited engineering bandwidth.** Most of the organisations OptimNow works with
+   cannot dedicate 1-2 FTE to ML-Ops.
    Managed APIs let small teams ship.
 5. **Fast-moving roadmap.** Vendors update models monthly. Managed APIs give you the new
    model with a config change. Self-hosted requires a deployment and validation cycle.
@@ -273,13 +280,15 @@ should be priced into the decision.
 
 ## The maturity-driven decision rubric
 
-This is the OptimNow point of view. Cost mechanics matter. Compliance matters. But the
-single best predictor of self-hosted success is the client's in-house ML-Ops maturity.
+This is the OptimNow point of view: cost mechanics and compliance matter, but the best
+predictor of self-hosted success OptimNow has seen is the client's in-house ML-Ops
+maturity.
 
 ### Recommend self-hosted only when **all** of the following are true:
 
-1. **Dedicated platform/ML-Ops team in place.** Not "the data team will pick it up."
-   Not "our DevOps engineer is curious." A dedicated function with budget and accountability.
+1. **Dedicated platform/ML-Ops team in place.** A dedicated function with budget and
+   accountability, rather than "the data team will pick it up" or "our DevOps engineer
+   is curious."
 2. **The team has shipped GPU workloads in production before.** Not just experimented in a
    notebook. Real production traffic on GPU-backed services, with documented SLOs and
    incident history.
@@ -289,8 +298,8 @@ single best predictor of self-hosted success is the client's in-house ML-Ops mat
 4. **Workload pattern is high-volume and predictable.** Backed by 90 days of usage data
    showing consistent traffic, not aspirational projections.
 5. **Cost arbitrage is meaningful, not marginal.** A credible TCO model showing 30%+ savings
-   net of operational overhead. If the savings are 10-15%, the operational risk almost
-   always outweighs them.
+   net of operational overhead. If the savings are 10-15%, the operational tax described
+   above usually consumes them.
 
 If any of the above is missing, default to managed APIs. Revisit in 12-18 months.
 
@@ -335,13 +344,14 @@ billed to the same FinOps budget as remediation.
 
 ## Common anti-patterns
 
-These are the failure modes seen repeatedly in 2024-2026:
+These are the failure modes OptimNow has seen repeatedly in 2024-2026; the figures are
+from those cases, not a benchmark:
 
 - **TCO calculator without operational tax.** Putting the self-hosted per-token rate next
   to the managed per-token rate and stopping there, omitting the FTE cost, oncall burden,
   migration overhead, retuning cycles. The headline gap is usually several-fold in favour
-  of self-hosting, which is exactly why it survives scrutiny for so long. The TCO model is
-  wrong by a factor of 2-5x.
+  of self-hosting, which is exactly why it survives scrutiny for so long. In those cases
+  the TCO model was wrong by a factor of 2-5x.
 - **"We will figure it out" sizing.** Provisioning A100s without 90 days of usage data,
   ending up at 15-25% utilisation. The per-token math collapses immediately.
 - **No fallback plan.** Single-pod self-hosted in one region, no redundancy. First
@@ -353,8 +363,8 @@ These are the failure modes seen repeatedly in 2024-2026:
 - **Custom model when off-the-shelf would do.** Self-hosting a fine-tuned model that
   marginally beats Claude Sonnet on a narrow benchmark, while costing 3x more all-in.
 - **Self-hosting frontier alternatives.** "We will run Llama 4 405B instead of Claude
-  Opus." The infrastructure cost of running a 405B model in production is brutal. Most
-  clients underestimate it by an order of magnitude.
+  Opus." The infrastructure cost of running a 405B model in production is high, and the
+  clients OptimNow has seen attempt it underestimated it by an order of magnitude.
 
 ## Connecting back to FinOps phases
 
@@ -367,8 +377,9 @@ These are the failure modes seen repeatedly in 2024-2026:
 ## Connecting back to OptimNow methodology
 
 This sits squarely in the **diagnose before prescribing** principle. The self-hosted vs
-managed question is one of the most common AI FinOps questions, and one of the most common
-sources of bad recommendations from generic consultants. The OptimNow approach is to:
+managed question is one of the AI FinOps questions OptimNow hears most often, and one
+where the recommendation often goes wrong because the operating cost is left out. The
+OptimNow approach is to:
 
 1. Refuse to answer the question without 90 days of usage data and a clear view of the
    client's ML-Ops maturity.

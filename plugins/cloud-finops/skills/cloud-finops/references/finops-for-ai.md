@@ -20,12 +20,14 @@ fcp_maturity_entry: "Walk"
 ## AI cost management is no longer optional
 
 The State of FinOps 2026 survey (6th edition, 1,192 respondents, published February 2026)
-confirms that AI cost management has shifted from emerging concern to universal priority.
-The trajectory is striking: 31% of respondents managed AI spend in 2024, 63% in 2025,
-and 98% in 2026. AI cost management is now the #1 skillset that FinOps teams need to
-develop, and 81% of respondents are actively exploring how AI can improve FinOps
-efficiency itself. Many organisations report being asked to self-fund AI investments
-through efficiency gains - tying FinOps directly to strategic AI enablement.
+reports that 31% of respondents managed AI spend in 2024, 63% in 2025 and 98% in 2026;
+that respondents rank AI cost management as the skillset their FinOps teams most need
+to develop; and that 81% are exploring how AI can improve FinOps work itself. Many
+respondents also report being asked to self-fund AI investments through efficiency
+gains, which ties FinOps directly to how AI programmes are funded. The survey's
+organisational findings (reporting line, team structure, scope) sit in
+`finops-framework.md`; this file quotes the AI figures once so the other AI references
+can point here.
 
 ---
 
@@ -51,15 +53,15 @@ shows the spike, the request that caused it has long since run.
 
 **The structural mismatch:** Traditional FinOps was built for predictable infrastructure.
 AI workloads behave more like real-time COGS than capacity plans. A feature estimated
-at $1,600/month can cost $8,800 without any infrastructure change - the variance comes
-entirely from user behaviour and model design decisions.
+at $1,600/month can cost $8,800 (illustrative figures) without any infrastructure
+change - the variance comes entirely from user behaviour and model design decisions.
 
 **The critical inversion:** For AI workloads, the FinOps sequence must run in reverse.
 Cost allocation must happen *before* the cost is created, not after the bill arrives.
 Organisations that wait for monthly invoices to understand AI spend are already operating
 with a structural disadvantage that compounds with every new model deployment.
 
-**Where token cost is actually determined.** Token cost is not one number but the
+**Where token cost is determined.** Token cost is not one number but the
 output of decisions stacked across the serving path. The Tokenomics Foundation - a
 Linux Foundation project launched in 2026 to standardise AI cost management, with
 token cost telemetry in the FOCUS specification on its roadmap - decomposes it as a
@@ -107,8 +109,9 @@ returned, not retrieved from billing exports. Cost Explorer lags 24-48 hours - a
 for EC2, not for workloads where a misconfigured agent can generate thousands of dollars
 within hours.
 
-> **Implementation baseline:** Achieving visibility typically requires ~30 minutes of
-> design and ~2 hours of implementation. The barrier is lower than most teams expect.
+> **Implementation baseline:** about 30 minutes of design and about 2 hours of
+> implementation for a first gateway - a working estimate, not a benchmark; verify
+> against the estate's own gateway setup. The barrier is lower than it looks.
 
 ### The full AI cost surface
 
@@ -185,7 +188,7 @@ reducing waste and improving allocation accuracy.
 
 **GPU utilisation is misleading - read the right DCGM metrics:**
 
-The single biggest mistake in GPU FinOps is trusting `nvidia-smi`'s
+The GPU FinOps mistake OptimNow sees most often is trusting `nvidia-smi`'s
 `GPU-Util` percentage (also surfaced as CloudWatch `GPUUtilization` on EC2,
 and as the default in many monitoring stacks). The metric reports whether
 the GPU did **anything** during the sampling interval, not how much of its
@@ -207,7 +210,7 @@ exposed via DCGM Exporter:
 | `DCGM_FI_PROF_DRAM_ACTIVE` | GPU memory bandwidth in use | Detects memory-bound workloads (signal to move to higher-bandwidth SKU or batch differently) |
 | `DCGM_FI_DEV_FB_USED` | Frame buffer (GPU memory) used | Sizing decisions, MIG candidacy, OOM risk |
 
-A workload is genuinely well-sized when `DCGM_FI_PROF_GR_ENGINE_ACTIVE` and
+A workload is well-sized when `DCGM_FI_PROF_GR_ENGINE_ACTIVE` and
 `DCGM_FI_PROF_PIPE_TENSOR_ACTIVE` are both > 40-60% during steady-state
 traffic. If `GR_ENGINE_ACTIVE` is high but `PIPE_TENSOR_ACTIVE` is low for
 an ML workload, the GPU is doing work that is not matrix multiplication -
@@ -311,7 +314,7 @@ AI-specific:
 
 - **API keys drift faster than resources do.** A shared key used across three features
   attributes all of its spend to whatever label the key carries, not to the features
-  that actually consumed it. Static key-level tagging is a Crawl-stage approximation,
+  that consumed it. Static key-level tagging is a Crawl-stage approximation,
   not an allocation.
 - **The person is a shared resource.** One engineer runs several concurrent agent
   sessions across different projects on the same key or seat - a Claude Code session on
@@ -421,13 +424,15 @@ ROI% = monthly_profit / fixed_costs × 100
 Payback period = fixed_costs / monthly_profit (months)
 ```
 
-**ROI time dimension:** AI systems follow a predictable ramp.
+**ROI time dimension:** the ramp below is an illustrative shape, not a forecast. The
+months are placeholders; replace them with the feature's own measured trajectory.
 - Month 1: Negative ROI - integration costs dominate
 - Month 3: Near cost parity - prompts improve, routing optimises
 - Month 6+: Positive ROI - learning effects compound, volume absorbs fixed costs
 
 Tolerating early losses is rational if the weekly trajectory toward breakeven is positive.
-Systems showing no improvement after 8-12 weeks warrant scrutiny.
+Systems showing no improvement after 8-12 weeks (a working threshold, not a rule) warrant
+scrutiny.
 
 #### The agent deployment inequality (go/no-go economics)
 
@@ -466,7 +471,7 @@ whether failure is environment-changing, per use case, before funding.
 
 ### Phase 3: Optimize
 
-**Model selection** (highest impact lever):
+**Model selection** (the lever OptimNow has seen move the bill most):
 
 Treat model selection like instance rightsizing. Defaulting to the largest or latest model
 for every feature is the AI equivalent of running all workloads on ml.p4d.24xlarge.
@@ -555,7 +560,7 @@ September 2026).
 The following inference parameters directly affect output length and therefore cost:
 - `temperature` - higher values produce longer, more varied outputs
 - `top_p` / `top_k` - affect output distribution and length
-- `max_tokens` - the single most important cost guardrail; always set it
+- `max_tokens` - the first cost guardrail to set; always set it
 
 #### Token engineering - the input/output optimisation menu
 
@@ -600,7 +605,8 @@ deployments:
 
 - Minifying JSON (strip whitespace/newlines) between agents: 30-50% token reduction
   (AWS-reported) with zero information loss
-- CSV instead of JSON where structure allows: ~30-40% fewer tokens (no repeated keys)
+- CSV instead of JSON where structure allows: ~30-40% fewer tokens (indicative; the
+  saving is the repeated keys)
 - Constrain inter-agent outputs to the minimum schema (a number, a label) - verbose
   prose between agents is pure waste and degrades downstream parsing
 
@@ -639,10 +645,11 @@ deployments:
 - Define escalation paths when unit economics deteriorate
 
 **Shadow AI:**
-Research indicates 90% of employee AI tool usage does not appear in corporate billing
-systems. The remainder occurs through personal subscriptions, departmental cards, or
-free-tier accounts that bypass procurement. Shadow AI is not only a governance issue -
-it destroys cost attribution and makes forecasting impossible.
+Surveys of shadow AI put the share of employee AI tool usage that never appears in
+corporate billing systems as high as 90%; treat that as an estimate, not a measurement.
+The unseen usage runs through personal subscriptions, departmental cards, or free-tier
+accounts that bypass procurement. Shadow AI is not only a governance issue - it
+removes the spend from cost attribution and from any forecast.
 
 Detection approach:
 - Audit for marketplace subscriptions (AWS, Azure, GCP) that may not appear in
@@ -662,18 +669,19 @@ A feature loses adoption but continues processing in the background - pre-proces
 documents, indexing content, maintaining persistent connections, or retrying failed calls.
 Cost persists while value delivered collapses.
 
-*Real example:* An AI summarization feature was used heavily at launch, then dropped to
-fewer than 5 active users per day. The feature continued pre-processing every uploaded
-document regardless of whether a summary was requested - 2.8M tokens/month, $1,400.
-Actual value delivered: negligible.
+*Real example (figures illustrative):* An AI summarization feature was used heavily at
+launch, then dropped to fewer than 5 active users per day. The feature continued
+pre-processing every uploaded document regardless of whether a summary was requested -
+2.8M tokens/month, $1,400. Actual value delivered: negligible.
 
 *Detection signal:* Token consumption stable or rising while active user sessions decline.
 
 ### 2. Technology churn debt
 Each AI provider or framework migration leaves behind infrastructure that continues
 incurring charges: API keys, Lambda functions, S3 buckets, committed capacity reservations.
-Organisations running 3+ AI providers simultaneously often find 30-40% of AI spend
-supports abandoned experiments rather than production features.
+In organisations running 3 or more AI providers at once, a working estimate is that
+30-40% of AI spend supports abandoned experiments rather than production features;
+indicative, not a benchmark, so measure it in the estate.
 
 *Detection signal:* Active resources in accounts or regions with no recent deployments;
 committed capacity with low utilization.
@@ -681,9 +689,10 @@ committed capacity with low utilization.
 ### 3. Agentic loops
 AI agents calling other agents create multiplicative cost patterns. Retry logic, recursive
 calls, validation loops, or agents that invoke themselves multiply token consumption by
-5-50× per user request. This compounds when agents interact with SaaS APIs that charge
-per query - each retry or validation loop triggers additional SaaS charges alongside
-model costs.
+anywhere from 5x to 50x per user request (an indicative range; the real multiplier is
+whatever the retry policy allows). This compounds when agents interact with SaaS APIs
+that charge per query - each retry or validation loop triggers additional SaaS charges
+alongside model costs.
 
 *Real example (figures illustrative):* A sales intelligence agent validated its own output
 with a second API call. When validation failed, it retried the full sequence. A single user
@@ -699,8 +708,8 @@ in SaaS API usage charges.
 ### 4. Data egress in AI pipelines
 RAG systems that store data in one region, generate embeddings in another, and run
 inference in a third create multi-directional transfer costs invisible in model-level
-reporting. For high-volume applications, data movement can represent 15-25% of total
-AI costs.
+reporting. For high-volume applications, data movement can reach 15-25% of total
+AI costs (a working estimate; verify in the estate's transfer lines).
 
 *Detection signal:* S3 or network costs rising in proportion with AI feature usage;
 cross-region data transfer appearing in billing without a clear infrastructure change.

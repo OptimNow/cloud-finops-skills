@@ -22,7 +22,7 @@ fcp_maturity_entry: "Walk"
 > versus buying a Western managed API. This file covers the third channel neither of
 > those two describes: buying the model from the lab that trained it.
 >
-> Built by OptimNow. Grounded in hands-on enterprise delivery, not abstract frameworks.
+> Built by OptimNow from hands-on enterprise FinOps delivery.
 >
 > **Source caveat:** vendor rate cards in this space change on a scale of weeks, and
 > several claims below (licence terms, prior flat rates, subscription tier prices above
@@ -39,11 +39,11 @@ fcp_maturity_entry: "Walk"
 ## TL;DR
 
 "Open weight" describes the licence on a checkpoint. It says nothing about what you
-pay, and increasingly nothing about whether the model you are actually buying is open
-at all. Three things follow, and they are the whole file:
+pay, and increasingly nothing about whether the model you are buying is open at all.
+Three things follow, and they are the whole file:
 
-1. **The same checkpoint has a different price on every channel.** What a host sells is
-   the serving, not the model.
+1. **The same checkpoint has a different price on every channel**, because what a host
+   sells is the serving.
 2. **The vendors' own APIs are no longer uniformly cheap.** The current flagships from
    Moonshot and Z.ai price in the same band as Western mid-tier models, and DeepSeek's
    August 2026 repricing raised its rate card rather than lowering it.
@@ -76,12 +76,12 @@ Two distinctions worth holding firmly, because clients routinely collapse them:
 - **The premium a third-party host charges over the vendor's own API is not margin on
   the model.** It buys data-processing location, an enterprise SLA with credits, and a
   procurement path that Legal and Security have already cleared. Whether that premium
-  is worth paying is a compliance and risk question with a price attached, not a rate
-  negotiation. Price the channels only after that question is settled - see "Data
-  residency decides the channel before price does" below.
+  is worth paying is a compliance and risk question with a price attached. Price the
+  channels only after that question is settled - see "Data residency decides the
+  channel before price does" below.
 
-**FinOps consequence.** Model selection and channel selection are two decisions, not
-one. A routing layer that treats "GLM-5.2" as a single line item will silently mix
+**FinOps consequence.** Model selection and channel selection are two separate
+decisions. A routing layer that treats "GLM-5.2" as a single line item will silently mix
 three different unit costs, three jurisdictions and three contracts in one cost centre.
 Allocate by model *and* channel from the start.
 
@@ -139,11 +139,11 @@ rewards scheduling.
 
 **The catalogue trap.** Alibaba runs a deliberate two-track strategy: the smaller Qwen3
 and Qwen3-Coder lines ship as open weights, while the Plus and Max flagships are
-proprietary and API-only, with no published weights. The model most clients actually
-buy on Model Studio is therefore **not an open-weight model at all**. Treating the
-vendor as "the open-weight channel" and then routing production traffic to a Max-tier
-endpoint gives you a closed model with none of the exit optionality that justified the
-choice. Check the specific model, not the vendor.
+proprietary and API-only, with no published weights. The model most clients buy on
+Model Studio is therefore **not an open-weight model at all**. Treating the vendor as
+"the open-weight channel" and then routing production traffic to a Max-tier endpoint
+gives you a closed model with none of the exit optionality that justified the choice.
+Check the specific model.
 
 *(A prior version of this guidance recorded no published Qwen batch discount. Alibaba's
 own pricing documentation states 50%, verified 23 August 2026.)*
@@ -158,7 +158,7 @@ own pricing documentation states 50%, verified 23 August 2026.)*
 | On Bedrock | Since 18 September 2026 Kimi K3 is also on Amazon Bedrock, the first open-weight model there with explicit prompt caching. Bedrock bills a single 30-minute cache write at 1.25x input next to the 0.1x read; Moonshot direct bills K3 cache writes by TTL, 5 minutes at 1x input and 1 hour at 2x (both read 2 October 2026). Model the write tier when comparing the two channels |
 | Taxes | The rate card is quoted excluding applicable taxes, assessed at checkout by jurisdiction. Budget gross, not net |
 
-**This is the single most useful data point in the file for a client conversation.** K3
+**This is the data point OptimNow uses most in client conversations.** K3
 at $3 / $15 sits 50% above Claude Sonnet 5's list rate of $2 / $10, which Anthropic made
 standard in August 2026 when it cancelled the scheduled rise to $3 / $15 (see
 `finops-anthropic.md`; both rates read 2 October 2026). An open-weight flagship from a
@@ -226,7 +226,7 @@ at exactly the moment the deployment succeeds, because the thresholds are trigge
 growth.
 
 **Practical sequencing.** Legal signs off on the specific checkpoint before Procurement
-signs a volume commitment, not after. For a model-as-a-service or embedded-product use
+signs a volume commitment. For a model-as-a-service or embedded-product use
 case, that review is not optional at any scale, because the obligation attaches to
 revenue you are forecasting rather than to spend you are incurring. The broader
 licence-obligation discipline sits in `finops-itam.md`.
@@ -242,11 +242,11 @@ one, with a separate rate card.
 Frame this as a determination, not a debate:
 
 1. **Establish where the workload's data may be processed.** This is an existing answer
-   inside the client's organisation, held by Legal, Security or the DPO. It is not a
-   FinOps judgement and FinOps should not manufacture one.
+   inside the client's organisation, held by Legal, Security or the DPO. FinOps should
+   not manufacture one.
 2. **That answer eliminates channels before any price is compared.** If the vendor's own
-   API is out of scope for a workload, its rate card is not a cheaper option that was
-   rejected - it is not an option, and it does not belong in the comparison at all.
+   API is out of scope for a workload, its rate card does not belong in the comparison
+   at all.
 3. **A third-party host is the mechanism for keeping the model while changing the
    jurisdiction.** Together, Fireworks and Bedrock serve several of these checkpoints
    from US and EU regions under a Western contract. The premium over the vendor's own
@@ -272,7 +272,7 @@ Send simple, high-volume work through a routing layer (LiteLLM, Portkey, or a cu
 proxy) rather than wiring vendor SDKs into applications. In this segment the gateway
 earns its keep faster than usual:
 
-- **The vendors are genuinely interchangeable for simple work.** Classification, routing,
+- **The vendors are interchangeable for simple work.** Classification, routing,
   extraction and summarisation run acceptably on several of these models. That is exactly
   the traffic where a rate change should trigger a re-route, and only a gateway makes
   re-routing a config change.
@@ -292,8 +292,8 @@ Third-party price trackers, comparison sites and aggregator pages lag this segme
 badly, and they keep listing models the vendors have retired. Two rules:
 
 - **Re-verify on the vendor platform before any figure enters a forecast, a business
-  case, or a client deliverable.** Not the tracker, not this file - the vendor's own
-  pricing page, and record the date you read it.
+  case, or a client deliverable.** Use the vendor's own pricing page rather than a
+  tracker or this file, and record the date you read it.
 - **A missing figure is a missing figure.** If a model, tier or endpoint is not listed,
   say so. Do not interpolate from a neighbouring model or the other endpoint. This is
   the general rule from SKILL.md "Price figures", and it bites hardest here because the
@@ -338,14 +338,13 @@ unallocated estate is guesswork with extra steps.
 
 ## Common anti-patterns
 
-- **"Open weight, therefore cheap."** Kimi K3 at $3 / $15 disproves it at the top of the
-  range, and Moonshot is not an outlier. Price the specific model.
+- **"Open weight, therefore cheap."** Kimi K3 at $3 / $15 (read 23 August 2026) is the
+  counter-example at the top of the range, and Z.ai's flagship also prices in the
+  Western mid-tier band. Price the specific model.
 - **"Open weight, therefore we can leave."** True only if the model you are buying has
-  published weights. On Model Studio, the Plus and Max tiers do not. Exit optionality
-  that was never checked is not optionality.
+  published weights. On Model Studio, the Plus and Max tiers do not.
 - **Reading a time-of-day repricing as a discount.** Off-peak is half of a raised peak,
-  not a cut to the old flat rate. Model the delta against what you actually paid last
-  month.
+  not a cut to the old flat rate. Model the delta against what you paid last month.
 - **Assuming a licence from the family name.** Kimi K3 is not modified MIT even though
   its predecessors were, and the obligations trigger on revenue and user growth.
 - **Comparing a vendor API price to a Bedrock or Together price as if they were the same

@@ -29,8 +29,8 @@ gains spread by word of mouth, and within months the entire engineering organisa
 using it. Spend follows the same curve, but visibility does not. Finance sees a growing
 invoice with a single number. Engineering cannot explain what is behind it.
 
-This makes AI dev tools a FinOps blind spot in most organisations - growing fast, poorly
-attributed, and governed reactively if at all.
+This makes AI dev tools a FinOps blind spot in most of the organisations OptimNow has
+assessed - growing fast, poorly attributed, and governed reactively if at all.
 
 ---
 
@@ -78,8 +78,8 @@ also have no vendor-side cost dashboard unless you build or buy one.
 
 ## Cursor (primary deep-dive)
 
-Cursor is the dominant AI coding assistant by adoption. Understanding its cost mechanics
-in detail provides a template for evaluating any seat + usage tool.
+Cursor is one of the most widely adopted AI coding assistants, and its cost mechanics
+are a template for evaluating any seat + usage tool.
 
 ### Pricing model
 
@@ -242,8 +242,11 @@ of 13 October 2026). It is toggled per session with `/fast`, and it can be persi
 the default in `config.toml` (`service_tier = "fast"` with `[features].fast_mode = true`),
 which is how one configuration line multiplies a whole team's consumption. Fast mode
 credits are not available in API key mode, which uses the API `service_tier` premiums
-described under "Optimisation levers" below. Govern it the same way: allow-list, never a
-default in a shared configuration. One organisation reported that switching a Fast
+described under "Optimisation levers" below. On team and enterprise plans where
+`config.toml` is shared, treat it like Anthropic Fast mode: allow-listed per engineer or
+per task, not the default in the shared configuration. A solo developer on a personal
+plan can leave it on; the multiplier only matters once the limit is pooled. One
+organisation reported that switching a Fast
 default back to Standard cut its Codex credit consumption by about 60% (Robertas Vasaris,
 Lundbeck, "Price the Outcome, Not the Seat", Tokenomicon FinOps X Amsterdam, September
 2026, https://www.youtube.com/watch?v=tjskeeu8YhI - practitioner-reported).
@@ -327,7 +330,7 @@ change in developer behaviour or headcount.
 Post-transition actions: (1) reconcile the first full credit-billed month against
 the pre-transition baseline per developer, and expect the variance to be
 concentrated in whoever routes to the most expensive models; (2) check whether
-Enterprise admin model-routing controls are actually set, rather than left at
+Enterprise admin model-routing controls are set, rather than left at
 default; (3) confirm the variable-spend line is budgeted in the right cost centre,
 since a usage-based charge often lands differently from a per-seat one.
 Source: https://docs.github.com/en/copilot/how-tos/manage-and-track-spending/prepare-for-your-move-to-usage-based-billing
@@ -382,8 +385,8 @@ build charts. Works for small teams. Does not scale.
 
 ### For BYOK tools (Claude Code, Codex in API key mode)
 
-**API gateway / proxy (LiteLLM)**: this is the most powerful option. Route all API calls
-through a self-hosted LiteLLM proxy to:
+**API gateway / proxy (LiteLLM)**: this is the option with the most control. Route all
+API calls through a self-hosted LiteLLM proxy to:
 
 - Inject metadata at request level (team ID, project, feature, environment)
 - Set per-team or per-project budget caps with automatic enforcement
@@ -412,7 +415,8 @@ billing data but limited per-developer or per-team granularity.
 
 ### For seat + usage tools (Cursor, Copilot, Windsurf)
 
-**Model routing governance** - the single highest-impact lever. Ensure expensive reasoning
+**Model routing governance** - the lever that moves the bill most, because of the
+10-50x rate gap noted above. Ensure expensive reasoning
 models (Opus, GPT-5) are used for tasks that benefit from them, not for routine code
 completions. A team defaulting to the most capable model for every request will spend
 10-50x more than one using the auto-routing or budget models for standard work.
@@ -468,7 +472,7 @@ that reached 1M context via a beta header; the current generation prices flat ac
 1M window (see "Context window pricing" in `finops-anthropic.md`). On current models the
 exposure is therefore token *volume* and context exhaustion, not a rate cliff - monitor
 input tokens because long contexts cost more in absolute terms, not because a threshold
-reprices the request. Check which models the estate actually pins before designing an
+reprices the request. Check which models the estate pins before designing an
 alert around a threshold.
 
 ---
@@ -484,7 +488,7 @@ twenty servers' worth of definitions on every session - most never invoked.
 This is not an MCP-specific problem, and framing it as one misdiagnoses the fix. It is
 context-window economics, and it applies to anything that lands in the context prefix: MCP
 tool definitions, skill instructions, project/memory files (e.g. `CLAUDE.md`), and the base
-system prompt itself. MCP is simply the most *visible* case, because the token count jumps
+system prompt itself. MCP is the most *visible* case, because the token count jumps
 the moment you enable a server.
 
 **Order of magnitude** (from a live Claude Code walkthrough, July 2026; figures approximate):
@@ -614,7 +618,7 @@ the wrong side of the line from where governance attention usually goes:
   hits a rate limit, not an overage cliff. The worst case is a bounded, predictable
   monthly number. This is the safe side, and it draws most of the governance attention
   because the invoice is legible.
-- **API-direct (BYOK) and agentic consumption is where budgets actually break.** A raw
+- **API-direct (BYOK) and agentic consumption is where budgets break.** A raw
   API key with no proxy has no ceiling. An agent looping on that key (see the
   [cross-cloud-agent-loop-burn](../playbooks/cross-cloud-agent-loop-burn.md) playbook) or
   a background job left running bills per token until someone notices, and the overage

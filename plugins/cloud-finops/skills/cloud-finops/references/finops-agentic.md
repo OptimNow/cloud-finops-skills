@@ -37,7 +37,8 @@ as "agents":
 - Budget and forecast per type. Workflows and pipelines can be unit-priced; true
   agents must be budgeted as a **cost distribution** (P50/P90 per task), not a point
   estimate.
-- **Procurement diligence:** most vendors selling an "agent" are selling a pipeline.
+- **Procurement diligence:** in the vendor reviews OptimNow has seen, most products
+  sold as an "agent" are pipelines.
   Often that is exactly what the client needs - but bounded-cost pipelines and
   unbounded-cost agents deserve different contract and budget treatment. Ask which
   one you are buying.
@@ -123,9 +124,9 @@ cite the classification, not the ecosystem.
   model tokens - per credit, per page, or per scoped extraction - instead of the
   agent paying full input-token rates to ingest raw page text. Compare that
   vendor cost against the token cost of stuffing full pages into context; the
-  cheaper path depends on page size and how much of the page the task actually
-  needs. This is a fast-moving, mostly early-stage vendor category - check
-  viability before wiring one into a production path.
+  cheaper path depends on page size and how much of the page the task needs. This
+  is a fast-moving, mostly early-stage vendor category - check viability before
+  wiring one into a production path.
 
 **Three architectural pillars for cost-safe agents:**
 
@@ -148,7 +149,8 @@ available in AWS GovCloud (US-West), extending these pillars to regulated and go
 cloud environments for cost-governance planning. Source: AWS What's New - Bedrock.
 
 **3. Policy-generation over direct mutation**
-The safest agentic architecture for FinOps generates governance policies for human review
+The agentic architecture OptimNow treats as safest for FinOps generates governance
+policies for human review
 rather than executing infrastructure changes directly. An agent that identifies idle
 resources and drafts a Cloud Custodian policy or OpenOps rule for review is production-safe.
 An agent that stops instances autonomously is not - regardless of how sophisticated its
@@ -239,8 +241,9 @@ Sources: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/payments-
 https://developers.cloudflare.com/agents/tools/payments/, https://x402.org/,
 https://ampersend.ai/
 
-**Key insight:** Agents will be advisory long before they are autonomous. Organisations
-making progress treat agent development as iterative learning, not project delivery.
+**Working hypothesis**, from the 2026 deployments OptimNow has seen: agents earn
+autonomy per action type after a period as advisory tools, and the organisations making
+progress treat agent development as iterative learning rather than project delivery.
 
 ---
 

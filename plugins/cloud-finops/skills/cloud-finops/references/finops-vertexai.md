@@ -271,7 +271,7 @@ and can switch between models within that publisher's portfolio.
 
 ## Gemini Developer API (AI Studio) vs Vertex AI: same token price, different mechanics
 
-Google sells Gemini through two doors, and most estates end up using both without
+Google sells Gemini through two doors, and many estates end up using both without
 deciding to. The **Gemini Developer API** (keys issued in Google AI Studio) is the
 self-serve door; **Vertex AI** is the enterprise door. Teams routinely assume one is
 cheaper. It is not.
@@ -286,7 +286,7 @@ Three real differences sit underneath the identical headline rates:
 
 - **Explicit cache storage is cheaper on the Developer API until 1 January 2027.** On
   the 3.8 / 3.7 / 3.6 Flash SKUs it bills at half the Agent Platform rate per token-hour
-  through 31 December 2026, then converges. A cache-heavy workload is genuinely cheaper
+  through 31 December 2026, then converges. A cache-heavy workload is cheaper
   through the Developer API today, and stops being so in January.
 - **Grounding bills on a different unit.** The Developer API charges per *search query*,
   and a single prompt may issue several. Vertex AI charges per *grounded prompt* - one
@@ -410,7 +410,7 @@ supported partner models - labelling a request to an unsupported model returns a
 **The cardinality limit is an allocation trap.** Each label key may carry up to **1,000
 unique values over the life of the billing account**, and beyond that *the key can be
 dropped without notice*. A key like `session_id`, `user_id` or `request_id` will blow
-through that in days, and the failure is silent: allocation simply stops arriving for
+through that in days, and the failure is silent: allocation stops arriving for
 that key, and the spend lands in the unallocated bucket. Keep label keys to bounded
 dimensions - team, environment, feature, cost centre - and push per-request identifiers
 into application logs, where the earlier unit-economics pattern already puts them.
