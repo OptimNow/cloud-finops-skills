@@ -66,7 +66,7 @@ against current AWS pricing documentation):
 | Anthropic Claude Sonnet | Mid | Balanced capability and cost |
 | Anthropic Claude Opus | High | Complex reasoning, agentic workflows |
 
-**FinOps principle:** model selection is the single highest-leverage cost decision.
+**FinOps principle:** model selection is the cost decision with the widest range.
 Benchmark task quality across model tiers before defaulting to the most capable model.
 
 ### Batch inference discount
@@ -289,7 +289,7 @@ Application Inference Profile is a tagged inference profile that callers referen
 instead of (or in addition to) raw model IDs - the tags propagate to CUR 2.0 and
 Cost Explorer alongside `line_item_iam_principal`.
 
-**What this unlocks that IAM Principal alone does not:**
+**What this adds that IAM Principal alone does not:**
 - **Cross-region inference attribution.** Cross-region inference profiles route to
   alternate regions for availability. Without an Application Inference Profile, the
   resulting cost lines do not carry the originating application context. With one,
@@ -365,7 +365,7 @@ output token counts, and caller identity - to S3 and/or CloudWatch Logs.
 
 Without it, several optimisation decisions are guesswork. With it, the logs answer:
 
-| Question | Optimisation decision it unlocks |
+| Question | Optimisation decision it supports |
 |---|---|
 | Are the same prompts (or prefixes) recurring? | Prompt caching candidacy - quantify expected hit rate before enabling |
 | Which roles/services call which models, at what avg token counts? | Model right-sizing per workload, chargeback sanity checks |
@@ -446,8 +446,8 @@ Input token volume is directly controllable:
 - Audit system prompt length - verbose instructions inflate every API call
 - Truncate or summarize conversation history for multi-turn applications
 - Avoid sending redundant context in retrieval-augmented generation (RAG) pipelines
-- For repetitive context, use **prompt caching** (see below) - this is the highest-
-  leverage prompt-side lever for long-context and agentic workflows
+- For repetitive context, use **prompt caching** (see below) - this is the prompt-side
+  lever with the largest effect for long-context and agentic workflows
 
 ### Prompt caching - direct FinOps lever for long-context and agentic workloads
 

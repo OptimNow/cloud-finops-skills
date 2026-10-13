@@ -250,8 +250,7 @@ For real signals, use NVIDIA DCGM Exporter metrics (`DCGM_FI_PROF_GR_ENGINE_ACTI
 `DCGM_FI_DEV_FB_USED`). See `finops-for-ai.md` section "GPU utilization is
 misleading" for the metric reference.
 
-The four highest-leverage GPU rightsizing patterns, each with a dedicated
-playbook:
+The five GPU rightsizing patterns with a dedicated playbook:
 
 - **Oversized GPU instance** - workload uses < 30% of GPU compute and
   < 40% of GPU memory.

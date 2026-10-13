@@ -205,7 +205,7 @@ Many organizations continue running short-lived or low-intensity SQL workloads -
 **Inefficient Bi Queries Driving Excessive Compute Usage**
 Service: Interactive Clusters | Type: Inefficient Query Patterns
 
-Business Intelligence dashboards and ad-hoc analyst queries frequently drive Databricks compute usage - especially when: * Dashboards are auto-refreshed too frequently * Queries scan full datasets instead of leveraging filtered views or materialized tables * Inefficient joins or large broadcast operations are used * Redundant or exploratory queries are triggered during interactive exploration This often results in clusters staying active for longer than necessary, or being autoscaled up to handle inefficient workloads, leading to unnecessary DBU consumption.
+Business Intelligence dashboards and ad-hoc analyst queries frequently drive Databricks compute usage - especially when: * Dashboards are auto-refreshed too frequently * Queries scan full datasets instead of using filtered views or materialized tables * Inefficient joins or large broadcast operations are used * Redundant or exploratory queries are triggered during interactive exploration This often results in clusters staying active for longer than necessary, or being autoscaled up to handle inefficient workloads, leading to unnecessary DBU consumption.
 
 - Refactor BI queries to limit scan scope and reduce complexity
 - Materialize frequently used intermediate results into temp or Delta tables
@@ -271,7 +271,7 @@ Service: Databricks Clusters | Type: Suboptimal Pricing Model
 In non-production environments -such as development, testing, and experimentation -many teams default to on-demand nodes out of habit or caution. However, Databricks offers built-in support for using spot instances safely.
 
 - Enable spot instance usage for non-production clusters where workloads are resilient to interruption
-- Leverage Databricks’ native fallback-to-on-demand capabilities to preserve job continuity
+- Use Databricks’ native fallback-to-on-demand capabilities to preserve job continuity
 - Establish workspace-level defaults or templates that promote spot usage in dev/test clusters
 
 **Suboptimal Use Of On Demand Instances In Non Production Clusters**
@@ -306,7 +306,7 @@ Service: Databricks Workflows | Type: Suboptimal Cluster Configuration
 When multiple tasks within a workflow are executed on separate job clusters - despite having similar compute requirements - organizations incur unnecessary overhead. Each cluster must initialize independently, adding latency and cost.
 
 - Configure a shared job cluster to run multiple tasks within the same workflow when compute requirements are similar
-- Leverage cluster reuse settings to reduce start-up overhead and improve efficiency
+- Use cluster reuse settings to reduce start-up overhead and improve efficiency
 - Validate that consolidation does not impact workload performance or isolation requirements before implementing
 
 **Lack Of Functional Cost Attribution In Databricks Workloads**

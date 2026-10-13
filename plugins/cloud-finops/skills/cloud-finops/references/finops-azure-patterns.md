@@ -195,7 +195,7 @@ Azure users may enable the SFTP feature on Storage Accounts during migration tes
 **Missing Performance Plus On Eligible Managed Disks**
 Service: Azure Managed Disks | Type: Misconfiguration
 
-For Premium SSD and Standard SSD disks 513 GiB or larger, Azure now offers the option to enable Performance Plus - unlocking higher IOPS and MBps at no extra cost. Many environments that previously required custom performance settings continue to pay for additional throughput unnecessarily.
+For Premium SSD and Standard SSD disks 513 GiB or larger, Azure now offers the option to enable Performance Plus, which raises the IOPS and MBps ceilings at no extra cost. Many environments that previously required custom performance settings continue to pay for additional throughput unnecessarily.
 
 - Enable Performance Plus on all eligible disks using Azure CLI, API, or portal
 - Decommission paid performance tiers or custom throughput settings where Performance Plus provides equivalent capability
@@ -438,7 +438,7 @@ Service: Azure DevOps | Type: Inefficient Configuration
 
 Teams often overuse Microsoft-hosted agents by running redundant or low-value jobs, failing to configure pipelines efficiently, or neglecting to use self-hosted agents for steady workloads. These inefficiencies result in unnecessary cost and delivery friction, especially when pipelines create queues due to limited agent availability.
 
-- Audit and streamline pipelines to remove redundant or unnecessary stages
+- Audit and simplify pipelines to remove redundant or unnecessary stages
 - Use conditional logic to limit execution of non-critical pipelines
 - Prioritise agent capacity for pipelines supporting core or production workloads
 

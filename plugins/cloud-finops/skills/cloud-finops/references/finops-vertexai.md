@@ -110,7 +110,7 @@ No minimum spend, no upfront commitment.
 | Anthropic Claude Opus | High | Available via Vertex Model Garden |
 | Meta Llama (various) | Low-Mid | Open-weight, available in Model Garden |
 
-**FinOps principle:** model selection is the single highest-leverage cost decision.
+**FinOps principle:** model selection is the cost decision with the widest range.
 Benchmark task quality across model tiers before defaulting to the most capable model.
 
 ### Batch prediction discount

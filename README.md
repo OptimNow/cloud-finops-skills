@@ -21,7 +21,7 @@
 
 | Tool | One-step install |
 |---|---|
-| <img src="https://img.shields.io/badge/-Claude%20Code-D97757?logo=anthropic&logoColor=white" alt="Claude Code" height="22"/> | At the Claude Code prompt: `/plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git` then `/plugin install cloud-finops@optimnow`. The plugin is the skill only; for the six retrieval tools, add the hosted MCP connector separately (row below) |
+| <img src="https://img.shields.io/badge/-Claude%20Code-D97757?logo=anthropic&logoColor=white" alt="Claude Code" height="22"/> | At the Claude Code prompt: `/plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git` then `/plugin install cloud-finops@optimnow`. The plugin is the skill only; for the 6 retrieval tools, add the hosted MCP connector separately (row below) |
 | <img src="https://img.shields.io/badge/-Claude.ai%20%2F%20Desktop-D97757?logo=anthropic&logoColor=white" alt="Claude.ai / Claude Desktop" height="22"/> | [Install from the Claude directory](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory) (one click, kept current from this repository). Or [download the latest release zip](https://github.com/OptimNow/cloud-finops-skills/releases/latest), then **Settings -> Skills -> Upload zip** |
 | <img src="https://img.shields.io/badge/-ChatGPT-10A37F?logo=openai&logoColor=white" alt="ChatGPT" height="22"/> | Self-host: `./install.sh --tool chatgpt --grouped` _(a public Cloud FinOps GPT is on the Roadmap)_ |
 | <img src="https://img.shields.io/badge/-Gemini-4285F4?logo=googlegemini&logoColor=white" alt="Gemini" height="22"/> | Self-host: `./install.sh --tool gemini` _(a public Cloud FinOps Gem is on the Roadmap)_ |
@@ -62,7 +62,7 @@ use this.
 
 ## Skill + installer, or MCP?
 
-Same content, two delivery shapes - and they behave differently, because of how models
+Same content, 2 delivery shapes - and they behave differently, because of how models
 use them (field-tested with the same battery of practitioner questions through both):
 
 - **Pushed into context** - as a native skill (Claude Code, Claude.ai / Desktop, Kiro),
@@ -83,16 +83,16 @@ use them (field-tested with the same battery of practitioner questions through b
   over the library's metadata, and interactive widgets on hosts that render MCP Apps
   (Claude.ai does not render them yet; see the MCP server section below).
 - **Both is legitimate.** Skill loaded for the doctrine, connector added for faceted
-  retrieval or for hosts where the skill is not loaded. Details on the six tools:
+  retrieval or for hosts where the skill is not loaded. Details on the 6 tools:
   [MCP server](#mcp-server-cross-tool-search-style-retrieval) below.
 
 **What to expect in practice, on either surface.** Neither the skill nor the server
 can see your cloud account. For "which of *my* X" questions ("which of my RIs are
 about to expire?") the deliverable is the playbook's detection query, which you run
-yourself - and the measured behaviour is that models tend to ask you for a data
+yourself - and the measured behaviour is that models ask you for a data
 export instead of volunteering that runbook. The reliable way to get it is to ask
 explicitly: "check the playbook library" or "show me the runbook for this". Routing
-is also probabilistic, not guaranteed - the same question phrased two ways can ground
+is also probabilistic, not guaranteed - the same question phrased 2 ways can ground
 differently - so when an answer arrives without a visible tool call or file read,
 asking for the library by name is the one-turn fix.
 
@@ -116,9 +116,9 @@ by URL as described below.
 The hosted MCP connector is optional and is installed separately: as a custom
 connector in Claude.ai or Claude Desktop, or with `claude mcp add` in Claude Code
 (the "MCP hosted" row in the install table above). It serves the same library
-through six read-only tools and, on hosts that render MCP Apps, as interactive
+through 6 read-only tools and, on hosts that render MCP Apps, as interactive
 views. It is offered separately, as an MCP connector, not as part of the plugin,
-on purpose: the two carry the same content, and a plugin that also declared the
+on purpose: both carry the same content, and a plugin that also declared the
 server would load the tool definitions in every session next to the skill and put
 the same library into context twice. Use the plugin when you want the doctrine
 loaded up front, the connector when you want on-demand retrieval or the views, and
@@ -158,7 +158,7 @@ playbook family.
 
 ### Coverage, published deliberately
 
-Coverage has two structural surfaces, answering different questions. The first is the
+Coverage has 2 structural surfaces, answering different questions. The first is the
 **named waste-pattern runbooks**: which specific, detectable waste patterns have a
 ready-made playbook, per provider. A dashed cell is a known hole in the *runbook*
 catalogue, with its prioritised backlog public in [docs/ROADMAP.md](docs/ROADMAP.md) -
@@ -205,7 +205,7 @@ side; gaps it finds land in the same public backlog.
   because cloud efficiency directly drives gross margin. Pushing every organisation
   toward the same maturity ceiling is malpractice.
 - **Connect cost to business value.** Every recommendation answers the CFO test:
-  what business outcome does this protect or unlock. Cost reduction without a value
+  what business outcome does this protect or create. Cost reduction without a value
   lens is a leak.
 - **Mechanics live here, price figures do not.** Billing mechanics are durable;
   absolute prices are volatile and go stale inside a packaged file. Current-price
@@ -214,7 +214,7 @@ side; gaps it finds land in the same public backlog.
 - **FinOps is an operating discipline, not a culture.** The discipline lives in
   allocation, anomaly management, commitment management, rightsizing, and
   governance, all of which produce measurable outputs. "Culture of FinOps" framing
-  tends to substitute slideware for those outputs. In the agentic era this matters
+  often substitutes slideware for those outputs. In the agentic era this matters
   more, not less: agents execute discipline, not culture.
 
 ---
@@ -245,7 +245,7 @@ them, particularly on billing mechanics and capacity economics.
 - "We need to start reporting our cloud carbon emissions - where do we begin?"
 - "Our Snowflake bill doubled in a quarter. Is it the warehouses, storage or Cortex, and what do we check first?"
 - "Finance wants to charge teams for shared Kubernetes clusters. What has to be true before we move from showback to chargeback?"
-- "Our AI coding tool spend tripled in six months. How do we control it without banning the tools?"
+- "Our AI coding tool spend tripled in 6 months. How do we control it without banning the tools?"
 
 ---
 
@@ -284,7 +284,7 @@ Hosted (nothing to install) or from PyPI - both paths are in the
 `io.github.OptimNow/cloud-finops`, and on
 [PyPI](https://pypi.org/project/cloud-finops-mcp/).
 
-Six read-only tools across two surfaces. The split is deliberate: the two content
+Six read-only tools across 2 surfaces. The split is deliberate: the 2 content
 types have different shapes, and different questions attached to them.
 
 **References** - the long-form provider and discipline files. Reach for these for
@@ -343,7 +343,7 @@ each is appropriate. Full policy in [PRIVACY.md](./PRIVACY.md).
 - **The hosted MCP connector, if you add it, sends tool calls to `mcp.optimnow.io`.**
   It is separate from the plugin (see "Plugin and connector" above) and runs as the
   Fly.io app `cloud-finops-mcp`; the former `cloud-finops-mcp.fly.dev` host still
-  answers but is deprecated. When the model calls one of the six tools, the tool
+  answers but is deprecated. When the model calls one of the 6 tools, the tool
   arguments (a reference or playbook name, a section phrase, facet filters such as
   domain or scope) travel over HTTPS to that server and the matching library content
   comes back. The server requires no account and no authentication, holds no database
@@ -374,7 +374,7 @@ each is appropriate. Full policy in [PRIVACY.md](./PRIVACY.md).
 This is a living repository, updated weekly. Every Saturday an automated scan checks
 around 35 sources - cloud and AI provider release notes, billing changelogs and pricing
 pages, plus FinOps community publications. Each change is confirmed on the provider's
-own documentation and reviewed before it is applied, so the content reflects verified
+own documentation and reviewed before it is applied, so what ships is verified
 updates rather than raw feed output.
 
 AI cost management is moving particularly fast - new model releases, capacity options,
@@ -427,7 +427,7 @@ spend to measurable business value. Based in France with European reach.
 
 | Tool | What it does |
 |---|---|
-| [OptimToken](https://optimtoken.optimnow.io) | Compare what 250+ models cost per request, with caching and batch factored in, plus compute instance rates across seven clouds. Also available as an MCP connector - this skill routes price questions here |
+| [OptimToken](https://optimtoken.optimnow.io) | Compare what 250+ models cost per request, with caching and batch factored in, plus compute instance rates across 7 clouds. Also available as an MCP connector - this skill routes price questions here |
 | [AI ROI Calculator](https://airoicalculator.optimnow.io) | Whether an AI project pays for itself: three-layer cost model, payback, break-even, sensitivity. Also an [MCP server](https://github.com/OptimNow/ai-roi-calculator-mcp) |
 | [AI Cost Readiness Assessment](https://aicostsfinops.optimnow.io) | Where your organisation stands on AI cost management |
 | [MCP for Tagging](https://github.com/OptimNow/finops-mcp) | Tag governance automation |

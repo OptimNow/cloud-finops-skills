@@ -372,7 +372,7 @@ The FinOps function should enable distributed decision-making, not replace it.
 
 **Building practices without community support**
 Developing FinOps practices in isolation without engaging the broader FinOps community
-misses valuable lessons learned. Leverage community resources, attend meetups, and
+misses valuable lessons learned. Use community resources, attend meetups, and
 participate in forums to avoid reinventing solutions.
 
 **Allowing inaccurate data to erode engineering trust**

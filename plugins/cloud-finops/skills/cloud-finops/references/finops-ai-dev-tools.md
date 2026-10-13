@@ -104,8 +104,8 @@ before building a seat forecast.
 
 ### Token rate variability
 
-Token rates depend on which model handles the request. This is the highest-leverage cost
-variable. The range is wide:
+Token rates depend on which model handles the request. This is the cost variable with the
+widest range:
 
 - **Auto mode** (Cursor's default routing): the earlier flat Auto rate was retired -
   Auto now bills at the API rate of whichever model it routes to, so its cost tracks
