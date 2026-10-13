@@ -36,6 +36,8 @@ Traditional FinOps assumes a rhythm: usage happens first, costs are reported lat
 decisions follow. AI disrupts this sequence. With LLMs and agentic systems, cost is
 incurred at the moment a decision is made - a longer prompt, an extra retry, a different
 model, or a poorly bounded loop can change spend materially in seconds, not weeks.
+In AI the invoice is written at the keyboard, not at month end: by the time a report
+shows the spike, the request that caused it has long since run.
 
 | Dimension | Traditional Cloud | AI Workloads |
 |---|---|---|
