@@ -325,6 +325,35 @@ AI spend (a new agent surface, a wallet-funded payment, a per-query SaaS charge)
 outrunning the instrumentation. Session-level metadata on every call is what keeps the
 number low; key-level or seat-level tagging is the fallback that lets it drift.
 
+#### Documented example: spend concentration next to unallocated %
+
+A second allocation-side indicator worth tracking for AI tools is **spend concentration**:
+the share of AI tool spend held by the top 1% and the top 10% of users, per team, per
+month. Adoption rates (how many people use the tool) say nothing about where the money
+goes; concentration does. In one pharmaceutical organisation, 1% of users drove 36% of AI
+spend and the top 10% drove 74%. Those figures describe one estate in 2026, not a
+benchmark.
+
+What the indicator is for:
+
+- **Finding the conversation.** A handful of heavy users is where model choice, premium
+  speed modes and context hygiene move the bill. Talk to them before writing policy for
+  everyone.
+- **Separating value from waste.** High concentration is not a problem in itself: the top
+  users may be the ones getting the most from the tool. Pair the number with the unit
+  economics in Phase 2 before treating it as waste.
+- **Sizing controls.** A tiered approval ladder (see "Documented example: tiered spending
+  controls with renewal" in `finops-ai-dev-tools.md`) only needs to touch the tail the
+  concentration figure identifies.
+
+The same Goodhart caveat applies as for spend per merged PR: report concentration at team
+level to direct attention, never as a ranking of individuals.
+
+*Sourcing note:* practitioner-reported, from Robertas Vasaris (Lundbeck), "Price the
+Outcome, Not the Seat", Tokenomicon FinOps X Amsterdam, September 2026
+(https://www.youtube.com/watch?v=tjskeeu8YhI, viewed 13 October 2026). The percentages are
+one organisation's data, quoted as reported.
+
 ---
 
 ### Phase 2: Establish unit economics

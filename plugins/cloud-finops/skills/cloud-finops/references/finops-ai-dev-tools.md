@@ -617,6 +617,44 @@ per-team budget caps at a proxy (LiteLLM), sustained-throughput alarms, and a ki
 because that is the side with no built-in ceiling. Spending governance effort in
 proportion to invoice legibility rather than to unbounded risk is the common mistake.
 
+### Documented example: tiered spending controls with renewal
+
+One organisation's answer to fast-growing AI tool spend was neither a hard cap nor a
+shutdown, but a ladder of spending tiers on a single tool. It is a documented example from
+one large engineering organisation, not an established best practice; adapt the tier
+count and the thresholds to your own approval structure.
+
+| Tier | Who it is for | What it takes to get there |
+|---|---|---|
+| Explore | Everyone, by default | Nothing: no approval |
+| Scale | Users whose work needs more | Line-manager approval and evidence of value |
+| Transform | The expensive tail | A written business case, a skip-level review and senior confirmation |
+
+The promotion rules carry most of the design:
+
+- **Sustained usage first.** Four to six weeks at the current tier before a request to
+  move up, so a one-off spike does not become an entitlement.
+- **Optimisation before promotion.** The requester shows the cheaper levers were tried
+  first (the right model for the task, a sound workflow). A tier upgrade is not a
+  substitute for model routing.
+- **A link to a company priority.** The use is tied to a tracked work item that maps to
+  a priority, which gives the approver something to judge besides the amount.
+- **Time-boxed tiers.** Each upgrade is renewed every 30 to 60 days or the user drops a
+  tier. Renewal is what stops the ladder from ratcheting upward.
+
+The principles the organisation put around it match the rest of this file: visibility
+before restriction (individual, team and organisation dashboards went live before the
+tiers), ownership at the point of consumption, and managers, not the FinOps team,
+accountable for the approvals. Enforce the tier limits where the tool allows it (the
+vendor admin console for seat tools, a proxy budget for API keys) so the ladder is a
+control, not a request form.
+
+*Sourcing note:* practitioner-reported, from Christian de Wit (Booking.com), "Implementing
+AI Cost Controls", Tokenomicon FinOps X Amsterdam, September 2026
+(https://www.youtube.com/watch?v=JKC-5ZhJmeM, viewed 13 October 2026). It describes one
+organisation's operating practice, introduced in July and August 2026, not vendor
+mechanics, and no outcome data was presented beyond the design.
+
 ---
 
 ## Diagnostic questions for a new engagement
