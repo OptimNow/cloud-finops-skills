@@ -501,8 +501,8 @@ operational risk if the workload supports the target architecture.
   ship every 12-18 months. Modernization is a continuous process, not
   a project.
 - **Ignoring Extended Support charges**. RDS Extended Support pricing is
-  significant (typically 2-3x the base rate); in the accounts OptimNow has
-  reviewed, migration to a supported version is usually the highest-ROI
+  significant (typically 2-3x the base rate); migration to a supported
+  version is often the highest-ROI
   single optimisation.
 
 ---

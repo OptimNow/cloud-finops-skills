@@ -16,8 +16,7 @@ commitment whether matching resources run or not. When the estate drifts
 away from the committed shape - a machine-series migration (N2 to C4, x86
 to Arm), a region consolidation, or a workload move to GKE Autopilot or
 serverless - the CUD keeps billing while the discount it was bought for
-stops landing. This is the GCP commitment failure OptimNow sees most
-often: the deep
+stops landing. This is a common GCP commitment failure: the deep
 discount of a resource-based CUD is exactly what makes it brittle, because
 resource-based CUDs cannot be exchanged or cancelled mid-term. The paired
 sizing trap: CUD savings modelled against headline on-demand rates

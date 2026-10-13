@@ -125,7 +125,7 @@ Recommended starting thresholds:
 
 ## The layered-detection pattern (catching masked anomalies)
 
-The failure mode OptimNow sees most often in anomaly management is the **masked anomaly**:
+A common failure mode in anomaly management is the **masked anomaly**:
 two changes of opposite sign in the same billing period that net to a small total
 delta. Aggregate monitors do not see it. The classic shape:
 

@@ -20,7 +20,7 @@ is ~$0.53/hour ~= $385/month; the equivalent CPU-bound `c7i.xlarge` is
 ~$0.18/hour ~= $130/month. For larger instances the gap widens: a
 `g5.4xlarge` is ~$1.62/hour vs `c7i.4xlarge` at ~$0.71/hour. Multiplied
 across an inference fleet, the wrong compute choice is among the
-costliest silent waste OptimNow finds in an AI stack. The rates above
+costliest silent waste in an AI stack. The rates above
 are illustrative us-east-1 on-demand list prices as at May 2026 - they
 anchor the size of the gap, not the current bill; verify against live
 pricing before quoting.

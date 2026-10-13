@@ -16,8 +16,8 @@ costs ~$36/month if left on 24/7; an `ml.t3.xlarge` is ~$144/month; a GPU
 notebook (`ml.g4dn.xlarge`) is ~$540/month. Data-science teams routinely
 spin notebooks up for a half-day experiment, walk away, and the notebook
 keeps billing for months. Multiply across a 10-person ML team and a Friday
-deadline, and in the accounts OptimNow has reviewed the always-on notebook
-bill is the second-largest line in SageMaker spend after endpoints. The
+deadline, and the always-on notebook bill can become the second-largest
+line in SageMaker spend after endpoints. The
 monthly figures are illustrative
 us-east-1 list rates as at May 2026 - verify against live pricing before
 quoting.

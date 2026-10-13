@@ -98,8 +98,8 @@ The right shape depends on whether the models share a container.
 - Picking IC when models are homogeneous and small - MME is cheaper
   to operate and has lower per-model overhead in that regime.
 - Skipping the pilot phase. A direct cutover to a consolidated endpoint
-  without a traffic-shadowing window has been the usual cause of the
-  consolidation rollbacks OptimNow has seen.
+  without a traffic-shadowing window has been the usual cause of
+  consolidation rollbacks.
 
 ## See also
 

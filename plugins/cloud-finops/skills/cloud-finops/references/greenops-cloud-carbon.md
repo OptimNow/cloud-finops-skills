@@ -144,8 +144,8 @@ figure as a marketing ceiling, not a planning baseline.
 
 ### Open source: Cloud Carbon Footprint (CCF)
 
-Of the multi-cloud carbon tools OptimNow has worked with, CCF is the most useful in
-day-to-day operation. It estimates energy and carbon emissions at the service level
+CCF is a practical multi-cloud carbon tool for day-to-day operation. It estimates energy and
+carbon emissions at the service level
 using actual CPU utilization rather than averages.
 
 **What it does:**
@@ -236,8 +236,8 @@ This trade-off should be explicit, documented, and time-bounded.
 
 ## Region selection for carbon reduction
 
-Region selection is the highest-impact single optimisation OptimNow has seen in carbon
-work. Research from Microsoft's Carbon Aware SDK project puts the ceiling at up to 75%
+Region selection is the largest single lever for location-based emissions on shiftable
+workloads. Research from Microsoft's Carbon Aware SDK project puts the ceiling at up to 75%
 lower emissions for a given workload through location-shifting; treat that figure as a
 ceiling, not an expectation.
 
@@ -661,8 +661,8 @@ making any commitment. A Reserved Instance on an overprovisioned VM is still was
 now locked in for 1-3 years.
 
 **Treating GreenOps as a separate program.**
-In OptimNow's experience, a sustainability team disconnected from FinOps does not get
-carbon reduction into day-to-day operation. Carbon data needs to be in the same
+A sustainability team disconnected from FinOps rarely gets carbon reduction into
+day-to-day operation. Carbon data needs to be in the same
 dashboards, the same team reviews, and the same governance processes as cost data.
 
 **Measuring without acting.**

@@ -151,8 +151,8 @@ emerged.
 
 During any migration there is a window where both the source environment
 and the target environment are running. This is the "double bubble" - paying
-twice for capacity until the source is decommissioned. In the migration
-projects OptimNow has seen, it is the biggest hidden cost.
+twice for capacity until the source is decommissioned. It is often the
+biggest hidden cost of a migration project.
 
 ### Why it gets missed
 

@@ -39,7 +39,7 @@ These patterns describe the most common forms of SaaS waste. Use them to diagnos
 **Unused or Underutilised Licenses (Shelfware)**
 Type: License Waste
 
-Licenses allocated to users who have not logged in within 30, 60, or 90 days. Common with enterprise agreements where seats are purchased in bulk and assigned broadly. In the estates OptimNow has reviewed, often the largest single source of SaaS waste.
+Licenses allocated to users who have not logged in within 30, 60, or 90 days. Common with enterprise agreements where seats are purchased in bulk and assigned broadly. Often the largest single source of SaaS waste.
 
 - Implement automated license reharvesting after a defined inactivity threshold
 - Notify users before revocation to avoid disrupting active but infrequent users

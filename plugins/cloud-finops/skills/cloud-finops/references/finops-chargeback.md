@@ -358,7 +358,7 @@ team is being unreasonable.
 - **Jumping straight to hard chargeback**. The chargeback-revolt failure
   mode. Cost: 12-18 months of credibility, recovery measured in years.
 - **Hard chargeback without CFO sponsorship**. Reverts to soft chargeback
-  within two quarters in OptimNow's experience. The CFO owns the accounting
+  within two quarters (see above). The CFO owns the accounting
   and incentive implications; without that ownership, the first quarter of
   P&L surprise
   triggers a pause that is hard to reverse.

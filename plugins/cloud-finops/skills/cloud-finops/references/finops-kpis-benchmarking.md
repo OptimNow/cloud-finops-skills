@@ -74,8 +74,8 @@ Two portfolio-level indicators deserve special care:
   (the delta banked after action) is the only number Finance should
   ever hear as an achievement. Practices that report potential as achievement
   get one good quarter and then a credibility problem.
-- **Forecast variance.** The proxy for practice maturity OptimNow relies on
-  most, because it compounds everything else: allocation quality, anomaly response,
+- **Forecast variance.** The proxy for practice maturity to watch first,
+  because it compounds everything else: allocation quality, anomaly response,
   commitment discipline. A practice that lands within a mid-single-digit
   percentage band month after month has earned the executive room's trust in
   every other number it shows.

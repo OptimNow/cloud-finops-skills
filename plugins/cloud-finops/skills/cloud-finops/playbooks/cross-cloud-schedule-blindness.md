@@ -21,8 +21,8 @@ instance is a round illustrative figure used to make the arithmetic
 legible (written May 2026), not a quoted rate - the 70% ratio is the
 durable part.
 
-In OptimNow's work this is one of the highest-return, lowest-risk
-optimisations. It sits in the "obvious" tier because the business case
+This is one of the highest-return, lowest-risk optimisations in
+cloud cost work. It sits in the "obvious" tier because the business case
 is unambiguous: dev / test does not need to run while everyone is
 asleep.
 

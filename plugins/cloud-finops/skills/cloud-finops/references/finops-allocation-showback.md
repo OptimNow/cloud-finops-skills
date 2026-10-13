@@ -46,8 +46,8 @@ cost views that survive Finance scrutiny.
 
 ## Cost-column methodology
 
-The allocation error OptimNow sees most often is using the wrong cost
-column. FOCUS makes the choices explicit; AWS-native exports require some
+A common allocation error is using the wrong cost column. FOCUS makes the
+choices explicit; AWS-native exports require some
 translation.
 
 ### FOCUS cost columns
