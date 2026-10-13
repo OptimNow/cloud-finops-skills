@@ -159,8 +159,12 @@ cloud-finops-skills/
 │                             check-skill-description,
 │                             check-skill-power-parity (diffs the shared
 │                             SKILL.md / POWER.md body so the routing tables
-│                             cannot drift apart) and check-marketplace-version
-│                             - all fifteen run by the `CI` workflow, and
+│                             cannot drift apart), check-style (prose only:
+│                             no em dash, filler intensifier, corporate verb,
+│                             "percent", dash residue or "the single most";
+│                             allowlist in check-style-allow.txt) and
+│                             check-marketplace-version
+│                             - all sixteen run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow
@@ -955,6 +959,12 @@ from how the directory works:
       `> *Cloud FinOps Skill by [OptimNow]... CC BY-SA 4.0...*`; playbooks use
       `> *Cloud FinOps Playbook by [OptimNow]... CC BY-SA 4.0...*`. No
       truncation mid-sentence or mid-table.
+- [ ] `scripts/check-style.sh` passes (CI-gated): no em dash, filler intensifier
+      (genuinely, actually, simply, truly, really), corporate-register verb
+      (leverage, unlock, streamline, empower), "percent" as a word, "full stop",
+      " -word" dash residue or "the single most" in prose. A quoted title that
+      trips it goes in `scripts/check-style-allow.txt`; our own sentence is
+      rewritten instead.
 - [ ] If adding a new playbook, follow the format in
       `plugins/cloud-finops/skills/cloud-finops/playbooks/README.md` (frontmatter schema, Problem /
       Symptoms / Detection / Fix / Anti-pattern / See also sections, OptimNow

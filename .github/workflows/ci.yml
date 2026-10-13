@@ -54,6 +54,11 @@ jobs:
       - name: Every reference and playbook keeps its footer
         run: bash scripts/check-footers.sh
 
+      # The 13 October 2026 brand review removed 98 filler words, 15 corporate
+      # verbs and the em-dash leftovers from the prose; this holds that at zero.
+      - name: Prose free of style regressions (check-style)
+        run: bash scripts/check-style.sh
+
       # SKILL.md and POWER.md are two entry points onto one body of content and
       # have drifted before (a routing row added to one only).
       - name: SKILL.md and POWER.md have not drifted

@@ -51,7 +51,7 @@ and analysis across platforms.
 
 ### `system.billing.usage` - the canonical billing table
 
-The single most important table for Databricks FinOps. One row per usage record
+The core table for Databricks FinOps. One row per usage record
 (typically 1-hour granularity), with fields covering account, workspace, SKU, DBUs
 consumed, list-price USD, and identifiers for the workload that consumed the DBUs
 (`usage_metadata` includes job_id, cluster_id, warehouse_id, endpoint_id depending
