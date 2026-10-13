@@ -80,6 +80,32 @@ Two portfolio-level indicators deserve special care:
   percentage band month after month has earned the executive room's trust in
   every other number it shows.
 
+**Documented example: the five-minute budget, and the initiative trap.** One
+online-marketplace group applied the DevOps rule "if it hurts, do it more often" to cloud
+budgeting. Three moves, each one organisation's practice rather than an established
+standard:
+
+- **Normalise before you delegate.** The old top-down process mixed currencies and mixed
+  amortised with billed cost, so the first step was one cost basis and one currency.
+- **Prefilled, owned by the people who deploy.** Each budget arrives prefilled and should
+  take its owner under five minutes. Owners went from tens of people to hundreds, which
+  spread cost awareness through engineering more than any training did.
+- **Budget by exception.** The next step is a standing prefilled budget that asks for a
+  change only when actuals diverge from it - the same signal as forecast variance above.
+
+The same team named the trap on the reporting side. Management tracked each savings
+initiative individually, one initiative that stayed red (a NAT Gateway fix) took over the
+weekly review for months, and the overall target was met through other initiatives
+anyway. Report savings against the portfolio target and treat a single stuck initiative
+as an exception to resolve, not as the headline. It is Campbell's law in a FinOps setting:
+the more weight a single indicator carries in decisions, the more it distorts the work it
+was meant to measure.
+
+*Sourcing note:* practitioner-reported, from Ferran Grau Horta (Adevinta), "The Five-Minute
+Budget", Tokenomicon FinOps X Amsterdam, September 2026
+(https://www.youtube.com/watch?v=vZrELViIXNA, viewed 13 October 2026). It describes one
+organisation's process; no comparative data was presented.
+
 ## Unit economics: the discipline that makes KPIs mean something
 
 The unit metric translates "we spent less" into "we got more efficient", and it

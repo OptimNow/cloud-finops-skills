@@ -164,6 +164,32 @@ AI tools can assist with spend forecasting, anomaly detection, and cost attribut
 Note: high variance and non-determinism in AI outputs means human review remains
 required. AI accelerates FinOps work; it does not replace judgment.
 
+**Documented example: "SQL does the maths, the model does the talking".** One airline
+platform team, with a seven-figure Azure bill and no dedicated FinOps team, built a
+semi-agentic FinOps assistant around a split that answers the variance problem directly:
+
+- **Deterministic numbers.** Billing data lands raw and append-only, is normalised to
+  FOCUS with ownership attached, and every figure the assistant quotes is computed by SQL
+  at query time. The model never does arithmetic.
+- **The model explains.** The language model reads the query results and writes the
+  explanation, and every recommendation traces back to the rows that produced it.
+- **Evidence, not permissions.** The assistant has read access to evidence and no write
+  access to infrastructure. Its recommendations come out as infrastructure-as-code
+  changes (storage tier moves, compute sizing) that an engineer reviews and merges like
+  any other change. Nothing runs autonomously.
+- **Value, not consumption.** For AI coding tools, the team attributed cost to successful
+  deployments rather than stopping at a spend total, and said plainly that the link to
+  business value was still to be made.
+
+The team reported a 15% reduction in cloud run rate over three months. That is one
+organisation's own result; the transferable part is the design, which keeps the
+non-determinism the paragraph above warns about out of every number a decision rests on.
+
+*Sourcing note:* practitioner-reported, from Ina Shabani (Transavia), "Can You Trust an AI
+FinOps Agent?", Tokenomicon FinOps X Amsterdam, September 2026
+(https://www.youtube.com/watch?v=gzqak-gAv-o, viewed 13 October 2026). It describes one
+organisation's design, not vendor mechanics.
+
 ### Communicate AI value to executives
 
 Practitioner experience from Google Cloud and Shopify highlights the importance of

@@ -171,6 +171,61 @@ open-weight inference at very high request volume across multiple GPU vendors (p
 20 September 2026). They describe operating experience, not vendor billing mechanics -
 verify each against the specific vendors on your shortlist.
 
+### Documented example: capacity classes on a shared GPU fleet
+
+Once inference is self-hosted, idle capacity is a line the provider's bill never shows.
+One voice-AI company serving several products from a shared, autoscaled GPU fleet on AWS
+splits fleet cost into three capacity classes before it allocates anything to products:
+
+| Class | What it is | What it usually means |
+|---|---|---|
+| In use | Instance time spent serving work | The cost that unit metrics should carry |
+| Idle reserved | Instances running while the fleet scales up or down | The price of elasticity; tune it with scaling policy |
+| Dark reserved | Instances running and idle with no scaling activity to explain them | Waste, or an incident |
+
+The third class earned its place in that team: a spike in dark-reserved cost matched a
+scaling-policy incident (cached scaling behaviour that kept capacity up), and the
+breakdown became the evidence for a credit request to the provider. Treat a dark-reserved
+spike as an alert condition, not a month-end finding.
+
+How the split can be built on AWS (mechanics from AWS documentation; the classification
+itself is the team's):
+
+- **Group instances into fleets** with the `aws:autoscaling:groupName` tag, which EC2
+  Auto Scaling applies to every instance it launches. To see it in the CUR it has to be
+  activated as a cost allocation tag in the payer account. AWS's page on AWS-generated
+  cost allocation tags documents only `aws:createdBy`, and the activation path for the
+  Auto Scaling tag is described in AWS re:Post answers rather than in the billing docs,
+  so confirm it appears in your account's cost allocation tag list before building on it.
+  Either way, cost allocation tags apply only from activation forward.
+- **Separate used from unused instance capacity** where the fleet runs containers.
+  Split cost allocation data carries `splitLineItem/ParentResourceId` (the EC2 instance a
+  task or pod ran on) and `splitLineItem/UnusedCost` (instance capacity no task or pod
+  used). On EKS it covers NVIDIA and AMD GPUs, Trainium and Inferentia since
+  September 2025; on ECS it covers vCPU and memory only, so a GPU fleet on ECS needs an
+  approximation (the team applied the CPU-based split logic to GPU instances and said
+  so). Split cost allocation data is a CUR 2.0 and legacy CUR option, not part of the
+  FOCUS 1.2 export (see `finops-focus.md`).
+- **Tell idle reserved from dark reserved** with the Auto Scaling group's scaling
+  activity history: idle time inside a scaling window is idle reserved, idle time with
+  no activity is dark reserved. This join happens outside the CUR.
+
+The same team set unit metrics at the granularity of its own price list (product by model
+by region) and smoothed volatile allocation keys over a two-week rolling window, accepting
+that a new model or language lags in the numbers for its first two weeks.
+
+*Sourcing note:* practitioner-reported, from Caitlin Johnson (AssemblyAI), "What Does It
+Really Cost to Serve an AI Product?", Tokenomicon FinOps X Amsterdam, September 2026
+(https://www.youtube.com/watch?v=KacOh4sKhZU, viewed 13 October 2026). AWS mechanics:
+split cost allocation columns
+(https://docs.aws.amazon.com/cur/latest/userguide/split-line-item-columns.html),
+accelerated-instance support
+(https://aws.amazon.com/about-aws/whats-new/2025/09/split-cost-allocation-data-amazon-eks-nvidia-amd-gpu-trainium-inferentia-ec2),
+Auto Scaling instance tags
+(https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-tagging.html),
+AWS-generated cost allocation tags
+(https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/aws-tags.html).
+
 ## Where self-hosted wins (when it does)
 
 When the conditions align, self-hosted is meaningfully cheaper and operationally sensible.
