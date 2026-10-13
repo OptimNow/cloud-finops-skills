@@ -149,7 +149,7 @@ When a Compute instance is terminated in OCI, the associated boot volume is not 
 **Missing Lifecycle Policy On Object Storage**
 Service: OCI Object Storage | Type: Missing Cost Control Configuration
 
-Without lifecycle policies, data in OCI Object Storage remains in the default storage tier indefinitely -even if it is rarely accessed. This can lead to growing costs from unneeded or rarely accessed data that could be expired or transitioned to lower-cost tiers like Archive Storage.
+Without lifecycle policies, data in OCI Object Storage remains in the default storage tier indefinitely - even if it is rarely accessed. This can lead to growing costs from unneeded or rarely accessed data that could be expired or transitioned to lower-cost tiers like Archive Storage.
 
 - Create lifecycle rules to transition older objects to Archive Storage
 - Set expiration policies for data older than required retention thresholds
@@ -160,9 +160,9 @@ Service: OCI Block Volume | Type: Orphaned Storage Resource
 
 Block volumes that are not attached to any instance continue to incur charges. These often accumulate after instance deletion or reconfiguration.
 
-- Delete unattached boot volumes that are no longer needed
-- Establish lifecycle policies or instance termination settings that automatically delete boot volumes unless explicitly retained
-- Periodically audit the Block Volumes service for orphaned resources
+- Delete unattached block volumes that are no longer needed
+- Tag volumes detached on purpose with an owner and an expiry date, and review them at expiry
+- Periodically audit the Block Volumes service for volumes with no attachment
 
 ---
 

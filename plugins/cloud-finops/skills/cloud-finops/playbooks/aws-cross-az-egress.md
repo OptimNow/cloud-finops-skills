@@ -87,10 +87,12 @@ LIMIT 50;
    Hints), service mesh (Istio locality routing), or load balancer
    target group stickiness so a request sent in AZ-a routes to a target
    in AZ-a where possible.
-2. **Co-locate chatty pairs**: if Service A makes 1000 calls/sec to
-   Service B, the two should be in the same AZ even if it slightly
-   weakens the multi-AZ posture - a single-AZ outage is a known recovery
-   pattern, a constant cross-AZ bill is not.
+2. **Co-locate chatty pairs per AZ**: if Service A makes 1000 calls/sec to
+   Service B, run a replica of each in every AZ and route AZ-locally, so
+   the pair talks inside one AZ without weakening the multi-AZ posture.
+   Collapsing the pair into a single AZ is a different decision: it trades
+   availability for transfer cost and needs the workload owner's RTO on
+   the table before it is made.
 3. **Read replicas in each AZ**: for read-heavy databases, an in-AZ read
    replica eliminates cross-AZ read traffic at the cost of one extra
    instance.

@@ -187,8 +187,8 @@ window - treat it as a discount on continuing usage, not as a rebate.
 
 Neither mechanism alters Provisioned Throughput commitment burndown rates.
 
-*Remove this subsection after January 2027, once both windows have closed and the
-repricing has landed in actuals.*
+<!-- Maintainer note: remove this subsection after January 2027, once both windows have
+closed and the repricing has landed in actuals. -->
 
 Source: https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing
 

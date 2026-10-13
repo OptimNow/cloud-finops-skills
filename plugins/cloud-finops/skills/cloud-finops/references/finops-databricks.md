@@ -81,7 +81,7 @@ a policy that attaches to compute (cluster, job, warehouse, serverless endpoint)
 enforces a spend cap with alert and/or hard-stop modes.
 
 **What budget policies enable:**
-- **Serverless serverless cost attribution before the fact** - tag the workload with
+- **Serverless cost attribution before the fact** - tag the workload with
   the policy ID, and all serverless DBU consumption rolls up to that policy in
   billing reports (this is the canonical way to attribute serverless spend, since
   serverless workloads don't expose node-level visibility).
@@ -205,7 +205,14 @@ Many organizations continue running short-lived or low-intensity SQL workloads -
 **Inefficient Bi Queries Driving Excessive Compute Usage**
 Service: Interactive Clusters | Type: Inefficient Query Patterns
 
-Business Intelligence dashboards and ad-hoc analyst queries frequently drive Databricks compute usage - especially when: * Dashboards are auto-refreshed too frequently * Queries scan full datasets instead of using filtered views or materialized tables * Inefficient joins or large broadcast operations are used * Redundant or exploratory queries are triggered during interactive exploration This often results in clusters staying active for longer than necessary, or being autoscaled up to handle inefficient workloads, leading to unnecessary DBU consumption.
+Business Intelligence dashboards and ad-hoc analyst queries frequently drive Databricks compute usage - especially when:
+
+- Dashboards are auto-refreshed too frequently
+- Queries scan full datasets instead of using filtered views or materialized tables
+- Inefficient joins or large broadcast operations are used
+- Redundant or exploratory queries are triggered during interactive exploration
+
+This often results in clusters staying active for longer than necessary, or being autoscaled up to handle inefficient workloads, leading to unnecessary DBU consumption.
 
 - Refactor BI queries to limit scan scope and reduce complexity
 - Materialize frequently used intermediate results into temp or Delta tables
@@ -223,7 +230,7 @@ Interactive clusters are often left running between periods of active use. To mi
 **Inefficient Use Of Interactive Clusters**
 Service: Databricks Clusters | Type: Misconfiguration
 
-Interactive clusters are intended for development and ad-hoc analysis, remaining active until manually terminated. When used to run scheduled jobs or production workflows, they often stay idle between executions -leading to unnecessary infrastructure and DBU costs.
+Interactive clusters are intended for development and ad-hoc analysis, remaining active until manually terminated. When used to run scheduled jobs or production workflows, they often stay idle between executions - leading to unnecessary infrastructure and DBU costs.
 
 - Reassign scheduled jobs to ephemeral job clusters
 - Apply workspace policies to enforce job cluster usage for scheduled workflows
@@ -268,7 +275,7 @@ Databricks supports AWS Graviton-based instances for most workloads, including S
 **On Demand Only Configuration For Non Production Databricks Clusters**
 Service: Databricks Clusters | Type: Suboptimal Pricing Model
 
-In non-production environments -such as development, testing, and experimentation -many teams default to on-demand nodes out of habit or caution. However, Databricks offers built-in support for using spot instances safely.
+In non-production environments - such as development, testing, and experimentation - many teams default to on-demand nodes out of habit or caution. However, Databricks offers built-in support for using spot instances safely.
 
 - Enable spot instance usage for non-production clusters where workloads are resilient to interruption
 - Use Databricks’ native fallback-to-on-demand capabilities to preserve job continuity
@@ -277,7 +284,7 @@ In non-production environments -such as development, testing, and experimentatio
 **Suboptimal Use Of On Demand Instances In Non Production Clusters**
 Service: Databricks Clusters | Type: Suboptimal Pricing Model
 
-In Databricks, on-demand instances provide reliable performance but come at a premium cost. For non-production workloads -such as development, testing, or exploratory analysis -high availability is often unnecessary.
+In Databricks, on-demand instances provide reliable performance but come at a premium cost. For non-production workloads - such as development, testing, or exploratory analysis - high availability is often unnecessary.
 
 - Implement compute policies that cap the percentage of on-demand nodes in relevant workloads
 - Update existing cluster configurations to prioritize Spot usage for dev/test workloads

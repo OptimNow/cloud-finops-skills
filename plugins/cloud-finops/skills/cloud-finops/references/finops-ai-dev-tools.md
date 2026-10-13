@@ -175,14 +175,8 @@ charges, but you hit rate limits when the budget is consumed.
 ### API key access (BYOK)
 
 When using an API key, Claude Code bills directly against your Anthropic account at
-standard API rates:
-
-| Model | Input ($/MTok) | Output ($/MTok) |
-|---|---|---|
-| Claude Haiku 4.5 | $1.00 | $5.00 |
-| Claude Sonnet 5 | $2.00 | $10.00 (introductory rate made permanent in August 2026) |
-| Claude Sonnet 4.6 | $3.00 | $15.00 |
-| Claude Opus 5 / 4.8 / 4.6 | $5.00 | $25.00 |
+standard API rates. The per-model list prices are in `finops-anthropic.md` and on
+Anthropic's pricing page; they are not repeated here.
 
 Anthropic's own data (as of September 2026) puts the average Claude Code user on API
 key mode at around $13 per developer per active day, with 90% of users staying under

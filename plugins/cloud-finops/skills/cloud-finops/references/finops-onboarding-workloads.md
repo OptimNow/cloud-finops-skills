@@ -298,9 +298,6 @@ the FOCUS adoption decision gets re-litigated in 18 months when the
 migration team has moved on and the new owners have no incentive to do
 optional refactoring work.
 
-As of December 2024, the expanded FOCUS provider support significantly
-reduces the complexity of multi-cloud cost normalisation during migrations.
-
 ---
 
 ## Architecture review integration

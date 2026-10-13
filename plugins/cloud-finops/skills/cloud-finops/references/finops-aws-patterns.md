@@ -1398,7 +1398,7 @@ By default, AWS Config is enabled in continuous recording mode. While this may b
 - Validate that compliance and auditing needs remain satisfied after reducing recording frequency
 
 **Overly Permissive Vpc Flow Log Filters Sent To Cloudwatch Logs**
-Service: AWS CloudWatch | Type: Explanation
+Service: AWS CloudWatch | Type: Inefficient Configuration
 
 VPC Flow Logs configured with the ALL filter and delivered to CloudWatch Logs often result in unnecessarily high log ingestion volumes - especially in high-traffic environments. This setup is rarely required for day-to-day monitoring or security use cases but is commonly enabled by default or for temporary debugging and then left in place.
 

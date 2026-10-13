@@ -46,8 +46,9 @@ cost the bill records. Three structural complications make this hard:
    serve every team. Their cost has to be allocated by a chosen methodology,
    not by a tag on the resource.
 
-K8s cost allocation is a discipline that has to be built. There is no
-provider button to turn on.
+K8s cost allocation is a discipline that has to be built. The providers'
+native allocation features (next section) get you to namespace level;
+everything past that is yours to build.
 
 ---
 

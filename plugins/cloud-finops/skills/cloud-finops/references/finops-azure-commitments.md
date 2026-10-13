@@ -37,7 +37,7 @@ to be layered, not chosen in isolation.
 | Azure Hybrid Benefit (AHB) | Up to 40% (Windows), 55% (SQL) | Highest - no commitment, no lock-in | Licensing overlay | None | VMs, SQL Database, SQL MI, Red Hat/SUSE Linux |
 | Spot Virtual Machines | Up to 90% | Variable - can be evicted with 30s notice | None (market-priced) | None | VMs, VMSS, AKS node pools |
 
-**Note on one-year Reserved VM Instances:** As of July 1, 2026, Azure is retiring one-year Reserved VM Instances for select older VM series. This affects new purchases and renewals for these specific series. Three-year reservations remain available for all VM series. When planning reservation strategies, verify current eligibility for one-year terms on your target VM series. Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/manage-legacy-vm-reservations-after-july-1-2026
+**Note on one-year Reserved VM Instances:** As of 1 July 2026, Azure is retiring one-year Reserved VM Instances for select older VM series. This affects new purchases and renewals for these specific series. Three-year reservations remain available for all VM series. When planning reservation strategies, verify current eligibility for one-year terms on your target VM series. Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/manage-legacy-vm-reservations-after-july-1-2026
 
 **Critical distinctions:**
 
@@ -45,8 +45,9 @@ to be layered, not chosen in isolation.
    Server or SQL Server licenses with Software Assurance, AHB eliminates the license
    component from VM pricing. No contract, no lock-in, no restart needed. This should
    be enabled on all eligible VMs before any other commitment decision. Windows licence
-   costs can account for 44% of a Windows VM price (e.g. D4_v5 Windows at ~0.35/hr =
-   ~0.19 compute + ~0.15 licence). Use the AHB Workbook from FinOps Toolkit for
+   costs can be a large share of a Windows VM's pay-as-you-go rate (44% in the D4_v5
+   case study in `finops-azure.md`; read the exact split for your SKU from the pricing
+   calculator). Use the AHB Workbook from FinOps Toolkit for
    compliance tracking across the fleet.
 
 2. **Savings Plans for Compute cover more than VMs.** Unlike Reservations (which are
@@ -135,7 +136,7 @@ START: What Azure compute service runs the workload?
 │   │           └── YES → Will it stay on the same VM family + region?
 │   │               ├── YES → Is the VM series eligible for 1yr reservations?
 │   │               │         (Check: older series may only support 3yr after
-│   │               │         July 1, 2026)
+│   │               │         1 July 2026)
 │   │               │         ├── YES → Azure Reservation (up to 72%)
 │   │               │         │         Deepest discount. From 1 Feb 2027 covered
 │   │               │         │         services can't be exchanged, so reserve only
@@ -597,8 +598,9 @@ integration with non-Azure data is needed.
 **FinOps Hubs (Azure-native, open source).** Microsoft's reference implementation.
 Deploys an Azure Data Explorer or Fabric backend that ingests FOCUS exports, plus
 pre-built Power BI reports. Open source as software - but the ADX or Fabric capacity is
-real money. Small ADX cluster ~$300/month; Fabric capacity unit $2,500+/month depending
-on size. **The cost of running FinOps Hubs is itself a FinOps line item that should
+real money: a small ADX cluster runs to a few hundred dollars a month and the smallest
+useful Fabric capacity to a few thousand (order of magnitude only; read current rates
+from the pricing pages). **The cost of running FinOps Hubs is itself a FinOps line item that should
 appear in the customer's cost model.** Best for customers committed to Azure-native,
 with engineering capacity to maintain it.
 
