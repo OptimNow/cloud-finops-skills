@@ -21,6 +21,9 @@ fcp_maturity_entry: "Walk"
 > This file covers the intake gate that prevents the miss, and the operating
 > patterns for the migration-time activities that the gate enforces.
 
+The multipliers in this file are working estimates from migration work, not
+published benchmarks.
+
 ---
 
 ## Why migration is the cheapest FinOps window
@@ -128,7 +131,7 @@ quarterly close pressure, and the slow rampup of users from the legacy
 system. Committing on 30 days routinely produces 40-60% commitment
 utilisation in month 4 - the worst-of-both outcome where you paid for
 capacity you don't use AND you lack flexibility for the workload that
-actually emerged.
+emerged.
 
 ### Exceptions to the rule
 
@@ -148,8 +151,8 @@ actually emerged.
 
 During any migration there is a window where both the source environment
 and the target environment are running. This is the "double bubble" - paying
-twice for capacity until the source is decommissioned. It is the single
-biggest hidden cost of migration projects.
+twice for capacity until the source is decommissioned. In the migration
+projects OptimNow has seen, it is the biggest hidden cost.
 
 ### Why it gets missed
 
@@ -182,7 +185,7 @@ biggest hidden cost of migration projects.
 
 ## Migration-cost estimates vs actuals
 
-Migration cost estimates are routinely wrong. The most common reason: the
+Migration cost estimates are routinely wrong. The usual reason: the
 network-cost model differs radically between data centre (capacity-based,
 mostly fixed pipe) and cloud (usage-based, every byte priced).
 
@@ -418,7 +421,7 @@ it post-migration costs a quarter of engineering time.
 - `finops-anomaly-management.md` - new workloads should be added to the
   anomaly-monitoring scope as part of the intake gate
 - `optimnow-methodology.md` - "Diagnose before prescribing" applies
-  especially to migration: understand what the workload actually does
+  especially to migration: understand what the workload does
   before recommending architecture or commitment
 
 ---

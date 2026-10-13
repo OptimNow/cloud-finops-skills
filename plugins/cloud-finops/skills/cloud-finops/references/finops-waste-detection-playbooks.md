@@ -167,7 +167,8 @@ ORDER BY monthly_cost DESC;
 ### Fix sequence
 
 1. **Snapshot before delete** for any storage resource. Snapshot cost is
-   pennies; restoring deleted production data costs careers.
+   pennies; deleted production data with no snapshot is an incident with a
+   post-mortem.
 2. **Owner identification**: tag-based first, account-context fallback.
    If no owner can be identified, the resource enters a 30-day grace
    period with a `wasteline-orphan-pending-deletion` tag.
@@ -435,8 +436,7 @@ not sizing, are the fix.
 ### Fix sequence
 
 1. **Identify the schedule pattern from observed usage**, not from
-   assumed business hours. Some teams really do work weekends or split
-   shifts.
+   assumed business hours. Some teams work weekends or split shifts.
 2. **Pilot on dev/test environments first**. Production scheduling has
    complications (long-running batch jobs, cross-time-zone teams) that
    dev does not.
@@ -445,7 +445,8 @@ not sizing, are the fix.
    `schedule=batch-overnight`). Scheduler reads tags. New workloads
    default to a tag that requires explicit opt-out from scheduling.
 4. **Realised savings**: 60-70% on dev / test that moves to business
-   hours; 30-40% on production batch workloads that pause overnight.
+   hours; 30-40% on production batch workloads that pause overnight. Both
+   ranges are indicative, not a benchmark.
 
 ### Anti-patterns
 
@@ -488,8 +489,8 @@ operational risk if the workload supports the target architecture.
 4. **Have a rollback plan**: blue-green deployment or feature flag that
    reverts to the old architecture if metrics regress.
 5. **Track realised savings against the new instance type cost**. ARM
-   typically delivers 20-30% savings on equivalent workloads; older →
-   newer generation typically 15-25%.
+   delivers 20-30% savings on equivalent workloads as a working estimate;
+   older → newer generation 15-25%. Verify both in the estate.
 
 ### Anti-patterns
 
@@ -500,8 +501,9 @@ operational risk if the workload supports the target architecture.
   ship every 12-18 months. Modernization is a continuous process, not
   a project.
 - **Ignoring Extended Support charges**. RDS Extended Support pricing is
-  significant (typically 2-3x the base rate); migration to a supported
-  version is usually the highest-ROI single optimisation in an account.
+  significant (typically 2-3x the base rate); in the accounts OptimNow has
+  reviewed, migration to a supported version is usually the highest-ROI
+  single optimisation.
 
 ---
 
@@ -552,7 +554,7 @@ provider-specific AI billing, see `finops-bedrock.md`,
    can be restarted; deleted ones lose state. Notify owner with a 30-day
    stop-vs-delete decision window.
 2. **Bedrock Provisioned Throughput underutilised**: switch to on-demand
-   if the utilisation pattern is genuinely low; or right-size the PT
+   if the utilisation pattern is low; or right-size the PT
    commitment to the observed p95.
 3. **Training on-demand → Spot**: validate the training job supports
    checkpointing (most modern training frameworks do). Spot delivers
@@ -749,7 +751,8 @@ roadmap.
   regenerates as workloads change. Continuous detection is the only
   durable answer.
 - **Aggressive deletion before snapshot or rollback path is in place**.
-  Customer-critical data loss is career-ending.
+  Customer-critical data loss is unrecoverable; the snapshot step is the
+  whole safety margin.
 - **No realised-savings tracking**. Without the closing-the-loop
   measurement, the programme has no signal of its own effectiveness and
   no defence against the inevitable "are we sure this is working?"

@@ -26,9 +26,10 @@ fcp_maturity_entry: "Walk"
 
 Data centers consumed approximately 415 TWh globally in 2024 - roughly 1.5% of world
 electricity. The IEA projects this could reach 945 TWh by 2030, driven primarily by AI
-workloads and cloud scale. Tech sector emissions already rival the aviation industry.
+workloads and cloud scale. Tech sector emissions are often compared to those of aviation.
 
-**GreenOps is not a separate discipline.** It is FinOps with a carbon column added.
+**OptimNow treats GreenOps as FinOps with a carbon column added**, because the same
+tagging, showback and governance work serves both.
 Every tagging, rightsizing, or idle resource cleanup action that reduces cost also
 reduces emissions. The marginal effort to add carbon tracking to an existing FinOps
 program is low.
@@ -143,9 +144,9 @@ figure as a marketing ceiling, not a planning baseline.
 
 ### Open source: Cloud Carbon Footprint (CCF)
 
-CCF is the most operationally useful multi-cloud carbon tool available today. It
-estimates energy and carbon emissions at the service level using actual CPU utilization
-rather than averages.
+Of the multi-cloud carbon tools OptimNow has worked with, CCF is the most useful in
+day-to-day operation. It estimates energy and carbon emissions at the service level
+using actual CPU utilization rather than averages.
 
 **What it does:**
 - Covers AWS, Azure, and GCP in a single dashboard
@@ -226,7 +227,7 @@ adding one column - gCO₂e - to existing cost reports.
 
 ### Key difference from pure FinOps
 
-In FinOps, the lowest-cost option is always preferred. In GreenOps, a slightly higher-cost
+In a pure cost lens the lowest-cost option wins by default. In GreenOps, a slightly higher-cost
 option may be justified if it runs in a region with significantly lower carbon intensity
 (e.g., a renewable-heavy region vs. a coal-heavy region at marginally higher compute cost).
 This trade-off should be explicit, documented, and time-bounded.
@@ -235,9 +236,10 @@ This trade-off should be explicit, documented, and time-bounded.
 
 ## Region selection for carbon reduction
 
-Region selection is the single highest-impact optimisation available. Research from
-Microsoft's Carbon Aware SDK project shows that location-shifting can reduce carbon
-emissions by up to 75% for a given workload.
+Region selection is the highest-impact single optimisation OptimNow has seen in carbon
+work. Research from Microsoft's Carbon Aware SDK project puts the ceiling at up to 75%
+lower emissions for a given workload through location-shifting; treat that figure as a
+ceiling, not an expectation.
 
 ### Low-carbon regions by provider (indicative)
 
@@ -247,7 +249,8 @@ emissions by up to 75% for a given workload.
 | **GCP** | Montreal, Toronto, Santiago (90%+ carbon-free energy) | Varies by grid mix |
 | **Azure** | Nordics, Ireland, parts of Canada | Regions dependent on coal or gas grids |
 
-**AWS region intensities - quantitative anchors (location-based):**
+**AWS region intensities - quantitative anchors (location-based):** annual averages as
+read in 2026; check Electricity Maps for current values.
 
 | AWS region | Approximate grid intensity | Grid mix |
 |---|---|---|
@@ -397,7 +400,7 @@ needed.
 **Critical read.** This is the area where the carbon argument is strongest and sometimes lands
 harder than the cost argument alone. Graviton is cheaper *and* meaningfully lower carbon. Spot
 extends hardware lifetime - a real scope 3 lever, not just a cost lever. Recommend Hardware
-Patterns first when a client is genuinely sustainability-driven.
+Patterns first when a client is sustainability-driven.
 
 ### SUS06 - Development and deployment process
 
@@ -462,14 +465,14 @@ Four scenarios where cost and carbon point in different directions and the decis
 not technical.
 
 **Region migration for carbon.** Moving from US-East-1 (~375 g CO2/kWh) to Sweden (~25 g) reduces
-location-based emissions by ~15x. Trade-offs: higher latency to US users, potentially different
-SKU pricing, egress charges to legacy systems, data-residency implications. Net cost may rise
+location-based emissions by ~15x. Trade-offs: higher latency to US users, SKU prices that
+differ by region, egress charges to legacy systems, data-residency implications. Net cost may rise
 even though carbon falls dramatically.
 
 **Premium hardware for efficiency.** Latest-generation processors typically cost more per hour
 but deliver more work per watt. Net cost per workload-output may be lower even at higher hourly
-rate, but only if the workload actually utilises the new hardware features. For static workloads,
-the migration cost may exceed savings. For carbon, latest-generation almost always wins.
+rate, but only if the workload utilises the new hardware features. For static workloads,
+the migration cost may exceed savings. For carbon, latest-generation wins in most cases.
 
 **Hardware lifetime extension via Spot.** Spot reduces effective embodied-emissions amortisation
 per workload-hour because the instances would otherwise sit idle. Trade-off: evictability,
@@ -495,14 +498,16 @@ conversations:
 The "higher cost + lower carbon" quadrant is where consulting judgment matters most. A region
 migration that costs €500k extra per year and reduces 200 tCO2e is €2.5k/tCO2e - useful to
 compare against the customer's carbon-pricing assumption (internal carbon price, expected carbon
-tax, voluntary offset rate). Many enterprise customers use €50-150/tCO2e as an internal price;
-the region migration above is far more expensive than that and probably not justified on carbon
-alone, but might be justified strategically.
+tax, voluntary offset rate). The internal carbon prices seen in client work range from €50 to
+€150/tCO2e; the region migration above is far more expensive than that and probably not
+justified on carbon alone, but might be justified strategically.
 
 ### The CSRD / climate-disclosure conversation
 
-For European clients (and increasingly global ones via SEC and similar regulators), carbon
-reporting is no longer optional. The roles to know:
+For clients inside CSRD scope, carbon reporting is a legal obligation; the size thresholds
+were revised in 2025 under the Omnibus package, so confirm the client's status before
+assuming it applies. Outside the EU, disclosure rules vary by jurisdiction. The roles to
+know:
 
 **Chief Sustainability Officer / Head of Sustainability.** Owns the disclosure narrative. Wants
 methodology defensibility (ISO standards, third-party verification, scope completeness). Cares
@@ -608,8 +613,9 @@ Cloud providers report their data center emissions under Scope 1 and 2.
 - **EU Energy Efficiency Directive (Data Centers in Europe):** European organisations
   must report on data center energy use, PUE, renewable energy share, water usage,
   and waste heat reuse. Reporting obligations apply from 2024 onward.
-- **EU CSRD:** Large companies must report Scope 1, 2, and 3 emissions with third-party
-  verification. Cloud emissions are material Scope 3 items.
+- **EU CSRD:** Companies inside CSRD scope report Scope 1, 2, and 3 emissions with
+  third-party verification (scope thresholds revised in 2025, see above). Cloud
+  emissions are material Scope 3 items.
 - **SEC Climate-Related Disclosures (US):** Requires disclosure of material climate risks
   and GHG emissions for public companies.
 
@@ -655,8 +661,8 @@ making any commitment. A Reserved Instance on an overprovisioned VM is still was
 now locked in for 1-3 years.
 
 **Treating GreenOps as a separate program.**
-Organisations that create a separate sustainability team disconnected from FinOps
-typically fail to operationalize carbon reduction. Carbon data needs to be in the same
+In OptimNow's experience, a sustainability team disconnected from FinOps does not get
+carbon reduction into day-to-day operation. Carbon data needs to be in the same
 dashboards, the same team reviews, and the same governance processes as cost data.
 
 **Measuring without acting.**

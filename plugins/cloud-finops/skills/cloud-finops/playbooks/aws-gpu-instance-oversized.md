@@ -19,7 +19,7 @@ patterns in AWS - and one of the hardest to spot, because the basic
 GPU-utilisation metric most teams reach for (`nvidia-smi`'s `GPU-Util`,
 surfaced by the CloudWatch agent as `nvidia_smi_utilization_gpu`) reports
 whether the GPU did anything in the interval, not how much of its compute
-capacity was actually used (see
+capacity was used (see
 [finops-for-ai.md](../references/finops-for-ai.md), section on GPU
 telemetry). The rates above are illustrative us-east-1 on-demand list
 prices written between May and August 2026 - verify against live pricing

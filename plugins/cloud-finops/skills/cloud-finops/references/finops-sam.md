@@ -24,9 +24,9 @@ SaaS has become one of the largest and least visible cost categories in most org
 
 The State of FinOps 2026 survey (6th edition, 1,192 respondents, $83+ billion in cloud spend, published February 2026) confirms that SaaS is now firmly within the FinOps scope: 90% of respondents manage SaaS or plan to (up from 65% in 2025). Licensing management has also grown to 64% (up from 49%). This expansion reflects a practical reality: SaaS and IaaS are often interchangeable (a managed database versus an RDS instance, a SaaS observability tool versus self-hosted Prometheus), so managing one without the other creates blind spots in cost allocation and optimisation.
 
-Gartner predicts that by 2028, over 70% of organisations will centralize SaaS management using a SaaS Management Platform (SMP), up from less than 30% in 2025. Organizations that fail to centralize SaaS lifecycle management will overspend on SaaS by at least 25% due to unused entitlements and unnecessary overlapping tools, and remain five times more susceptible to cyberincidents or data loss.
+Gartner forecasts that by 2028, over 70% of organisations will centralize SaaS management using a SaaS Management Platform (SMP), up from less than 30% in 2025. The same Gartner forecast holds that organizations that fail to centralize SaaS lifecycle management will overspend on SaaS by at least 25% due to unused entitlements and unnecessary overlapping tools, and remain five times more susceptible to cyberincidents or data loss. These are analyst projections, not measured outcomes.
 
-The structural problem - sometimes called the "SaaSocalypse" - is not access to tools. It is loss of control. A mid-sized organisation may run 120+ SaaS applications. License renewals go unreviewed. Tools described as mission-critical are used by three people. Finance discovers overlapping tools doing the same job only during emergency audits. Procurement becomes the bottleneck instead of the enabler.
+The structural problem is not access to tools. It is loss of control. A mid-sized organisation may run 120+ SaaS applications, where license renewals go unreviewed and tools described as mission-critical are used by three people. Finance discovers overlapping tools doing the same job only during emergency audits, by which point procurement has become the bottleneck instead of the enabler.
 
 **Connection to the FinOps Inform phase:** You cannot optimise what you cannot see. SaaS visibility is the prerequisite for license optimisation, renewal negotiation, and any serious application rationalisation effort.
 
@@ -39,7 +39,7 @@ These patterns describe the most common forms of SaaS waste. Use them to diagnos
 **Unused or Underutilised Licenses (Shelfware)**
 Type: License Waste
 
-Licenses allocated to users who have not logged in within 30, 60, or 90 days. Common with enterprise agreements where seats are purchased in bulk and assigned broadly. Often the single largest source of SaaS waste.
+Licenses allocated to users who have not logged in within 30, 60, or 90 days. Common with enterprise agreements where seats are purchased in bulk and assigned broadly. In the estates OptimNow has reviewed, often the largest single source of SaaS waste.
 
 - Implement automated license reharvesting after a defined inactivity threshold
 - Notify users before revocation to avoid disrupting active but infrequent users
@@ -271,14 +271,14 @@ SaaS management governance is a prerequisite for any serious AI integration stra
 
 **Why this matters now:**
 
-SaaS applications are, at their core, CRUD databases with embedded business logic. As AI agents become capable of operating across multiple systems and data sources, some of that business logic may migrate out of SaaS tools and into agent workflows. This does not mean SaaS is dead. It means SaaS without structure will not survive the era of agents.
+SaaS applications are, at their core, CRUD databases with embedded business logic. As AI agents become capable of operating across multiple systems and data sources, some of that business logic may migrate out of SaaS tools and into agent workflows. This does not mean SaaS is dead. It means a SaaS estate with no inventory or contract metadata leaves the organisation unable to decide what to replace, integrate or retire as agent workflows mature.
 
 **Practical implications for the transition period:**
 
 - Organizations need full visibility into their current SaaS estate before making informed decisions about what to replace, integrate, or retire
 - SaaS inventory data becomes an input to AI strategy: which tools contain business logic that could be displaced by agents? Which are data stores that agents will need to access?
-- Torii's 2025 launch of MCP-compatible agentic capabilities signals the direction: SMPs themselves are becoming platforms for AI agent orchestration
-- Until AI agents actually displace SaaS at scale (which may take years), organisations need the ability to know their current stack, control it deliberately, and evolve it with confidence
+- Torii's 2025 launch of MCP-compatible agentic capabilities is one datapoint that SMPs may become platforms for AI agent orchestration; one vendor is not a market direction
+- Until AI agents displace SaaS at scale (which may take years), organisations need the ability to know their current stack, control it deliberately, and evolve it with confidence
 
 **Digital sovereignty (European context):**
 
@@ -291,6 +291,8 @@ Always-on SaaS services, duplicated infrastructure across overlapping tools, and
 ---
 
 ## Key metrics
+
+Targets are indicative Run-stage values; a Crawl practice should baseline first.
 
 | Metric | Description | Target |
 |---|---|---|

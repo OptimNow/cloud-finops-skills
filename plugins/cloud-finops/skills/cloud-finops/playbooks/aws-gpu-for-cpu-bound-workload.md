@@ -19,10 +19,11 @@ SIMD). The customer is paying GPU prices for CPU work. A `g4dn.xlarge`
 is ~$0.53/hour ~= $385/month; the equivalent CPU-bound `c7i.xlarge` is
 ~$0.18/hour ~= $130/month. For larger instances the gap widens: a
 `g5.4xlarge` is ~$1.62/hour vs `c7i.4xlarge` at ~$0.71/hour. Multiplied
-across an inference fleet, the wrong compute choice is the costliest
-silent waste in an AI stack. The rates above are illustrative us-east-1
-on-demand list prices as at May 2026 - they anchor the size of the gap,
-not the current bill; verify against live pricing before quoting.
+across an inference fleet, the wrong compute choice is among the
+costliest silent waste OptimNow finds in an AI stack. The rates above
+are illustrative us-east-1 on-demand list prices as at May 2026 - they
+anchor the size of the gap, not the current bill; verify against live
+pricing before quoting.
 
 ## Symptoms
 
@@ -67,10 +68,11 @@ the diagnosis is near-certain - confirm with one DCGM run, then move.
    embedding APIs, consider `c7i.large` to `c7i.4xlarge`; for batch
    preprocessing, `c7g` Spot is highly cost-effective.
 2. **Consider Inferentia/Trainium as a middle path**. If the workload
-   genuinely benefits from hardware acceleration but doesn't need a
+   benefits from hardware acceleration but doesn't need a
    general-purpose GPU, `inf2` (Inferentia2) is purpose-built for
-   inference and runs ~30-40% cheaper per inference than `g5` for
-   supported models. Check AWS Neuron compatibility for the model family
+   inference; AWS positions it at up to 40% better price-performance
+   than `g5` for supported models, so benchmark it. Check AWS Neuron
+   compatibility for the model family
    (transformers, CNNs, common architectures are well supported).
 3. **Optimise the model for CPU before benchmarking**. Convert to ONNX,
    quantise to INT8 (if accuracy holds), batch requests. CPU inference is
@@ -90,7 +92,7 @@ the diagnosis is near-certain - confirm with one DCGM run, then move.
   retraining or vector index rebuild. Run the migration only on the
   always-on inference fleet; keep the batch jobs on GPU.
 - Skipping the ONNX / quantisation step. A direct PyTorch-on-CPU move
-  produces a "CPU is too slow" verdict that is actually a model-format
+  produces a "CPU is too slow" verdict that is a model-format
   problem.
 - Assuming Inferentia is a drop-in replacement. Inf2 requires AWS Neuron
   SDK compilation; not all model architectures are supported.

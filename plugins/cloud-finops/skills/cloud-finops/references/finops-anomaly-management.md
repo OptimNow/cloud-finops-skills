@@ -40,7 +40,7 @@ Three failure modes if it is missing:
   optimisation work mis-calibrates against them.
 
 Anomaly management is required at Crawl maturity. The native tooling is free or
-near-free. There is no good reason to defer it.
+near-free, so deferring it buys nothing.
 
 ---
 
@@ -125,7 +125,7 @@ Recommended starting thresholds:
 
 ## The layered-detection pattern (catching masked anomalies)
 
-The single most common failure mode in anomaly management is the **masked anomaly**:
+The failure mode OptimNow sees most often in anomaly management is the **masked anomaly**:
 two changes of opposite sign in the same billing period that net to a small total
 delta. Aggregate monitors do not see it. The classic shape:
 
@@ -196,8 +196,8 @@ A separate, simpler signal: **alert on any first-time spend** in a service-regio
 pair that has never been used before in the account, above a small floor (e.g. $100).
 
 This catches:
-- Test deployments in unintended regions (the most common source of leaked-credential
-  cryptomining incidents).
+- Test deployments in unintended regions (the usual shape of a leaked-credential
+  cryptomining incident).
 - Developers spinning up services finance has no contract with.
 - Migration drift where workloads end up in regions outside the approved list.
 
@@ -259,8 +259,8 @@ agentic-loop cost anatomy behind it.
 
 **Sudden spend in unexpected regions is also a Security signal.** Cryptomining,
 exfiltration, and compromised credentials all show up first as unexpected compute
-or networking cost. A FinOps anomaly that looks like a developer mistake may actually
-be an active incident.
+or networking cost. A FinOps anomaly that looks like a developer mistake may be an
+active incident.
 
 Operating model:
 - Anomaly alerts that trigger on new-region or new-service patterns CC the Security
@@ -309,8 +309,9 @@ itself the first time it catches a real security incident.
 - Monthly review of alert history with manual threshold tuning
 
 **Quick win:** Enable AWS Cost Anomaly Detection or its Azure / GCP equivalent across
-all production accounts. The configuration takes under an hour per account. The first
-real alert typically pays for the next year of FinOps practice operations.
+all production accounts. The configuration takes under an hour per account. In
+OptimNow's experience the first real alert pays for the next year of FinOps practice
+operations.
 
 ### Walk
 

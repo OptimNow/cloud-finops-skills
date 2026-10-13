@@ -34,7 +34,7 @@ expected and separate.
 ## Detection
 
 Single signal, straight from Azure Resource Graph - a VM sitting in
-`stopped` is billing for nothing, full stop:
+`stopped` is billing for nothing:
 
 ```kusto
 // Azure Resource Graph - VMs stopped but NOT deallocated (still billed)
@@ -55,7 +55,7 @@ same instance view per VM.
 
 Resource Graph carries inventory, not cost: to price the finding, join
 the VM list to the Cost Management / FOCUS export on the lowercased
-resource ID, or simply read the `vmSize` column - the on-demand rate of
+resource ID, or read the `vmSize` column - the on-demand rate of
 the size is what each machine burns per hour while stopped.
 
 The neighbouring pattern - a **running** VM with near-zero CPU and

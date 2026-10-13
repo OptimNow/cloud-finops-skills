@@ -51,8 +51,8 @@ consequences. The first requires data and tooling. The second requires
 organisational readiness, executive sponsorship, accounting-system
 configuration, tax review, and cultural change.
 
-Skipping the showback phase is the most expensive recoverable mistake in
-FinOps practice maturity. The failure shape is consistent:
+Skipping the showback phase is the most expensive recoverable mistake OptimNow
+sees in FinOps practice maturity. The failure shape is consistent:
 
 - Finance imposes chargeback on engineering teams that have never seen their
   costs broken down before. Numbers feel arbitrary because the methodology
@@ -62,7 +62,8 @@ FinOps practice maturity. The failure shape is consistent:
 - The first wave of disputes lands on FinOps as a noise tax, not a useful
   signal. FinOps spends weeks defending the model rather than improving it.
 - Leadership sponsorship erodes. Chargeback is paused, sometimes permanently.
-  Twelve to eighteen months of credibility takes another two years to rebuild.
+  Twelve to eighteen months of credibility takes another two years to
+  rebuild (a working estimate, not a measurement).
 
 The cost of this failure is not the engineering time spent on disputes. It is
 the organisational unwillingness to attempt chargeback again for a generation
@@ -110,7 +111,7 @@ be mapped to the provider's own invoicing construct before any chargeback design
 starts - an allocation model cannot produce an invoice.
 
 - **AWS** - the construct is an **invoice unit** (Invoice Configuration). It produces a
-  genuinely separate invoice document per unit while keeping one AWS Organization,
+  separate invoice document per unit while keeping one AWS Organization,
   consolidated billing and volume tiering. Cost Categories do not do this; they are a
   reporting layer with no effect on the invoice. See "AWS billing hierarchy and separate
   invoices" in `finops-aws.md`.
@@ -134,7 +135,7 @@ Two cases, and they are not the same problem:
    the entity and VAT number behind each invoice recipient has to be confirmed, and the
    provider's account team has to validate the arrangement.
 
-Establish which of the two the client actually means at the first meeting. Case 1 is
+Establish which of the two the client means at the first meeting. Case 1 is
 weeks of configuration; case 2 is months, and most of the elapsed time is Tax and Legal
 rather than anything a FinOps practitioner controls.
 
@@ -194,23 +195,25 @@ side-effects need executive alignment before the first quarterly close lands:
 
 The CFO has to be the executive sponsor of hard chargeback for this reason.
 FinOps owns the methodology; the CFO owns the accounting and incentive
-implications. Hard chargeback without CFO sponsorship reverts to soft
-chargeback within two quarters.
+implications. In the cases OptimNow has seen, hard chargeback without CFO
+sponsorship reverts to soft chargeback within two quarters.
 
 ### Transfer pricing (multi-entity groups)
 
 Intercompany cloud recharges between legal entities are transfer-pricing
 transactions. They need an arm's-length basis, supporting documentation, and
-tax-team review. Most groups land on a cost-plus methodology (cost + 5-7%
-margin) for centrally-procured cloud recharged to operating subsidiaries, but
-the right answer depends on the local tax authority's expectations and the
-group's existing transfer-pricing policy.
+tax-team review. Groups commonly land on a cost-plus methodology for
+centrally-procured cloud recharged to operating subsidiaries. The tax team
+sets the mark-up; the OECD simplified approach for low-value-adding
+intra-group services uses a 5% mark-up as a reference, and the right answer
+depends on the local tax authority's expectations and the group's existing
+transfer-pricing policy.
 
 The pattern that breaks: a US parent procures cloud centrally and recharges
 to a French operating subsidiary at exact cost. The French tax authority
 re-characterises the transaction under their transfer-pricing rules, imputes
-a margin, and assesses tax on the imputed amount. The remediation cost is
-typically 2-4x the original tax delta.
+a margin, and assesses tax on the imputed amount. The remediation cost runs to
+a multiple of the original tax delta (2-4x is indicative, not a benchmark).
 
 Engage the tax team before chargeback crosses a legal-entity boundary. They
 will tell you which methodology applies, what documentation is needed, and
@@ -345,8 +348,8 @@ A working methodology dispute process:
    cadence table above)
 
 Treat methodology disputes as second-order signals: a rising dispute rate
-in one cost class often means the allocation key is genuinely wrong, not
-that the team is being unreasonable.
+in one cost class often means the allocation key is wrong, not that the
+team is being unreasonable.
 
 ---
 
@@ -355,19 +358,21 @@ that the team is being unreasonable.
 - **Jumping straight to hard chargeback**. The chargeback-revolt failure
   mode. Cost: 12-18 months of credibility, recovery measured in years.
 - **Hard chargeback without CFO sponsorship**. Reverts to soft chargeback
-  within two quarters. The CFO owns the accounting and incentive
-  implications; without that ownership, the first quarter of P&L surprise
+  within two quarters in OptimNow's experience. The CFO owns the accounting
+  and incentive implications; without that ownership, the first quarter of
+  P&L surprise
   triggers a pause that is hard to reverse.
 - **Hard chargeback go-live mid-fiscal-year**. Receiving teams have no
   budget for the recharged amount; every month posts variance. Align
   go-live with the start of a fiscal year.
 - **Skipping the mock-journal walkthrough**. Designing the allocation model
-  without confirming the ERP can post the journals is the most expensive
-  way to discover the gap. Walk through one chargeback journal with the
+  without confirming the ERP can post the journals is an expensive way to
+  discover the gap. Walk through one chargeback journal with the
   Controller before committing to the go-live date.
 - **Cross-border chargeback without tax review**. Transfer-pricing
-  re-characterisation costs typically 2-4x the original tax delta to
-  remediate. Engage tax before crossing legal-entity boundaries.
+  re-characterisation costs a multiple of the original tax delta to
+  remediate (2-4x indicative). Engage tax before crossing legal-entity
+  boundaries.
 - **Methodology changes mid-quarter**. Changes apply at quarterly true-ups,
   not in real time. Real-time methodology changes break trust in the numbers
   and create audit issues.

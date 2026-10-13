@@ -38,9 +38,11 @@ operational discipline that requires design, enforcement, and continuous monitor
 - Anomaly detection produces false positives - spikes in untagged spend are uninvestigable
 - Commitment discounts applied to untagged resources create stranded capacity
 
-**OptimNow principle:** Physical tagging must precede virtual tagging. Virtual tagging
-(applying metadata in the billing layer without changing actual resource tags) is a
-powerful complement but a fragile substitute. Fix the source before adding abstraction.
+**Design rule OptimNow applies:** fix physical tags before layering virtual tagging,
+because governance automation (enforcement policies, schedulers, anomaly routing) reads
+physical tags only. Virtual tagging (applying metadata in the billing layer without
+changing actual resource tags) is a powerful complement but a fragile substitute. Fix
+the source before adding abstraction.
 
 ---
 
@@ -164,11 +166,11 @@ account, service, region, resource ID, or existing tag values.
 
 ## MCP-based tagging automation
 
-OptimNow's `finops-tagging` MCP server enables AI agents to interact with AWS tagging
+OptimNow's `finops-tagging` MCP server lets AI agents interact with AWS tagging
 infrastructure through natural language. This changes the operational model from
 periodic audits to continuous, conversational governance.
 
-**What the MCP server enables:**
+**What the MCP server does:**
 
 ```
 Practitioner: "Which resources in production lack a CostCenter tag?"
@@ -216,7 +218,7 @@ tools (cost queries, AKS cost by cluster, namespace and active-versus-idle capac
 retail prices, price sheet download) are enabled by default, and an optional Cost
 Management toolset (forecasting, dimensions, budgets, alerts, reservation and Savings
 Plan insights) is switched on per client with the `x-mcp-toolset: CostManagement`
-header. This enables agents to analyse spend and estimate deployment costs natively,
+header. This lets agents analyse spend and estimate deployment costs natively,
 under the same identity-scoped, read-freely / write-behind-confirmation guardrails.
 Do not confuse it with the separate Azure MCP Server, which has its own pricing and
 Advisor tools. Sources: https://github.com/Azure/Azure-Resource-Manager-MCP (README),
@@ -234,7 +236,8 @@ https://techcommunity.microsoft.com/blog/finopsblog/cost-management-with-azure-r
 - No enforcement - violations are flagged but not blocked
 
 **Quick win:** Run a one-time tag audit, identify the top 10 untagged resources by spend,
-tag them manually. This typically achieves 15-20% allocation improvement in one session.
+tag them manually. A 15-20% gain in allocated spend from one session is a working
+estimate, not a benchmark; verify in the estate.
 
 ### Walk
 - Tags enforced at IaC layer for new resources
@@ -256,8 +259,8 @@ tag them manually. This typically achieves 15-20% allocation improvement in one 
 ## Common tagging mistakes
 
 **Too many tags at launch**
-Organisations that define 25 mandatory tags at launch achieve lower compliance than those
-that enforce 5. Start with the minimum viable set. Add tags only when there is a clear use
+In OptimNow's experience, a 25-tag mandatory set at launch gets lower compliance than a
+5-tag set. Start with the minimum viable set. Add tags only when there is a clear use
 case for them.
 
 **Inconsistent tag values**

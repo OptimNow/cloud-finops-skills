@@ -15,9 +15,9 @@ High-end GPU instances pack multiple GPUs in a single server: `g5.48xlarge`
 GB), `p5.48xlarge` (8 x H100). Pricing is for the whole server: ~$16/hour
 for `g5.48xlarge`, ~$22/hour for `p4d.24xlarge`, ~$55/hour for
 `p5.48xlarge`. When the workload runs on a single GPU and the other seven
-sit idle, the customer is paying 7/8 of the bill for thin air. This is one
-of the highest-confidence waste patterns: per-GPU telemetry shows it
-unambiguously. The rates above are illustrative us-east-1 on-demand list
+sit idle, the customer is paying 7/8 of the bill for idle hardware. This
+is one of the highest-confidence waste patterns: per-GPU telemetry shows
+it unambiguously. The rates above are illustrative us-east-1 on-demand list
 prices written between May and August 2026 - the 7/8 ratio is the durable
 part; verify the rates against live pricing before quoting.
 
@@ -57,21 +57,21 @@ near zero.
 
 ## Fix
 
-1. **Confirm the workload is genuinely single-device.** Read the model
+1. **Confirm the workload is single-device.** Read the model
    loader and inference code. Look for `nn.DataParallel`,
    `nn.parallel.DistributedDataParallel`, `tf.distribute.MirroredStrategy`,
    or framework-equivalent constructs. If absent, the workload is
    single-device by design.
 2. **Check peak windows for re-training or batch eval.** A workload that
    is single-GPU at inference time can fan out to all GPUs during a weekly
-   retraining job. If retraining genuinely needs the multi-GPU box,
+   retraining job. If retraining needs the multi-GPU box,
    schedule it separately on an on-demand or Spot instance and keep the
    inference endpoint on a single-GPU SKU.
 3. **Pick the target single-GPU SKU.** From `p4d.24xlarge` (8 x A100): a
    `g5.xlarge` or `g5.2xlarge` is the right target for small/medium
    models; a `p4d.24xlarge` split via MIG (see
    [aws-mig-candidate.md](aws-mig-candidate.md)) is the right move if the
-   workload genuinely needs A100 features. From `g5.48xlarge`: a
+   workload needs A100 features. From `g5.48xlarge`: a
    `g5.xlarge` or `g5.2xlarge`.
 4. **Benchmark and cut over** following the same procedure as standard GPU
    rightsizing (see [aws-gpu-instance-oversized.md](aws-gpu-instance-oversized.md)).

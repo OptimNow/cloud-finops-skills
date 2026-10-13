@@ -14,8 +14,9 @@ Log Analytics charges by **GB ingested** (~$2.30/GB Pay-As-You-Go,
 discounted with Commitment Tiers) plus retention beyond the included
 period. The default for many resource types is to send **everything** -
 diagnostic settings on App Service, AKS audit logs, Azure Activity
-Logs, NSG flow logs. Within months, 80% of ingestion volume is from
-high-churn telemetry that nobody queries, and the bill is dominated by
+Logs, NSG flow logs. Within months, most of the ingestion volume (80%
+is indicative, not a benchmark) is high-churn telemetry that nobody
+queries, and the bill is dominated by
 table types like `AzureDiagnostics`, `ContainerLog`, `AppPlatformLogs`.
 The per-GB figure is an illustrative list rate as at May 2026 and varies
 by region - verify against the Azure pricing page before sizing a
@@ -67,8 +68,9 @@ table(topTable)
    aggregate at the source (Application Insights sampling) instead of
    sending raw events.
 4. **Lever 4 - Retention right-sizing**: the included retention is 31
-   days. Audit which tables actually need 365+ days; archive the rest
-   to Storage Account Archive tier (~$0.002/GB-month) via export.
+   days. Audit which tables need 365+ days; archive the rest to Storage
+   Account Archive tier (~$0.002/GB-month, illustrative list rate; check
+   the pricing page) via export.
 5. **Lever 5 - Commitment tier**: if the steady-state volume is > 100
    GB/day, switch from Pay-As-You-Go to a Commitment Tier - up to ~30%
    discount.

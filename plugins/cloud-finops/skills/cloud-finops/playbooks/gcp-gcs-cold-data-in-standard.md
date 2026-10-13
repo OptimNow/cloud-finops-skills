@@ -112,7 +112,7 @@ The gates that make a class change defensible (all three, hence
 
 1. If inventory reports and an access signal are missing: ship the
    prerequisite finding, not a savings estimate.
-2. Where access is genuinely unknown and objects are large: **Autoclass**
+2. Where access is unknown and objects are large: **Autoclass**
    with the terminal class set to Nearline (or Archive where the team
    accepts the access model). It moves objects on observed access, waives
    retrieval and early-deletion fees, and charges a per-object management

@@ -63,9 +63,10 @@ ORDER BY cost_30d DESC;
 
 ## Fix
 
-1. Snapshot before delete (cheap insurance: snapshot is ~50% the cost of
-   the live volume per GB-month, and you can keep the snapshot for 30
-   days as a safety net before final deletion).
+1. Snapshot before delete (cheap insurance: a snapshot bills on the
+   blocks written, not the provisioned size, so it costs a fraction of
+   the live volume, and you can keep it for 30 days as a safety net
+   before final deletion).
 2. Delete volumes in the `available` state with confirmed:
    - No parent EC2 instance in the account
    - No matching live AMI or launch template

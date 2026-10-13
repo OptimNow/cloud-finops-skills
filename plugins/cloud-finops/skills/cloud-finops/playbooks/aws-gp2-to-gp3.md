@@ -100,7 +100,7 @@ aws ec2 describe-volumes \
 - `playbooks/aws-graviton-candidate.md` - the compute-side
   modernization pattern, same "newer generation, lower rate" shape
 - `playbooks/aws-orphaned-ebs-volumes.md` - run the orphan sweep first
-  so you do not migrate volumes that should simply be deleted
+  so you do not migrate volumes that should be deleted
 - `references/finops-aws-patterns.md` - the enumerated EBS pattern
   catalogue
 - `references/finops-waste-detection-playbooks.md` - "modernization"

@@ -95,11 +95,11 @@ The right shape depends on whether the models share a container.
 - Consolidating models with very different scaling profiles onto MME -
   one bursty model can evict the others from the cache and degrade overall
   hit rate. IC handles this case better via independent component scaling.
-- Picking IC when models are truly homogeneous and small - MME is cheaper
+- Picking IC when models are homogeneous and small - MME is cheaper
   to operate and has lower per-model overhead in that regime.
 - Skipping the pilot phase. A direct cutover to a consolidated endpoint
-  without a traffic-shadowing window has been the most common cause of
-  consolidation rollbacks.
+  without a traffic-shadowing window has been the usual cause of the
+  consolidation rollbacks OptimNow has seen.
 
 ## See also
 

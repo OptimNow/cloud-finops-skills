@@ -16,7 +16,8 @@ commitment whether matching resources run or not. When the estate drifts
 away from the committed shape - a machine-series migration (N2 to C4, x86
 to Arm), a region consolidation, or a workload move to GKE Autopilot or
 serverless - the CUD keeps billing while the discount it was bought for
-stops landing. This is the most common GCP commitment failure: the deep
+stops landing. This is the GCP commitment failure OptimNow sees most
+often: the deep
 discount of a resource-based CUD is exactly what makes it brittle, because
 resource-based CUDs cannot be exchanged or cancelled mid-term. The paired
 sizing trap: CUD savings modelled against headline on-demand rates
@@ -29,7 +30,7 @@ effective rate the CUD competes against.
   CUD credit lines
 - A machine-series or region migration shipped since the CUD was bought
 - Committed vCPU/memory in a region exceeds what the project family
-  actually runs there
+  runs there
 - CUD analysis report (Billing console) shows utilisation trending down
   over consecutive weeks
 
@@ -89,7 +90,7 @@ is Billing > Reports > **CUD analysis**.
 3. Where residual matching capacity exists, steer schedulable workloads
    (batch, CI, dev) onto the committed series/region so the remaining
    term's credits land - a workload-placement fix, legitimate when the
-   workload is genuinely shape-agnostic.
+   workload is shape-agnostic.
 4. Re-buy flexibility-first: for estates still migrating, spend-based
    (Flex) CUDs trade discount depth for series/region freedom, and are
    usually the right instrument until the target architecture is stable.

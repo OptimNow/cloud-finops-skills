@@ -97,7 +97,7 @@ gcloud monitoring metrics list --filter="metric.type:cloudfunctions.googleapis.c
   Google-API endpoints, Private Google Access reaches them without the
   per-connector hourly charge.
 - Replacing a VPC connector with Private Google Access when the function
-  actually talks to internal RFC1918 resources (Memorystore, internal
+  talks to internal RFC1918 resources (Memorystore, internal
   VMs, Cloud SQL via private IP). The function will start failing
   silently because Private Google Access does not reach those.
 

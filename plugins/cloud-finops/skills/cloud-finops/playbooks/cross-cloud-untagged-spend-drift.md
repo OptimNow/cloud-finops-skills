@@ -16,7 +16,7 @@ unattributable bucket - and that bucket grows month over month if no
 intake gate stops new resources from landing without tags. Once
 unallocated spend crosses ~10% of the bill, allocation reports become
 unreliable, showback loses credibility with engineering teams, and
-chargeback becomes politically impossible. This is not a "waste"
+chargeback loses the organisational support it needs. This is not a "waste"
 pattern in the per-resource sense - it is a **governance failure**
 that destroys the financial visibility downstream.
 

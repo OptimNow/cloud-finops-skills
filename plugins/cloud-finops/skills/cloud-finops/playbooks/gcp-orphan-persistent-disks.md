@@ -68,7 +68,8 @@ ORDER BY cost_30d DESC;
 ## Fix
 
 1. **Snapshot before delete** (GCP Persistent Disk Snapshot is cheap and
-   restorable - typically ~50% the cost of a live disk per GB-month).
+   restorable - it bills on the blocks written, not the provisioned
+   size, so it costs a fraction of the live disk).
 2. **Delete disks where**:
    - `users` is empty for > 30 days
    - No matching live VM in any zone in the project
