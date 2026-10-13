@@ -141,7 +141,7 @@ that cannot run is worse than no query at all - it returns empty and reads as
 - **Run it against a live account**, or state the prerequisite that stops you.
   A query needing the CloudWatch agent, a diagnostic setting, or a specific
   export is fine; leaving that unsaid is not.
-- **Check the metric/table/column actually exists.** Namespaces
+- **Check the metric/table/column exists.** Namespaces
   (`AWS/NATGateway`, not `NATGateway/`), required dimensions (SageMaker
   `Invocations` needs `VariantName`), and table names (Azure Resource Graph
   has no billing table) are the recurring failure modes.
@@ -173,8 +173,8 @@ license-hygiene default rather than relying on reference to the repo
 
 ## Confidence tiers (matching `finops-waste-detection-playbooks.md`)
 
-- **obvious** - single signal is enough to act (a NAT gateway with 0 GB
-  traffic for 30 days is dead, full stop)
+- **obvious** - single signal is enough to act (a NAT gateway with under
+  5 GB a month over 60 days and no route table pointing at it is dead)
 - **likely** - two signals required to avoid false positives (low CPU AND
   low network suggests an idle EC2 instance worth investigating)
 - **possible** - needs human review (a Reserved Instance under-utilisation

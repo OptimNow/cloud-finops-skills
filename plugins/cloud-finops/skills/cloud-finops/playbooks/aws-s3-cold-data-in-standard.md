@@ -88,7 +88,7 @@ until they are met):
 - **Payback**: per-object transition request cost recovered in under ~3
   months at the class-rate delta.
 
-Where access patterns are genuinely unknown and average object size is
+Where access patterns are unknown and average object size is
 comfortably large (roughly >= 1 MiB), **Intelligent-Tiering** is the
 lower-evidence alternative: its monitoring fee is the trade for not
 needing the access study. Between ~128 KiB and ~240 KiB average object

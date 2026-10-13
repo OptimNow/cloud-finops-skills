@@ -47,7 +47,7 @@ Three failure modes when this ordering is skipped:
 - **The gamed target.** A KPI wired to an individual's or team's performance
   review gets optimised as a number. Utilisation targets produce workloads that
   exist to consume commitments; cost-per-developer targets punish the team that
-  ships. Measure systems and trends, not people.
+  ships, so measure systems and trends rather than people.
 
 ## The KPI portfolio by maturity stage
 
@@ -64,18 +64,18 @@ live indicators; past that, attention fragments.
 
 Mechanics worth pinning down per KPI, once, in writing: the data source
 (FOCUS-conformed export, provider API), the owner, the review cadence, and the
-decision the KPI is supposed to move. A KPI that moves no decision is
-reporting, not an indicator.
+decision the KPI is supposed to move, since a KPI that moves no decision is
+reporting rather than an indicator.
 
 Two portfolio-level indicators deserve special care:
 
 - **Realised vs potential savings.** Report them as separate lines, always.
   Potential savings (the sized backlog) motivates the roadmap; realised savings
-  (the delta actually banked after action) is the only number Finance should
+  (the delta banked after action) is the only number Finance should
   ever hear as an achievement. Practices that report potential as achievement
   get one good quarter and then a credibility problem.
-- **Forecast variance.** The single best proxy for practice maturity, because
-  it compounds everything else: allocation quality, anomaly response,
+- **Forecast variance.** The proxy for practice maturity to watch first,
+  because it compounds everything else: allocation quality, anomaly response,
   commitment discipline. A practice that lands within a mid-single-digit
   percentage band month after month has earned the executive room's trust in
   every other number it shows.
@@ -132,9 +132,9 @@ Choosing the denominator is the actual work:
   signal, never an individual performance metric. The AI-side treatment lives
   in `finops-for-ai.md` and `finops-ai-dev-tools.md`.
 
-The trend, not the level, is the deliverable. A unit cost of 0.42 means
-nothing in isolation; a unit cost down 12% year-on-year while volume grew 30%
-is a sentence an executive can repeat to the board.
+The trend, not the level, is the deliverable: a unit cost of 0.42 means
+nothing in isolation, but a unit cost down 12% year-on-year while volume grew
+30% is a sentence an executive can repeat to the board.
 
 ## Benchmarking: internal first, external with caveats
 
@@ -155,8 +155,8 @@ with three questions before it reaches a slide:
    differ 30% on effective rate alone - the benchmark may be measuring
    procurement leverage, not engineering efficiency.
 2. **Whose workload mix?** "Cloud cost as % of revenue" varies more by
-   business model (SaaS vs retail vs pharma) than by practice quality.
-   Cross-industry comparisons are noise dressed as signal.
+   business model (SaaS vs retail vs pharma) than by practice quality, so a
+   cross-industry comparison mostly measures the business model.
 3. **Whose methodology?** Amortised or unblended? Cloud-only or fully loaded?
    Survey self-reporting or billing-data-derived? If the source cannot answer,
    the number cannot be used for a decision - only, at most, as a
@@ -165,14 +165,14 @@ with three questions before it reaches a slide:
 Legitimate external uses survive those questions: sanity-ranging a brand-new
 unit metric (order of magnitude, not target), commitment-coverage norms as a
 starting hypothesis, and peer conversations within the FinOps Foundation
-community where methodology can actually be interrogated. What never survives
-them: setting a team's target from a vendor's published benchmark. Vendor
-benchmark reports are marketing artefacts with a sampling bias towards the
-vendor's own customer base.
+community where methodology can be interrogated. What never survives them:
+setting a team's target from a vendor's published benchmark. Vendor benchmark
+reports are sales material first, and they sample the vendor's own customer
+base.
 
-The mature stance: benchmark your own trajectory. This quarter against last,
-this year against last, forecast against actual. The competitor that matters
-is the organisation's own baseline.
+The mature stance: benchmark your own trajectory, this quarter against last,
+this year against last, forecast against actual, because the organisation's
+own baseline is the comparison that moves decisions.
 
 ## The executive conversation
 

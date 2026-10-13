@@ -97,8 +97,9 @@ your own workload before a fleet rollout.
    across every agent so you have tokens, cache-hit ratio, and cost per session
    per developer. Everything below is guesswork without this baseline.
 2. **Fix the cache before anything else.** Cache-read is roughly 90% cheaper than
-   fresh input, and input dominates session cost, so the cached prefix is
-   the single biggest lever. Turn on prompt caching, keep the system prompt and
+   fresh input on Anthropic's rate card (other vendors use different
+   multipliers), and input dominates session cost, so the cached prefix is
+   the biggest single lever. Turn on prompt caching, keep the system prompt and
    static context stable, and avoid mid-session model switches that throw the warm
    cache away.
 3. **Cap and route.** Set per-seat or per-key dollar budgets (native admin

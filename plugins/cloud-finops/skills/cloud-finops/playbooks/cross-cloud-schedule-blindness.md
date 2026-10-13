@@ -21,9 +21,9 @@ instance is a round illustrative figure used to make the arithmetic
 legible (written May 2026), not a quoted rate - the 70% ratio is the
 durable part.
 
-This is one of the highest-return, lowest-risk optimisations in cloud cost
-work. It is the canonical "obvious" tier waste because the business
-case is unambiguous: dev / test does not need to run while everyone is
+This is one of the highest-return, lowest-risk optimisations in
+cloud cost work. It sits in the "obvious" tier because the business case
+is unambiguous: dev / test does not need to run while everyone is
 asleep.
 
 ## Symptoms
@@ -35,14 +35,14 @@ asleep.
   utilisation profile as production
 - Sunday and Tuesday hourly usage curves overlap (the flat-Sunday
   signature)
-- The non-prod / prod cost ratio is > 1:3 (mature orgs are typically
-  1:5 to 1:10 because non-prod is auto-stopped)
+- The non-prod / prod cost ratio is > 1:3 (a working ratio for a practice
+  with auto-stop in place is 1:5 to 1:10; verify in the estate)
 - No team-owned automation visible in the IaC repo for stop / start
 
 ## Detection
 
 Confirm with the flat-Sunday signature before scheduling anything: a
-genuinely weekday-only workload shows a visible weekend trough, while a
+weekday-only workload shows a visible weekend trough, while a
 curve that is flat across Sunday and Tuesday does not. Then quantify the
 spend at stake:
 

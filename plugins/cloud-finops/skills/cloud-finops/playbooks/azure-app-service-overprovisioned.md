@@ -11,7 +11,7 @@ confidence: likely
 ## Problem
 
 Azure App Service plans are billed by SKU (P1v3, P2v3, etc.) and instance
-count, regardless of how many web apps actually run on them. Teams
+count, regardless of how many web apps run on them. Teams
 default to **Premium v3** plans for production apps and never revisit -
 even when the app handles low traffic that **Standard** or **Basic**
 would serve fine. As an illustrative anchor, list rates as at May 2026

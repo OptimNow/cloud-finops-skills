@@ -103,7 +103,7 @@ floor for any rule you add.
    point-in-time restore window, object replication policies, and the
    owning team's real restore requirement (how many versions, how long).
 2. Right-size soft-delete retention to the incident window the team has
-   actually used, typically 7 to 14 days. Soft-deleted data is purged by
+   used, typically 7 to 14 days. Soft-deleted data is purged by
    the retention setting itself, not by lifecycle rules, so the number of
    days is the whole lever. Do the same for container soft delete.
 3. Add a lifecycle rule with `version.delete.daysAfterCreationGreaterThan`

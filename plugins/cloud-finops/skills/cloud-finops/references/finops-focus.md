@@ -369,7 +369,7 @@ The question every pipeline eventually gets from Finance: "is last month final?"
 provider ships FOCUS 1.3 recency metadata, nothing in the export answers it, and the
 pipeline has to infer.
 
-**What actually happens at month end.** Providers keep writing rows for a closed month
+**What happens at month end.** Providers keep writing rows for a closed month
 for several days: late-arriving usage, credits, support charges, marketplace invoices,
 commitment amortisation adjustments. A row delivered on the 3rd can change a total for
 a month that the dashboard showed as closed on the 1st.

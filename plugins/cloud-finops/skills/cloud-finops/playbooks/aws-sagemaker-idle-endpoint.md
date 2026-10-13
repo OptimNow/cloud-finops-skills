@@ -92,7 +92,7 @@ aws cloudwatch list-metrics --namespace AWS/SageMaker \
 ## Fix
 
 Apply the safest-first ladder. The right action depends on whether the
-endpoint is genuinely idle or just lightly used.
+endpoint is idle or just lightly used.
 
 1. **Delete** if the endpoint has zero invocations for 30+ days AND no
    owner can produce a use case. Confirm with the owning team via Slack /
@@ -104,7 +104,7 @@ endpoint is genuinely idle or just lightly used.
    the always-on bill entirely. Create a new endpoint with
    `EndpointConfig.AsyncInferenceConfig`, migrate the caller, then delete
    the real-time variant.
-3. **Move to serverless inference** if traffic is genuinely intermittent
+3. **Move to serverless inference** if traffic is intermittent
    (a few requests per hour or per day) and the workload can tolerate cold
    starts of 1-15 s. Serverless inference bills on compute duration per
    request (GB-seconds of memory x duration) plus a per-request charge,

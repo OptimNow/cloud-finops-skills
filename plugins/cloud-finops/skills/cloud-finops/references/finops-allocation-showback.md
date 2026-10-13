@@ -46,8 +46,8 @@ cost views that survive Finance scrutiny.
 
 ## Cost-column methodology
 
-The single most common allocation error in the field is using the wrong cost
-column. FOCUS makes the choices explicit; AWS-native exports require some
+A common allocation error is using the wrong cost column. FOCUS makes the
+choices explicit; AWS-native exports require some
 translation.
 
 ### FOCUS cost columns
@@ -70,7 +70,7 @@ purchase.
 
 ### Mapping to AWS legacy cost columns
 
-The most common point of confusion is the AWS-native vocabulary, which
+The usual point of confusion is the AWS-native vocabulary, which
 predates FOCUS and uses different terms.
 
 | FOCUS column | AWS legacy column | Cost Explorer view |
@@ -83,7 +83,7 @@ predates FOCUS and uses different terms.
 **Avoid `blended_cost` (AWS) for allocation entirely.** Blended cost is a
 payer-account averaging artefact: it averages Reservation-discounted rates
 across all linked accounts that consumed the same instance type, regardless
-of which account actually owns the Reservation. FOCUS deliberately has no
+of which account owns the Reservation. FOCUS deliberately has no
 equivalent column because the concept is misleading - it does not reflect
 either invoice reality (use `BilledCost`) or true accrual attribution
 (use `EffectiveCost`). Teams that allocate on `blended_cost` discover the
@@ -131,21 +131,21 @@ a metric they can independently verify?
 
 **Rule of thumb:** build allocation keys from authoritative operational systems
 (Prometheus, Thanos, product telemetry, API gateway logs) for shared platform
-costs, not just from tags. Tags miss what teams actually consume; metrics
-do not.
+costs, not just from tags. Tags miss what teams consume; metrics do not.
 
 ---
 
 ## Shared-services hard cases
 
 The simple cases (resource has the team's tag, allocate to that team) work for
-roughly 70% of cloud spend. The remaining 30% is shared services, and that is
-where allocation methodology earns its credibility.
+roughly 70% of cloud spend (a working estimate; verify in the estate). The
+remainder is shared services, and that is where allocation methodology earns
+its credibility.
 
 ### Network cost
 
-Network cost is the single hardest shared-services allocation problem. Cost
-hides across many `ServiceCategory` values:
+Network cost is the hardest shared-services allocation problem OptimNow has
+met. Cost hides across many `ServiceCategory` values:
 
 - Cross-zone data transfer between EC2 instances of two different teams
   (shows up under `ServiceCategory='Compute'`, not `'Networking'`)
@@ -161,7 +161,7 @@ Recommended allocation pattern:
    tagging is supported
 2. For untaggable inter-resource traffic, allocate by **traffic share**
    measured from VPC Flow Logs, Application Gateway logs, or equivalent
-3. For genuinely shared infrastructure (CDN, edge), use a tiered approach:
+3. For shared infrastructure (CDN, edge), use a tiered approach:
    first attribute to product through the CDN's request logs; then fall back
    to revenue-weighted or even-split for the residual
 
@@ -182,7 +182,8 @@ serve every team. Three patterns that work:
   (covers the fixed cost of running the platform), and the variable cost is
   allocated by usage
 
-The tiered-floor pattern is what most mature organisations land on. It avoids
+The tiered-floor pattern is where the mature practices OptimNow has reviewed
+land. It avoids
 the failure mode where a small team using one log line per minute pays a
 microscopic share of a $100K/month log platform.
 
@@ -397,8 +398,8 @@ A working data-quality dispute process:
   PR-review cost annotations, Grafana panels) with no separate dashboard
 - Allocation methodology version-controlled and reviewed annually with
   explicit stakeholder sign-off
-- Unallocated spend < 5%, with the residual driven by genuinely untaggable
-  cost categories
+- Unallocated spend < 5%, with the residual driven by untaggable cost
+  categories
 - Data-quality dispute rate trending down year over year
 - Allocation pipeline outputs are the input to forecasting, anomaly
   detection, and (if the org has progressed there) chargeback

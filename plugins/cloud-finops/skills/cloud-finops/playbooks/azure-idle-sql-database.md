@@ -67,7 +67,7 @@ AzureMetrics
 
 ## Fix
 
-1. **Confirm the DB is genuinely idle** - some monthly batch jobs have
+1. **Confirm the DB is idle** - some monthly batch jobs have
    long inter-run gaps. Cross-check with `dm_db_resource_stats` and the
    application's job scheduler.
 2. **Backup before delete** (Azure SQL point-in-time restore retention is

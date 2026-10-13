@@ -15,7 +15,7 @@ x86 size within the same family generation, and AWS positions them at up
 to 40% better price-performance on top - a mechanics claim that holds
 for many workloads but must be benchmarked, not assumed. The pattern is
 `likely`, not `obvious`, because the price signal alone does not decide:
-the workload must actually run on ARM64. The decisive split is
+the workload must run on ARM64. The decisive split is
 **managed vs self-managed**. On RDS, Aurora, ElastiCache, OpenSearch and
 Lambda, AWS owns the OS and runtime, so switching is an instance-class
 or architecture flag change with no application port. On self-managed

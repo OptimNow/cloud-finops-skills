@@ -72,7 +72,7 @@ rules).
    scope to **shared scope** is free, instant, reversible, and fixes the
    most common cause outright.
 2. If the covered SKU is gone: while exchange remains available for the
-   service, exchange into the family and region the estate actually runs.
+   service, exchange into the family and region the estate runs.
    Reservations bought before 1 February 2027 keep one final exchange
    after that date - spend it deliberately, batched, not on a minor tweak.
 3. If neither scope nor exchange can restore utilisation: refund

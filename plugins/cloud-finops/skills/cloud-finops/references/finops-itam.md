@@ -41,7 +41,7 @@ negotiation leverage.
 - Contract intelligence: renewal terms, price escalation clauses, termination notice periods
 
 **What FinOps brings to ITAM:**
-- Real-time usage telemetry: what is actually being consumed, not just what is deployed
+- Real-time usage telemetry: what is being consumed, not just what is deployed
 - Cost attribution: linking spend to teams, products, and business outcomes
 - Commitment mechanics: how cloud discounts (RIs, Savings Plans, CUDs) interact with license decisions
 - Forecasting: consumption projections that inform procurement and renewal decisions
@@ -184,8 +184,8 @@ migration.
 
 ### Governance alignment
 
-The most effective FinOps-ITAM collaboration happens through shared forums, not through
-RACI matrices that reinforce boundaries.
+In the organisations OptimNow has worked with, FinOps-ITAM collaboration works best
+through shared forums rather than through RACI matrices that reinforce boundaries.
 
 | Practice | Purpose | Cadence |
 |---|---|---|
@@ -212,7 +212,8 @@ reconcilable data.
 ### Bi-directional skills development
 
 Effective collaboration requires both teams to understand each other's domain. Organisations
-that invest in cross-training consistently report better cost avoidance outcomes.
+that invest in cross-training report better cost avoidance outcomes; this is an
+observation from practice, not a measured benchmark.
 
 - FinOps teams need: licensing fundamentals (perpetual vs subscription, use rights, audit triggers), contract structure awareness, compliance risk vocabulary
 - ITAM teams need: cloud billing mechanics (consumption models, commitment discounts, reserved pricing), cost allocation principles, FinOps maturity stages
