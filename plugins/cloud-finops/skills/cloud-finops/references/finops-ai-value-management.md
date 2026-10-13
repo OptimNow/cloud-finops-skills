@@ -63,8 +63,7 @@ be explicit from the start.
 - Maintain a live **agent inventory**: every agent in production, its business
   owner, and the KPI it is supposed to move. "Agent sprawl" - Copilot rollouts,
   chatbots, coding assistants, and business-unit deployments central IT never sees -
-  is the AI-era shadow-IT pattern, and few of the enterprises OptimNow has worked
-  with can produce this list
+  is the AI-era shadow-IT pattern, and few enterprises can produce this list
 - Record P(success), T(verify), T(do), and failure blast radius per use case at
   stage-gate reviews (see the agent deployment inequality in `finops-for-ai.md`)
 - Maintain an inventory of agent payment instruments (wallets): owner, funding
@@ -383,7 +382,7 @@ finance review.
 
 There are four ways an AI feature produces money, and the right method follows from
 which one is at work. Choosing by use-case label instead of by mechanism is the
-structural error OptimNow sees most often in the business cases it has reviewed.
+common structural error.
 
 | Method | The mechanism | Typical use cases |
 |---|---|---|
@@ -497,8 +496,8 @@ every employee half an hour a day is real, and visible to anyone who looks, but 
 team is resized, a hiring plan is reduced, or the hours are redirected into output someone
 pays for, it has nowhere to land in the books. Carry it as a tracked FTE-equivalent figure
 with a review date, and move it to spend removed or new revenue won in the quarter someone
-acts on it. Reporting it as savings in the meantime is the fastest way OptimNow has seen
-an AI programme lose credibility with Finance.
+acts on it. Reporting it as savings in the meantime is a fast way for an AI programme to
+lose credibility with Finance.
 
 The value working-group taxonomy was unpublished at the time of writing (September 2026);
 re-check it against <https://www.tokeneconomics.com> once the paper ships.

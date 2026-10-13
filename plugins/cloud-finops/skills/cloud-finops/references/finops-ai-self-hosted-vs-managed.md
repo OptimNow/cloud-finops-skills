@@ -23,8 +23,9 @@ fcp_maturity_entry: "Walk"
 
 ## TL;DR
 
-Self-hosted inference looks cheaper on paper at every TCO calculator. In the business
-cases OptimNow has reviewed it rarely is, because the calculators omit the operational
+Self-hosted inference looks cheaper on paper at every TCO calculator. The paper
+advantage
+rarely survives contact with operations, because the calculators omit the operational
 maturity tax. The right question is
 not "what is cheaper per million tokens?" but "does the client have the in-house expertise
 to operate this stack at production grade without burning the savings on incident response,
@@ -258,8 +259,8 @@ The conditions are stricter than GPU vendors' marketing suggests.
    on managed APIs, expensive to replicate self-hosted.
 3. **Frontier model requirements.** Anthropic Claude Opus, OpenAI GPT-5, Google Gemini 3 Pro
    are not available as open weights. Self-hosting cannot replicate them.
-4. **Limited engineering bandwidth.** Most of the organisations OptimNow works with
-   cannot dedicate 1-2 FTE to ML-Ops.
+4. **Limited engineering bandwidth.** Many organisations cannot dedicate 1-2 FTE to
+   ML-Ops.
    Managed APIs let small teams ship.
 5. **Fast-moving roadmap.** Vendors update models monthly. Managed APIs give you the new
    model with a config change. Self-hosted requires a deployment and validation cycle.
@@ -281,8 +282,8 @@ should be priced into the decision.
 ## The maturity-driven decision rubric
 
 This is the OptimNow point of view: cost mechanics and compliance matter, but the best
-predictor of self-hosted success OptimNow has seen is the client's in-house ML-Ops
-maturity.
+predictor of
+self-hosted success is the client's in-house ML-Ops maturity.
 
 ### Recommend self-hosted only when **all** of the following are true:
 
@@ -363,8 +364,8 @@ from those cases, not a benchmark:
 - **Custom model when off-the-shelf would do.** Self-hosting a fine-tuned model that
   marginally beats Claude Sonnet on a narrow benchmark, while costing 3x more all-in.
 - **Self-hosting frontier alternatives.** "We will run Llama 4 405B instead of Claude
-  Opus." The infrastructure cost of running a 405B model in production is high, and the
-  clients OptimNow has seen attempt it underestimated it by an order of magnitude.
+  Opus." The infrastructure cost of running a 405B model in production is high, and
+  clients who attempt it have underestimated it by an order of magnitude.
 
 ## Connecting back to FinOps phases
 
@@ -377,8 +378,8 @@ from those cases, not a benchmark:
 ## Connecting back to OptimNow methodology
 
 This sits squarely in the **diagnose before prescribing** principle. The self-hosted vs
-managed question is one of the AI FinOps questions OptimNow hears most often, and one
-where the recommendation often goes wrong because the operating cost is left out. The
+managed question is one of the most frequent AI FinOps questions, and one where the
+recommendation often goes wrong because the operating cost is left out. The
 OptimNow approach is to:
 
 1. Refuse to answer the question without 90 days of usage data and a clear view of the

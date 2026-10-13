@@ -29,8 +29,8 @@ gains spread by word of mouth, and within months the entire engineering organisa
 using it. Spend follows the same curve, but visibility does not. Finance sees a growing
 invoice with a single number. Engineering cannot explain what is behind it.
 
-This makes AI dev tools a FinOps blind spot in most of the organisations OptimNow has
-assessed - growing fast, poorly attributed, and governed reactively if at all.
+This makes AI dev tools a FinOps blind spot in many organisations - growing fast, poorly
+attributed, and governed reactively if at all.
 
 ---
 

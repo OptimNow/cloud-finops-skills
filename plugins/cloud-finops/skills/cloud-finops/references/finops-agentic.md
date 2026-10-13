@@ -37,8 +37,7 @@ as "agents":
 - Budget and forecast per type. Workflows and pipelines can be unit-priced; true
   agents must be budgeted as a **cost distribution** (P50/P90 per task), not a point
   estimate.
-- **Procurement diligence:** in the vendor reviews OptimNow has seen, most products
-  sold as an "agent" are pipelines.
+- **Procurement diligence:** many products sold as an "agent" are pipelines.
   Often that is exactly what the client needs - but bounded-cost pipelines and
   unbounded-cost agents deserve different contract and budget treatment. Ask which
   one you are buying.
@@ -149,7 +148,7 @@ available in AWS GovCloud (US-West), extending these pillars to regulated and go
 cloud environments for cost-governance planning. Source: AWS What's New - Bedrock.
 
 **3. Policy-generation over direct mutation**
-The agentic architecture OptimNow treats as safest for FinOps generates governance
+The agentic architecture with the least risk for FinOps generates governance
 policies for human review
 rather than executing infrastructure changes directly. An agent that identifies idle
 resources and drafts a Cloud Custodian policy or OpenOps rule for review is production-safe.

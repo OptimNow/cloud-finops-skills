@@ -128,7 +128,7 @@ to embedded governance. The discipline of starting small
 and compounding gains is what separates lasting programs from one-off audits.
 
 ### Challenge assumptions, not just costs
-The FinOps interventions with the largest effect, in OptimNow's experience, question
+The FinOps interventions with the largest effect are often the ones that question
 whether a workload, architecture, or AI feature should exist in its current form before
 asking whether it can be made cheaper. Sometimes the right answer is to eliminate a
 feature, redesign a pipeline, or stop a commitment before optimising it.

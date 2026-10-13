@@ -188,7 +188,7 @@ reducing waste and improving allocation accuracy.
 
 **GPU utilisation is misleading - read the right DCGM metrics:**
 
-The GPU FinOps mistake OptimNow sees most often is trusting `nvidia-smi`'s
+A common GPU FinOps mistake is trusting `nvidia-smi`'s
 `GPU-Util` percentage (also surfaced as CloudWatch `GPUUtilization` on EC2,
 and as the default in many monitoring stacks). The metric reports whether
 the GPU did **anything** during the sampling interval, not how much of its
@@ -471,7 +471,7 @@ whether failure is environment-changing, per use case, before funding.
 
 ### Phase 3: Optimize
 
-**Model selection** (the lever OptimNow has seen move the bill most):
+**Model selection** (the lever with the widest range):
 
 Treat model selection like instance rightsizing. Defaulting to the largest or latest model
 for every feature is the AI equivalent of running all workloads on ml.p4d.24xlarge.
