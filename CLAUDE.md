@@ -783,6 +783,27 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
   example genuinely needs a number to be legible, keep one, mark it illustrative, and
   date it inline. The reader-facing version of this rule is the "Price figures" section
   in SKILL.md and POWER.md.
+- **Every quantitative claim carries its provenance (rule of 2026-10-13).** A
+  percentage, ratio, multiplier, hour count or FTE count that is not a price is still
+  a claim, and the 13 October 2026 brand review found about 60 of them stated as
+  universal fact ("typically 30-40%", "5-50x", "90% of employee AI usage"). Each one
+  is either cited to a dated source, derivable from arithmetic stated beside it, or
+  labelled as what it is: "indicative, not a benchmark" or "a working estimate; verify
+  in the estate". Attribute a figure to OptimNow engagements only when it was measured
+  there; a figure of unknown origin gets the indicative label, never an engagement
+  claim it cannot back. One framing sentence at the top of a figure-heavy section
+  ("the multipliers in this file are working estimates, not published benchmarks")
+  covers every figure under it.
+- **Superlatives are cited, scoped, or dropped.** "The single most common", "the
+  biggest", "the best predictor" is a claim about the whole population. Either cite
+  it, scope it to observation ("the error OptimNow sees most often"), or, preferably,
+  drop the superlative: "a common allocation error" says what the reader needs without
+  the attribution. The scoped form is a budget, not a default: at most one explicit
+  OptimNow-attributed observation per H2 section, so the phrase does not become the
+  file's tic (the voice pass of 2026-10-13 produced about 50 of them in one day, which
+  is what this sentence exists to prevent). Reference files are technical
+  documentation: their authority comes from the mechanics and sources they carry, not
+  from how often they name their author.
 
 **License**
 - All content is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
