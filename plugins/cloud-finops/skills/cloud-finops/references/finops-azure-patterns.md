@@ -70,7 +70,7 @@ Service: Azure AKS | Type: Orphaned Resource
 
 Kubernetes environments often accumulate unused resources over time as applications evolve. Common examples include Persistent Volume Claims (PVCs) backed by Azure Disks, Services that trigger load balancer provisioning, or stale ConfigMaps and Secrets.
 
-- Before deletion, verify resources are truly orphaned
+- Before deletion, verify resources are orphaned
 - Delete orphaned PVCs to release Azure Managed Disks
 - Remove Services that no longer front active workloads to deallocate Load Balancers and public IPs
 
@@ -470,8 +470,6 @@ By default, all Log Analytics tables are created under the Analytics plan, which
 - Reconfigure ingestion routes to direct non-essential logs to lower-cost tables
 
 **Source:** https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices
-
-
 
 ---
 

@@ -40,7 +40,8 @@ platforms; the allocation problem is the same.
 Databricks cost data lives primarily in **system tables** in Unity Catalog. Account-
 admin queries against these tables are the canonical FinOps source of truth - cluster
 UI snapshots, dashboards, and per-workspace reports all derive from the same data.
-Skip the UI for serious analytics; query the system tables directly.
+For attribution and custom tooling, query the system tables directly; the UI is for
+ad-hoc views.
 
 **FOCUS support:** As of December 2024, Databricks supports FOCUS v1.0 for
 standardised cost data export, enabling cross-cloud normalisation with other
@@ -199,7 +200,7 @@ Service: Databricks SQL | Type: Inefficient Configuration
 Many organizations continue running short-lived or low-intensity SQL workloads - such as dashboards, exploratory queries, and BI tool integrations - on traditional clusters. This leads to idle compute, overprovisioning, and high baseline costs, especially when the clusters are always-on.
 
 - Migrate lightweight SQL workloads and dashboards to Databricks SQL Serverless
-- Enable serverless for high-concurrency, low-compute scenarios where persistent compute isn’t needed
+- Enable serverless for high-concurrency, low-compute scenarios where persistent compute isn't needed
 - Set policies or guidelines to default to serverless for interactive workloads unless specific performance reasons require otherwise
 
 **Inefficient Bi Queries Driving Excessive Compute Usage**
@@ -278,7 +279,7 @@ Service: Databricks Clusters | Type: Suboptimal Pricing Model
 In non-production environments - such as development, testing, and experimentation - many teams default to on-demand nodes out of habit or caution. However, Databricks offers built-in support for using spot instances safely.
 
 - Enable spot instance usage for non-production clusters where workloads are resilient to interruption
-- Use Databricks’ native fallback-to-on-demand capabilities to preserve job continuity
+- Use Databricks' native fallback-to-on-demand capabilities to preserve job continuity
 - Establish workspace-level defaults or templates that promote spot usage in dev/test clusters
 
 **Suboptimal Use Of On Demand Instances In Non Production Clusters**
@@ -460,8 +461,8 @@ cost.** This separates two distinct conversations:
   (Effective Savings Rate).
 
 Without this split, teams may believe their behaviour generated savings when the
-savings actually came from centralised commitment purchasing, or the reverse - a
-team that genuinely reduced consumption sees no impact in their amortised number
+savings came from centralised commitment purchasing, or the reverse - a
+team that reduced consumption sees no impact in their amortised number
 because the contractual amortisation is fixed.
 
 ### Monthly review cadence - Databricks side
@@ -490,12 +491,13 @@ prerequisite for the next:
 5. **Then** commit via DBCU and / or Azure VM RIs on the underlying compute.
 
 **Reserving before cleanup turns waste into a contractual baseline.** This is the
-single most expensive ordering mistake on Databricks engagements - DBCU commitments
-are non-trivial and a year-long commitment to over-provisioned clusters is hard to
-unwind.
+most expensive ordering mistake OptimNow has seen on Databricks engagements - DBCU
+commitments are non-trivial and a year-long commitment to over-provisioned clusters
+is hard to unwind.
 
-Source for the data-platform allocation framing: FinOps Foundation webinar -
-practitioner conversation on data-platform allocation (Databricks + Fabric).
+Source for the data-platform allocation framing: a FinOps Foundation practitioner
+webinar on data-platform allocation (Databricks + Fabric); title and date were not
+recorded, so treat the framing as practitioner observation rather than a citable source.
 
 ---
 

@@ -14,8 +14,8 @@ fcp_maturity_entry: "Walk"
 > AWS rate-optimisation instruments and the decisions around them: Savings Plans
 > (Compute, EC2 Instance, SageMaker AI, Database), Reserved Instances, Spot, the
 > commitment decision tree, portfolio liquidity and phased purchasing, and EDP
-> negotiation. Split out of `finops-aws.md` so a commitment question does not load
-> the full AWS pattern catalogue. For AWS billing data, rightsizing, allocation and
+> negotiation. Kept separate from `finops-aws.md` so a commitment question does not
+> load the full AWS pattern catalogue. For AWS billing data, rightsizing, allocation and
 > service-specific optimisation, see `finops-aws.md`.
 
 ---
@@ -26,8 +26,8 @@ fcp_maturity_entry: "Walk"
 
 AWS provides six distinct instruments for reducing compute costs, plus a separate
 Database Savings Plan (covered in the database section below). Each has different
-flexibility, discount depth, and risk profile. The most common mistake is treating
-them as alternatives when they are designed to be layered.
+flexibility, discount depth, and risk profile. A common mistake is treating them as
+alternatives when they are designed to be layered.
 
 AWS now documents **four Savings Plan types** in its plan-types reference: Compute,
 EC2 Instance, SageMaker AI, and Database. SageMaker AI Savings Plans are a separate
@@ -45,12 +45,12 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 | SageMaker AI Savings Plan | Up to 64% | Flexible across SageMaker AI usage | Spend-based ($/hr) | 1yr or 3yr | SageMaker AI (training, inference, notebooks) |
 | Spot Instances | Up to 90% | Variable - can be interrupted with 2 min notice | None (market-priced) | None | EC2, EKS nodes, EMR, SageMaker Training |
 
-**Critical distinctions most teams miss:**
+**Critical distinctions that are easy to miss:**
 
 1. **EC2 Instance Savings Plans match Standard RI discount depth** (up to 72%) but
    are spend-based, not capacity-based. They offer the same discount with more
-   flexibility (any size within the instance family). For most teams, EC2 Instance
-   SPs have replaced Standard RIs as the default choice.
+   flexibility (any size within the instance family). In the AWS estates OptimNow
+   has reviewed, EC2 Instance SPs have replaced Standard RIs as the default choice.
 
 2. **Compute Savings Plans are shallower** (up to 66%) but cover EC2, Fargate, and
    Lambda. The flexibility premium costs ~6% discount depth vs EC2 Instance SPs.
@@ -346,7 +346,7 @@ and a falling keel is an early liquidity warning.
 
 ### Phased purchasing
 
-Never buy the full commitment in a single transaction. Purchase in blocks to create
+Avoid buying the full commitment in a single transaction. Purchase in blocks to create
 a portfolio of overlapping terms with staggered expiry dates. The cadence and block
 size should match your consumption profile - not a fixed rule.
 
@@ -468,6 +468,9 @@ over 3 years is substantially higher than over 1 year.
 - Not monitoring utilisation: an SP or RI below 80% utilisation means you are paying
   for unused commitment and should adjust the next purchase
 
+The targets below are OptimNow working thresholds for a Walk-stage estate; adjust
+to risk appetite.
+
 **Key metrics:**
 - **SP/RI Utilisation:** Target >80%. Below this, the commitment is oversized.
 - **SP/RI Coverage:** Target 70% (Walk maturity), 80%+ (Run maturity).
@@ -527,7 +530,8 @@ $500,000 in annual spend.
 The EDP discount is applied after Reserved Instance and Savings Plan discounts. This
 means the EDP provides additional savings on top of already-discounted compute. When
 combined with aggressive rate optimisation (RIs, Savings Plans, Spot), mature
-organisations can achieve an overall effective discount of 40-70% off On-Demand rates.
+organisations can reach an overall effective discount in the 40-70% range off
+On-Demand rates (indicative, not a benchmark).
 
 **Eligibility requirements and hidden costs:**
 - Minimum annual spend of $1 million (negotiable for high-growth accounts)
@@ -568,7 +572,7 @@ boundary can yield a disproportionate jump in discount rate.
 - [ ] Factor Enterprise Support cost into the total cost of ownership before
       signing
 
-**EDP preparation roadmap (source: OptimNow):**
+**EDP preparation roadmap (OptimNow engagement template, not an AWS document):**
 
 | Stage | Timeline | Key activities |
 |---|---|---|
@@ -609,9 +613,6 @@ works best when stacked with other instruments:
 - Note: as of January 2024, EDP customers are prohibited from selling discounted
   RIs on the AWS Marketplace, making internal commitment forecasting and liquidity
   management more critical
-
----
-
 
 ---
 

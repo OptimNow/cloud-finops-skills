@@ -40,8 +40,8 @@ fcp_maturity_entry: "Walk"
 
 ### Azure Cost Management exports
 
-Azure Cost Management is the native cost visibility tool. For serious FinOps
-implementations, configure scheduled exports to Azure Storage for downstream processing.
+Azure Cost Management is the native cost visibility tool. For attribution and custom
+tooling, build on scheduled exports to Azure Storage; the portal is for ad-hoc views.
 
 **Export types:**
 - **Actual cost** - charges as they appear on the invoice (use for billing reconciliation)
@@ -110,8 +110,7 @@ with KQL queries. Use it for:
 
 Start here: the VM cost model, SKU naming, family selection, automated start/stop,
 generation upgrades and region placement. The Advisor mechanics below assume all of
-this. (These two bodies of material previously sat ~1,200 lines apart in this file,
-fundamentals *after* the advanced treatment - they are merged and reordered here.)
+this.
 
 ### VM cost model
 
@@ -189,8 +188,8 @@ Use the Retail Prices API to compare regions programmatically.
 
 Rightsizing precedes any commitment decision. Committing to an oversized fleet locks
 in waste for one to three years. The Azure Advisor recommendation is the obvious
-starting point - and also the most misleading default in the entire Cost Management
-surface.
+starting point - and, in the Azure estates OptimNow has reviewed, the most misleading
+default in the Cost Management surface.
 
 ### The Advisor threshold trap
 
@@ -212,8 +211,8 @@ Source: https://learn.microsoft.com/en-us/azure/advisor/advisor-cost-recommendat
 
 **Common trap:** Advisor's logic is conservative on shutdown and skips many moderate-
 rightsizing opportunities. A new Azure customer following Advisor at default settings
-will typically see only 5-15% of their actual rightsizing surface; the remainder needs
-custom queries (see KQL pattern below) to surface.
+sees only a fraction of its rightsizing surface (5-15% is a working estimate; verify
+in the estate); the remainder needs custom queries (see KQL pattern below) to surface.
 
 ### The configurable rule is a display filter, not a tuning knob
 
@@ -274,7 +273,7 @@ dimensions over the same window:
 | Network | `Network In/Out Total` | Sustained at SKU bandwidth ceiling (do not downsize) |
 
 A VM with 8% CPU but 95% memory pressure will OOM on a downsize - the cost saving
-is reversed by an outage. This is the most common rightsizing rollback cause.
+is reversed by an outage. This is a common cause of rightsizing rollbacks.
 
 ### B-series caveat - the credit bank trap
 
@@ -301,7 +300,7 @@ nominal CPU% understates the demand. Either move off B-series or hold size.
 
 ### When rightsizing competes with commitment renewal
 
-If a Reservation is locked to a specific SKU and the workload is genuinely oversized,
+If a Reservation is locked to a specific SKU and the workload is oversized,
 instance size flexibility already covers smaller sizes within the same family, so a
 downsize inside the family needs no action. Moving outside the family previously meant
 exchanging the Reservation; for covered services that path closes on 1 February 2027, so
@@ -314,10 +313,10 @@ commitment.
 
 ## Log Analytics cost control
 
-On mature Azure customers, Log Analytics is frequently the second-largest cost line
-after compute and almost always the most overspent. Default ingestion settings, agent
-sprawl, and Sentinel layering compound quickly. The levers below are listed in
-order of impact - work top-down.
+In the mature Azure estates OptimNow has reviewed, Log Analytics is often the
+second-largest cost line after compute and the most overspent. Default ingestion
+settings, agent sprawl, and Sentinel layering compound quickly. The levers below
+are listed in order of impact - work top-down.
 
 ### Lever 1: Commitment tiers (the quickest win)
 
@@ -416,7 +415,7 @@ search-job cost will exceed the retention saving.
 
 Microsoft Sentinel charges a **Sentinel premium** on top of the Log Analytics
 ingestion cost. The two are entangled - cutting LA ingestion cuts the Sentinel bill
-proportionally. Never optimise one without the other:
+proportionally. Size the two together, because a change on one side moves the other:
 
 - Tables in Basic plan are not eligible for most Sentinel analytics rules - confirm
   before moving security-relevant tables to Basic
@@ -437,8 +436,9 @@ Usage
 | order by GBIngested desc
 ```
 
-The 80/20 distribution is consistent across customers - typically 3-5 tables drive
-70-80% of the bill. Address those first.
+The distribution is skewed: a handful of tables, often 3-5, drive most of the
+bill (70-80% is indicative, not a benchmark).
+Address those first.
 
 ### KQL: ingestion trend by solution
 
@@ -559,7 +559,7 @@ retention configuration. Walk each engine:
 - **Periodic backup** - free, two copies retained
 - **Continuous backup (7-day or 30-day)** - paid feature, often left on after a
   one-time PITR test. Audit which accounts have it enabled and whether the workload
-  actually needs continuous PITR.
+  needs continuous PITR.
 
 **Postgres / MySQL Flexible Server:**
 - `backup_retention_days` is per-server, default 7 days, max 35 days. Servers
@@ -645,8 +645,8 @@ A single node pool serving everything is the most expensive layout. Segregate by
 workload class:
 
 - **System pool** - hosts kube-system pods (CoreDNS, metrics-server, konnectivity).
-  Stable, non-evictable SKUs. Minimum D2s_v5 or B2ms, 2-3 nodes for HA. Never on
-  Spot.
+  Stable, non-evictable SKUs. Minimum D2s_v5 or B2ms, 2-3 nodes for HA. Keep it
+  off Spot: its addons do not tolerate eviction.
 - **General user pool** - Standard Linux nodes, on-demand or with conservative
   autoscaler. Default destination for pods without specific tolerations.
 - **Spot user pool** - taint with `kubernetes.azure.com/scalesetpriority=spot:NoSchedule`,
@@ -656,7 +656,7 @@ workload class:
 
 **Anti-pattern:** running the system pool on Spot. CoreDNS and metrics-server cannot
 gracefully tolerate eviction, and a Spot reclaim event can destabilise the entire
-cluster's control-plane addons. Always system-pool on dedicated, non-evictable
+cluster's control-plane addons. Keep the system pool on dedicated, non-evictable
 capacity.
 
 Use **taints and tolerations** to steer pods. The Spot taint above forces explicit
@@ -885,7 +885,7 @@ service tier decouples storage from compute:
   upgrade
 
 **Threshold rule:** consider Hyperscale once a database is >4 TB or when read
-replica scale-out is genuinely needed. Below that, General Purpose or Business
+replica scale-out is needed. Below that, General Purpose or Business
 Critical is usually the right call.
 
 ### Postgres / MySQL Flexible Server start/stop
@@ -999,8 +999,8 @@ Mandatory tag set - the OptimNow default for FinOps allocation:
 
 **Critical mechanic:** tags **are not** automatically inherited from a Resource
 Group to its resources. A tag on the RG does not propagate to VMs, disks, or NICs
-inside it. This is the most common source of "we tag everything" claims that
-collapse on audit. Inheritance must be enforced via Policy with `Modify` or
+inside it. This is a common source of "we tag everything" claims that collapse on
+audit. Inheritance must be enforced via Policy with `Modify` or
 `Inherit a tag from the resource group` built-in.
 
 Tag values should be drawn from a **controlled enum**, not free text. `CostCenter`
@@ -1052,7 +1052,7 @@ Three patterns, in order of allocation cleanliness vs flexibility:
    shared subscription costs (network, governance) across consumers based on tag
    values.
 3. **Hybrid** - subscription per BU for direct costs, tag-based allocation for
-   shared services. Most enterprise customers end here.
+   shared services.
 
 **Cost Management allocation rules** can split shared costs (a shared subscription,
 RG, or service) across consumers based on tag values, fixed proportions, or
@@ -1063,9 +1063,9 @@ allocation-rule debugging is otherwise an audit nightmare.
 
 - **Showback** - costs are visible to consuming teams, no money moves. Appropriate
   for low-to-medium maturity, or organisations without internal billing plumbing.
-  Most enterprise FinOps engagements end here.
+  Most of the enterprise engagements OptimNow has run end here.
 - **Chargeback** - costs flow to consuming teams' budgets. Requires finance
-  process and tooling to actually move money internally. Appropriate when the
+  process and tooling to move money internally. Appropriate when the
   organisation has the financial plumbing and the cultural readiness to be
   confronted with its consumption.
 
@@ -1074,15 +1074,15 @@ off when the showback signal stops driving behaviour change on its own.
 
 ### OptimNow tooling for tag governance
 
-Two OptimNow assets directly relevant to engagement delivery:
+Two OptimNow assets for tag governance work:
 
 - **Tag compliance MCP (open source)** -
   https://github.com/OptimNow/finops-tag-compliance-mcp - agent-accessible tag
-  compliance auditing across Azure (and AWS). Recommended pattern when an
-  engagement needs ongoing tag compliance reporting integrated with an AI agent.
+  compliance auditing across Azure (and AWS). Recommended pattern when ongoing
+  tag compliance reporting needs to be integrated with an AI agent.
 - **Tagging policy generator** - generates Azure Policy / AWS SCP / GCP Org Policy
-  from a tagging schema. Fastest way to bootstrap a tagging policy from a
-  customer's tag taxonomy without hand-writing Bicep or ARM.
+  from a tagging schema. Fastest way to bootstrap a tagging policy from an
+  existing tag taxonomy without hand-writing Bicep or ARM.
 
 ### KQL: tag governance triage
 
@@ -1256,8 +1256,8 @@ storage account).
 
 ## Networking cost
 
-Networking is the most commonly underestimated cost line on multi-region or
-hub-spoke architectures. The egress and peering charges are small per GB but
+Networking is a commonly underestimated cost line on multi-region or hub-spoke
+architectures. The egress and peering charges are small per GB but
 compound to material amounts on busy workloads.
 
 > *Every rate in this section is an approximate list rate for a common region, as of
@@ -1736,7 +1736,8 @@ Annual savings       €30,515/year
 ```
 
 **Implementation order matters:**
-1. **Week 1:** AHB - zero risk, zero downtime, immediate savings
+1. **Week 1:** AHB - no commitment, no downtime, immediate savings; confirm licence
+   eligibility first
 2. **Week 1-2:** Start/Stop automation - low risk, high impact
 3. **Week 3:** Rightsize non-prod web tier (stateless, easy rollback)
 4. **Week 4-6:** Rightsize non-prod DB tier (stateful, validate carefully per VM)

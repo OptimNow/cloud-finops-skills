@@ -37,8 +37,7 @@ contract sits at the Billing Account level.
 - [ ] AI Cost Summary Agent widget in Billing Overview (preview) for AI workload visibility
 
 The Cloud Billing console is sufficient for ad-hoc visualisation and budget alerting.
-For any serious FinOps analytics, the BigQuery billing export is the right primitive,
-not the console.
+For attribution and custom tooling, build on the BigQuery billing export.
 
 ### AI Cost Summary Agent - native AI spend visibility
 
@@ -136,7 +135,7 @@ progress, reward, and a status of Active, Achieved, Upcoming or **Missed**.
 
 What matters for FinOps:
 
-- **A missed milestone is forfeited money, and until now nobody owned watching it.**
+- **A missed milestone is forfeited money, and often nobody owns watching it.**
   These terms are negotiated by procurement and then sit in a contract PDF. Put the
   milestone end dates in the same calendar as commitment expiries, and review the page
   monthly. It only appears for billing accounts whose contract includes such programmes.
@@ -243,10 +242,10 @@ consumption is not eligible for a Compute Engine CUD, and compute is not eligibl
 FSP. Mechanics and the eligibility boundary are in `finops-vertexai.md`.
 
 The **architectural drift trap** (already in the patterns section below) is the
-most common GCP commitment failure: organisations buy resource-based CUDs early,
-then migrate workloads to GKE Autopilot or Cloud Run, leaving the CUDs underused.
-Spend-based CUDs avoid this category of failure at the cost of ~11 percentage
-points of discount depth on 3-year terms (46% vs 57%).
+GCP commitment failure OptimNow sees most often: organisations buy resource-based
+CUDs early, then migrate workloads to GKE Autopilot or Cloud Run, leaving the CUDs
+underused. Spend-based CUDs avoid this category of failure at the cost of ~11
+percentage points of discount depth on 3-year terms (46% vs 57%).
 
 **Layering recommendation (analogous to AWS / Azure layering):**
 
@@ -267,8 +266,8 @@ CUDs cover **Compute Engine, GKE (via the underlying nodes), Cloud SQL, Cloud Ru
 cover Cloud Functions, BigQuery, GCS, or Pub/Sub - those services have their own
 commitment models (BigQuery slot reservations, etc.).
 
-**CUD Sharing - the single most-missed CUD setting.** By default, CUD discounts
-apply only **within the project that purchased them**. To pool CUDs across an
+**CUD Sharing - the CUD setting most often left off.** By default, CUD
+discounts apply only **within the project that purchased them**. To pool CUDs across an
 organisation - the typical multi-team / multi-project scenario - you must
 explicitly enable **CUD Sharing** at the **billing-account level**. Without it,
 one project burns its CUDs to zero while sibling projects pay PAYG, and the
@@ -368,7 +367,7 @@ dashboard SLA.
 A reservation with a waste factor of 1.5 pays 50% more per useful slot than
 its list rate. This is the right cost lens for capacity reservations, not
 the slot-hour list price. A surprising number of "we have a BigQuery cost
-problem" engagements are really waste-factor problems hidden behind a
+problem" engagements are waste-factor problems hidden behind a
 reservation discount that looked fine on paper.
 
 #### Progressive ladder for BigQuery commitments
@@ -386,12 +385,12 @@ maturity (Crawl or early Walk):
    10/20% without architectural rework or concurrency trade-offs. Applies
    across all capacity SKUs, so the discount does not strand if the team
    later switches editions.
-4. **Slot commitments**: only when there is a genuinely stable, binpackable
+4. **Slot commitments**: only when there is a stable, binpackable
    baseline AND the team has re-architected concurrency to fit it. Start
    small (50-100 slots) and expand based on observed waste factor.
 
 Jumping straight to step 4 - the "I'll just commit to my observed average
-usage" reflex - is the single most common BigQuery commitment failure.
+usage" reflex - is a common BigQuery commitment failure.
 
 #### Principal-based reservation assignments - native slot attribution
 
@@ -449,7 +448,7 @@ budget enforcement.
 **Frame for clients**: BigQuery commitments trade flexibility for
 predictability, and often performance for predictability. The right
 question is not "what discount can we get" but "what is the SLA the
-business actually needs, and what is the cheapest pricing mix that meets
+business needs, and what is the cheapest pricing mix that meets
 it without breaking that SLA".
 
 Sources:
@@ -546,7 +545,7 @@ Development and test environments on Compute Engine are commonly provisioned and
 **Orphaned And Overprovisioned Resources In Gke Clusters**
 Service: GCP GKE | Type: Inefficient Configuration
 
-As environments scale, GKE clusters tend to accumulate artifacts from ephemeral workloads, dev environments, or incomplete job execution. PVCs can continue to retain Persistent Disks, Services may continue to expose public IPs and provision load balancers, and node pools are often oversized for steady-state demand.
+As environments scale, GKE clusters accumulate artifacts from ephemeral workloads, dev environments, or incomplete job execution. PVCs can continue to retain Persistent Disks, Services may continue to expose public IPs and provision load balancers, and node pools are often oversized for steady-state demand.
 
 - Delete PVCs with unmounted Persistent Disks
 - Clean up Services with no backend to release IPs and load balancers
@@ -604,7 +603,7 @@ VM-based Committed Use Discounts in GCP offer cost savings for predictable workl
 
 - Consolidate workloads onto committed VM types where feasible
 - Avoid renewing commitments for workloads that are scaling down or migrating
-- For workloads where architecture is still evolving, prefer Flexible / spend-based CUDs (Compute Engine Flex CUDs) over Resource-based CUDs - they trade a few percentage points of discount depth for the freedom to move across machine families and regions without stranding commitments. Resource-based CUDs are the right fit only when the workload, family, and region are genuinely stable for the full term.
+- For workloads where architecture is still evolving, prefer Flexible / spend-based CUDs (Compute Engine Flex CUDs) over Resource-based CUDs - they trade a few percentage points of discount depth for the freedom to move across machine families and regions without stranding commitments. Resource-based CUDs are the right fit only when the workload, family, and region are stable for the full term.
 
 ---
 
@@ -689,7 +688,7 @@ Bigtable automatically splits data into tablets (shards), which are distributed 
 
 - Redesign row keys to promote even tablet distribution (e.g., avoid monotonically increasing keys)
 - Consolidate shards where appropriate to reduce overhead
-- Use Bigtable’s Key Visualizer tool to identify and resolve hot spotting
+- Use Bigtable's Key Visualizer tool to identify and resolve hot spotting
 
 **Unoptimized Billing Model For Bigquery Dataset Storage**
 Service: GCP BigQuery | Type: Inefficient Configuration
@@ -698,7 +697,7 @@ Highly compressible datasets, such as those with repeated string fields, nested 
 
 - Switch eligible datasets to physical storage billing when compression advantages are material
 - There is no performance impact between the two billing models.
-- Changing the billing model takes 24 hours before it’s reflected in the GCP billing SKUs.
+- Changing the billing model takes 24 hours before it's reflected in the GCP billing SKUs.
 
 **Excessive Data Scanned Due To Unpartitioned Tables In Bigquery**
 Service: GCP BigQuery | Type: Suboptimal Configuration
@@ -735,7 +734,7 @@ Cloud SQL instances are often over-provisioned or left running despite low utili
 
 - Right-size vCPU and memory allocations based on actual performance needs
 - Schedule automatic shutdown for non-production instances during off-hours
-- Use Cloud SQL’s stop/start capability for intermittent workloads
+- Use Cloud SQL's stop/start capability for intermittent workloads
 
 ---
 

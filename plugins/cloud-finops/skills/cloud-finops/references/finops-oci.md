@@ -140,7 +140,7 @@ OCI Object Storage buckets accrue charges based on data volume stored, even if n
 **Unattached Boot Volume**
 Service: OCI Block Volume | Type: Inactive and Detached Volume
 
-When a Compute instance is terminated in OCI, the associated boot volume is not deleted by default. If the termination settings don’t explicitly delete the boot volume, it persists and continues to generate storage charges.
+When a Compute instance is terminated in OCI, the associated boot volume is not deleted by default. If the termination settings don't explicitly delete the boot volume, it persists and continues to generate storage charges.
 
 - Delete unattached boot volumes that are no longer needed
 - Establish lifecycle policies or instance termination settings that automatically delete boot volumes unless explicitly retained
