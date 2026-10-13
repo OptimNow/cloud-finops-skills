@@ -324,6 +324,16 @@ bumps live in dedicated release PRs that move four files together: `plugin.json`
 top-level `version` and in `packages[0].version`, both CI-gated since August 2026.
 See the release-train rule in the repo's CLAUDE.md.
 
+## Data handling
+
+The server holds no account, credential or user data and cannot see your cloud
+estate: the tools read the bundled markdown files and keep no copy of the request.
+The hosted connector writes one application-log line per request without the
+arguments and, for a lookup that matched nothing, the arguments that missed, which
+can include a phrase the model copied from your question. The hosting platform keeps
+the standard HTTP access log. What is logged, where it lives and for how long is in
+[PRIVACY.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md).
+
 ## License
 
 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) - same as the parent

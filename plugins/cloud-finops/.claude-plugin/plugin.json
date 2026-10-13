@@ -11,6 +11,10 @@
   "repository": "https://github.com/OptimNow/cloud-finops-skills",
   "license": "CC-BY-SA-4.0",
   "homepage": "https://github.com/OptimNow/cloud-finops-skills",
+  "icon": "./.claude-plugin/icon.svg",
+  "documentationUrl": "https://github.com/OptimNow/cloud-finops-skills#readme",
+  "supportUrl": "https://github.com/OptimNow/cloud-finops-skills/issues",
+  "privacyPolicyUrl": "https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md",
   "keywords": [
     "finops",
     "cloud-cost",

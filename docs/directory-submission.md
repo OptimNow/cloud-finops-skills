@@ -72,6 +72,12 @@ Then exercise each of the six tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
 asks you to confirm you did.
 
+**Verified 2026-10-13.** `initialize` at `https://mcp.optimnow.io/mcp` answers
+`serverInfo.version` 1.41.1 with the six tools; `list_references` total 36 and
+`list_playbooks` total 41, equal to tag `v1.41.1`. The plugin listing is validated. The
+connector listing passed validation, was resubmitted after a category change and is
+under review again.
+
 **Verified 2026-09-30, after the move to `https://mcp.optimnow.io/mcp` (PR #210) and
 `fly deploy`.** Both hosts answer `initialize` with `serverInfo.version` 1.37.0, list
 the six tools and `list_references` total 35; the three widget resources advertise
@@ -411,8 +417,10 @@ who add both see one set of tools.
   uppercase `$VAR` beside a URL, no curl-pipe-to-shell and no package launcher
   (`scripts/check-plugin-content.sh`). Developer tooling stays at the repository
   root, where the scanner never reads it.
-- A connector-URL change touches three places: `server.py`
-  (`CANONICAL_CONNECTOR_ORIGIN`), README.md and INSTALLATION.md. The connector
-  listing's URL is edited in the portal separately.
+- A connector-URL change touches every copy listed in the CLAUDE.md checklist:
+  `server.py` (`CANONICAL_CONNECTOR_ORIGIN`) and its pinned test, README.md,
+  INSTALLATION.md, `mcp_server/README.md`, `server.json`, llms.txt, PRIVACY.md,
+  `fly.toml` and the two submission guides. `git grep` the old host before merging.
+  The connector listing's URL is edited in the portal separately.
 - Delisting is a request from the plugin's page menu; relisting is also a request and
   can be declined. Prefer publishing a fix over delisting.
