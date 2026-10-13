@@ -2,7 +2,7 @@
 name: greenops-cloud-carbon
 fcp_domain: "Optimize Usage & Cost"
 fcp_capability: "Sustainability"
-fcp_capabilities_secondary: ["Architecting & Workload Placement", "Usage Optimization"]
+fcp_capabilities_secondary: ["Architecting & Workload Placement", "Usage Optimization", "Intersecting Disciplines"]
 fcp_phases: ["Inform", "Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Sustainability", "Leadership", "Finance"]

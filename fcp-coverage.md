@@ -45,7 +45,7 @@ Marker legend:
 - [x] **Invoicing & Chargeback** - finops-chargeback.md _(secondary: finops-focus.md)_
 - [~] **FinOps Assessment** _(secondary: finops-framework.md)_
 - [~] **Automation, Tools & Services** _(secondary: finops-tagging.md; finops-waste-detection-playbooks.md)_
-- [~] **Intersecting Disciplines** _(secondary: finops-itam.md)_
+- [~] **Intersecting Disciplines** _(secondary: finops-itam.md; finops-sam.md; greenops-cloud-carbon.md)_
 
 ---
 

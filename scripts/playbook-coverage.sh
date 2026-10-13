@@ -127,6 +127,10 @@ fi
   echo "[docs/ROADMAP.md](docs/ROADMAP.md) and is weighted by expected recoverable"
   echo "spend, not by cell count."
   echo
+  echo "The GPU and SageMaker playbooks are filed by waste mechanism (idle,"
+  echo "overprovisioned, modernization), so the ai-ml-inefficiency row counts only"
+  echo "the token and agent playbooks and understates AI coverage."
+  echo
   header="| waste_category |"
   divider="|---|"
   for s in "${SCOPES[@]}"; do header+=" $s |"; divider+="---|"; done

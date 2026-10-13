@@ -80,9 +80,10 @@ use them (field-tested with the same battery of practitioner questions through b
   serves to move that probability, not to force the call.
   Its strengths: distribution (paste one URL - the right path for non-technical users
   and for hosts with neither skill support nor an installer target), faceted queries
-  over the library's metadata, and interactive widgets on hosts that render MCP Apps.
-- **Both is legitimate.** Skill loaded for the doctrine, connector added for the
-  widgets or for hosts where the skill is not loaded. Details on the six tools:
+  over the library's metadata, and interactive widgets on hosts that render MCP Apps
+  (Claude.ai does not render them yet; see the MCP server section below).
+- **Both is legitimate.** Skill loaded for the doctrine, connector added for faceted
+  retrieval or for hosts where the skill is not loaded. Details on the six tools:
   [MCP server](#mcp-server-cross-tool-search-style-retrieval) below.
 
 **What to expect in practice, on either surface.** Neither the skill nor the server
@@ -165,6 +166,10 @@ covers the underlying mechanics even where no runbook exists.
 
 ![Waste-playbook runbook coverage heat map](assets/playbook-coverage.svg)
 
+Playbooks are filed by waste mechanism, so the GPU and SageMaker runbooks sit in the
+idle, overprovisioned and modernization rows; the AI/ML row counts only the token and
+agent runbooks and understates AI coverage.
+
 The second surface is the **reference library mapped to the FinOps Framework**: which
 of the 22 Framework capabilities have a reference that owns them. This is where
 commitment strategy, chargeback, allocation and the other advisory themes live - none
@@ -212,7 +217,7 @@ side; gaps it finds land in the same public backlog.
   more, not less: agents execute discipline, not culture.
 
 These principles will grow into a `plugins/cloud-finops/skills/cloud-finops/doctrine/` directory of
-opposable theses with their own primary sources.
+opposable theses with their own primary sources (tracked in [docs/ROADMAP.md](docs/ROADMAP.md)).
 
 ---
 
@@ -240,6 +245,9 @@ them, particularly on billing mechanics and capacity economics.
 - "We're migrating from EA to MCA - what FinOps work do we need to do before the switch?"
 - "Which VMs run for nothing, and which runbook finds them?"
 - "We need to start reporting our cloud carbon emissions - where do we begin?"
+- "Our Snowflake bill doubled in a quarter. Is it the warehouses, storage or Cortex, and what do we check first?"
+- "Finance wants to charge teams for shared Kubernetes clusters. What has to be true before we move from showback to chargeback?"
+- "Our AI coding tool spend tripled in six months. How do we control it without banning the tools?"
 
 ---
 
@@ -312,7 +320,9 @@ On hosts that support MCP Apps (SEP-1865), the tool results render as interactiv
 widgets - a playbook explorer with facet filters and a coverage matrix, a playbook
 viewer with copyable detection queries and a checkable fix list, and a reference
 browser with a reading panel. Hosts without MCP Apps support get the plain results;
-nothing about the tools changes. Details in
+nothing about the tools changes. Claude.ai is one of them for now: in the last test
+(30 September 2026) the tool calls worked and returned plain results, and no widget
+rendered. Details in
 [mcp_server/README.md](./mcp_server/README.md).
 
 ---

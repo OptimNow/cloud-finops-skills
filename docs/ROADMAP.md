@@ -66,6 +66,8 @@ re-rank the list below against what engagements actually asked.
 
 Written against the 2026-09-30 state: 35 references, 37 playbooks (AWS 21,
 Azure 8, GCP 4, cross-cloud 4), 13 of 22 FCP capabilities with a primary owner.
+State at 2026-10-13: 36 references, 41 playbooks (AWS 21, Azure 10, GCP 6,
+cross-cloud 4), still 13 of 22 with a primary owner.
 
 1. **Storage tiering for Azure Blob and GCS - SHIPPED 2026-10-01** (lot of
    the 1st). Four playbooks porting the AWS split:
@@ -96,7 +98,7 @@ Azure 8, GCP 4, cross-cloud 4), 13 of 22 FCP capabilities with a primary owner.
 Depth items that ride a quality lot when a content lot is light: OCI (182
 lines, six patterns: deepen or label it a foundations file in the routing
 table), the GreenOps Azure and GCP pass below, and any further split of
-`finops-azure.md` (1,817 lines, above the 1,500-line structural-edit
+`finops-azure.md` (1,838 lines, above the 1,500-line structural-edit
 threshold) before adding to it.
 
 Deliberately not on the list: the last FCP cell (Education & Enablement) and
@@ -123,8 +125,12 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   inventory, guard-rails verification (9/9 tests pass; full suite 43/43 green),
   implicit assumptions, gap analysis vs Phase-2 targets, recommended
   remediation order (9 items, 5 blocking unfreeze), and proposed unfreeze
-  criteria (U1-U4 below, plus U5-U8 from the audit). The
-  remaining three phases are still below; Phase 2 (Harden) is the next PR.
+  criteria (U1-U4 below, plus U5-U8 from the audit). Phase 2 (Harden) is partly
+  done: the real-API smoke test (`pipeline/smoke_test.py`), the per-run report
+  (`pipeline/state/runs/<id>/report.json`) and preview-mode guard rails landed on
+  2026-05-15, and since September 2026 the scan records `fetch_failure` when every
+  source fails instead of reporting success. The applier stays frozen
+  (`run_apply.py.FROZEN`).
 
   Four phases:
 
@@ -189,72 +195,30 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   section of `CLAUDE.md` and should produce a follow-up Lessons learned entry
   describing the un-freeze evidence.
 
-- **Host `cloud-finops-mcp` on Alpic - DONE (2026-08-17).** Live at
-  <https://cloud-finops-skills-590a051d.alpic.live/mcp>, published in README.md,
-  INSTALLATION.md and the `remotes` block of `server.json`. The decision to deploy
-  remotely was taken on 2026-08-16 on distribution grounds alone (let a non-technical
-  user paste a URL into claude.ai instead of installing a PyPI package), explicitly
-  *not* on interactive rendering - see [`mcp-apps-lessons.md`](./mcp-apps-lessons.md) for
-  the full record of what actually gates widget rendering. (The 2026-08-16 reading, that
-  the Connectors Directory is the gate, was overturned on 2026-08-20: the gate is
-  implementation shape, and a remote deployment is neither necessary nor sufficient for
-  rendering. The distribution argument for hosting stands regardless.)
+- **Hosted connector: Alpic (2026-08-17), then Fly.io (2026-09-09), canonical URL
+  since 2026-09-30.** The connector was first hosted on Alpic for distribution
+  reasons (a non-technical user pastes a URL instead of installing a package), not
+  for interactive rendering; see [`mcp-apps-lessons.md`](./mcp-apps-lessons.md) for
+  what actually gates widget rendering. Alpic served stale content after releases
+  (still 1.29.0 on 2026-08-27, with PyPI at 1.33.0), and its shared free quota then
+  took the connector down on 2026-09-09 (HTTP 402). The connector moved to Fly.io the
+  same day (#195), and its canonical URL became `https://mcp.optimnow.io/mcp` on
+  2026-09-30 (#210); the `fly.dev` host still answers but is deprecated. The
+  Alpic-era record is in git history and in `docs/mcp-apps-lessons.md`.
 
-  **Verified against the deployed endpoint**, not just against a build log:
-  `initialize` returns `serverInfo {"name":"cloud-finops","version":"1.29.0"}` and
-  `tools/call list_references` returns `"total":33`. The reference count is the check
-  that matters - see constraint 1 below for why a deployment can come up healthy with
-  an empty catalogue.
+  What still holds on Fly:
 
-  **Staleness confirmed (2026-08-27).** The same two calls still return 1.29.0 and 33
-  references, so the deployment has not effectively picked up a release since
-  2026-08-17 - four releases and two new references (`finops-kpis-benchmarking`,
-  `finops-open-weight-vendors`) behind PyPI, and serving pre-price-purge content. This
-  is what the release-checklist item "redeploy the hosted MCP (Alpic) after the tag,
-  then verify by calling it" exists to prevent, and it is evidence that the redeploy
-  cannot be assumed to happen on its own. Re-verify with `initialize` plus
-  `list_references` after every release; expect the current version and a total of 35.
-
-  **Staleness resolved (2026-08-29).** Redeployed after the 1.34.0 release and verified
-  by calling the hosted connector: `list_references` returns 35 (including
-  `finops-kpis-benchmarking` and `finops-open-weight-vendors`), and
-  `get_reference(name="finops-aws", section="AWS billing hierarchy and separate
-  invoices")` serves the 1.34.0 section through the section parameter shipped in
-  PR #180 - so the deployment carries both of the releases it was behind on. The
-  re-verify-after-every-release rule stands unchanged; this entry records one
-  verified pass of it, not a reason to skip the next one. Lot C in the batch
-  sequence below is no longer gated on this redeploy.
-
-  One behavioural difference from the local run, worth knowing before writing a health
-  check: **the hosted endpoint is session-based.** A bare `tools/call` returns HTTP 400
-  even though `stateless_http = True` is set in the code; Alpic's ingress front-ends the
-  server with its own session layer. You must `initialize` first and pass the returned
-  `mcp-session-id` header on subsequent calls. Real MCP clients do this automatically;
-  a hand-rolled `curl` one-liner does not.
-
-  Four things about this repo that a deployment has to respect, all verified locally
-  before the config was written:
-
-  1. **Build from the repo root, never from `mcp_server/` in isolation.** The bundled
-     `data/*.md` are gitignored, so a fresh clone has none. They are produced at build
-     time by the `hatch-build-scripts` hook running `scripts/sync_references.py`, which
-     resolves the repo root from `__file__` and reads `plugins/cloud-finops/skills/cloud-finops/`. Point the
-     build at `mcp_server/` alone and it will happily build a server with an empty
-     catalogue - a silent failure, not a build error.
-  2. **The start command must name the transport explicitly.** Alpic detects Python
-     transport by looking for `mcp.run()` / `mcp.http_app()` with an explicit transport
-     argument. This server routes through argparse in `__main__.py` and defaults to
-     stdio, so auto-detection would get it wrong. Hence `--transport http` in
-     `startCommand` rather than relying on detection.
-  3. `$PORT` and `0.0.0.0` are already handled in `__main__._env_port()` and
-     `run_http()`, and `stateless_http = True` is set deliberately so there is no
-     session affinity to preserve across instances.
-  4. The route is FastMCP's default `/mcp`. Do not move it.
-
-  Verified 2026-08-17 on a clean tree: `uv build --wheel` runs the sync hook and produces
-  a wheel carrying 33 references + 25 playbooks + the viewer HTML; `python -m
-  cloud_finops_mcp --transport http` binds and answers `initialize` and `tools/list` over
-  streamable HTTP.
+  1. **Build from the repo root, never from `mcp_server/` alone.** The bundled
+     `data/*.md` files are gitignored and produced at build time by
+     `mcp_server/scripts/sync_references.py` (the `Dockerfile` copies the references
+     and playbooks, then runs it). A build pointed at `mcp_server/` alone produces a
+     server with an empty catalogue: a silent failure, not a build error.
+  2. **The route is FastMCP's default `/mcp`. Do not move it:** the widget sandbox
+     domain is derived from the exact connector URL (see `CLAUDE.md`).
+  3. **Nothing redeploys on its own.** After every release, run `fly deploy` from the
+     tagged commit and verify by calling the endpoint (`initialize`, then
+     `list_references`, and compare the reference count with the tag), as the release
+     checklist in `CLAUDE.md` says.
 
 - **Live pricing tools inside `cloud-finops-mcp`: will not do (decided 2026-08-17).**
   The idea was to add `get_llm_price` / `get_compute_price` to this server, fetching the
@@ -308,13 +272,17 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   3. **NAT-to-gateway-endpoint substitution (AWS)** - the high-traffic end of the NAT
      distribution, which the zombie-NAT playbook deliberately scopes out: a NAT moving
      mostly S3/DynamoDB data pays a per-GB processing fee a gateway endpoint eliminates
-     entirely. Larger recoverable than the idle end.
+     entirely. Larger recoverable than the idle end. *SHIPPED 2026-08-29 (#182) as
+     `aws-nat-gateway-endpoint-substitution`.*
   4. **Azure idle VM + orphaned NICs / public IPs + snapshot sprawl** - the Azure set is
      four playbooks against fourteen for AWS; these three are the everyday-estate gaps.
+     *SHIPPED 2026-08-29 (#182): `azure-idle-vm`, `azure-orphaned-public-ips-and-nics`,
+     `azure-snapshot-sprawl`.*
   5. **Schedule blindness beyond compute** - databases and non-production data platforms
      (SQL pause/resume, Fabric capacity pause, warehouse auto-suspend).
   6. **Modernization beyond GPU generations** - Graviton/ARM migration, gp2-to-gp3,
-     Azure v-series refresh.
+     Azure v-series refresh. *AWS side SHIPPED 2026-08-29 (#182): `aws-gp2-to-gp3`,
+     `aws-graviton-candidate`. The Azure v-series refresh is still open.*
   7. **Egress beyond AWS cross-AZ** - NAT-path egress, Azure/GCP equivalents, CDN bypass.
   8. **GCP depth** - BigQuery slot and storage waste, Cloud SQL idle, CUD mismatch (also
      covered by item 2).
@@ -335,8 +303,8 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   playbook matrix is 18 AWS / 5 Azure / 4 GCP / 4 cross-cloud, and schedule-blindness,
   modernization and egress each have a single playbook.
 
-  **Lot A - everyday-estate playbooks (next batch).** Five files, all able to carry
-  the obvious tier, all high-value:
+  **Lot A - everyday-estate playbooks: SHIPPED 2026-08-29 (#182).** The six files
+  below, as planned:
   1. `aws-nat-gateway-endpoint-substitution` (egress) - backlog item 3. Urgent because
      it is a dangling pointer: `aws-zombie-nat-gateway` explicitly scopes it out as
      "a larger finding", and probe P13 is waiting for it. CUR detection: NatGateway-Bytes
@@ -488,6 +456,8 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   Standing incident, third cycle running: every connector call renders "Unable to reach
   AI Cloud FinOps Skill & MCP" while the data arrives intact, and a tool-approval gate
   now appears per call. Full per-probe notes in `pipeline/coverage-probes.md`.
+  This was observed on the Alpic deployment and has not been re-tested since the move
+  to Fly.io: re-test it in the next probe cycle, then close or keep this note.
 
   Two composition notes from the same test, recorded as positioning decisions rather than
   defects until decided otherwise: (a) the library reads AI-workload-heavy (8 of 14 AWS
@@ -507,8 +477,8 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   the resulting `https://chat.openai.com/g/g-XXXXX` URL and replace the placeholder in
   `README.md`'s install table. Maintenance burden: a GitHub Action that re-builds the
   artefacts on each release, plus a manual re-upload to ChatGPT (their API does not
-  expose a "publish new version" endpoint for Custom GPTs). Cadence target: monthly
-  refresh on top of the monthly source-update batch.
+  expose a "publish new version" endpoint for Custom GPTs). Cadence target: a monthly
+  refresh, after the content lot of the 1st.
 
 - **Public Gemini Gem for Gemini users.** Same shape as the ChatGPT GPT. Build
   steps: (1) run `./install.sh --tool gemini` to produce the 10 grouped knowledge
@@ -537,17 +507,23 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
     per provider. The trade-off tables, four-quadrant cost-vs-carbon framework, and CSRD
     stakeholder roles already apply across all three providers.
 
+- **Doctrine directory.** The README's design principles are meant to grow into
+  `plugins/cloud-finops/skills/cloud-finops/doctrine/`: one file per opposable
+  thesis, each with its own primary sources. No trigger is recorded yet; set one
+  when this is scheduled.
+
 ## Deferred reference files
 
 These files were identified in the white-space analysis (May 2026) and explicitly deferred,
 with the rationale captured here so future work picks them up at the right moment rather
-than re-litigating priority. Tracking issue: `OptimNow/cloud-finops-skills#55`.
+than re-litigating priority. Tracking issue: `OptimNow/cloud-finops-skills#55` (closed;
+this table is now the record).
 
 | Proposed file | Priority | Trigger to revisit | Why deferred |
 |---|---|---|---|
 | `finops-tools-services.md` | P2 | Next engagement raises a vendor-evaluation question | OptimNow has implicit views (FinOps Toolkit, MCP, OpenCost) but no formal write-up; better to write against a real client question than a generic checklist |
 | `finops-practice-operations.md` | P2 | Next Walk to Run client engagement starts | `optimnow-methodology.md` covers the consultancy-positioning lens; this would be the operator-grade discipline below it (three-cadence operating model, per-Capability scorecard, allied-discipline integration charter) |
-| `finops-forecasting.md` | P2 | Non-AI forecasting demand emerges | `finops-ai-value-management.md` covers AI forecasting; non-AI demand has not surfaced in current engagements |
+| `finops-forecasting.md` | **Scheduled** (ranked list item 5) | Fired: budget season (September-November 2026) | `finops-ai-value-management.md` covers AI forecasting. Input already in the library: the budget-by-exception example in `finops-kpis-benchmarking.md` (#240) |
 | `finops-unit-economics.md` | P2 | Non-AI unit-economics demand emerges | Same reasoning as forecasting; AI-side covered by AI value management and finops-for-ai files |
 | `finops-education-enablement.md` | P2 | Demand emerges; consider folding into practice-operations | Smaller scope than the other P2 files; could double as a section in practice-operations |
 | `finops-benchmarking.md` | **Shipped 2026-08-21** | (closed) | Shipped as `finops-kpis-benchmarking.md` (primary capability: KPIs & Benchmarking), reopened by maintainer decision 2026-08-20. The data-quality caveats that justified the deferral became the file's benchmarking section |
@@ -571,6 +547,14 @@ secondary in `finops-tagging.md` (MCP automation, IaC enforcement) and
 `finops-waste-detection-playbooks.md` (WasteLine appliance). Plus the
 `finops-tools-services.md` deferred entry above which would be the dedicated
 write-up if engagement demand emerges.
+
+**Note on Governance, Policy & Risk**: no primary owner, and no deferral was
+recorded for it until now. It is covered as secondary in `finops-agentic.md` and
+`finops-tagging.md`. The provider files carry policy mechanics without declaring
+the capability: Azure Policy patterns and budgets in `finops-azure.md`, the spend
+limits and guardrail SCPs in `finops-aws.md`. A cheap first step is to declare it
+as secondary in those provider files. Trigger for a primary owner: an engagement
+that asks for a cross-provider guardrail or policy-as-code design.
 
 When picking up a deferred item: read the rationale above and confirm the trigger is real
 before starting the file.
