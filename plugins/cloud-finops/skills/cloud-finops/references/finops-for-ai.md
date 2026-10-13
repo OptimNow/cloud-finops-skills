@@ -17,7 +17,7 @@ fcp_maturity_entry: "Walk"
 
 ---
 
-## AI cost management is no longer optional
+## AI cost management in the State of FinOps 2026
 
 The State of FinOps 2026 survey (6th edition, 1,192 respondents, published February 2026)
 reports that 31% of respondents managed AI spend in 2024, 63% in 2025 and 98% in 2026;

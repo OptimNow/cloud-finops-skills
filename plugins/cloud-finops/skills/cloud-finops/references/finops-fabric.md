@@ -136,7 +136,7 @@ Source: https://learn.microsoft.com/en-us/fabric/enterprise/capacity-overage-ove
 
 ---
 
-## Pause / Resume - the most underused cost lever
+## Pause / Resume
 
 Fabric capacities support **manual pause and resume**. While paused, **compute
 charges stop**; storage and metadata continue to accrue. Resume takes a few
