@@ -117,8 +117,8 @@ bundle**.
 
 **Which branch to track.** The directory scans every new commit on the tracked branch
 and, once published, serves it to everyone who installed the plugin. Following `main`
-means each fortnightly content PR becomes a directory version, which matches the
-"refreshed twice monthly" promise in the README. The documentation says to raise
+means each content PR becomes a directory version, which matches the "updated
+weekly" promise in the README. The documentation says to raise
 `version` in `plugin.json` on every release; whether the directory publishes a commit
 whose `version` is unchanged is not documented. The release-train rule in CLAUDE.md
 keeps content PRs free of version bumps, so if the directory turns out to ignore
@@ -280,7 +280,7 @@ edited by Anthropic afterwards):
 > The server holds no account, no credential and no user data; it cannot see your
 > cloud environment and hands over the detection query instead. Price figures are
 > not served here: the tools carry mechanics and ratios, and any figure in a
-> reference is illustrative and dated inline. Content is refreshed twice a month from primary
+> reference is illustrative and dated inline. Content is updated weekly from primary
 > provider sources and published under CC BY-SA 4.0. Built by OptimNow, a FinOps
 > consultancy, from enterprise delivery experience.
 

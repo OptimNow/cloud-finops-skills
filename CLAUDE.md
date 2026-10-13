@@ -204,6 +204,14 @@ cloud-finops-skills/
 
 ## Content update pipeline
 
+**Weekly since 2026-10-17.** The source scan now runs every Saturday as a private
+cloud routine over about 35 sources in two tiers (provider primary pages, and
+secondary leads that must be confirmed on a primary page). It replaces the
+fortnightly laptop scan described below and, like it, only proposes: nothing is
+applied without review. Its source list and run state live outside the repository.
+The rest of this section describes the laptop pipeline, kept for its tooling and
+history.
+
 The `pipeline/` folder contains a **fortnightly** content scanner (1st and 15th
 of each month at 9:00 AM CET via Windows Task Scheduler) that detects
 FinOps-relevant changes across ~30 sources and proposes updates to the reference
@@ -870,7 +878,7 @@ from how the directory works:
   and the guard scripts, `$VAR` references next to URLs in install.sh and CLAUDE.md,
   curl-pipe-to-shell lines in the READMEs and workflows, and CLAUDE.md itself at the
   plugin root. A hold does not block, but it sends every new version to a human
-  reviewer, which ends auto-publishing of the twice-monthly content releases. So the
+  reviewer, which ends auto-publishing of the regular content releases. So the
   plugin folder now holds only what a user installs: the manifest, a plugin README,
   LICENSE and the skill. Everything else stays at the root and is invisible to the
   scanner. The marketplace entry's `source` points at the folder; the plugin `name`

@@ -34,7 +34,7 @@ on its own, so that the content is not loaded twice in one session.
 
 ## Updates
 
-Content is refreshed about twice a month from primary provider sources. Every merge
+Content is updated weekly from primary provider sources. Every merge
 to the `main` branch of the repository is a new plugin version.
 
 ## License and source

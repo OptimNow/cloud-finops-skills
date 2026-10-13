@@ -364,11 +364,11 @@ use it. Full policy in [PRIVACY.md](./PRIVACY.md).
 
 ## This skill is actively maintained
 
-This is a living repository. Reference files are refreshed twice a month (around the
-1st and the 15th), driven by an automated scan of around 30 data sources - cloud
-provider pricing pages, release notes, billing changelogs, and FinOps community
-publications. Changes are reviewed before being applied, so the content reflects
-verified updates rather than raw feed output.
+This is a living repository, updated weekly. Every Saturday an automated scan checks
+around 35 sources - cloud and AI provider release notes, billing changelogs and pricing
+pages, plus FinOps community publications. Each change is confirmed on the provider's
+own documentation and reviewed before it is applied, so the content reflects verified
+updates rather than raw feed output.
 
 AI cost management is moving particularly fast - new model releases, capacity options,
 and billing mechanics appear every few weeks. Watch or star this repo to be notified
