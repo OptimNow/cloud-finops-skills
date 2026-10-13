@@ -22,10 +22,11 @@ fcp_maturity_entry: "Walk"
 
 ## Why AI complicates FinOps practice operations
 
-The State of FinOps 2026 survey confirms that AI governance is no longer optional: 98%
-of respondents now manage AI spend (up from 31% in 2024), and AI cost management is the
-#1 skillset FinOps teams need to develop. The challenge is not awareness - it is
-operational readiness.
+The State of FinOps 2026 survey shows AI spend management has become near-universal
+among respondents, and AI cost management ranks as the skillset their FinOps teams most
+need to develop (the figures are quoted once in `finops-for-ai.md`; the survey's
+organisational findings sit in `finops-framework.md`). The challenge is operational
+readiness rather than awareness.
 
 Standard FinOps practice operations - building accountability, enabling collaboration,
 driving optimisation - face compounded challenges when AI is in scope:
@@ -46,7 +47,7 @@ driving optimisation - face compounded challenges when AI is in scope:
 
 Decide the ownership model before projects start - by team, project, or department.
 AI carries its own risk profile (ethical, compliance, cost), so accountability must
-be explicit, not assumed.
+be explicit from the start.
 
 - Define who owns AI spend and the value it is expected to produce
 - Ensure owners understand organisational policies, which may be evolving rapidly
@@ -62,7 +63,7 @@ be explicit, not assumed.
 - Maintain a live **agent inventory**: every agent in production, its business
   owner, and the KPI it is supposed to move. "Agent sprawl" - Copilot rollouts,
   chatbots, coding assistants, and business-unit deployments central IT never sees -
-  is the AI-era shadow-IT pattern, and most enterprises cannot produce this list
+  is the AI-era shadow-IT pattern, and few enterprises can produce this list
 - Record P(success), T(verify), T(do), and failure blast radius per use case at
   stage-gate reviews (see the agent deployment inequality in `finops-for-ai.md`)
 - Maintain an inventory of agent payment instruments (wallets): owner, funding
@@ -123,7 +124,7 @@ Waiting for the monthly invoice is not a viable operating model for AI spend.
 
 ### Define and track unit economics
 
-Token-level cost visibility is table stakes. The more important metric is cost per
+Token-level cost visibility is the prerequisite; the metric that matters is cost per
 unit of business value. **ROI is not a KPI - it is computed from KPIs and cost.**
 If success KPIs are undefined, inference-layer optimisation is premature
 optimisation.
@@ -162,7 +163,7 @@ Source: Tokenomics Brief, "Why Tokens Aren't the AI Bill: Introducing Total Cost
 
 AI tools can assist with spend forecasting, anomaly detection, and cost attribution.
 Note: high variance and non-determinism in AI outputs means human review remains
-required. AI accelerates FinOps work; it does not replace judgment.
+required; AI accelerates FinOps work without replacing judgment.
 
 **Documented example: "SQL does the maths, the model does the talking".** One airline
 platform team, with a seven-figure Azure bill and no dedicated FinOps team, built a
@@ -192,8 +193,9 @@ organisation's design, not vendor mechanics.
 
 ### Communicate AI value to executives
 
-Practitioner experience from Google Cloud and Shopify highlights the importance of
-proactive CFO communication:
+Practitioners from Google Cloud and Shopify, quoted in the FinOps Foundation
+working-group paper this file distils, describe the same pattern of proactive CFO
+communication:
 
 - Frame AI investments in business outcomes, not technical metrics
 - Provide regular updates before surprises occur - weekly during rapid scaling phases
@@ -231,8 +233,7 @@ outcomes are uncertain.
 
 ### FinOps role in the council
 
-FinOps is a strategic partner in the council - present from the start, not called in
-after costs have escalated.
+FinOps is a strategic partner in the council and sits in it from the first review.
 
 FinOps provides:
 
@@ -286,7 +287,7 @@ is well-suited to lead.
 
 The goal of each meeting is a short-term approved spend list allowing projects to
 carry forward to the next milestone. Reviews should focus on value, risk, and funding
-decisions - not detailed cost or architecture debates.
+decisions; detailed cost and architecture debates belong in the working sessions.
 
 Required inputs per project:
 - Actual spend vs expectations
@@ -330,7 +331,8 @@ Auto-escalate to council if a project:
 
 ## Scaling AI without surprises
 
-Leading practitioners emphasise these patterns for scaling AI investments:
+The working-group paper's contributors describe these patterns for scaling AI
+investments:
 
 ### Phased scaling approach
 
@@ -378,8 +380,8 @@ finance review.
 
 ### Pick the method from the economic mechanism, not from the use case
 
-There are four ways an AI feature actually produces money, and the right method follows
-from which one is at work. Choosing by use-case label instead of by mechanism is the most
+There are four ways an AI feature produces money, and the right method follows from
+which one is at work. Choosing by use-case label instead of by mechanism is the
 common structural error.
 
 | Method | The mechanism | Typical use cases |
@@ -394,8 +396,9 @@ other as unquantified upside rather than folding a guess into the headline figur
 
 ### The four traps, one per method
 
-Each method has a characteristic way of being overstated. In practice these account for
-most of the gap between a business case and its realised outcome.
+Each method has a characteristic way of being overstated. In the business cases OptimNow
+has reviewed, these account for most of the gap between the case and its realised
+outcome.
 
 - **Cost displacement, gross of residual review.** A deflection rate is not a saving.
   Some proportion of AI output still needs a human to check it, and that review has a
@@ -405,8 +408,8 @@ most of the gap between a business case and its realised outcome.
 - **Revenue uplift, absolute versus relative.** A conversion rate moving from 3.0% to
   3.2% is an absolute uplift of 0.2 percentage points, not a relative uplift of 6.67%.
   The formulas take percentage points. Entering the relative figure inflates the value by
-  a factor of tens. This is the single most expensive input error in the category.
-  Churn reduction carries the same trap.
+  a factor of tens, which no other input error in the category matches. Churn
+  reduction carries the same trap.
 - **Retention uplift, period mismatch.** Customer value is normally held annually and the
   business case runs monthly. The annual value has to be brought to the period of the
   calculation, and a retained customer's value accrues over their remaining life, not in
@@ -428,9 +431,10 @@ adopting because a case that blends them cannot be audited:
 | **Augmentation** | AI does part of the task, the human stays in the loop | The human alone on the same task | Gross of the review time the human still spends (the residual-review trap above) |
 | **Automation** | AI does the task end to end | The better of the human alone and the previous automation, plus a quality gate | Counting output that failed the gate; nobody named as owner of the decision once the human is out of the loop |
 
-Say which one a case is making. Augmentation is the easiest to measure and the most
-commonly overstated. Automation is the only one that removes a cost line, and only if the
-freed capacity is actually redeployed or removed (next section). Capacity gain and new
+Say which one a case is making. Augmentation is the easiest to measure and the one most
+often overstated, because the review time is left out. Automation is the only one that
+removes a cost line, and only if the freed capacity is redeployed or removed (next
+section). Capacity gain and new
 capabilities routinely weigh more with executives than cost avoidance, which is exactly
 why they need the strictest counterfactual: without one, the ROI story collapses into an
 FTE estimate nobody will sign.
@@ -492,8 +496,8 @@ every employee half an hour a day is real, and visible to anyone who looks, but 
 team is resized, a hiring plan is reduced, or the hours are redirected into output someone
 pays for, it has nowhere to land in the books. Carry it as a tracked FTE-equivalent figure
 with a review date, and move it to spend removed or new revenue won in the quarter someone
-acts on it. Reporting it as savings in the meantime is the most common way an AI programme
-loses credibility with Finance.
+acts on it. Reporting it as savings in the meantime is a fast way for an AI programme to
+lose credibility with Finance.
 
 The value working-group taxonomy was unpublished at the time of writing (September 2026);
 re-check it against <https://www.tokeneconomics.com> once the paper ships.

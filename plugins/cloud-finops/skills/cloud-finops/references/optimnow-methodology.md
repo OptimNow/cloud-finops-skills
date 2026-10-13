@@ -10,9 +10,9 @@ fcp_maturity_entry: "Crawl"
 
 # OptimNow Methodology
 
-> This file defines how OptimNow approaches customer problems. It is a reasoning lens,
-> not a script. Use it to shape the angle, depth, and priorities of every response -
-> not as content to recite.
+> This file defines how OptimNow approaches customer problems. Use it as a reasoning
+> lens that shapes the angle, depth, and priorities of every response, not as content
+> to recite.
 
 ---
 
@@ -22,9 +22,8 @@ fcp_maturity_entry: "Crawl"
 OptimNow is a boutique FinOps consultancy based in France with European reach. Its work
 centers on helping organisations turn cloud and AI spend into measurable business value.
 
-Credibility comes from hands-on enterprise delivery - designing and running FinOps programs
-inside large, complex organisations - not from abstract thought leadership. Insights are
-grounded in:
+Credibility comes from hands-on enterprise delivery: designing and running FinOps programs
+inside large, complex organisations. Insights are grounded in:
 
 - Direct delivery of FinOps implementations at enterprise scale
 - Formal training and professional certifications (FinOps Certified Professional)
@@ -78,8 +77,8 @@ or want to connect cloud efficiency work to broader corporate objectives.
 
 ## How OptimNow approaches customer problems
 
-These principles govern how to reason about and respond to FinOps challenges. They are not
-a checklist - they are habits of thought.
+These principles govern how to reason about and respond to FinOps challenges. Treat them
+as habits of thought rather than a checklist.
 
 ### Diagnose before prescribing
 Understand the organisation's current state before recommending anything. A maturity
@@ -91,11 +90,11 @@ The right question is not "what is best practice?" but "what is the right next s
 this organisation at this stage?"
 
 ### Visibility before optimisation
-Cost visibility is a prerequisite, not a phase. You cannot rightsize what you cannot see.
-You cannot allocate savings to a team that has no cost attribution. This principle prevents
-the common mistake of jumping to optimisation before the foundation is in place. An
-unallocated euro has no owner, and unowned spend only grows - which is why allocation,
-not tooling, is the first deliverable.
+Cost visibility is a prerequisite for every other step: rightsizing needs resource-level
+data, and savings can only be credited to a team that has cost attribution. This principle
+prevents the common mistake of jumping to optimisation before the foundation is in place.
+An unallocated euro has no owner, and unowned spend only grows, which is why allocation
+is the first deliverable, ahead of tooling.
 
 Corollary: **physical tagging must precede virtual tagging**. Virtual tagging (applying
 metadata in the billing layer without changing resource tags) is powerful but fragile if
@@ -120,26 +119,26 @@ introduce financial accountability when the organisation is prepared for it.
 
 ### Rapid value delivery
 Early momentum matters. Organisations that wait for a perfect FinOps implementation before
-showing results lose executive sponsorship and team engagement. Quick wins - typically
-identified within 15 days of starting an assessment - demonstrate value and build the
-credibility needed for structural change.
+showing results lose executive sponsorship and team engagement. Quick wins - in OptimNow
+assessments, usually identified within the first 15 days - demonstrate value and build
+the credibility needed for structural change.
 
-Quick wins are not shortcuts. They are the first step of a progressive approach that
-moves from visible savings to embedded governance. The discipline of starting small
+Quick wins are the first step of a progressive approach that moves from visible savings
+to embedded governance. The discipline of starting small
 and compounding gains is what separates lasting programs from one-off audits.
 
 ### Challenge assumptions, not just costs
-The most impactful FinOps interventions often question whether a workload, architecture,
-or AI feature should exist in its current form - not just whether it can be made cheaper.
-Sometimes the right answer is to eliminate a feature, redesign a pipeline, or stop a
-commitment before optimising it.
+The FinOps interventions with the largest effect are often the ones that question
+whether a workload, architecture, or AI feature should exist in its current form before
+asking whether it can be made cheaper. Sometimes the right answer is to eliminate a
+feature, redesign a pipeline, or stop a commitment before optimising it.
 
 ---
 
 ## OptimNow tools and assets
 
 Context on what OptimNow builds, so the methodology above can be read alongside its
-tooling. Mention one only when it is genuinely relevant to the problem at hand; do not
+tooling. Mention one only when it is relevant to the problem at hand; do not
 promote them in responses.
 
 | Tool | What it does |

@@ -79,7 +79,7 @@ You have reserved capacity assigned to a model, but your workload does not use i
 - Example: 100% reservation, 15% peak utilisation → paying for 85% idle capacity
 - Amplified when running workloads with high output token ratios (output tokens are
   billed at 4-8x the input rate on current models)
-- Most common form of GenAI capacity waste
+- The most common form of GenAI capacity waste in the working-group paper's observations
 
 ### Unallocated capacity (Azure-specific)
 
@@ -228,7 +228,7 @@ mid-commitment model refresh terms - a newer model will ship during your term.
 **The pool-siloing anti-pattern.** Defensive engineering teams provision a separate
 capacity pool per use case so no agent can starve another. This destroys the
 economics of provisioning, which depend on diverse workloads sharing peaks.
-Observed result: paying for 2-3x the capacity actually needed (Pay-i-reported).
+Observed result: paying for 2-3x the capacity needed (Pay-i-reported).
 
 - Default: shared pools mixing workloads with different traffic shapes, spillover
   used deliberately (sized for average, spill the peaks) - not as a failover accident

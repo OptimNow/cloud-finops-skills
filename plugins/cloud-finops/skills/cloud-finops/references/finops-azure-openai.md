@@ -347,8 +347,10 @@ highest ROI for the effort.
 - Use the lowest-cost model that meets your quality threshold
 - **Model modernisation is an optimisation lever in its own right:** newer models within
   the same capability tier are often faster and cheaper than the models they replace.
-  Replacing o1 with o3 can deliver up to 80-90% cost reduction on reasoning workloads.
-  Treat model refresh as a recurring FinOps activity, not a one-time migration.
+  Replacing o1 with o3 cut reasoning-workload cost by up to 80-90% on list rates when
+  the PointFive analysis was written in 2025 (a derived figure; recompute from the
+  current pricing page before quoting it). Treat model refresh as a recurring FinOps
+  activity, not a one-time migration.
 - Scan deployments periodically for outdated models - paying a higher per-token rate
   for a superseded model generation is pure waste
 
@@ -428,7 +430,8 @@ delivering production value.
   spillover tolerance and can absorb occasional throttling
 - Reserve PTU allocations for production workloads with consistent, latency-sensitive
   demand
-- This is one of the highest-ROI, lowest-risk optimisations available on Azure OpenAI
+- The risk is low because non-production rarely needs the SLA, and the return is the
+  full PTU premium on those deployments
 
 ### Use case economics: beyond token totals
 

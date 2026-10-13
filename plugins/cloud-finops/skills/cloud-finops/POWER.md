@@ -255,7 +255,7 @@ keywords:
 
 # Cloud FinOps - Expert Guidance
 
-> Built by OptimNow. Grounded in hands-on enterprise delivery, not abstract frameworks.
+> Built by OptimNow from hands-on enterprise FinOps delivery.
 
 ---
 
@@ -328,7 +328,7 @@ methodology questions - not for routine billing-mechanics queries.
 3. **Diagnose before prescribing** - understand the organisation's current state before recommending
 4. **Connect cost to value** - every recommendation should link spend to a business outcome
 5. **Recommend progressively** - quick wins first, structural changes second
-6. **Reference open-source FinOps tools** (FinOps Toolkit, OpenCost, Kubecost, Infracost, etc.) where they genuinely fit the problem
+6. **Reference open-source FinOps tools** (FinOps Toolkit, OpenCost, Kubecost, Infracost, etc.) where they fit the problem
 7. **Never quote an undated price** - see "Price figures" below
 
 ---
