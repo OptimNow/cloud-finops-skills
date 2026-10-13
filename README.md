@@ -258,12 +258,17 @@ them, particularly on billing mechanics and capacity economics.
 cloud-finops-skills/
 ├── README.md                    <- This file
 ├── INSTALLATION.md              <- Per-tool setup, troubleshooting, API loader
+├── PRIVACY.md                   <- What the skill and the hosted connector collect
+├── CONTRIBUTING.md              <- How to contribute
 ├── CLAUDE.md / AGENTS.md        <- Project context for AI assistants and contributors
 ├── llms.txt                     <- LLM discovery index (cross-agent)
 ├── install.sh                   <- Cross-tool installer (12 targets)
+├── docs/                        <- Roadmap and directory listing guides
+├── .claude-plugin/              <- marketplace.json, behind `cloud-finops@optimnow`
+├── skills/cloud-finops/         <- Stub pointing to the plugin folder (old path)
 ├── mcp_server/                  <- cloud-finops-mcp PyPI package
 └── plugins/cloud-finops/        <- The Claude plugin: only what a user installs
-    ├── .claude-plugin/plugin.json
+    ├── .claude-plugin/          <- plugin.json + icon.svg
     ├── README.md / LICENSE
     └── skills/cloud-finops/     <- The skill - install this folder
         ├── SKILL.md             <- Entry point + per-file routing catalogue
@@ -305,8 +310,8 @@ for "how do I detect and fix this specific thing".
 | `find_playbooks(scope?, service?, waste_category?, confidence?)` | "Which VMs run for nothing?" "Why is the NAT bill so high?" "Which of my RIs are about to expire?" - finds the runbook for a specific waste suspicion. The server cannot see your account; the runbook's detection query is the answer it hands over |
 
 Both listings carry `approx_tokens` per entry, because the references vary by more
-than tenfold - roughly 2K tokens for the smallest, over 25K for the provider pattern
-catalogues. The catalogues are enumerated lists, so an agent that wants one pattern
+than tenfold - roughly 2K tokens for the smallest, over 25K for the AWS pattern
+catalogue. The pattern catalogues are enumerated lists, so an agent that wants one pattern
 family passes `section` (`get_reference("finops-aws-patterns", section="storage")`)
 and pays for that section instead of the whole file. Matching is case-insensitive and
 partial; a phrase that matches no heading returns the file's available headings rather
@@ -330,33 +335,38 @@ rendered. Details in
 
 ## Data handling
 
-What the plugin runs, sends and fetches, so you can decide where it is appropriate to
-use it. Full policy in [PRIVACY.md](./PRIVACY.md).
+What the skill and the hosted connector run, send and fetch, so you can decide where
+each is appropriate. Full policy in [PRIVACY.md](./PRIVACY.md).
 
 - **The skill is static text.** `SKILL.md`, the references and the playbooks are
   markdown files read into the model's context. They run no code, call no network
   endpoint and carry no credentials. The playbooks contain detection queries (billing
   export SQL, CLI commands) that *you* run in your own cloud account; nothing in this
   repository reads a cloud account.
-- **The hosted MCP connector, if you add it, sends tool calls to
-  `mcp.optimnow.io`** (served by the Fly.io app `cloud-finops-mcp`; the former
-  `cloud-finops-mcp.fly.dev` host still answers but is deprecated). It is not part of the plugin (see "Plugin and
-  connector" above). When the model calls one of the six tools, the tool arguments (a reference or playbook
-  name, a section phrase, facet filters such as domain or scope) travel over HTTPS to
-  that server and the matching library content comes back. The server requires no
-  account and no authentication, holds no database and no per-user state, and serves
-  the same public files as this repository. Its application log records facet queries
-  that matched nothing (the filter values, never conversation text) so coverage gaps
-  can be reviewed; the hosting platform (Fly.io, Paris region) keeps the web server's
-  standard access log. OptimNow does not sell, share or profile from either. On hosts
-  that render MCP Apps, the widget HTML comes from the same origin and its content
-  security policy allows no third-party domain.
+- **The hosted MCP connector, if you add it, sends tool calls to `mcp.optimnow.io`.**
+  It is separate from the plugin (see "Plugin and connector" above) and runs as the
+  Fly.io app `cloud-finops-mcp`; the former `cloud-finops-mcp.fly.dev` host still
+  answers but is deprecated. When the model calls one of the six tools, the tool
+  arguments (a reference or playbook name, a section phrase, facet filters such as
+  domain or scope) travel over HTTPS to that server and the matching library content
+  comes back. The server requires no account and no authentication, holds no database
+  and no per-user state, and serves the same public files as this repository.
+  Its application log writes one line per request (method, the `/mcp` path, status
+  and request type, never the arguments). When a lookup matches nothing, it also
+  writes the tool name and the arguments that missed: the facet filters, or the
+  reference name and section phrase. Those are short strings the model writes, not
+  your conversation, but a model can copy a word from your question into one. Fly.io,
+  primary region Paris (`cdg`), holds that log stream, which may include the client IP
+  address, under its default retention. OptimNow does not sell, share or profile from
+  it. On hosts that render MCP Apps, the widget HTML comes from the same origin and its
+  content security policy allows no third-party domain.
 - **Price lookups route to a live tool, not to this repo.** The skill tells the model
   to fetch current prices from the OptimNow AI Pricing Hub
   (<https://optimtoken.optimnow.io>) instead of quoting a stale figure. That is a
   separate public site; whether the model opens it is its decision in the conversation.
-  The hosted server carries the same rule without naming a tool: use a live pricing
-  tool if one is connected in the session, never quote an undated figure.
+  The hosted server carries the same rule without naming a tool: figures in a
+  reference are illustrative and dated, and a live pricing tool connected in the
+  session is the source for a current price.
 - **Nothing else.** No telemetry, no analytics beacon, no update check, no package
   launcher, no credential read from your environment.
 
