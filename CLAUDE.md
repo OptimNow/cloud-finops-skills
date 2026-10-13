@@ -204,6 +204,14 @@ cloud-finops-skills/
 
 ## Content update pipeline
 
+**Weekly since 2026-10-17.** The source scan now runs every Saturday as a private
+cloud routine over about 35 sources in two tiers (provider primary pages, and
+secondary leads that must be confirmed on a primary page). It replaces the
+fortnightly laptop scan described below and, like it, only proposes: nothing is
+applied without review. Its source list and run state live outside the repository.
+The rest of this section describes the laptop pipeline, kept for its tooling and
+history.
+
 The `pipeline/` folder contains a **fortnightly** content scanner (1st and 15th
 of each month at 9:00 AM CET via Windows Task Scheduler) that detects
 FinOps-relevant changes across ~30 sources and proposes updates to the reference
@@ -529,7 +537,7 @@ pattern count, since PR #192).
 
 Probe cycles 4-7 (per-probe record in the maintainer-local
 `pipeline/coverage-probes.md`; the arc's public summary in the
-`docs/ROADMAP.md` routing entry) measured how the same library grounds
+`docs/ROADMAP.md` routing record) measured how the same library grounds
 answers through the MCP connector versus the uploaded skill on claude.ai,
 across three interventions: new playbooks (PRs #177, #182) and two rounds
 of routing work (PRs #184, #187). The mechanics that emerged are durable
@@ -775,6 +783,27 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
   example genuinely needs a number to be legible, keep one, mark it illustrative, and
   date it inline. The reader-facing version of this rule is the "Price figures" section
   in SKILL.md and POWER.md.
+- **Every quantitative claim carries its provenance (rule of 2026-10-13).** A
+  percentage, ratio, multiplier, hour count or FTE count that is not a price is still
+  a claim, and the 13 October 2026 brand review found about 60 of them stated as
+  universal fact ("typically 30-40%", "5-50x", "90% of employee AI usage"). Each one
+  is either cited to a dated source, derivable from arithmetic stated beside it, or
+  labelled as what it is: "indicative, not a benchmark" or "a working estimate; verify
+  in the estate". Attribute a figure to OptimNow engagements only when it was measured
+  there; a figure of unknown origin gets the indicative label, never an engagement
+  claim it cannot back. One framing sentence at the top of a figure-heavy section
+  ("the multipliers in this file are working estimates, not published benchmarks")
+  covers every figure under it.
+- **Superlatives are cited, scoped, or dropped.** "The single most common", "the
+  biggest", "the best predictor" is a claim about the whole population. Either cite
+  it, scope it to observation ("the error OptimNow sees most often"), or, preferably,
+  drop the superlative: "a common allocation error" says what the reader needs without
+  the attribution. The scoped form is a budget, not a default: at most one explicit
+  OptimNow-attributed observation per H2 section, so the phrase does not become the
+  file's tic (the voice pass of 2026-10-13 produced about 50 of them in one day, which
+  is what this sentence exists to prevent). Reference files are technical
+  documentation: their authority comes from the mechanics and sources they carry, not
+  from how often they name their author.
 
 **License**
 - All content is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
@@ -870,7 +899,7 @@ from how the directory works:
   and the guard scripts, `$VAR` references next to URLs in install.sh and CLAUDE.md,
   curl-pipe-to-shell lines in the READMEs and workflows, and CLAUDE.md itself at the
   plugin root. A hold does not block, but it sends every new version to a human
-  reviewer, which ends auto-publishing of the twice-monthly content releases. So the
+  reviewer, which ends auto-publishing of the regular content releases. So the
   plugin folder now holds only what a user installs: the manifest, a plugin README,
   LICENSE and the skill. Everything else stays at the root and is invisible to the
   scanner. The marketplace entry's `source` points at the folder; the plugin `name`

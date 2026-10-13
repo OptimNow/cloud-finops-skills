@@ -9,6 +9,10 @@ or a gap deferred knowingly. The prioritised backlog lives in
 [docs/ROADMAP.md](docs/ROADMAP.md) and is weighted by expected recoverable
 spend, not by cell count.
 
+The GPU and SageMaker playbooks are filed by waste mechanism (idle,
+overprovisioned, modernization), so the ai-ml-inefficiency row counts only
+the token and agent playbooks and understates AI coverage.
+
 | waste_category | aws | azure | gcp | cross-cloud | total |
 |---|---|---|---|---|---|
 | orphaned | 4 | 4 | 2 | 1 | 11 |

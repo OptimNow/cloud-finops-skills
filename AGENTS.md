@@ -55,9 +55,10 @@ sub-modules, see CLAUDE.md.
 
 ## Content update pipeline
 
-The `pipeline/` folder contains a fortnightly content scanner (the 1st and the
-15th of each month) that detects FinOps-relevant changes across ~30 sources and
-proposes updates to the reference files. It is gitignored and not part of the
+Since October 2026 the source scan runs weekly (every Saturday). The
+`pipeline/` folder contains the earlier fortnightly content scanner, which
+detected FinOps-relevant changes across ~30 sources and proposed updates to the
+reference files. It is gitignored and not part of the
 public distribution.
 
 The pipeline is human-in-the-loop: nothing is changed automatically. Every

@@ -72,6 +72,12 @@ Then exercise each of the six tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
 asks you to confirm you did.
 
+**Verified 2026-10-13.** `initialize` at `https://mcp.optimnow.io/mcp` answers
+`serverInfo.version` 1.41.1 with the six tools; `list_references` total 36 and
+`list_playbooks` total 41, equal to tag `v1.41.1`. The plugin listing is validated. The
+connector listing passed validation, was resubmitted after a category change and is
+under review again.
+
 **Verified 2026-09-30, after the move to `https://mcp.optimnow.io/mcp` (PR #210) and
 `fly deploy`.** Both hosts answer `initialize` with `serverInfo.version` 1.37.0, list
 the six tools and `list_references` total 35; the three widget resources advertise
@@ -117,8 +123,8 @@ bundle**.
 
 **Which branch to track.** The directory scans every new commit on the tracked branch
 and, once published, serves it to everyone who installed the plugin. Following `main`
-means each fortnightly content PR becomes a directory version, which matches the
-"refreshed twice monthly" promise in the README. The documentation says to raise
+means each content PR becomes a directory version, which matches the "updated
+weekly" promise in the README. The documentation says to raise
 `version` in `plugin.json` on every release; whether the directory publishes a commit
 whose `version` is unchanged is not documented. The release-train rule in CLAUDE.md
 keeps content PRs free of version bumps, so if the directory turns out to ignore
@@ -280,7 +286,7 @@ edited by Anthropic afterwards):
 > The server holds no account, no credential and no user data; it cannot see your
 > cloud environment and hands over the detection query instead. Price figures are
 > not served here: the tools carry mechanics and ratios, and any figure in a
-> reference is illustrative and dated inline. Content is refreshed twice a month from primary
+> reference is illustrative and dated inline. Content is updated weekly from primary
 > provider sources and published under CC BY-SA 4.0. Built by OptimNow, a FinOps
 > consultancy, from enterprise delivery experience.
 
@@ -343,7 +349,7 @@ whether a tool-call block appears and which tool it names:
    advisory phrasing that flipped after PRs #171 and #176)
 
 A drop on prompt 2 across both runs while prompt 1 still grounds is the signal that
-the wording change cost routing. Baselines per probe are in the routing entry of
+the wording change cost routing. Baselines per probe are in the routing record of
 `docs/ROADMAP.md` (cycles 4 to 7).
 
 ### 2.9 Compliance
@@ -411,8 +417,10 @@ who add both see one set of tools.
   uppercase `$VAR` beside a URL, no curl-pipe-to-shell and no package launcher
   (`scripts/check-plugin-content.sh`). Developer tooling stays at the repository
   root, where the scanner never reads it.
-- A connector-URL change touches three places: `server.py`
-  (`CANONICAL_CONNECTOR_ORIGIN`), README.md and INSTALLATION.md. The connector
-  listing's URL is edited in the portal separately.
+- A connector-URL change touches every copy listed in the CLAUDE.md checklist:
+  `server.py` (`CANONICAL_CONNECTOR_ORIGIN`) and its pinned test, README.md,
+  INSTALLATION.md, `mcp_server/README.md`, `server.json`, llms.txt, PRIVACY.md,
+  `fly.toml` and the two submission guides. `git grep` the old host before merging.
+  The connector listing's URL is edited in the portal separately.
 - Delisting is a request from the plugin's page menu; relisting is also a request and
   can be declined. Prefer publishing a fix over delisting.

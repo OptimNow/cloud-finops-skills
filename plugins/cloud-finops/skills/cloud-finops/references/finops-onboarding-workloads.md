@@ -289,7 +289,7 @@ What this looks like in practice:
   cutover, so post-cutover analysis is on FOCUS-shaped data from day one
 - For M&A integration: stand up FOCUS for the acquired estate as part of
   the inventory phase (months 1-2)
-- For multi-cloud environments: leverage the expanded FOCUS ecosystem
+- For multi-cloud environments: use the expanded FOCUS ecosystem
   (Oracle 1.0, Nebius 1.2, Vercel 1.3, Grafana Cloud 1.2, Redis 1.2,
   Databricks 1.2) to normalise cost data across all providers from day one
 
@@ -297,9 +297,6 @@ The alternative - "we'll do FOCUS after the migration is stable" - means
 the FOCUS adoption decision gets re-litigated in 18 months when the
 migration team has moved on and the new owners have no incentive to do
 optional refactoring work.
-
-As of December 2024, the expanded FOCUS provider support significantly
-reduces the complexity of multi-cloud cost normalisation during migrations.
 
 ---
 

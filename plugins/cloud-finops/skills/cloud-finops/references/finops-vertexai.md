@@ -110,7 +110,7 @@ No minimum spend, no upfront commitment.
 | Anthropic Claude Opus | High | Available via Vertex Model Garden |
 | Meta Llama (various) | Low-Mid | Open-weight, available in Model Garden |
 
-**FinOps principle:** model selection is the single highest-leverage cost decision.
+**FinOps principle:** model selection is the cost decision with the widest range.
 Benchmark task quality across model tiers before defaulting to the most capable model.
 
 ### Batch prediction discount
@@ -187,8 +187,8 @@ window - treat it as a discount on continuing usage, not as a rebate.
 
 Neither mechanism alters Provisioned Throughput commitment burndown rates.
 
-*Remove this subsection after January 2027, once both windows have closed and the
-repricing has landed in actuals.*
+<!-- Maintainer note: remove this subsection after January 2027, once both windows have
+closed and the repricing has landed in actuals. -->
 
 Source: https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing
 

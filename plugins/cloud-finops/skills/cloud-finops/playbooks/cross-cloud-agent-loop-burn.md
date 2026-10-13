@@ -61,7 +61,7 @@ Explorer / CUR - good for after-the-fact ownership, too coarse for live alerts.
 (`bucket_width=1m`; data appears within ~5 minutes). Group by `api_key_id` or
 `model` to isolate the identity holding a flat line. The cost endpoint
 `/v1/organizations/cost_report` is daily-only and cannot see the pattern.
-Requires an Admin API key (`sk-ant-admin01-...`); replace the placeholder below
+Requires an Admin API key (the key type whose prefix is `sk-ant-admin`); replace the placeholder below
 with yours:
 
 ```bash

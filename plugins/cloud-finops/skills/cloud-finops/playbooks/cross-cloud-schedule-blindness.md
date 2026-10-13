@@ -21,7 +21,7 @@ instance is a round illustrative figure used to make the arithmetic
 legible (written May 2026), not a quoted rate - the 70% ratio is the
 durable part.
 
-This is the highest-leverage, lowest-risk optimisation in cloud cost
+This is one of the highest-return, lowest-risk optimisations in cloud cost
 work. It is the canonical "obvious" tier waste because the business
 case is unambiguous: dev / test does not need to run while everyone is
 asleep.

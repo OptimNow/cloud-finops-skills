@@ -532,8 +532,9 @@ organisations can achieve an overall effective discount of 40-70% off On-Demand 
 **Eligibility requirements and hidden costs:**
 - Minimum annual spend of $1 million (negotiable for high-growth accounts)
 - AWS requires a growth commitment - typically 10-20% year-over-year increase
-  over trailing spend. This growth tax is non-negotiable and creates risk for
-  organisations with unpredictable workloads
+  over trailing spend. The growth expectation is rarely waived; what is negotiable
+  is its level and how it is measured. It creates risk for organisations with
+  unpredictable workloads
 - The commitment floor only moves upward - you cannot reduce your pledge in
   subsequent years of the contract
 - Mandatory Enterprise Support (3-10% of monthly usage). For mid-sized

@@ -143,7 +143,7 @@ PR body:
 ```markdown
 This adds one line at the end of Community Skills > Specialized Domains.
 
-The skill folder is `plugins/cloud-finops/skills/cloud-finops/` in the linked repository: a SKILL.md router plus reference files on cloud, SaaS and AI cost management, written from how the providers actually bill (commitment mechanics, allocation and chargeback, waste patterns with detection queries). It has been public since February 2026 and is updated twice a month.
+The skill folder is `plugins/cloud-finops/skills/cloud-finops/` in the linked repository: a SKILL.md router plus reference files on cloud, SaaS and AI cost management, written from how the providers actually bill (commitment mechanics, allocation and chargeback, waste patterns with detection queries). It has been public since February 2026 and is updated weekly.
 
 Usage outside the maintainer's own account, all checkable on GitHub:
 

@@ -28,13 +28,16 @@ It runs no code. It declares no hooks, no commands, no agents and no MCP server.
 sends no data anywhere and reads nothing from your machine: the model reads these
 files as context and answers from them. It cannot see your cloud account; for a
 question about your own resources it hands you the detection query to run yourself.
+The skill names one public website for current prices, the OptimNow AI Pricing Hub;
+whether the model opens it is decided in your session, and the plugin itself makes
+no request.
 
 The hosted MCP connector that serves the same library is a separate listing, added
 on its own, so that the content is not loaded twice in one session.
 
 ## Updates
 
-Content is refreshed about twice a month from primary provider sources. Every merge
+Content is updated weekly from primary provider sources. Every merge
 to the `main` branch of the repository is a new plugin version.
 
 ## License and source

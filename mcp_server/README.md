@@ -46,7 +46,7 @@ while costing a sixth of a call that every session makes.
 
 `get_reference` takes an optional `section`. It exists because the provider
 pattern catalogues (`finops-aws-patterns`, `finops-azure-patterns`) are
-enumerated lists past 25K tokens, and an agent asking about S3 lifecycle wants
+enumerated lists (the AWS one past 25K tokens), and an agent asking about S3 lifecycle wants
 one heading out of them, not the file.
 
 ```python
@@ -103,7 +103,7 @@ Neither surface serves current prices. References carry billing *mechanics* -
 multipliers, commitment term structure, the shape of a break-even calculation - and
 any absolute figure inside them is illustrative and dated inline. For a current
 price, the server tells the model to use a live pricing tool if one is connected in
-the session, and never to quote an undated figure from a reference body. It names
+the session, and that figures inside a reference are illustrative and dated. It names
 no pricing tool itself; the skill's own "Price figures" rule (in `SKILL.md`) is
 where the OptimNow AI Pricing Hub is suggested.
 
@@ -268,7 +268,7 @@ skill into the prompt.
 Agent prompt: *"Pull the AWS reference."*
 
 Calls `get_reference(name="finops-aws")` and gets back the full markdown body
-(~1,000 lines, roughly 13K tokens) instead of the entire knowledge base. That is one
+(about 1,400 lines, roughly 19K tokens) instead of the entire knowledge base. That is one
 of the larger references - see the size range noted above before fetching several.
 
 Agent prompt: *"What does the AWS pattern catalogue say about storage?"*
@@ -323,6 +323,16 @@ bumps live in dedicated release PRs that move four files together: `plugin.json`
 `pyproject.toml`, and `server.json` - which carries the version twice, in the
 top-level `version` and in `packages[0].version`, both CI-gated since August 2026.
 See the release-train rule in the repo's CLAUDE.md.
+
+## Data handling
+
+The server holds no account, credential or user data and cannot see your cloud
+estate: the tools read the bundled markdown files and keep no copy of the request.
+The hosted connector writes one application-log line per request without the
+arguments and, for a lookup that matched nothing, the arguments that missed, which
+can include a phrase the model copied from your question. The hosting platform keeps
+the standard HTTP access log. What is logged, where it lives and for how long is in
+[PRIVACY.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md).
 
 ## License
 

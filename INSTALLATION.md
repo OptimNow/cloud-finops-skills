@@ -170,7 +170,7 @@ Then manually:
 4. Set name (`Cloud FinOps`), category, visibility per preference
 
 **Public Custom GPT on the Roadmap.** A maintained public Cloud FinOps GPT is tracked
-in the `In-flight` section of [`docs/ROADMAP.md`](./docs/ROADMAP.md); until it ships,
+in the `Planned distribution` section of [`docs/ROADMAP.md`](./docs/ROADMAP.md); until it ships,
 the self-host path above is the supported install.
 
 **Trade-off:** ChatGPT's 8K Instructions limit means routing + response contract live
@@ -194,8 +194,8 @@ section inside it.
 Manual upload at https://gemini.google.com/gems/. Same trade-off as ChatGPT applies.
 
 **Public Gemini Gem on the Roadmap.** A maintained public Cloud FinOps Gem is
-tracked in the `In-flight` section of [`docs/ROADMAP.md`](./docs/ROADMAP.md); until it
-ships, the self-host path above is the supported install.
+tracked in the `Planned distribution` section of [`docs/ROADMAP.md`](./docs/ROADMAP.md);
+until it ships, the self-host path above is the supported install.
 
 ### Gemini CLI
 

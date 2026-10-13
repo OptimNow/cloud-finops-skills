@@ -386,7 +386,7 @@ def find_references(
 def list_playbooks() -> dict[str, Any]:
     """Return all bundled named-pattern playbooks.
 
-    Each playbook is a ~80-130 line runbook scoped to one waste pattern
+    Each playbook is a ~90-170 line runbook scoped to one waste pattern
     (e.g. ``aws-zombie-nat-gateway``). Use this for discovery; fetch the body
     via ``get_playbook(name)``.
     """

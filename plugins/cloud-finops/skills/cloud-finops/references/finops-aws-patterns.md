@@ -358,7 +358,7 @@ When Kubernetes workloads request more CPU and memory than they actually consume
 
 - Identify workloads where average CPU and memory usage are consistently much lower than requested values
 - Analyse container-level metrics to assess request-to-usage ratios over time
-- Leverage Vertical Pod Autoscaler recommendations, if available, to identify right-sizing opportunities
+- Use Vertical Pod Autoscaler recommendations, if available, to identify right-sizing opportunities
 
 **Underutilized Or Overprovisioned Appstream Instances**
 Service: AWS AppStream 2.0 | Type: Underutilization
@@ -619,7 +619,7 @@ Service: AWS Backup | Type: Underutilization
 
 AWS Backup does not natively support global deduplication or change block tracking across backups. As a result, even traditional incremental or differential backup strategies (e.g., daily incremental, weekly full) can accumulate redundant data.
 
-- Where supported, leverage third-party backup tools with CBT and deduplication (e.g., Commvault, Veeam, Druva)
+- Where supported, use third-party backup tools with CBT and deduplication (e.g., Commvault, Veeam, Druva)
 - Reevaluate backup frequency and retention periods based on RPO/RTO requirements
 - Consolidate redundant backup plans across environments and services
 
@@ -847,7 +847,7 @@ Is the database workload stable and predictable (90+ days of consistent usage)?
         │     - No size flexibility - must match exact instance type
         │     - Higher risk: right-size thoroughly before committing
         │     - Evaluate BYOL vs License Included cost difference
-        │     - Consider migration to open-source engine to unlock
+        │     - Consider migration to open-source engine to gain
         │       size flexibility and reduce licensing costs
         │
         ├── DynamoDB
@@ -931,7 +931,7 @@ flexibility. The decision is rarely purely financial.
 - Are any RDS RIs sitting below 80% utilisation? (indicates over-commitment or
   workload changes)
 - Do you have commercial-engine RDS instances that could migrate to open-source
-  (unlocking size flexibility and reducing licence costs)?
+  (which gives size flexibility and reduces licence costs)?
 - Are DynamoDB tables on On-Demand mode despite having predictable, steady throughput?
 - Is anyone running self-managed databases on EC2 without Compute Savings Plans
   covering those instances?
@@ -1398,7 +1398,7 @@ By default, AWS Config is enabled in continuous recording mode. While this may b
 - Validate that compliance and auditing needs remain satisfied after reducing recording frequency
 
 **Overly Permissive Vpc Flow Log Filters Sent To Cloudwatch Logs**
-Service: AWS CloudWatch | Type: Explanation
+Service: AWS CloudWatch | Type: Inefficient Configuration
 
 VPC Flow Logs configured with the ALL filter and delivered to CloudWatch Logs often result in unnecessarily high log ingestion volumes - especially in high-traffic environments. This setup is rarely required for day-to-day monitoring or security use cases but is commonly enabled by default or for temporary debugging and then left in place.
 
@@ -1466,7 +1466,7 @@ Service: AWS OpenSearch | Type: Suboptimal Instance Selection
 AWS Graviton processors are designed to deliver better price-performance than comparable Intel-based instances, often reducing cost by 20-30% at equivalent workload performance. OpenSearch domains running on older Intel-based families consume more spend without providing additional capability.
 
 - Migrate OpenSearch domains from Intel-based instances (e.g., `m5`, `r5`, `i4i`) to equivalent Graviton families (`m6g`, `c6g`, `r6g`, `i4g`)
-- Leverage in-place instance type updates for clusters where supported to minimise downtime
+- Use in-place instance type updates for clusters where supported to minimise downtime
 - Benchmark performance after migration to validate expected cost-performance improvements
 
 **Unnecessarily High Recording Granularity In Aws Config**

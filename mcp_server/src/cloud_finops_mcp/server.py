@@ -162,7 +162,7 @@ mcp = FastMCP(
         "narrow by FinOps Capability/Phase facets, get_reference(name=, "
         "section=) to fetch one body. "
         "Every listing entry carries approx_tokens. Read it before fetching: "
-        "references run from about 3,000 to over 25,000 tokens. Above roughly "
+        "references run from about 2,000 to over 25,000 tokens. Above roughly "
         "10,000, call get_reference(name=, section=\"<heading phrase>\") and "
         "take the section you need - section matches H2 and H3 headings "
         "case-insensitively and partially, and a miss returns the file's "
@@ -229,7 +229,7 @@ def list_references() -> dict[str, Any]:
     ``fcp_phases``, ``fcp_personas_primary``, ``fcp_maturity_entry``) and
     ``approx_tokens``.
 
-    Read ``approx_tokens`` before fetching: the library runs from about 3,000
+    Read ``approx_tokens`` before fetching: the library runs from about 2,000
     to over 25,000 tokens per file. Above roughly 10,000, prefer
     ``get_reference(name, section=...)`` and pull the part you need.
     """
@@ -250,8 +250,8 @@ def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
 
     Pass ``section`` when the question is narrower than the file. The
     ``approx_tokens`` hint in the listing tells you when this matters: the
-    provider pattern catalogues run past 25,000 tokens and are enumerated
-    lists, so a question about S3 lifecycle wants one section of
+    AWS pattern catalogue runs past 25,000 tokens and the pattern catalogues
+    are enumerated lists, so a question about S3 lifecycle wants one section of
     ``finops-aws-patterns``, not all of it. Omit ``section`` for the whole
     file when you need the cross-cutting reasoning.
 
@@ -358,7 +358,7 @@ def list_playbooks() -> dict[str, Any]:
     question already names a provider, waste category, or confidence tier,
     call ``find_playbooks`` instead.
 
-    Each playbook is a small (~80-130 line) runbook scoped to one waste
+    Each playbook is a small (~90-170 line) runbook scoped to one waste
     pattern (e.g. ``aws-zombie-nat-gateway``, ``azure-orphan-disks``). Returns
     ``{"playbooks": [...], "total": N}`` where each entry includes ``name``,
     ``title``, ``scope`` (aws/azure/gcp/cross-cloud), ``service``,

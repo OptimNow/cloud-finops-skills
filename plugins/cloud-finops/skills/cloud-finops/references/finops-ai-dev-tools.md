@@ -104,8 +104,8 @@ before building a seat forecast.
 
 ### Token rate variability
 
-Token rates depend on which model handles the request. This is the highest-leverage cost
-variable. The range is wide:
+Token rates depend on which model handles the request. This is the cost variable with the
+widest range:
 
 - **Auto mode** (Cursor's default routing): the earlier flat Auto rate was retired -
   Auto now bills at the API rate of whichever model it routes to, so its cost tracks
@@ -175,14 +175,8 @@ charges, but you hit rate limits when the budget is consumed.
 ### API key access (BYOK)
 
 When using an API key, Claude Code bills directly against your Anthropic account at
-standard API rates:
-
-| Model | Input ($/MTok) | Output ($/MTok) |
-|---|---|---|
-| Claude Haiku 4.5 | $1.00 | $5.00 |
-| Claude Sonnet 5 | $2.00 | $10.00 (introductory rate made permanent in August 2026) |
-| Claude Sonnet 4.6 | $3.00 | $15.00 |
-| Claude Opus 5 / 4.8 / 4.6 | $5.00 | $25.00 |
+standard API rates. The per-model list prices are in `finops-anthropic.md` and on
+Anthropic's pricing page; they are not repeated here.
 
 Anthropic's own data (as of September 2026) puts the average Claude Code user on API
 key mode at around $13 per developer per active day, with 90% of users staying under
@@ -240,6 +234,21 @@ Codex is OpenAI's coding agent, available through ChatGPT and as a CLI tool.
 
 **ChatGPT subscription (default):** Codex CLI usage draws from your ChatGPT plan limits
 at no extra per-token charge. ChatGPT Plus at $20/month is the cheapest access path.
+
+**Fast mode on the subscription path is a consumption multiplier.** Signed in with
+ChatGPT, Codex offers a Fast mode on supported models that draws included plan limits at
+2.5x the Standard rate, and purchased credits or Enterprise pay-as-you-go usage at 2x (as
+of 13 October 2026). It is toggled per session with `/fast`, and it can be persisted as
+the default in `config.toml` (`service_tier = "fast"` with `[features].fast_mode = true`),
+which is how one configuration line multiplies a whole team's consumption. Fast mode
+credits are not available in API key mode, which uses the API `service_tier` premiums
+described under "Optimisation levers" below. Govern it the same way: allow-list, never a
+default in a shared configuration. One organisation reported that switching a Fast
+default back to Standard cut its Codex credit consumption by about 60% (Robertas Vasaris,
+Lundbeck, "Price the Outcome, Not the Seat", Tokenomicon FinOps X Amsterdam, September
+2026, https://www.youtube.com/watch?v=tjskeeu8YhI - practitioner-reported).
+Sources: https://learn.chatgpt.com/docs/agent-configuration/speed.md (formerly
+developers.openai.com/codex/speed), https://help.openai.com/en/articles/20001106-codex-rate-card
 
 **API key mode:** when switched to API key mode, Codex bills per token at standard
 OpenAI API rates for the current Codex-facing models (GPT-5.x-Codex variants).

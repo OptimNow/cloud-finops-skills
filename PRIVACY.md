@@ -1,6 +1,6 @@
 # Privacy policy - Cloud FinOps Skill & MCP
 
-Last updated: 26 September 2026. Publisher: OptimNow (<https://optimnow.io>).
+Last updated: 13 October 2026. Publisher: OptimNow (<https://optimnow.io>).
 
 This policy covers the three ways the Cloud FinOps library reaches you:
 
@@ -31,13 +31,18 @@ request. Specifically, the hosted connector has:
 - no user accounts and no authentication;
 - no cookies and no per-user identifier;
 - no database and no per-user state;
-- no conversation text - the tools take names and filter values, not free text.
+- no conversation text by design: the tools take names, filter values and short
+  phrases the model writes, such as a section heading or a service name. A model can
+  copy a word from your question into one of those phrases, so keep confidential
+  names out of questions you route through the connector if that matters to you.
 
 Two logs exist:
 
-- **Application log.** When a faceted query matches nothing, the server writes one
-  line containing the tool name and the filter values. OptimNow reads these lines to
-  find coverage gaps in the library. No other tool call is logged by the application.
+- **Application log.** The server writes one line per request: method, the `/mcp`
+  path, status code and request type, never the arguments. When a lookup matches
+  nothing, it also writes the tool name and the arguments that missed: the facet
+  filters, or the reference name and section phrase. OptimNow reads these lines to
+  find coverage gaps in the library.
 - **Web server access log.** The hosting platform keeps the standard HTTP access log
   (client IP address, timestamp, method, path, status code). The path is always
   `/mcp`, so the access log records that a call happened, not what it asked.

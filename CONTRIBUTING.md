@@ -77,7 +77,7 @@ playbook. Both paths are first-class.
 - Vendor marketing material restated as fact, without a primary source or
   practitioner-grade evidence behind the claim.
 - Wholesale AI-generated reference content with no human practitioner pass. The
-  pipeline that powers the fortnightly refresh has hard guard rails (see the
+  pipeline that powers the weekly refresh has hard guard rails (see the
   `Lessons learned` section of `CLAUDE.md` for why). Hand-written contributions go
   through human review for the same reasons.
 - "Best practices" lists with no business-value framing. Every recommendation in

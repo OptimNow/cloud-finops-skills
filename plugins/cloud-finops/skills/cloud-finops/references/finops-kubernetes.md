@@ -46,8 +46,9 @@ cost the bill records. Three structural complications make this hard:
    serve every team. Their cost has to be allocated by a chosen methodology,
    not by a tag on the resource.
 
-K8s cost allocation is a discipline that has to be built. There is no
-provider button to turn on.
+K8s cost allocation is a discipline that has to be built. The providers'
+native allocation features (next section) get you to namespace level;
+everything past that is yours to build.
 
 ---
 
@@ -98,9 +99,15 @@ GKE, EKS, and AKS all expose some level of native cost allocation:
 
 - **GKE Cost Allocation** - native per-namespace, per-label cost in Cloud
   Billing. Lowest-friction option for GKE-only estates.
-- **EKS Split Cost Allocation** - native per-pod allocation in CUR / Data
-  Exports for FOCUS. Available for EKS clusters with the AWS-managed
-  metrics; per-pod attribution flows directly into CUR.
+- **EKS Split Cost Allocation** - native per-pod allocation in CUR 2.0 and
+  the legacy CUR, opted into from Cost Management preferences. It splits the
+  amortised instance cost by each pod's share of CPU and memory and adds
+  `aws:eks:*` cost allocation tags (cluster, namespace, node, workload).
+  Since September 2025 it also allocates NVIDIA and AMD GPU, Trainium and
+  Inferentia capacity on EKS. It is not part of the FOCUS 1.2 export, so a
+  FOCUS-based pipeline joins it back from the CUR (see `finops-focus.md`).
+  Sources: https://docs.aws.amazon.com/cur/latest/userguide/split-cost-allocation-data.html,
+  https://aws.amazon.com/about-aws/whats-new/2025/09/split-cost-allocation-data-amazon-eks-nvidia-amd-gpu-trainium-inferentia-ec2
 - **AKS Cost Analysis** - per-namespace cost in Azure Cost Management.
   Less granular than GKE or EKS native; OpenCost or Kubecost typically add
   meaningful value on top.

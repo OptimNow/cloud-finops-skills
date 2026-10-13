@@ -16,15 +16,16 @@ maintainer file.
 
 ## Fortnightly operating rhythm (adopted 2026-10-01)
 
-The 1st and 15th scans already exist (see the "Content update pipeline" section
-of `CLAUDE.md`). From October 2026 each half-month also carries one *lot*,
+Since 2026-10-17 the source scan runs weekly, every Saturday (see the "Content
+update pipeline" section of `CLAUDE.md`); its digest is triaged within the week.
+The lots below stay on the 1st and the 15th. From October 2026 each half-month also carries one *lot*,
 alternating in shape so that no single kind of debt accumulates. Every lot
 assumes hand-written content from primary sources: the applier stays frozen,
 and the September 2026 batch showed that correcting its output costs more than
 writing the item by hand (nine applied items, nine corrections).
 
 The constraint this rhythm is built around comes from probe cycles 4 to 7
-(the routing entry below): **content closes a gap only where the phrasing
+(the routing record below): **content closes a gap only where the phrasing
 already routes.** So roughly a third of the budget goes to measurement and
 routing rather than new files, and a lot that does not convert its probe
 becomes a routing item, not a reason to write more.
@@ -66,6 +67,8 @@ re-rank the list below against what engagements actually asked.
 
 Written against the 2026-09-30 state: 35 references, 37 playbooks (AWS 21,
 Azure 8, GCP 4, cross-cloud 4), 13 of 22 FCP capabilities with a primary owner.
+State at 2026-10-13: 36 references, 41 playbooks (AWS 21, Azure 10, GCP 6,
+cross-cloud 4), still 13 of 22 with a primary owner.
 
 1. **Storage tiering for Azure Blob and GCS - SHIPPED 2026-10-01** (lot of
    the 1st). Four playbooks porting the AWS split:
@@ -83,8 +86,10 @@ Azure 8, GCP 4, cross-cloud 4), 13 of 22 FCP capabilities with a primary owner.
    auto-suspend. One cross-cloud playbook plus per-provider variants closes a
    whole zero row of the matrix.
 4. **Issue #97 as a mechanics section**, not a table, in
-   `finops-azure-openai.md` and `finops-genai-capacity.md` (Lot B item 1
-   below). The only open user request, waiting since June.
+   `finops-azure-openai.md` and `finops-genai-capacity.md`: the break-even
+   utilisation formula, the hourly-vs-token shape and the spillover switch,
+   with figures routed to the pricing hub. The only open user request, waiting
+   since June.
 5. **`finops-forecasting.md`.** Budget season is the trigger named in the
    deferred table, and it is now. Moves Forecasting from secondary-only to a
    primary owner in the FCP matrix.
@@ -96,7 +101,7 @@ Azure 8, GCP 4, cross-cloud 4), 13 of 22 FCP capabilities with a primary owner.
 Depth items that ride a quality lot when a content lot is light: OCI (182
 lines, six patterns: deepen or label it a foundations file in the routing
 table), the GreenOps Azure and GCP pass below, and any further split of
-`finops-azure.md` (1,817 lines, above the 1,500-line structural-edit
+`finops-azure.md` (1,838 lines, above the 1,500-line structural-edit
 threshold) before adding to it.
 
 Deliberately not on the list: the last FCP cell (Education & Enablement) and
@@ -104,7 +109,7 @@ the modernization and egress zero cells for Azure and GCP, which score well
 on the matrices and poorly on recoverable spend; unfreezing the applier; and
 non-cloud domains such as the IoT and unmanned-retail request in issue #200.
 
-## In-flight (write when prerequisites land)
+## Refresh pipeline (P1)
 
 - **P1 - Audit, harden, stabilise, and publish the refresh pipeline.** The pipeline
   in `pipeline/` is currently frozen (`run_apply.py.FROZEN`) since the May 2026
@@ -123,8 +128,12 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   inventory, guard-rails verification (9/9 tests pass; full suite 43/43 green),
   implicit assumptions, gap analysis vs Phase-2 targets, recommended
   remediation order (9 items, 5 blocking unfreeze), and proposed unfreeze
-  criteria (U1-U4 below, plus U5-U8 from the audit). The
-  remaining three phases are still below; Phase 2 (Harden) is the next PR.
+  criteria (U1-U4 below, plus U5-U8 from the audit). Phase 2 (Harden) is partly
+  done: the real-API smoke test (`pipeline/smoke_test.py`), the per-run report
+  (`pipeline/state/runs/<id>/report.json`) and preview-mode guard rails landed on
+  2026-05-15, and since September 2026 the scan records `fetch_failure` when every
+  source fails instead of reporting success. The applier stays frozen
+  (`run_apply.py.FROZEN`).
 
   Four phases:
 
@@ -189,72 +198,7 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   section of `CLAUDE.md` and should produce a follow-up Lessons learned entry
   describing the un-freeze evidence.
 
-- **Host `cloud-finops-mcp` on Alpic - DONE (2026-08-17).** Live at
-  <https://cloud-finops-skills-590a051d.alpic.live/mcp>, published in README.md,
-  INSTALLATION.md and the `remotes` block of `server.json`. The decision to deploy
-  remotely was taken on 2026-08-16 on distribution grounds alone (let a non-technical
-  user paste a URL into claude.ai instead of installing a PyPI package), explicitly
-  *not* on interactive rendering - see [`mcp-apps-lessons.md`](./mcp-apps-lessons.md) for
-  the full record of what actually gates widget rendering. (The 2026-08-16 reading, that
-  the Connectors Directory is the gate, was overturned on 2026-08-20: the gate is
-  implementation shape, and a remote deployment is neither necessary nor sufficient for
-  rendering. The distribution argument for hosting stands regardless.)
-
-  **Verified against the deployed endpoint**, not just against a build log:
-  `initialize` returns `serverInfo {"name":"cloud-finops","version":"1.29.0"}` and
-  `tools/call list_references` returns `"total":33`. The reference count is the check
-  that matters - see constraint 1 below for why a deployment can come up healthy with
-  an empty catalogue.
-
-  **Staleness confirmed (2026-08-27).** The same two calls still return 1.29.0 and 33
-  references, so the deployment has not effectively picked up a release since
-  2026-08-17 - four releases and two new references (`finops-kpis-benchmarking`,
-  `finops-open-weight-vendors`) behind PyPI, and serving pre-price-purge content. This
-  is what the release-checklist item "redeploy the hosted MCP (Alpic) after the tag,
-  then verify by calling it" exists to prevent, and it is evidence that the redeploy
-  cannot be assumed to happen on its own. Re-verify with `initialize` plus
-  `list_references` after every release; expect the current version and a total of 35.
-
-  **Staleness resolved (2026-08-29).** Redeployed after the 1.34.0 release and verified
-  by calling the hosted connector: `list_references` returns 35 (including
-  `finops-kpis-benchmarking` and `finops-open-weight-vendors`), and
-  `get_reference(name="finops-aws", section="AWS billing hierarchy and separate
-  invoices")` serves the 1.34.0 section through the section parameter shipped in
-  PR #180 - so the deployment carries both of the releases it was behind on. The
-  re-verify-after-every-release rule stands unchanged; this entry records one
-  verified pass of it, not a reason to skip the next one. Lot C in the batch
-  sequence below is no longer gated on this redeploy.
-
-  One behavioural difference from the local run, worth knowing before writing a health
-  check: **the hosted endpoint is session-based.** A bare `tools/call` returns HTTP 400
-  even though `stateless_http = True` is set in the code; Alpic's ingress front-ends the
-  server with its own session layer. You must `initialize` first and pass the returned
-  `mcp-session-id` header on subsequent calls. Real MCP clients do this automatically;
-  a hand-rolled `curl` one-liner does not.
-
-  Four things about this repo that a deployment has to respect, all verified locally
-  before the config was written:
-
-  1. **Build from the repo root, never from `mcp_server/` in isolation.** The bundled
-     `data/*.md` are gitignored, so a fresh clone has none. They are produced at build
-     time by the `hatch-build-scripts` hook running `scripts/sync_references.py`, which
-     resolves the repo root from `__file__` and reads `plugins/cloud-finops/skills/cloud-finops/`. Point the
-     build at `mcp_server/` alone and it will happily build a server with an empty
-     catalogue - a silent failure, not a build error.
-  2. **The start command must name the transport explicitly.** Alpic detects Python
-     transport by looking for `mcp.run()` / `mcp.http_app()` with an explicit transport
-     argument. This server routes through argparse in `__main__.py` and defaults to
-     stdio, so auto-detection would get it wrong. Hence `--transport http` in
-     `startCommand` rather than relying on detection.
-  3. `$PORT` and `0.0.0.0` are already handled in `__main__._env_port()` and
-     `run_http()`, and `stateless_http = True` is set deliberately so there is no
-     session affinity to preserve across instances.
-  4. The route is FastMCP's default `/mcp`. Do not move it.
-
-  Verified 2026-08-17 on a clean tree: `uv build --wheel` runs the sync hook and produces
-  a wheel carrying 33 references + 25 playbooks + the viewer HTML; `python -m
-  cloud_finops_mcp --transport http` binds and answers `initialize` and `tools/list` over
-  streamable HTTP.
+## Standing decisions
 
 - **Live pricing tools inside `cloud-finops-mcp`: will not do (decided 2026-08-17).**
   The idea was to add `get_llm_price` / `get_compute_price` to this server, fetching the
@@ -282,220 +226,26 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   between them. Revisit only if that composition proves to be real friction for users -
   not because one endpoint feels tidier than two.
 
-- **Playbook coverage for `commitment-mismatch` - CLOSED (2026-08-21).** One playbook
-  per provider shipped: `aws-expiring-commitment-no-decision` (obvious),
-  `azure-unused-reservation` (obvious), `gcp-cud-mismatch` (likely). The deeper
-  sizing/portfolio reasoning stays in the commitments references, which the playbooks
-  link. Originally surfaced by the 2026-08-02 repository review (F9); priority
-  confirmed by the 2026-08-19 field test and by probe P12 (cycle 3, 2026-08-20),
-  where the model asked for account data instead of handing over a runbook.
+## Routing record (probe cycles 4 to 7)
 
-- **Playbook backlog from the 2026-08-19 connector field test.** Four probe prompts run
-  through the hosted MCP produced a coverage read worth keeping. The ordering principle it
-  validated: **weight gaps by expected recoverable spend, not by category count** - a missing
-  storage-tiering playbook is worth more in a typical estate than several narrow GPU
-  sub-patterns. Prioritised backlog, one playbook each unless noted:
-  1. **Storage tiering** - *AWS side SHIPPED 2026-08-21* as three playbooks from the
-     P11 seed: `aws-s3-incomplete-multipart-uploads` (obvious),
-     `aws-s3-noncurrent-version-sprawl` (likely), `aws-s3-cold-data-in-standard`
-     (possible, carries the prerequisite-finding pattern - rule 3 of the seed - and
-     folds rule 4, expire-don't-transition, into its Fix/Anti-pattern). *Azure Blob
-     and GCS ported 2026-10-01* as two playbooks per cloud (garbage collection at
-     `likely`, cold-data tiering at `possible`); the incomplete-multipart file stays
-     AWS-only: the GCS abort rule rides its garbage-collection playbook, and Azure
-     discards uncommitted blocks on its own after a week.
-  2. **Commitment-mismatch x3 providers** - CLOSED 2026-08-21, see the entry above.
-  3. **NAT-to-gateway-endpoint substitution (AWS)** - the high-traffic end of the NAT
-     distribution, which the zombie-NAT playbook deliberately scopes out: a NAT moving
-     mostly S3/DynamoDB data pays a per-GB processing fee a gateway endpoint eliminates
-     entirely. Larger recoverable than the idle end.
-  4. **Azure idle VM + orphaned NICs / public IPs + snapshot sprawl** - the Azure set is
-     four playbooks against fourteen for AWS; these three are the everyday-estate gaps.
-  5. **Schedule blindness beyond compute** - databases and non-production data platforms
-     (SQL pause/resume, Fabric capacity pause, warehouse auto-suspend).
-  6. **Modernization beyond GPU generations** - Graviton/ARM migration, gp2-to-gp3,
-     Azure v-series refresh.
-  7. **Egress beyond AWS cross-AZ** - NAT-path egress, Azure/GCP equivalents, CDN bypass.
-  8. **GCP depth** - BigQuery slot and storage waste, Cloud SQL idle, CUD mismatch (also
-     covered by item 2).
-  9. **Kubernetes beyond one playbook** (added by the 2026-08-20 probe run) - only
-     gcp-idle-gke-autopilot exists. Missing: EKS/AKS equivalents, over-requested
-     CPU/memory vs actual usage, idle node pools, orphaned persistent volumes.
+Probe cycles 4 to 7 (August 2026) measured how the same library grounds answers
+through the hosted connector and through the skill loaded on claude.ai. The durable
+rules are in the "Skills inject, MCP tools decide" lesson in `CLAUDE.md`; per-probe
+notes are in the maintainer-local `pipeline/coverage-probes.md`; the cycle-by-cycle
+narrative is in this file's git history (before October 2026). Baselines to compare
+future runs against:
 
-  Product note from the same run: of the nine obvious-tier playbooks, one is Azure
-  and one is GCP. If WasteLine gates auto-remediation proposals on the obvious tier,
-  the non-AWS product is effectively two checks - weight new non-AWS playbooks
-  towards patterns that can honestly carry the obvious tier. *Update 2026-08-21: PR
-  #177 added `azure-unused-reservation` (obvious) and two AWS obvious playbooks; the
-  count is now 12 obvious of 31, Azure 2, GCP 1 - the weighting rule still applies.*
+| Probe | Connector (best, cycles 4-6) | Skill alone (cycle 7) |
+|---|---|---|
+| P11 detect phrasing | GROUNDED | GROUNDED via skill |
+| P13 symptom | GROUNDED only after two routing iterations | GROUNDED first try |
+| P31 naive symptom | never converted | GROUNDED first try, playbook verbatim |
+| P12 account data | never | never - no surface triggers |
 
-- **Next content batches, sequenced (2026-08-21).** Written after PR #177 closed
-  backlog items 1 (AWS side) and 2. Ordering principle unchanged: recoverable spend
-  first, demand evidence (probe or issue) second, matrix zeros last. Post-#177 the
-  playbook matrix is 18 AWS / 5 Azure / 4 GCP / 4 cross-cloud, and schedule-blindness,
-  modernization and egress each have a single playbook.
+P12 ("which of my RIs...") is closed as structural: no surface picks up account-data
+phrasing, and the reachable ceiling is the model offering to check the library.
 
-  **Lot A - everyday-estate playbooks (next batch).** Five files, all able to carry
-  the obvious tier, all high-value:
-  1. `aws-nat-gateway-endpoint-substitution` (egress) - backlog item 3. Urgent because
-     it is a dangling pointer: `aws-zombie-nat-gateway` explicitly scopes it out as
-     "a larger finding", and probe P13 is waiting for it. CUR detection: NatGateway-Bytes
-     vs S3/DynamoDB-destined traffic; gateway endpoints remove the per-GB fee entirely.
-  2. `azure-idle-vm`, `azure-orphaned-public-ips-and-nics`, `azure-snapshot-sprawl` -
-     backlog item 4, all Resource Graph single-signal, all obvious. Takes Azure from 5
-     to 8 playbooks and from 2 to 5 obvious-tier.
-  3. `aws-gp2-to-gp3` (modernization, obvious - pure gain, no risk) and, second,
-     `aws-graviton-candidate` (likely) - backlog item 6.
-  Then, in later batches: storage tiering ported to Azure Blob and GCS (*done
-  2026-10-01*, two playbooks per cloud rather than one: the GC rules and the
-  cold-data decision carry different confidence tiers and different blockers, so
-  one catch-all file would have had to be `possible` throughout);
-  `cross-cloud-nonprod-data-platform-always-on`
-  (schedule blindness beyond compute: SQL serverless auto-pause, Fabric pause,
-  Snowflake auto-suspend - backlog item 5); Kubernetes `eks-aks-overrequested-resources`
-  and `orphaned-persistent-volumes` (backlog item 9).
-
-  **Lot B - references with demand evidence.**
-  1. Issue #97 (Azure OpenAI PTU vs PAYG break-even) - a real user request open since
-     July, and probe P23 targets the same question. Not a new file: a mechanics section
-     in `finops-azure-openai.md` + `finops-genai-capacity.md` (break-even utilisation
-     formula, hourly-vs-token shape, spillover switch), figures routed to the pricing
-     hub. A priced *table* is the wrong container under the dated-price rule.
-  2. `finops-forecasting.md` - `finops-kpis-benchmarking.md` now names forecast
-     variance as the single best maturity proxy but nothing teaches forecasting
-     (driver-based, commitment-aware, the 60-90 day rule at intake). Budget season
-     (September-November) is the natural trigger; it was listed as "non-AI demand
-     emerges" in the deferred table below.
-  3. GreenOps Azure/GCP depth pass (see Depth passes below).
-  4. Education & Enablement - the last true FCP gap after #177 (21/22 any-coverage).
-     Low spend impact; a section inside a future practice-operations file closes the
-     matrix to 22/22. Only worth doing if the 100% badge matters for positioning.
-  Not now: `finops-unit-economics.md` and `finops-practice-operations.md` - the KPI
-  file covers their useful parts and their Walk-to-Run engagement triggers have not
-  fired.
-
-  **Lot C - measurement: DONE 2026-08-29, and it changes the ordering rule.**
-
-  The original wording of this item ("run the 24 never-played probes ... with Sonnet")
-  was already stale when it was written: cycle 3 ran the FULL battery P01-P32 on
-  2026-08-20, one day earlier. What was actually needed, and what ran, is a *regression*
-  cycle - only the probes whose content shipped since c3, plus one new probe for the
-  #181 invoice-unit material. Deployment was verified first by calling the connector.
-
-  Result (c4, Sonnet 5 Medium, 4 probes): **content closes a gap only where the phrasing
-  already routed.**
-
-  - **P11** (S3 lifecycle, "how do I *detect*...") - 2 empty library calls in c3, now
-    GROUNDED: `find_playbooks` then `get_playbook(aws-s3-cold-data-in-standard)`, and the
-    answer carries the prerequisite-first rule, expire-don't-transition, the 128 KiB
-    threshold and weight-by-bytes. **PR #177 closed the trap.**
-  - **P12** ("which of *my* RIs are about to expire...") and **P13** ("*my* NAT processes
-    10TB/month...") - **unchanged, zero library calls each**, even though
-    `aws-expiring-commitment-no-decision` (#177) and
-    `aws-nat-gateway-endpoint-substitution` (#182) are both live on Alpic and the
-    connector toggle was verified ON. This is routing, not availability.
-  - **P33** (new, the real client question behind #181: "their AWS contact suggested Cost
-    Categories - is that right?") - GROUNDED via the claude.ai skill surface; the
-    anti-confusion framing holds ("they change how spend is sliced in reports, not how
-    AWS bills") and anchor sentence 3 comes back near-verbatim.
-
-  **Consequence for how this backlog is ordered.** The rule "every IMPROVISED verdict
-  becomes a content item with demand evidence" is now known to be wrong for one class:
-  account-data phrasing ("which of MY x") and symptom phrasing ("my NAT does X") do not
-  route, so shipping their playbook does not convert them. Those two probes are demand
-  evidence for **routing work** - tool descriptions, SKILL.md phrasing - not for more
-  playbooks. Only discovery- and advisory-phrased gaps are content items. The remaining
-  c3 IMPROVISED probes (P06, P23 provider-billing-news; P25 finops-itam orphaned) were
-  not re-run: nothing shipped for them, so their verdict stands unchanged.
-
-  **The routing work ships in the same PR as this entry**, in three places: two norms
-  in the server `instructions` string (you cannot see the user's account - hand over
-  the playbook's detection query instead of asking for a data export; check
-  find_playbooks before answering a waste question from model knowledge), service-noun
-  vocabulary in the find_playbooks / get_playbook descriptions (NAT gateways, expiring
-  RIs, snapshots, S3 lifecycle... - the words symptom phrasings actually contain, for
-  the host's tool-search layer), and an estate-phrasing trigger in the SKILL.md /
-  POWER.md descriptions. Precedent that this class of fix works on this surface: P05
-  and P14 both flipped after the PR #176 priority lines. Measurement: cycle 5 re-runs
-  P12, P13 and P31 with P11 as the do-not-regress control, after the next release
-  reaches Alpic. Stop rule: if two description iterations fail to convert P12/P13,
-  the failure is structural to claude.ai's tool-search gate - document it here and
-  stop investing; the loaded-skill surface is the fallback.
-
-  **Cycle 5 ran (2026-08-30, on the 1.35.0 deployment, norms verified live by curl
-  initialize first). Iteration 1: zero conversions, but the failure moved one layer.**
-  P11 control HOLDS (GROUNDED, multi-call) - the fix broke nothing. P13 and P31 now
-  fire the host's tool-search ("Searched available tools" / "Loaded tools"), which
-  never happened in c3/c4 - the service-noun descriptions reached the host index -
-  but no call follows: the remaining gate is the model preferring its parametric
-  answer once tools are loaded. P12 is unchanged at zero calls, and its transcript
-  shows the model claiming "no connector for AWS/Azure billing" without checking -
-  strong evidence claude.ai does not surface the server `instructions` string to the
-  model at all, so norms placed there are inert on this host. Iteration 2, the last
-  before the stop rule: move the two norms INTO the find_playbooks / get_playbook
-  descriptions - the only artefact proven to reach the model - and re-run the same
-  four probes. If that fails too, this entry closes as structural.
-
-  **Cycle 6 (2026-08-30, on the #187 deployment, verified by SDK tools/list first):
-  iteration 2 converts P13, closes P12, and the entry closes with a three-way verdict.**
-
-  - **P13 GROUNDED - CONVERTED.** Tool-search fired, the connector was called, and the
-    answer carried the NAT-endpoint playbook near-verbatim (the describe-vpc-endpoints
-    command, the aws:SourceVpce policy caveat, the interface-endpoint anti-pattern).
-    Specific-symptom phrasing routes when imperative norms open the tool description.
-  - **P12 CLOSED AS STRUCTURAL** per the stop rule: zero spontaneous calls across four
-    cycles and three interventions. One softening in c6: the model now offers "I can
-    check the Cloud FinOps skill library for the standard playbook" instead of denying
-    capability - so a user who says yes gets routed, one turn late. Account-data
-    phrasing does not spontaneously route on claude.ai; stop investing here.
-  - **P31 shows naive-symptom routing is stochastic.** Same class as P13, opposite
-    outcome in the same cycle (search did not fire). The description work moves the
-    conversion probability, not a switch. Track it in regular cycles, do not iterate
-    further on it specifically.
-  - **P11 control held across all three fix cycles** - none of the routing work
-    regressed what already routed.
-
-  The durable rules this arc leaves behind: norms only work where the host actually
-  surfaces them (tool descriptions on claude.ai, never server instructions); imperative
-  placement at the top of the description is what converts; and the claude.ai memory
-  feature can interfere with account-phrased questions in ways no repo change reaches.
-
-  **Cycle 7 (2026-08-30): skill-isolation counterpart, run to attribute surfaces.**
-  Same probes with the connector toggled off (the toggle is account-global - restore
-  it after). Result, against the connector surface's best outcomes:
-
-  | Probe | Connector (best, c4-c6) | Skill alone (c7) |
-  |---|---|---|
-  | P11 detect-phrasing | GROUNDED | GROUNDED via skill |
-  | P13 symptom | GROUNDED only after two routing iterations | GROUNDED first try |
-  | P31 naive symptom | never converted | GROUNDED first try, playbook verbatim |
-  | P12 account-data | never | never - no surface triggers |
-
-  Three conclusions. First, **the skill in isolation routes symptom phrasings better
-  than the connector after two iterations of routing work** - pushed-into-context
-  needs no tool-choice decision, which was the whole failure surface. Second, **P12 is
-  confirmed trans-surface**: neither skill, connector, nor web picks up account-data
-  phrasing; the structural closure holds at the model-behaviour level, and the
-  playbook's value there is delivered when the user accepts the model's offer to
-  check the library. Third, an **interaction-effect hypothesis worth one future
-  cycle**: with the connector enabled (c4-c6), the skill never triggered on these
-  probes - the connector appears to pre-empt the skill and then, pre-#187, declined
-  to call. If both-enabled grounds worse than skill-alone on symptom questions, the
-  README's "add the connector too" default for Claude users deserves a caveat.
-  Controls: P10 grounded via skill (the skill loads fine); P33 went to web this
-  cycle - skill-vs-web pre-emption is itself stochastic.
-
-  Standing incident, third cycle running: every connector call renders "Unable to reach
-  AI Cloud FinOps Skill & MCP" while the data arrives intact, and a tool-approval gate
-  now appears per call. Full per-probe notes in `pipeline/coverage-probes.md`.
-
-  Two composition notes from the same test, recorded as positioning decisions rather than
-  defects until decided otherwise: (a) the library reads AI-workload-heavy (8 of 14 AWS
-  playbooks are GPU/SageMaker; ~43% of engineering-primary Optimize references are
-  AI-specific) - that is the OptimNow positioning, but new playbooks should rebalance
-  towards everyday-estate patterns; (b) users read the skill description's topic list as a
-  playbook promise (e.g. "Azure OpenAI PTUs" is covered by references, not by a playbook) -
-  a wording nuance to keep in mind when the description is next touched.
+## Planned distribution
 
 - **Public Custom GPT for ChatGPT users.** The current ChatGPT install path is
   self-host: `./install.sh --tool chatgpt --grouped` produces 10 grouped knowledge
@@ -507,8 +257,8 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   the resulting `https://chat.openai.com/g/g-XXXXX` URL and replace the placeholder in
   `README.md`'s install table. Maintenance burden: a GitHub Action that re-builds the
   artefacts on each release, plus a manual re-upload to ChatGPT (their API does not
-  expose a "publish new version" endpoint for Custom GPTs). Cadence target: monthly
-  refresh on top of the monthly source-update batch.
+  expose a "publish new version" endpoint for Custom GPTs). Cadence target: a monthly
+  refresh, after the content lot of the 1st.
 
 - **Public Gemini Gem for Gemini users.** Same shape as the ChatGPT GPT. Build
   steps: (1) run `./install.sh --tool gemini` to produce the 10 grouped knowledge
@@ -541,13 +291,14 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
 
 These files were identified in the white-space analysis (May 2026) and explicitly deferred,
 with the rationale captured here so future work picks them up at the right moment rather
-than re-litigating priority. Tracking issue: `OptimNow/cloud-finops-skills#55`.
+than re-litigating priority. Tracking issue: `OptimNow/cloud-finops-skills#55` (closed;
+this table is now the record).
 
 | Proposed file | Priority | Trigger to revisit | Why deferred |
 |---|---|---|---|
 | `finops-tools-services.md` | P2 | Next engagement raises a vendor-evaluation question | OptimNow has implicit views (FinOps Toolkit, MCP, OpenCost) but no formal write-up; better to write against a real client question than a generic checklist |
 | `finops-practice-operations.md` | P2 | Next Walk to Run client engagement starts | `optimnow-methodology.md` covers the consultancy-positioning lens; this would be the operator-grade discipline below it (three-cadence operating model, per-Capability scorecard, allied-discipline integration charter) |
-| `finops-forecasting.md` | P2 | Non-AI forecasting demand emerges | `finops-ai-value-management.md` covers AI forecasting; non-AI demand has not surfaced in current engagements |
+| `finops-forecasting.md` | **Scheduled** (ranked list item 5) | Fired: budget season (September-November 2026) | `finops-ai-value-management.md` covers AI forecasting. Input already in the library: the budget-by-exception example in `finops-kpis-benchmarking.md` (#240) |
 | `finops-unit-economics.md` | P2 | Non-AI unit-economics demand emerges | Same reasoning as forecasting; AI-side covered by AI value management and finops-for-ai files |
 | `finops-education-enablement.md` | P2 | Demand emerges; consider folding into practice-operations | Smaller scope than the other P2 files; could double as a section in practice-operations |
 | `finops-benchmarking.md` | **Shipped 2026-08-21** | (closed) | Shipped as `finops-kpis-benchmarking.md` (primary capability: KPIs & Benchmarking), reopened by maintainer decision 2026-08-20. The data-quality caveats that justified the deferral became the file's benchmarking section |
@@ -571,6 +322,14 @@ secondary in `finops-tagging.md` (MCP automation, IaC enforcement) and
 `finops-waste-detection-playbooks.md` (WasteLine appliance). Plus the
 `finops-tools-services.md` deferred entry above which would be the dedicated
 write-up if engagement demand emerges.
+
+**Note on Governance, Policy & Risk**: no primary owner, and no deferral was
+recorded for it until now. It is covered as secondary in `finops-agentic.md` and
+`finops-tagging.md`. The provider files carry policy mechanics without declaring
+the capability: Azure Policy patterns and budgets in `finops-azure.md`, the spend
+limits and guardrail SCPs in `finops-aws.md`. A cheap first step is to declare it
+as secondary in those provider files. Trigger for a primary owner: an engagement
+that asks for a cross-provider guardrail or policy-as-code design.
 
 When picking up a deferred item: read the rationale above and confirm the trigger is real
 before starting the file.

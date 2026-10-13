@@ -103,8 +103,10 @@ LIMIT 100;
      `[modify]` effect to inherit from resource group.
    - **GCP**: Organisation Policy + label inheritance from project
      metadata.
-4. **Make untagged spend visible weekly** - publish a "tag debt"
-   leaderboard by team. Social pressure works.
+4. **Make untagged spend visible weekly** - publish untagged spend per
+   team as an owner-named line in the showback digest: a visible number,
+   not a ranking (see `finops-allocation-showback.md` on cross-team
+   comparisons).
 5. **Tie the tagging mandate to the onboarding gate**: a new workload
    does not enter the cloud estate until it passes the tag check. See
    `references/finops-onboarding-workloads.md`.

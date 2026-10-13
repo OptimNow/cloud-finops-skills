@@ -42,7 +42,7 @@ fix-safety posture.
 | **Commitment mismatches** | RIs / Savings Plans / CUDs underutilised, expiring soon, or covering the wrong things | High dollar, low complexity to fix | Usually obvious in the data; political to act on |
 | **Schedule blindness** | Workload runs 24/7 with a clear business-hours pattern | Variable; 60-70% savings on dev / test environments | Usually likely; depends on workload sensitivity |
 | **Modernization opportunities** | Workload runs on older-generation instances or pre-Graviton x86_64 when ARM equivalents exist | 10-40% per workload, low risk | Usually possible; revalidation required |
-| **AI / ML inefficiency** | SageMaker endpoints idle, Bedrock provisioned throughput underutilised, training jobs on-demand instead of Spot | High per-workload, growing rapidly | Usually likely; product team has the context |
+| **AI / ML inefficiency** | Waste with no generic infrastructure equivalent: token waste, agent loops, model over-selection. AI infrastructure waste (idle SageMaker endpoints, oversized GPUs, underused provisioned throughput) is filed under its mechanism - idle, overprovisioned, commitment mismatch - and indexed in Category 7 | High per-workload, growing rapidly | Usually likely; product team has the context |
 | **Egress / data transfer** | Traffic is billed for crossing a boundary (AZ, region, VPC, internet) that the architecture did not need to cross | High and compounding at scale; frequently a top-5 line item | Usually possible; needs traffic attribution before anyone will act |
 
 These categories are not equal in priority. **Orphaned and idle** are where
@@ -59,7 +59,10 @@ configuration change, so it needs the credibility the other seven earn.
 
 ### Two-signal classification rule
 
-Never act on a single metric. The two-signal rule:
+Do not act on a single utilisation metric. A configuration state (a detached
+volume, a stopped VM, a missing lifecycle rule) is a complete signal on its own,
+which is what the `obvious` tier relies on. For usage-based classifications, the
+two-signal rule:
 
 - **Compute idle** = low CPU AND low network for 30+ days (not CPU alone)
 - **Idle load balancer** = no traffic AND no healthy targets (not just one)
@@ -85,10 +88,13 @@ not need a meeting; possible waste cannot be batched.
 
 ### Realised savings vs potential savings
 
-The only number that matters is **realised savings**: monthly baseline
-minus monthly post-cleanup cost, sustained for at least 60 days. Stop
-reporting "potential savings" - stakeholders learn to discount these
-within one quarter and the credibility of the FinOps practice degrades.
+**Realised savings** is the only achievement line: monthly baseline
+minus monthly post-cleanup cost, sustained for at least 60 days.
+Potential savings is the sized backlog that motivates the roadmap; report
+it as a separate line, never as an achievement. Stakeholders who see
+potential reported as achieved learn to discount it within one quarter,
+and the credibility of the FinOps practice degrades (see
+`finops-kpis-benchmarking.md`).
 
 ### Use FOCUS columns for inventory scope
 
@@ -274,7 +280,7 @@ Right-sizing reduces cost without functional change.
 | Pattern | Signal | Detection approach |
 |---|---|---|
 | EC2 with consistently low CPU | p95 CPU < 30% over 14 days, no memory pressure | CloudWatch + Compute Optimizer cross-reference |
-| EBS on suboptimal type | gp2 → gp3 (always cheaper, equal perf), io1/io2 with low IOPS | EBS inventory + IOPS observation |
+| EBS on suboptimal type | gp2 → gp3 (cheaper at equal performance up to 1,000 GB; larger volumes need IOPS matched, see the playbook), io1/io2 with low IOPS | EBS inventory + IOPS observation |
 | RDS with low CPU and connections | CPU < 25% AND connections << max | CloudWatch RDS metrics |
 | S3 bucket > 100 GB without lifecycle / Intelligent-Tiering | Bucket size > 100 GB, no lifecycle, no IT enabled | S3 metadata query |
 | S3 versioning without noncurrent expiration | Versioning ON, no rule to expire noncurrent versions | S3 lifecycle inspection |
@@ -509,6 +515,11 @@ unused notebook instances, training jobs on-demand instead of Spot, and
 provisioned throughput locked to the wrong model version are the
 high-frequency patterns.
 
+This section groups AI waste by workload so it can be found from the AI side.
+The linked playbooks are filed under the mechanism they share with non-AI
+waste (idle, overprovisioned, modernization); only token and agent waste
+carries the `ai-ml-inefficiency` category.
+
 For broader AI cost-management discipline (token economics, agentic
 patterns, ROI frameworks), see `finops-for-ai.md`,
 `finops-ai-value-management.md`, `finops-genai-capacity.md`. For
@@ -728,10 +739,10 @@ roadmap.
 ## Anti-patterns (across all categories)
 
 - **Single-metric detection** producing false positives that erode trust
-- **Bulk delete based on one signal**. Always require two signals and
-  classify confidence
-- **Reporting "potential savings"**. Stakeholders learn to discount these.
-  Track realised savings only.
+- **Bulk delete based on one utilisation signal**. Require two signals for
+  usage-based classifications and classify confidence
+- **Reporting "potential savings" as an achievement**. Stakeholders learn to
+  discount it. Keep potential as the backlog line and realised as the result.
 - **Skipping owner notification for "obvious" waste**. Even obvious
   orphans can be load-bearing in unexpected ways.
 - **Treating waste detection as a one-time project**. Cloud waste

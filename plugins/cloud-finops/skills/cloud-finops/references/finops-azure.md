@@ -612,7 +612,7 @@ than per-resource discretionary.
 
 ## AKS optimisation in depth
 
-The commitment decision tree above covers AKS at the layer of "node pools run on
+The compute commitment decision tree in `finops-azure-commitments.md` covers AKS at the layer of "node pools run on
 VMs - apply VM commitments." That is necessary but not sufficient. AKS-specific
 levers - autoscaler tuning, node pool segregation, pod rightsizing - typically
 deliver more saving than the commitment layer because they shrink the workload
@@ -807,7 +807,8 @@ resources
 ## Database optimisation patterns
 
 Azure SQL, Postgres / MySQL Flexible Server, and Cosmos DB each have their own
-sizing levers. The commitment-side guidance is in the decision-tree section above;
+sizing levers. The commitment-side guidance is in the database commitment decision tree in
+`finops-azure-commitments.md`;
 the levers below are the architectural and configuration changes that should
 happen **before** any Database Reserved Capacity purchase.
 
@@ -1715,20 +1716,23 @@ Ordered by priority: highest savings + lowest risk first.
 
 ## Case study: 2-tier web app optimisation
 
+Figures are illustrative, from one engagement at the list rates of the time (as of
+August 2026); they are not current prices.
+
 **Baseline:** 12 VMs across prod/pre-prod/dev (D4_v5 Windows web + E8_v5 Linux DB),
-all running 24/7. Monthly cost: ~5,071 EUR. Non-prod CPU utilisation: 3-5%.
+all running 24/7. Monthly cost: ~€5,071. Non-prod CPU utilisation: 3-5%.
 
 **Optimisation waterfall (compute only):**
 
 ```
-Current compute       3,747 EUR/mo
+Current compute       €3,747/mo
  - AHB               -  675  -->  3,073  (enable today, no downtime)
  - Start/Stop        -1,440  -->  1,633  (non-prod business hours only)
  - Rightsize Web     -   97  -->  1,536  (D4_v5 -> B2ms for non-prod)
  - Rightsize DB      -  331  -->  1,205  (E8_v5 -> E2_v5 for non-prod)
                                ------
-Optimised compute     1,205 EUR/mo  (-67.9% compute reduction)
-Annual savings       30,515 EUR/year
+Optimised compute     €1,205/mo  (-67.9% compute reduction)
+Annual savings       €30,515/year
 ```
 
 **Implementation order matters:**
@@ -1738,7 +1742,7 @@ Annual savings       30,515 EUR/year
 4. **Week 4-6:** Rightsize non-prod DB tier (stateful, validate carefully per VM)
 
 **Key lesson:** 44% of Windows VM cost was license premium the company was double-
-paying. AHB alone saved 675 EUR/month with a single CLI command per VM.
+paying. AHB alone saved €675/month with a single CLI command per VM.
 
 ---
 

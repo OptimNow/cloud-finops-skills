@@ -2,7 +2,7 @@
 name: greenops-cloud-carbon
 fcp_domain: "Optimize Usage & Cost"
 fcp_capability: "Sustainability"
-fcp_capabilities_secondary: ["Architecting & Workload Placement", "Usage Optimization"]
+fcp_capabilities_secondary: ["Architecting & Workload Placement", "Usage Optimization", "Intersecting Disciplines"]
 fcp_phases: ["Inform", "Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Sustainability", "Leadership", "Finance"]
@@ -428,8 +428,9 @@ FinOps.
 
 ### Sizing the GreenOps opportunity
 
-For most cloud customers, the achievable scope 1+2+3 reduction in cloud workloads sits in the
-**5-15% range** over a 12-18 month engagement, expressed in tonnes CO2e. The headline reduction
+In OptimNow's engagements to date, the achievable scope 1+2+3 reduction in cloud workloads has
+sat in the **5-15% range** over a 12-18 month engagement, expressed in tonnes CO2e. These are
+working estimates from a small number of engagements, not published benchmarks. The headline reduction
 in carbon footprint is rarely transformational on its own.
 
 Decompose the typical opportunity:
@@ -583,8 +584,9 @@ and the energy required to maintain it.
 Running identical workloads across multiple clouds for redundancy purposes often creates
 carbon waste. Audit cross-cloud replication to confirm it is operationally justified.
 
-**Expected impact:** Optimisations typically reduce cloud carbon footprint by 20-40%
-and generate cost savings of 15-40% simultaneously.
+**Expected impact:** the same actions reduce cost and carbon together. For the size of the
+carbon reduction to expect, use the 5-15% working range in "Sizing the GreenOps opportunity"
+above rather than a separate figure.
 
 ---
 

@@ -309,7 +309,7 @@ Retention of stale data occurs when old, no longer needed records are preserved 
 **Excessive Snapshot Storage From High Churn Snowflake Tables**
 Service: Snowflake Snapshots | Type: Inefficient Storage Usage
 
-Snowflake automatically maintains previous versions of data when tables are modified or deleted. For tables with high churn -meaning frequent INSERT, UPDATE, DELETE, or MERGE operations -this can cause a significant buildup of historical snapshot data, even if the active data size remains small.
+Snowflake automatically maintains previous versions of data when tables are modified or deleted. For tables with high churn - meaning frequent INSERT, UPDATE, DELETE, or MERGE operations - this can cause a significant buildup of historical snapshot data, even if the active data size remains small.
 
 - Optimize Time Travel retention settings: Reduce retention periods (e.g., from 90 days to 1 day) for high-churn tables where long recovery windows are not necessary.
 - Periodically clone and recreate heavily churned tables to "reset" accumulated historical storage if appropriate.

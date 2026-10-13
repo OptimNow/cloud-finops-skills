@@ -6,7 +6,7 @@
 # The plugin folder is plugins/cloud-finops/ (it holds .claude-plugin/plugin.json),
 # and the directory scans every file under it on each commit it picks up from
 # `main`. Two of its checks do not block a submission but put every new version
-# on hold for a reviewer, which is what would stop the twice-monthly content
+# on hold for a reviewer, which is what would stop the regular content
 # releases from auto-publishing:
 #
 #   - any file that is not an image or a font over 256 KiB;

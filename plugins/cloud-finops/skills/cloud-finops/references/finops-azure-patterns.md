@@ -195,7 +195,7 @@ Azure users may enable the SFTP feature on Storage Accounts during migration tes
 **Missing Performance Plus On Eligible Managed Disks**
 Service: Azure Managed Disks | Type: Misconfiguration
 
-For Premium SSD and Standard SSD disks 513 GiB or larger, Azure now offers the option to enable Performance Plus - unlocking higher IOPS and MBps at no extra cost. Many environments that previously required custom performance settings continue to pay for additional throughput unnecessarily.
+For Premium SSD and Standard SSD disks 513 GiB or larger, Azure now offers the option to enable Performance Plus, which raises the IOPS and MBps ceilings at no extra cost. Many environments that previously required custom performance settings continue to pay for additional throughput unnecessarily.
 
 - Enable Performance Plus on all eligible disks using Azure CLI, API, or portal
 - Decommission paid performance tiers or custom throughput settings where Performance Plus provides equivalent capability
@@ -417,7 +417,7 @@ In Azure, it's common for public IP addresses to be created as part of virtual m
 **Transactable vs Non-Transactable Confusion In Azure Marketplace**
 Service: Azure Marketplace | Type: Commitment Misalignment
 
-Azure Marketplace offers two types of listings: transactable and non-transactable. Only transactable purchases contribute toward a customer's MACC commitment. See the "MACC - commercial commitment alignment" section under Commitment discounts for full drawdown mechanics, including what counts and what does not.
+Azure Marketplace offers two types of listings: transactable and non-transactable. Only transactable purchases contribute toward a customer's MACC commitment. See "MACC - commercial commitment alignment" in `finops-azure-commitments.md` for full drawdown mechanics, including what counts and what does not.
 
 - Prefer transactable listings in Azure Marketplace whenever MACC utilisation is a priority
 - Validate SKU eligibility against Microsoft's Procurement Playbook or MACC eligibility lists
@@ -438,7 +438,7 @@ Service: Azure DevOps | Type: Inefficient Configuration
 
 Teams often overuse Microsoft-hosted agents by running redundant or low-value jobs, failing to configure pipelines efficiently, or neglecting to use self-hosted agents for steady workloads. These inefficiencies result in unnecessary cost and delivery friction, especially when pipelines create queues due to limited agent availability.
 
-- Audit and streamline pipelines to remove redundant or unnecessary stages
+- Audit and simplify pipelines to remove redundant or unnecessary stages
 - Use conditional logic to limit execution of non-critical pipelines
 - Prioritise agent capacity for pipelines supporting core or production workloads
 
@@ -463,7 +463,7 @@ In Azure Databricks environments that rely on Private Link for secure networking
 **Suboptimal Table Plan Selection In Log Analytics**
 Service: Azure Monitor | Type: Suboptimal Pricing Model
 
-By default, all Log Analytics tables are created under the Analytics plan, which is optimised for high-performance querying and interactive analysis. However, not all telemetry requires real-time access or frequent querying. (Note: Auxiliary plan availability varies per table - see Log Analytics cost control section above for current eligibility.)
+By default, all Log Analytics tables are created under the Analytics plan, which is optimised for high-performance querying and interactive analysis. However, not all telemetry requires real-time access or frequent querying. (Note: Auxiliary plan availability varies per table - see "Log Analytics cost control" in `finops-azure.md` for current eligibility.)
 
 - Assign the Basic plan to tables that are retained for audit, archival, or compliance purposes
 - Split high-volume ingestion sources into separate tables based on access needs

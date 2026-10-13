@@ -12,7 +12,7 @@
 # the READMEs and the workflows (RUNTIME_FETCH_EXEC), and CLAUDE.md at the
 # plugin root (ROOT_CLAUDE_MD). A hold does not block a submission, but every
 # new version then waits for a human reviewer, which ends auto-publishing of
-# the twice-monthly content releases. The plugin moved to plugins/cloud-finops/
+# the regular content releases. The plugin moved to plugins/cloud-finops/
 # so the scanner sees only what a user installs; this guard keeps that folder
 # free of the same patterns.
 #
