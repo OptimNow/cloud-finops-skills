@@ -546,7 +546,7 @@ September 2026).
   often to the serving path, so a request routed to a different model or vendor misses
   the cache it would otherwise have hit. Measure the two levers together, not separately
 - Report a cache **hit ratio** (bounded, 0-100%), not a reuse multiple. Bounded ratios
-  compose across teams; a figure in the hundreds of thousands of percent means nothing
+  compose across teams; a reuse multiple in the hundreds of thousands means nothing
   to a reader
 
 **Architecture hygiene:**

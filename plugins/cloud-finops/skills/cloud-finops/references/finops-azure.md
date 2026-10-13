@@ -321,7 +321,7 @@ are listed in order of impact - work top-down.
 ### Lever 1: Commitment tiers (the quickest win)
 
 Log Analytics offers tiered commitment pricing for daily ingestion. Choosing a tier
-above the steady ingestion floor is usually the single largest saving with zero
+above the steady ingestion floor is usually the largest saving with zero
 architectural change:
 
 | Tier | Daily commitment (GB) | Discount vs PAYG ingestion |

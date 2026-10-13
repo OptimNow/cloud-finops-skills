@@ -95,7 +95,7 @@ The notation itself is durable mechanics; the framework is early-stage (publishe
 2026) and most of its companion tooling was still unreleased as of August 2026 -
 cite the classification, not the ecosystem.
 
-## Agentic cost anatomy - where the tokens actually go
+## Agentic cost anatomy - where the tokens go
 
 - **Refinement is the sink.** ~60% of an agentic task's cost sits in checking,
   repairing, and re-verifying - not in generating the first answer (59.4%
