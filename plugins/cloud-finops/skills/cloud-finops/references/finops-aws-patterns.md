@@ -790,8 +790,8 @@ on serverless databases (Aurora Serverless v2, DynamoDB On-Demand, Neptune Serve
 and up to 20% on provisioned database instances (RDS, Aurora, ElastiCache, MemoryDB,
 OpenSearch). Compute Savings Plans still do not cover managed databases - those
 workloads need either RIs or the Database Savings Plan, depending on the service.
-Choosing the wrong instrument - or committing too early - is the database FinOps
-mistake OptimNow sees most often.
+Choosing the wrong instrument - or committing too early - is a common database
+FinOps mistake.
 
 Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html
 

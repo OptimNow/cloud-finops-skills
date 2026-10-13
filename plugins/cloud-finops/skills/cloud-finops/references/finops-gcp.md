@@ -135,8 +135,7 @@ progress, reward, and a status of Active, Achieved, Upcoming or **Missed**.
 
 What matters for FinOps:
 
-- **A missed milestone is forfeited money, and in the GCP estates OptimNow has
-  reviewed, nobody owned watching it.**
+- **A missed milestone is forfeited money, and often nobody owns watching it.**
   These terms are negotiated by procurement and then sit in a contract PDF. Put the
   milestone end dates in the same calendar as commitment expiries, and review the page
   monthly. It only appears for billing accounts whose contract includes such programmes.
@@ -267,7 +266,7 @@ CUDs cover **Compute Engine, GKE (via the underlying nodes), Cloud SQL, Cloud Ru
 cover Cloud Functions, BigQuery, GCS, or Pub/Sub - those services have their own
 commitment models (BigQuery slot reservations, etc.).
 
-**CUD Sharing - the CUD setting OptimNow sees missed most often.** By default, CUD
+**CUD Sharing - the CUD setting most often left off.** By default, CUD
 discounts apply only **within the project that purchased them**. To pool CUDs across an
 organisation - the typical multi-team / multi-project scenario - you must
 explicitly enable **CUD Sharing** at the **billing-account level**. Without it,
@@ -391,7 +390,7 @@ maturity (Crawl or early Walk):
    small (50-100 slots) and expand based on observed waste factor.
 
 Jumping straight to step 4 - the "I'll just commit to my observed average
-usage" reflex - is the BigQuery commitment failure OptimNow sees most often.
+usage" reflex - is a common BigQuery commitment failure.
 
 #### Principal-based reservation assignments - native slot attribution
 

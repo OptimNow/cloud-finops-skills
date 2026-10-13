@@ -26,8 +26,8 @@ fcp_maturity_entry: "Walk"
 
 AWS provides six distinct instruments for reducing compute costs, plus a separate
 Database Savings Plan (covered in the database section below). Each has different
-flexibility, discount depth, and risk profile. The mistake OptimNow sees most often
-is treating them as alternatives when they are designed to be layered.
+flexibility, discount depth, and risk profile. A common mistake is treating them as
+alternatives when they are designed to be layered.
 
 AWS now documents **four Savings Plan types** in its plan-types reference: Compute,
 EC2 Instance, SageMaker AI, and Database. SageMaker AI Savings Plans are a separate

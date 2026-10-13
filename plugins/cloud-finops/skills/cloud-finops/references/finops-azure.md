@@ -273,8 +273,7 @@ dimensions over the same window:
 | Network | `Network In/Out Total` | Sustained at SKU bandwidth ceiling (do not downsize) |
 
 A VM with 8% CPU but 95% memory pressure will OOM on a downsize - the cost saving
-is reversed by an outage. This is the rightsizing rollback cause OptimNow sees most
-often.
+is reversed by an outage. This is a common cause of rightsizing rollbacks.
 
 ### B-series caveat - the credit bank trap
 
@@ -437,8 +436,8 @@ Usage
 | order by GBIngested desc
 ```
 
-The distribution is skewed in every estate OptimNow has reviewed - a handful of
-tables, often 3-5, drive most of the bill (70-80% is indicative, not a benchmark).
+The distribution is skewed: a handful of tables, often 3-5, drive most of the
+bill (70-80% is indicative, not a benchmark).
 Address those first.
 
 ### KQL: ingestion trend by solution
@@ -1000,8 +999,8 @@ Mandatory tag set - the OptimNow default for FinOps allocation:
 
 **Critical mechanic:** tags **are not** automatically inherited from a Resource
 Group to its resources. A tag on the RG does not propagate to VMs, disks, or NICs
-inside it. This is the source OptimNow sees most often behind "we tag everything"
-claims that collapse on audit. Inheritance must be enforced via Policy with `Modify` or
+inside it. This is a common source of "we tag everything" claims that collapse on
+audit. Inheritance must be enforced via Policy with `Modify` or
 `Inherit a tag from the resource group` built-in.
 
 Tag values should be drawn from a **controlled enum**, not free text. `CostCenter`
@@ -1257,8 +1256,8 @@ storage account).
 
 ## Networking cost
 
-Networking is the cost line OptimNow sees underestimated most often on multi-region
-or hub-spoke architectures. The egress and peering charges are small per GB but
+Networking is a commonly underestimated cost line on multi-region or hub-spoke
+architectures. The egress and peering charges are small per GB but
 compound to material amounts on busy workloads.
 
 > *Every rate in this section is an approximate list rate for a common region, as of

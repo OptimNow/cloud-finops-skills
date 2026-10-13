@@ -60,8 +60,8 @@ hard-coded numbers age out fast.
 
 Fabric **smooths CU usage over a 24-hour rolling window** before applying
 throttling decisions. Short spikes are absorbed by the smoothing; sustained
-over-consumption triggers throttling. In OptimNow's experience this is the most
-counterintuitive behaviour in Fabric capacity sizing: customers regularly mis-size
+over-consumption triggers throttling. This is a counterintuitive behaviour in
+Fabric capacity sizing: customers regularly mis-size
 F-SKUs because they reason about peak instead of smoothed load.
 
 **Practical implication:** a 5-minute spike at 200% of capacity does not throttle

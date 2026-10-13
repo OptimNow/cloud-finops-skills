@@ -321,8 +321,8 @@ behind a strict latency SLA).
 | **Asynchronous inference** | Bursty traffic, large payloads, tolerable response delay | Queue depth, scale-down settings, scale-to-zero | Synchronous request-response APIs |
 | **Batch transform** | Offline scoring, scheduled jobs, large datasets | Spot, partitioning, instance type for throughput | Interactive inference; user-facing immediate response |
 
-The default in most teams is real-time. The silent waste OptimNow sees most
-often is a real-time endpoint serving traffic that would be a clean fit for
+The default in most teams is real-time. A common silent waste is a
+real-time endpoint serving traffic that would be a clean fit for
 serverless or asynchronous - keeping the endpoint always-on for what is
 a few requests per hour or per day.
 
