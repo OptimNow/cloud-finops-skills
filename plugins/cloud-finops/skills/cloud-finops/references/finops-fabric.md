@@ -60,9 +60,9 @@ hard-coded numbers age out fast.
 
 Fabric **smooths CU usage over a 24-hour rolling window** before applying
 throttling decisions. Short spikes are absorbed by the smoothing; sustained
-over-consumption triggers throttling. This is the single most counterintuitive
-behaviour in Fabric capacity sizing and customers regularly mis-size F-SKUs
-because they reason about peak instead of smoothed load.
+over-consumption triggers throttling. In OptimNow's experience this is the most
+counterintuitive behaviour in Fabric capacity sizing: customers regularly mis-size
+F-SKUs because they reason about peak instead of smoothed load.
 
 **Practical implication:** a 5-minute spike at 200% of capacity does not throttle
 anything if the rest of the 24-hour window runs below capacity. Capacity sizing
@@ -191,10 +191,9 @@ Source: https://azure.microsoft.com/en-us/pricing/details/microsoft-fabric/
 
 ## The Power BI Pro to Fabric capacity migration - the governance failure pattern
 
-The single most common Fabric FinOps failure pattern is the **post-migration
+The Fabric FinOps failure pattern OptimNow sees most often is the **post-migration
 governance gap** in customers transitioning from per-user Power BI Pro licensing
-to shared Fabric capacities. Document this as a specific repeatable engagement
-scenario.
+to shared Fabric capacities.
 
 When an organisation moves from Pro / PPU to Fabric:
 
@@ -287,8 +286,8 @@ F-SKU starts to compete economically. Below that threshold, Pro or PPU is
 usually cheaper. The exact crossover depends on F-SKU size selected, workspace
 mix, and whether Spark / pipeline workloads are running on the capacity.
 
-Provide a decision-tree-style guide to the customer rather than a single-number
-breakeven - the answer depends on feature mix, not just headcount.
+Work through the decision as a tree rather than a single-number breakeven - the
+answer depends on feature mix, not just headcount.
 
 Source: https://azure.microsoft.com/en-us/pricing/details/power-bi/
 

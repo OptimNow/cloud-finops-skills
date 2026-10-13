@@ -13,11 +13,10 @@ fcp_maturity_entry: "Crawl"
 
 > The enumerated AWS inefficiency catalogue - per-service waste patterns with the
 > signal to look for and the remediation. This is a lookup surface: retrieve it when
-> hunting a specific pattern, not to answer a billing-mechanics question. Split out of
-> `finops-aws.md`, where it was roughly half the file. For the named waste patterns
-> with runnable detection queries, prefer `playbooks/` - those are smaller and carry
-> Detection / Fix / Anti-pattern structure. For billing mechanics see `finops-aws.md`;
-> for commitments see `finops-aws-commitments.md`.
+> hunting a specific pattern, not to answer a billing-mechanics question. For the
+> named waste patterns with runnable detection queries, prefer `playbooks/` - those
+> are smaller and carry Detection / Fix / Anti-pattern structure. For billing
+> mechanics see `finops-aws.md`; for commitments see `finops-aws-commitments.md`.
 
 ---
 
@@ -55,7 +54,7 @@ Service: AWS EC2 | Type: Inefficient Architecture
 Workloads are sometimes deployed in specific AWS regions based on legacy decisions, developer convenience, or perceived performance requirements. However, regional EC2 pricing can vary significantly, and placing instances in a suboptimal region can lead to higher compute costs, increased data transfer charges, or both.
 
 - Identify EC2 instances that generate significant cross-region or cross-AZ data transfer
-- Review the current region’s EC2 pricing compared to other AWS regions supporting the same instance type
+- Review the current region's EC2 pricing compared to other AWS regions supporting the same instance type
 - Evaluate whether the instance communicates heavily with services or users located in another region
 
 **Suboptimal Region For Internet Only Ec2 Instance**
@@ -133,7 +132,7 @@ When fleet auto scaling policies maintain more active instances than are require
 **Suboptimal Memory To Cpu Ratio In Eks Cluster Node**
 Service: AWS EKS | Type: Inefficient Configuration
 
-When the EC2 instance types used for EKS node groups have a memory-to-CPU ratio that doesn’t match the workload profile, the result is poor bin-packing efficiency. For example, if memory-intensive containers are scheduled on compute-optimized nodes, memory may run out first while CPU remains unused.
+When the EC2 instance types used for EKS node groups have a memory-to-CPU ratio that doesn't match the workload profile, the result is poor bin-packing efficiency. For example, if memory-intensive containers are scheduled on compute-optimized nodes, memory may run out first while CPU remains unused.
 
 - Review container-level memory and CPU requests and limits across the cluster
 - Assess node-level resource utilisation to detect fragmentation (e.g., memory maxed out while CPU remains idle)
@@ -354,7 +353,7 @@ Many EC2 workloads - such as development environments, test jobs, stateless serv
 **Underutilized Kubernetes Workload**
 Service: AWS EKS | Type: Underutilization
 
-When Kubernetes workloads request more CPU and memory than they actually consume, nodes must reserve capacity that remains unused. This leads to lower node density, forcing the cluster to maintain more instances than necessary.
+When Kubernetes workloads request more CPU and memory than they consume, nodes must reserve capacity that remains unused. This leads to lower node density, forcing the cluster to maintain more instances than necessary.
 
 - Identify workloads where average CPU and memory usage are consistently much lower than requested values
 - Analyse container-level metrics to assess request-to-usage ratios over time
@@ -374,7 +373,7 @@ Service: AWS EC2 | Type: Underutilized Resource
 
 Oversized instances within Auto Scaling Groups lead to inflated baseline costs, even when scaling adjusts the number of instances dynamically. When workloads consistently use only a fraction of the available CPU, memory, or network capacity, there is an opportunity to downsize to smaller, less expensive instance types without sacrificing performance.
 
-- Evaluate smaller instance types that better match the workload’s actual resource requirements.
+- Evaluate smaller instance types that better match the workload's actual resource requirements.
 - Update the launch template or configuration for the Auto Scaling Group to use the selected instance type, and deploy changes during a low-traffic window if needed.
 - After downsizing, monitor performance metrics to ensure the workload continues to meet application and SLA expectations.
 
@@ -519,7 +518,7 @@ S3 buckets configured with SSE-KMS but without Bucket Keys generate a separate K
 **Missing Lifecycle Policy On Replicated Efs File System**
 Service: AWS EFS | Type: Misconfiguration
 
-When replicating an EFS file system across AWS regions (e.g., for disaster recovery), the destination file system does not automatically inherit the source’s lifecycle policy. As a result, files replicated to the destination will remain in the Standard storage class unless a new lifecycle policy is explicitly configured.
+When replicating an EFS file system across AWS regions (e.g., for disaster recovery), the destination file system does not automatically inherit the source's lifecycle policy. As a result, files replicated to the destination will remain in the Standard storage class unless a new lifecycle policy is explicitly configured.
 
 - Manually apply a lifecycle policy to the destination EFS file system after replication is configured
 - Align the policy with the source file system or tune it based on expected access frequency in the DR region
@@ -653,7 +652,7 @@ S3 buckets often persist after projects complete or when the associated workload
 **Unaccessed Ebs Snapshot**
 Service: AWS EBS | Type: Unused Resource
 
-This inefficiency arises when snapshots are retained long after they’ve served their purpose. Snapshots may have been created for backups, migrations, or disaster recovery plans but were never deleted - even after the related workload or volume was decommissioned.
+This inefficiency arises when snapshots are retained long after they've served their purpose. Snapshots may have been created for backups, migrations, or disaster recovery plans but were never deleted - even after the related workload or volume was decommissioned.
 
 - EBS Snapshot Pricing
 - Working with Snapshots
@@ -682,9 +681,10 @@ S3 Storage Lens Advanced provides valuable insights into storage usage and trend
 
 Amazon RDS is a fully managed database service but its pricing model is complex enough
 to generate unexpected cost surges. RDS instances are a subset of EC2 instance types
-but carry a 40-70% premium over equivalent EC2 instances. Understanding the cost
-structure and applying a structured optimisation approach prevents RDS from becoming
-an outsized line item.
+but carry a premium over equivalent EC2 instances, in the 40-70% range (indicative,
+not a benchmark; verify against current pricing for the engine and size).
+Understanding the cost structure and applying a structured optimisation approach
+prevents RDS from becoming an outsized line item.
 
 **Why RDS costs surge:**
 - On-Demand instances combined with auto-scaling can rapidly inflate costs when
@@ -695,7 +695,7 @@ an outsized line item.
 - Non-production environments (dev, test, QA) inherit production-grade configurations
   (Multi-AZ, oversized instances) without justification
 
-**RDS optimisation framework (source: OptimNow):**
+**RDS optimisation framework (OptimNow engagement template, not an AWS document):**
 
 The optimisation sequence matters. Follow this order:
 
@@ -790,8 +790,8 @@ on serverless databases (Aurora Serverless v2, DynamoDB On-Demand, Neptune Serve
 and up to 20% on provisioned database instances (RDS, Aurora, ElastiCache, MemoryDB,
 OpenSearch). Compute Savings Plans still do not cover managed databases - those
 workloads need either RIs or the Database Savings Plan, depending on the service.
-Choosing the wrong instrument - or committing too early - is the most common database
-FinOps mistake.
+Choosing the wrong instrument - or committing too early - is the database FinOps
+mistake OptimNow sees most often.
 
 Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html
 
@@ -835,7 +835,7 @@ Is the database workload stable and predictable (90+ days of consistent usage)?
         │
         ├── RDS or Aurora (open-source engine: MySQL, PostgreSQL, MariaDB)
         │   → RDS Reserved Instances with size flexibility
-        │     - Start with 1-year No Upfront (~34% discount, zero risk)
+        │     - Start with 1-year No Upfront (~34% discount, lowest commitment risk)
         │     - Upgrade to 1-year Partial Upfront (~37%) once confident
         │     - Consider 3-year Partial Upfront (~57%) only for workloads
         │       with 3+ year horizon AND no planned migration
@@ -852,7 +852,7 @@ Is the database workload stable and predictable (90+ days of consistent usage)?
         │
         ├── DynamoDB
         │   → First: switch from On-Demand to Provisioned + Auto Scaling
-        │     if usage is predictable (this alone saves 50-80%)
+        │     if usage is predictable (indicative saving of 50-80%)
         │   → Then: Reserved Capacity for baseline read/write units
         │     - 1-year or 3-year terms available
         │     - Only commit the steady-state baseline; let Auto Scaling
@@ -986,7 +986,7 @@ MemoryDB now supports Valkey, a drop-in replacement for Redis OSS offering signi
 
 - Migrate eligible MemoryDB clusters to use the Valkey engine
 - Validate API compatibility and performance requirements prior to migration
-- Use zero-downtime upgrade capabilities where possible for seamless transition
+- Use zero-downtime upgrade capabilities where possible for a transition without downtime
 
 **Suboptimal Rds Instance Storage Type**
 Service: AWS RDS | Type: Inefficient Configuration
@@ -1116,7 +1116,7 @@ Service: AWS RDS | Type: Overprovisioned Resource
 This inefficiency occurs when an RDS instance is consistently operating below its provisioned capacity - for example, showing low CPU, or memory utilisation over an extended period. This often results from conservative initial sizing, decreased workload demand, or failure to review and adjust after deployment.
 
 - Identify RDS instances with consistently low CPU and memory usage over a representative time window
-- Compare observed performance to the instance class’s capabilities to assess overprovisioning
+- Compare observed performance to the instance class's capabilities to assess overprovisioning
 - Evaluate whether Auto Scaling is disabled or not configured for compute resizing
 
 **Suboptimal Elasticache Engine Selection**
@@ -1131,7 +1131,7 @@ Many workloads default to using Redis or Memcached without evaluating whether a 
 **Non Graviton Elasticache Node On Eligible Workload**
 Service: AWS ElastiCache | Type: Suboptimal Instance Family Selection
 
-Many Redis and Memcached clusters still use legacy x86-based node types (e.g., cache.r5, cache.m5) even though Graviton-based alternatives are available. In-memory workloads tend to be highly compatible with Graviton due to their simplicity and reliance on standard CPU and memory usage patterns. Unless constrained by architecture-specific extensions or strict compliance requirements, most ElastiCache clusters can be transitioned with no application-level changes.
+Many Redis and Memcached clusters still use legacy x86-based node types (e.g., cache.r5, cache.m5) even though Graviton-based alternatives are available. In-memory workloads are usually compatible with Graviton because they rely on standard CPU and memory operations. Unless constrained by architecture-specific extensions or strict compliance requirements, most ElastiCache clusters can be transitioned with no application-level changes.
 
 - Switch node types to cache.r6g, cache.m6g, or cache.t4g equivalents
 - Update provisioning logic to default to Graviton families for new clusters
@@ -1474,7 +1474,7 @@ Service: AWS Config | Type: Suboptimal Recording Configuration
 
 Organisations frequently inherit continuous recording by default (e.g., through landing zones) without validating the business need for per-change granularity across all resource types and environments. In change-heavy accounts (ephemeral resources, CI/CD churn, autoscaling), continuous mode drives very high CIR volumes with limited additional operational value.
 
-- Shift suitable resource types and/or non-production environments from continuous to periodic recording where real-time change tracking isn’t required.
+- Shift suitable resource types and/or non-production environments from continuous to periodic recording where real-time change tracking isn't required.
 - Scope recording frequency by environment: continuous for production or high-risk resources; periodic for development/test or low-risk resources.
 - Document the rationale and ownership (e.g., security vs. platform) to ensure shared expectations on visibility vs. cost.
 
@@ -1486,9 +1486,6 @@ CloudWatch log groups often persist long after their usefulness has expired. In 
 - Identify log groups with significant stored log volume but no recent ingestion activity
 - Review historical usage to determine if log data is still being used for operational, security, or compliance purposes
 - Evaluate whether the log group is associated with an active application or AWS resource
-
----
-
 
 ---
 

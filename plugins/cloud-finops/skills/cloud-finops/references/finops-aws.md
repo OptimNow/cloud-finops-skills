@@ -37,8 +37,8 @@ material it does not need:
 
 ### Cost and Usage Report (CUR)
 
-CUR is the most granular billing data source AWS provides. It is the correct data source
-for any serious FinOps implementation on AWS.
+CUR is the most granular billing data source AWS provides. For attribution and custom
+tooling, build on CUR; the console is for ad-hoc views.
 
 **Why CUR over Cost Explorer API:**
 - Line-item granularity - every resource charge, every hour
@@ -321,10 +321,10 @@ behind a strict latency SLA).
 | **Asynchronous inference** | Bursty traffic, large payloads, tolerable response delay | Queue depth, scale-down settings, scale-to-zero | Synchronous request-response APIs |
 | **Batch transform** | Offline scoring, scheduled jobs, large datasets | Spot, partitioning, instance type for throughput | Interactive inference; user-facing immediate response |
 
-The default in most teams is real-time. The most common silent waste is a
-real-time endpoint serving traffic that would be a clean fit for
+The default in most teams is real-time. The silent waste OptimNow sees most
+often is a real-time endpoint serving traffic that would be a clean fit for
 serverless or asynchronous - keeping the endpoint always-on for what is
-actually a few requests per hour or per day.
+a few requests per hour or per day.
 
 ### Endpoint consolidation - MME and Inference Components
 
@@ -689,7 +689,7 @@ Database services often represent 20-40% of cloud spend, yet many organisations 
 **1. Overprovisioning for peak load**
 - Databases sized for Black Friday traffic that run at 10% utilisation for 11 months
 - Solution: auto-scaling where the engine supports it, or scheduled scaling for predictable patterns
-- Aurora Serverless v2 for genuinely variable load; RDS Proxy where the pressure is connection churn rather than compute
+- Aurora Serverless v2 for variable load; RDS Proxy where the pressure is connection churn rather than compute
 
 **2. High availability in non-production**
 - Multi-AZ deployments double infrastructure costs
@@ -766,10 +766,9 @@ made CloudFront costs hard to forecast.
 
 Pay-as-you-go pricing for 50 TB of data transfer out from North America runs
 roughly $4,250 at $0.085/GB. The Pro plan delivers the same 50 TB for $15. For
-bandwidth-heavy workloads the effective discount is at the 99% mark - this is
-not the usual "simplified pricing" code for "we repriced the meter". It is a
-genuine offer aimed at mid-market customers who would otherwise move to
-Cloudflare.
+bandwidth-heavy workloads the effective discount is at the 99% mark, so this is
+not a repriced meter dressed as simplified pricing. Our reading: the plan targets
+mid-market customers who would otherwise move to Cloudflare; AWS has not said so.
 
 ### Request-bound vs bandwidth-bound
 
@@ -885,8 +884,8 @@ alone, every month. The real price of CloudFront Pro is $15 plus the AWS
 dependency you have already accepted.
 
 For greenfield workloads with no AWS origins, Cloudflare's unlimited-bandwidth
-Pro plan at $25/month is the correct comparison. For existing AWS shops the
-comparison is not close.
+Pro plan at $25/month is the correct comparison. For existing AWS shops, add the
+egress charge on the AWS origin to the Cloudflare side before comparing.
 
 ### Operational gotchas
 
@@ -921,7 +920,7 @@ comparison is not close.
 ### Decision flow
 
 1. Audit existing distributions. Most accounts have zombie distributions -
-   identify which ones actually serve traffic.
+   identify which ones serve traffic.
 2. Check blockers per distribution: Lambda@Edge, shared Functions or WebACLs,
    real-time logs, Shield Advanced, cross-account Route 53. Any of these keep
    you on pay-as-you-go for that distribution.
@@ -933,10 +932,9 @@ comparison is not close.
 7. Migrate one non-critical distribution first, watch usage counters across a
    full billing cycle, then expand.
 
-The downside risk is low - no annual commitment, downgrades and cancellations
-are supported. The upside is the first AWS pricing mechanism in years where
-predictability and cost both move in the right direction for mid-market
-workloads.
+The downside risk is low - downgrades and cancellations are supported. The upside
+is a flat monthly price with no annual commitment, which is rare in AWS pricing,
+for mid-market workloads that fit a tier.
 
 ---
 
@@ -954,7 +952,7 @@ original S3 bucket as durable backing store.
 - FUSE-based workarounds: s3fs-fuse, goofys, Mountpoint for Amazon S3 for
   workloads that need genuine POSIX semantics
 - Cases where teams ran EFS or FSx purely to give legacy applications something
-  to mount, while the data of record actually lived in S3
+  to mount, while the data of record lived in S3
 - Ad-hoc proxy layers between S3 and ML training pipelines or agentic workloads
   that need shared file storage
 
@@ -973,7 +971,7 @@ Rates are identical to EFS Performance-optimised Standard. The underlying
 infrastructure is the same.
 
 **The design that makes it cheap:** you mount a petabyte bucket and pay S3 Files
-rates only on the small slice you actually touch. Everything else stays at
+rates only on the small slice you touch. Everything else stays at
 standard S3 pricing ($0.023/GB-month Standard, or less on Intelligent-Tiering or
 Infrequent Access). The hot tier is an opt-in cache, not a whole-bucket storage
 class.
@@ -981,8 +979,8 @@ class.
 ### The 128 KB threshold
 
 Files below the threshold (default 128 KB, configurable) get pulled into the
-hot tier on first access - small-file latency is where filesystems actually
-beat object stores, so S3 Files caches them.
+hot tier on first access - small-file latency is where filesystems beat
+object stores, so S3 Files caches them.
 
 **Reads of 128 KB or larger stream directly from S3 even when the file is
 already on the hot tier.** No S3 Files access charge. This is the key mechanic
@@ -1059,7 +1057,7 @@ lives in S3.
 ### When S3 Files fits
 
 - ML training pipelines that chew through millions of small checkpoint files
-  scattered across S3 - the existing duct-tape of Mountpoint and prayer
+  scattered across S3 - the case that Mountpoint-based workarounds served badly
 - Agentic AI workloads that need shared storage accessible by a mount command
   without the team becoming S3 API experts
 - Legacy applications assuming POSIX semantics where the data of record needs
@@ -1214,7 +1212,7 @@ of them belong to Finance rather than to the FinOps or platform team:
 4. **Who buys commitments, and which invoice units benefit?** Decide before the first
    Savings Plan is bought, then set Billing Preferences per account to match.
 5. **How is shared cost inside a business unit's account treated?** Invoice units cannot
-   split an account, so anything genuinely shared has to live in its own account or be
+   split an account, so anything shared has to live in its own account or be
    handled in the reporting layer with Cost Category split charge rules - and then it is
    a showback number, not an invoice line.
 
@@ -1308,7 +1306,7 @@ Billing transfer is a delegation mechanism that allows one payer account (the "b
   to take its bill (same page). Either account can withdraw the transfer afterwards.
 - Commitments stay bounded at the organisation level: "Volume discount tiers, Reserved
   Instances, and Savings Plans continue to be calculated and applied at the individual
-  AWS Organizations level" (same page). Credits behave differently rather than simply
+  AWS Organizations level" (same page). Credits behave differently rather than
   transferring: AWS documents credit-tracking restrictions for the bill source account,
   which loses the Credits page balance view, and credits do not appear in pro forma
   artefacts unless the bill transfer account models them through Billing Conductor.

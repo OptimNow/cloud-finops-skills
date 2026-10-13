@@ -11,11 +11,10 @@ fcp_maturity_entry: "Walk"
 
 # FinOps on Kubernetes
 
-> Kubernetes is the hardest variant of cloud-cost allocation. The cloud bill
-> shows node-hours, but teams ship workloads as pods across shared namespaces.
-> Without allocation, chargeback is impossible. Without rightsizing, allocation
-> is misleading. Without thoughtful autoscaling, both are working against
-> uncoordinated infrastructure.
+> Kubernetes is the hardest common case for cloud-cost allocation: the bill shows
+> node-hours, teams ship pods across shared namespaces. Allocation is the
+> prerequisite for chargeback, rightsizing keeps the allocation honest, and
+> autoscaling turns both into a smaller bill.
 >
 > This file is the cross-cluster discipline (EKS, GKE, AKS). Provider-specific
 > node mechanics live in the per-cloud files: AKS in
@@ -37,7 +36,8 @@ cost the bill records. Three structural complications make this hard:
    `namespace` column. Allocation must be built from cluster-side telemetry
    (Prometheus, Kubecost, OpenCost) and joined against the node bill.
 2. **Idle node capacity is real.** The cluster runs at some utilisation
-   (typically 40-70%); the gap between requested capacity and used capacity
+   (40-70% is a working estimate; verify in the cluster); the gap between
+   requested capacity and used capacity
    is paid for but not consumed by any pod. This idle cost has to land
    somewhere - either as overhead on each pod's allocation, or as a
    separate "platform overhead" line item.
@@ -119,8 +119,8 @@ GKE, EKS, and AKS all expose some level of native cost allocation:
 - Allocation needs are at the namespace level, not the pod or workload level
 
 **Trade-off:** allocation methodology is the cloud's, not yours. Cross-cloud
-consistency is impossible. Joining to the rest of the FOCUS dataset is
-provider-specific.
+consistency is not available natively. Joining to the rest of the FOCUS dataset
+is provider-specific.
 
 ### Recommended starting choice
 
@@ -196,9 +196,9 @@ to cloud-resource tags applies here.
 ## Container rightsizing
 
 Rightsizing pods is the largest single FinOps lever inside the cluster.
-Reducing CPU and memory requests to match observed usage typically reclaims
-30-50% of cluster spend without degrading service-level objectives, IF done
-carefully.
+Reducing CPU and memory requests to match observed usage reclaims a material
+share of cluster spend (30-50% is indicative, not a benchmark) without
+degrading service-level objectives, IF done carefully.
 
 ### Methodology
 
@@ -234,7 +234,7 @@ carefully.
 ### Landmines
 
 - **Memory requests below true usage** cause OOMKills and pager storms.
-  Always err on the side of memory headroom.
+  Leave memory headroom: an OOMKill costs more than the memory it saves.
 - **CPU limits below burstable demand** cause silent throttling that slows
   APIs without a clear failure signal. Many engineering teams set CPU
   requests but NOT CPU limits to avoid this; evaluate per workload (limits
@@ -256,7 +256,7 @@ the cluster provisions. Both are needed.
 
 ### Karpenter vs Cluster Autoscaler
 
-For most modern AWS EKS clusters, Karpenter outperforms Cluster Autoscaler
+On the EKS clusters OptimNow has reviewed, Karpenter beats Cluster Autoscaler
 on cost efficiency because Karpenter provisions the right shape node, not
 just "a node from the configured node pool." The same pattern applies to
 GKE (Karpenter is now available on GKE) and to AKS (Node Auto Provisioning
@@ -335,9 +335,9 @@ Detection and mitigation (a named pattern since September 2026):
 
 ### Pod Disruption Budgets are non-negotiable
 
-Every workload with an SLO must have a PDB. No exceptions. PDBs are how the
-cluster autoscaler (Karpenter or CA) knows it cannot drain a node without
-violating the workload's availability commitment.
+PDBs are the prerequisite for safe consolidation. Give every workload with an
+SLO a PDB: without one, the cluster autoscaler (Karpenter or CA) drains nodes
+with no knowledge of the workload's availability commitment.
 
 PDB anti-pattern: setting `minAvailable: 100%` because "we cannot tolerate
 any disruption." This blocks all consolidation. The right answer is
@@ -460,8 +460,8 @@ own. It belongs to the Platform team's budget, not the application teams'.
 
 ## Anti-patterns
 
-- **K8s cost allocation by tag-only.** Tags miss what teams actually
-  consume. Build from operational metrics (CPU-hours, memory-bytes,
+- **K8s cost allocation by tag-only.** Tags miss what teams consume.
+  Build from operational metrics (CPU-hours, memory-bytes,
   request counts) for the per-pod allocation, then attribute to teams via
   labels.
 - **Auto-update VPA in production.** Pod restarts at inopportune moments.
@@ -470,8 +470,8 @@ own. It belongs to the Platform team's budget, not the application teams'.
 - **CPU limits everywhere by default.** Causes silent throttling on bursty
   workloads. Evaluate per workload; many production workloads run better
   with CPU requests but no CPU limits (memory limits stay).
-- **Single-instance-type Spot.** Asking for simultaneous termination.
-  Always diversify.
+- **Single-instance-type Spot.** One capacity pool means one reclaim event
+  takes every node; spread requests across several instance types.
 - **Aggressive Karpenter consolidation in prod.** Pod churn affects SLOs.
   Start conservative and tune based on measurement.
 - **Allocating idle node cost to application teams.** The teams cannot

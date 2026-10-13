@@ -14,9 +14,8 @@ fcp_maturity_entry: "Walk"
 > Azure rate-optimisation instruments and the decisions around them: Reservations,
 > Savings Plans, Azure Hybrid Benefit, Spot, the compute and database commitment
 > decision trees, portfolio liquidity under the 1 February 2027 exchange retirement,
-> phased purchasing, and MACC alignment. Split out of `finops-azure.md`, which carried
-> this material in three sections ~2,000 lines apart. For Azure billing data,
-> rightsizing, service optimisation and governance, see `finops-azure.md`.
+> phased purchasing, and MACC alignment. For Azure billing data, rightsizing,
+> service optimisation and governance, see `finops-azure.md`.
 
 ---
 
@@ -41,13 +40,16 @@ to be layered, not chosen in isolation.
 
 **Critical distinctions:**
 
-1. **Azure Hybrid Benefit is not a commitment - it is free money.** If you have Windows
-   Server or SQL Server licenses with Software Assurance, AHB eliminates the license
-   component from VM pricing. No contract, no lock-in, no restart needed. This should
-   be enabled on all eligible VMs before any other commitment decision. Windows licence
-   costs can be a large share of a Windows VM's pay-as-you-go rate (44% in the D4_v5
-   case study in `finops-azure.md`; read the exact split for your SKU from the pricing
-   calculator). Use the AHB Workbook from FinOps Toolkit for
+1. **Azure Hybrid Benefit is not a commitment - it is a licensing overlay.** If you have
+   Windows Server or SQL Server licenses with Software Assurance, AHB eliminates the
+   license component from VM pricing. No contract, no lock-in, no restart needed. The
+   one exposure is licence compliance: each VM claiming AHB needs an eligible licence
+   with active Software Assurance assigned to it, and the assignment must hold up in
+   a licence audit. Enable it on all eligible VMs before any other commitment
+   decision. Windows licence costs can be a large share of a Windows VM's
+   pay-as-you-go rate (44% in the D4_v5 case study in `finops-azure.md`; read the
+   exact split for your SKU from the pricing calculator). Use the AHB Workbook from
+   FinOps Toolkit for
    compliance tracking across the fleet.
 
 2. **Savings Plans for Compute cover more than VMs.** Unlike Reservations (which are
@@ -258,7 +260,7 @@ Build the strategy around that.
 1. VM family stays put.
 2. Region stays put.
 3. Size stays inside the instance-size-flexibility band (ISF is unaffected by the change).
-4. Term length is one you can genuinely hold (1yr vs 3yr).
+4. Term length is one you can hold (1yr vs 3yr).
 5. No migration or decommission is planned in the window.
 
 If any single dimension is uncertain, default to a savings plan. Family and region are the
@@ -269,7 +271,7 @@ hard new locks; size within the family stays flexible through ISF.
 - **The default has a price, so size it.** A savings plan discounts roughly 7 points less
   than a reservation on compute (up to 65% vs up to 72%), and more on databases (up to 35%
   vs the reservation rate). That gap is the premium for the flexibility exchange used to
-  provide for free. On a large, genuinely stable baseline it can reach six figures a year.
+  provide for free. On a large, stable baseline it can reach six figures a year.
   Reserve the certain floor; do not surrender its depth out of caution.
 - **At Crawl and Walk maturity, the fallback is often more PAYG buffer, not a bigger
   savings plan.** Azure bills daily while a savings plan is sized on an hourly floor (see
@@ -326,7 +328,8 @@ Assurance) can apply them to Azure resources, eliminating the licence premium.
 - Up to 40% savings on Windows VMs, up to 55% on SQL Database
 - No architectural change, no restart needed - single CLI command per VM
 - Also applies to SQL Managed Instance and Red Hat/SUSE Linux
-- Zero commitment, zero risk, immediate effect
+- No commitment, immediate effect; the only exposure is licence compliance (eligible
+  licences with active Software Assurance, assigned per VM)
 - Use the AHB Workbook from FinOps Toolkit for compliance tracking across the fleet
 - **Enable on all eligible VMs before evaluating any other commitment**
 
@@ -632,7 +635,7 @@ START: What does the customer need?
 
 #### Six-step commitment strategy framework
 
-The canonical sequence to run on any Azure commitment engagement:
+The sequence OptimNow runs on an Azure commitment engagement:
 
 **Step 1 - Data foundation.** Daily FOCUS export to Storage Account, 90 days minimum
 of history (trigger backfill if the export is new). Azure Monitor diagnostic settings
@@ -851,11 +854,8 @@ more built-in liquidity mechanisms than AWS, but each has limits.
 
 The mechanics themselves - exchange, refund and its $50,000 rolling cap, instance
 size flexibility, trade-in to a savings plan, staggered expiry - are tabulated once in
-"Reservation and Savings Plan liquidity mechanics" near the top of this file. That
-table used to be repeated here because the two sections lived ~2,000 lines apart in
-`finops-azure.md` and a reader landing in the portfolio section would not have seen it.
-Now that both sit in this file, the duplicate is gone; read the table above, then the
-portfolio consequences below.
+"Reservation and Savings Plan liquidity mechanics" near the top of this file. Read
+that table first, then the portfolio consequences below.
 
 **Key insight (updated for 1 February 2027):** Reservations were more liquid than Savings
 Plans on Azure, the opposite of the common assumption. That edge is narrowing. Savings
@@ -888,7 +888,7 @@ and a falling keel is an early liquidity warning - on Azure doubly so after
 
 ### Phased purchasing
 
-Never buy the full commitment in a single transaction. Purchase in blocks to create
+Avoid buying the full commitment in a single transaction. Purchase in blocks to create
 a portfolio with staggered expiry dates. The cadence and block size should match
 your consumption profile - not a fixed rule.
 
@@ -1028,9 +1028,6 @@ each block should be.
 - [ ] Existing commitment utilisation is >80% before purchasing more
 - [ ] MACC burndown trajectory reviewed - commitment purchase aligns with drawdown
 - [ ] Finance has approved the capital outlay (for Upfront payments)
-
----
-
 
 ---
 
