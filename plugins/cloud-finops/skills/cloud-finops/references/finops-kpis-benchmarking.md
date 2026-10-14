@@ -131,6 +131,17 @@ Choosing the denominator is the actual work:
   the same anti-gaming rule applies: cost-per-merged-PR is a fleet trend
   signal, never an individual performance metric. The AI-side treatment lives
   in `finops-for-ai.md` and `finops-ai-dev-tools.md`.
+- **Organisations without revenue still have a denominator.** A foundation, a
+  public body or a regulated utility has no margin to divide by, but its board
+  already counts something: donors served, grants funded, claims settled,
+  citizens enrolled, funds moved. Use that. One foundation's BI team put a new
+  analytics platform to its board as $0.16 per donor, $1.20 per grant funded
+  and 0.09% of one day's giving, rather than as an F-SKU and a CU count, and
+  got an immediate approval (Chinni Krishna Abburi, Communities Foundation of
+  Texas, FinOps X 2026; the figures are the speaker's, illustrative). The
+  framing rule carries to any sector: do not open the leadership conversation
+  with the capacity tier, the TCO model or the unit of compute; open with the
+  unit the room already counts.
 
 The trend, not the level, is the deliverable: a unit cost of 0.42 means
 nothing in isolation, but a unit cost down 12% year-on-year while volume grew
@@ -191,7 +202,9 @@ What changes at the executive altitude:
 - **Translate ratios into business language.** "Commitment utilisation 94%"
   becomes "of the capacity we pre-paid for, 94% was used - the unused slice
   cost $X". "Unit cost down 12% while volume grew 30%" becomes "we bought this
-  year's growth at a discount".
+  year's growth at a discount". In an organisation without revenue the
+  translation target is the mission unit (per donor, per grant, per claim
+  settled); see "Unit economics" above.
 - **Bring bad news with the trend attached.** An anomaly that cost $80K
   presented alongside time-to-detection and the control added is a maturity
   story; the same anomaly discovered by Finance first is a credibility event.

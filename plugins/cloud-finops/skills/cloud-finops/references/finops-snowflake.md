@@ -12,7 +12,9 @@ fcp_maturity_entry: "Walk"
 # FinOps on Snowflake
 
 > Snowflake-specific optimization patterns covering warehouse sizing, query efficiency, storage, and governance. 13 inefficiency patterns for diagnosing waste and building optimization roadmaps.
-> Source: PointFive Cloud Efficiency Hub.
+> Source: the [Cloud Efficiency Hub](https://www.pointfive.co/efficiency-hub), an open,
+> practitioner-governed library powered by PointFive, credited here as the Hub
+> asks of anyone who reuses its content.
 
 ---
 

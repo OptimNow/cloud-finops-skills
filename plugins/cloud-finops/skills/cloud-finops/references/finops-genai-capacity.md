@@ -265,6 +265,7 @@ Observed result: paying for 2-3x the capacity needed (Pay-i-reported).
 | Data privacy requirements | Provisioned - segmented by sensitivity |
 | Bursty traffic, no spillover available | PAYG or hybrid with manual failover |
 | Uncertain workload, early stage | PAYG until traffic patterns are established |
+| Demand spike under way (launch week, viral traffic, a migration wave) | PAYG until the spike settles; size any commitment on the post-spike baseline, never on the peak |
 
 ### Step 4 - Choose provider model
 
@@ -285,6 +286,13 @@ Observed result: paying for 2-3x the capacity needed (Pay-i-reported).
 - [ ] Define a spillover policy: what percentage of requests can spill to PAYG within SLA?
 - [ ] Apply enterprise discounts to provisioned purchases - verify they apply
 - [ ] Review reservations at renewal - model landscape changes fast
+- [ ] Do not buy during a surge. A commitment sized on a demand spike cannot be
+      resold when demand settles, and the organisation is left holding GPU or
+      PTU capacity it no longer needs. Hold to the 60-90 day forecast-then-commit
+      rule in `finops-onboarding-workloads.md` and treat the contract-flexibility
+      row in `finops-ai-self-hosted-vs-managed.md` as the downside case. A
+      community-documented pattern (Cloud Efficiency Hub, presented by Jason
+      DiDomenico, Northrop Grumman, at FinOps X 2026), not a measured figure
 
 ---
 

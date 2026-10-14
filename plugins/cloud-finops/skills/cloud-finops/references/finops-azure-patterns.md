@@ -23,7 +23,9 @@ fcp_maturity_entry: "Crawl"
 
 > 48 cloud inefficiency patterns covering compute, storage, databases, networking,
 > and other Azure services. Use to diagnose waste, validate architecture, or build
-> optimisation roadmaps. Source: PointFive Cloud Efficiency Hub.
+> optimisation roadmaps. Source: the [Cloud Efficiency Hub](https://www.pointfive.co/efficiency-hub),
+> an open, practitioner-governed library powered by PointFive, credited here as
+> the Hub asks of anyone who reuses its content.
 
 ### Compute Optimization Patterns (13)
 

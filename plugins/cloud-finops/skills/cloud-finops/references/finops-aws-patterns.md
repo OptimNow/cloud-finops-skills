@@ -24,7 +24,9 @@ fcp_maturity_entry: "Crawl"
 
 > 128 cloud inefficiency patterns covering compute, storage, databases, networking,
 > and other AWS services. Use to diagnose waste, validate architecture, or build
-> optimisation roadmaps. Source: PointFive Cloud Efficiency Hub.
+> optimisation roadmaps. Source: the [Cloud Efficiency Hub](https://www.pointfive.co/efficiency-hub),
+> an open, practitioner-governed library powered by PointFive, credited here as
+> the Hub asks of anyone who reuses its content.
 
 ---
 
@@ -1217,6 +1219,11 @@ Manual snapshots are often created for operational tasks like upgrades, migratio
 - List all manual RDS snapshots across regions and accounts
 - Identify snapshots that exceed a predefined age threshold (e.g., 30, 60, or 90 days)
 - Check whether snapshots are tied to deleted or decommissioned database instances
+
+Manual snapshots are not subject to the backup retention period and do not
+expire (source: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html);
+the detection query for untagged manual snapshots is in
+[aws-snapshot-sprawl](../playbooks/aws-snapshot-sprawl.md).
 
 **No Lifecycle Management For Temporarily Stopped Rds Instances**
 Service: AWS RDS | Type: Unused Resource

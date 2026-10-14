@@ -111,6 +111,10 @@ Tools:
 - AWS: Service Control Policies (SCPs) that deny resource creation without required tags
 - Azure: Azure Policy `deny` effect for missing required tags
 - GCP: Organization policies for label requirements
+- Databricks: compute policies that require `custom_tags.<key>` and bound
+  `autotermination_minutes`, `dbus_per_hour` and `node_type_id` at cluster
+  creation; serverless usage policies for the serverless side (see
+  `finops-databricks.md`, "Compute policies" and "Serverless usage policies")
 - GCP Bigtable: As of July 2026, Bigtable instances support mandatory tag-binding at creation via GA policy enforcement, enabling allocation governance to be enforced at creation rather than applied post-hoc ([FinOps Weekly](https://finopsweekly.com/news/gpc-updates-2026-07-10/))
 
 **Layer 2: Detection (continuous compliance monitoring)**

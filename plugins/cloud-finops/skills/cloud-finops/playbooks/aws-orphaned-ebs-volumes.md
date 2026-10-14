@@ -70,8 +70,15 @@ ORDER BY cost_30d DESC;
 2. Delete volumes in the `available` state with confirmed:
    - No parent EC2 instance in the account
    - No matching live AMI or launch template
-   - Detached for > 30 days
+   - Detached for > 30 days (7 days is defensible where the volumes are
+     known to be ephemeral: EKS PVCs, Auto Scaling churn)
    - No restore activity in the last 90 days
+   Run the deletion as "alert first, delete next": publish the target list
+   to owners a few days before the job runs (a Friday list for a Monday run
+   is one working pattern), honour an exemption tag, and review the
+   exemptions quarterly so the list does not become permanent. The fix
+   sequence in `references/finops-waste-detection-playbooks.md` carries the
+   full shape.
 3. Set `DeleteOnTermination=true` in launch templates and Auto Scaling
    Group launch configurations going forward to prevent the pattern at
    source.

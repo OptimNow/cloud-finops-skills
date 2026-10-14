@@ -170,6 +170,47 @@ did not audit the active-dataset list first.
 
 ---
 
+## Scale up and down
+
+An F-SKU bought through Azure on pay-as-you-go carries no commitment: Azure
+bills it per second with a one-minute minimum, and a capacity admin with write
+rights on the capacity resource can change its size in the portal at any time.
+From the change onward the capacity bills at the pay-as-you-go rate of the new
+size. Scaling below a reserved size does not reduce the bill; the reservation
+sets the floor, so resizing is a tool for the pay-as-you-go portion of the
+estate.
+
+That mechanic is what makes a seasonal design sound rather than a compromise:
+a base size that carries the normal load, scaled up for the known peak weeks
+and back down afterwards. Automate it the same way as the pause schedule. The
+Azure Resource Manager `Update` call (`PATCH` on
+`.../providers/Microsoft.Fabric/capacities/{name}` with the new `sku.name`)
+resizes the capacity, so a Logic App, a Function or a runbook on a calendar can
+do it; log each resize next to the capacity-metrics history so the utilisation
+review lines up against size. Source:
+https://learn.microsoft.com/en-us/rest/api/microsoftfabric/fabric-capacities/update
+
+Three constraints from the documentation:
+
+- **The F256 / F512 boundary.** Scaling across it in either direction puts the
+  capacity through a transition that can cancel in-flight operations and
+  running jobs. Schedule those changes in a maintenance window and rerun
+  anything cancelled.
+- **The F64 licence boundary.** Scaling up from below F64 applies almost at
+  once, but the Power BI licence change can take up to a day, and Free users
+  may be asked for a Pro licence in the meantime (see "Pricing comparison"
+  below for why F64 matters).
+- **Frequency.** Applying a new size takes time and can delay operations in
+  progress, and Microsoft advises against frequent resizing. A weekly or
+  seasonal cadence is the intended use; intra-day variation is what the
+  smoothing window, autoscale and overage mechanics above are for.
+
+Sources: <https://learn.microsoft.com/en-us/fabric/enterprise/scale-capacity>
+and <https://learn.microsoft.com/en-us/fabric/enterprise/licenses> (both read
+14 October 2026).
+
+---
+
 ## Fabric Reserved Capacity
 
 - 1-year commitment, applied at the F-SKU level (e.g. one reservation per F64).
@@ -236,6 +277,22 @@ capacity sizing and reservations are downstream.
 | Monitoring | Capacity utilisation, spikes, throttling events, trend - all surfaced via the Fabric Capacity Metrics app |
 | Escalation | Finance + platform owner + workspace owner in the same review cadence; do not silo by function |
 
+**A worked sizing example (illustrative, as presented at FinOps X 2026).** A
+Texas community foundation with a two-person BI team received a 2025 vendor
+quote for a Fabric analytics platform at about $165,000 a year: an F64
+pay-as-you-go capacity at around $100,000, Power BI Pro licensing at $28,000,
+structured training at $25,000 and OneLake storage at $11,000. Each line was
+defensible. The team kept the licensing and storage lines unchanged, cut
+training to $4,000, and sized the capacity at F16 with F32 pay-as-you-go for a
+few peak weeks a year: about $79,000 lower on capacity alone, with the same
+reports and outputs and no rip-and-replace of the system of record. The
+figures are the speaker's (Chinni Krishna Abburi, Communities Foundation of
+Texas), not a rate card. The mechanics that made the design work are the
+per-second resize in "Scale up and down" above and the F64 viewer threshold in
+the pricing comparison below. The lesson travels: a quote that is defensible
+line by line can still be sized for a workload the organisation does not
+have, and a seasonal peak is a scaling schedule, not a base size.
+
 ---
 
 ## Allocation models for shared capacity
@@ -280,6 +337,26 @@ breakeven is headcount-dependent.
   capacity.
 - **Fabric F-SKU** - capacity-based. Replaces both Pro and PPU at scale and adds
   data engineering / Spark / data-warehouse workloads to the same capacity.
+
+**The F64 viewer threshold.** On F-SKUs smaller than F64, every user who views
+Power BI content on the capacity still needs a Pro, PPU or individual trial
+licence. From F64 upward, a user with only a Free licence and a viewer role on
+the workspace can view it. Creating Power BI items outside My workspace needs
+Pro or PPU on any SKU. Two consequences for sizing:
+
+- The breakeven is two lines, not one. Below F64 the capacity replaces nothing
+  on the licensing side, so the comparison is capacity plus per-viewer
+  licences against per-viewer licences alone. At F64 the viewer licences drop
+  out for Free users, which is how F64 ends up in quotes for organisations
+  whose workload would fit an F16: the quote is defensible on licensing
+  grounds and oversized on compute grounds at the same time.
+- A design that sizes below F64 keeps its Pro licensing line. Leave that line
+  in the business case; the worked example under "Capacity governance
+  controls" above kept it unchanged and still came out lower, because the
+  capacity line was the one that moved.
+
+Source: https://learn.microsoft.com/en-us/fabric/enterprise/licenses (read
+14 October 2026).
 
 **Rough breakeven:** above ~100-200 users with active Premium feature use, an
 F-SKU starts to compete economically. Below that threshold, Pro or PPU is

@@ -28,6 +28,7 @@ set with its facets.
 | [aws-graviton-candidate](aws-graviton-candidate.md) | Graviton Candidate | modernization | likely |
 | [aws-gpu-instance-oversized](aws-gpu-instance-oversized.md) | Oversized GPU Instance | overprovisioned | likely |
 | [aws-idle-load-balancer](aws-idle-load-balancer.md) | Idle Load Balancer | idle | obvious |
+| [aws-kinesis-stream-no-consumers](aws-kinesis-stream-no-consumers.md) | Kinesis Stream with Producers but No Consumers | idle | likely |
 | [aws-mig-candidate](aws-mig-candidate.md) | MIG (Multi-Instance GPU) Candidate | overprovisioned | possible |
 | [aws-multi-gpu-underutilized](aws-multi-gpu-underutilized.md) | Multi-GPU Instance with Single-GPU Workload | overprovisioned | obvious |
 | [aws-nat-gateway-endpoint-substitution](aws-nat-gateway-endpoint-substitution.md) | NAT-to-Gateway-Endpoint Substitution | egress | obvious |

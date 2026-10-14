@@ -270,13 +270,14 @@ node failures.
 
 ### Karpenter consolidation tuning
 
-Karpenter's `consolidationPolicy: WhenUnderutilized` is powerful but chatty.
+Karpenter's `consolidationPolicy: WhenEmptyOrUnderutilized` (named
+`WhenUnderutilized` before v1) is powerful but chatty.
 Aggressive `consolidateAfter` settings cause pod churn that affects SLOs.
 
 Karpenter triggers node replacement through three disruption mechanisms:
 
 - **Consolidation** - replaces or removes underutilised nodes to pack pods
-  onto fewer or cheaper nodes (`consolidationPolicy: WhenUnderutilized`).
+  onto fewer or cheaper nodes (`consolidationPolicy: WhenEmptyOrUnderutilized`).
 - **Drift** - detects when a node's actual configuration no longer matches
   its NodePool / NodeClass spec (e.g. an AMI, instance-type list, or label
   change) and replaces the drifted node to bring it into alignment. Drift
@@ -287,9 +288,13 @@ Karpenter triggers node replacement through three disruption mechanisms:
 Recommended starting points:
 
 - `consolidateAfter: 30s` for dev / staging clusters
-- `consolidateAfter: 5m` for prod clusters
-- `disruptionBudget` configured to limit simultaneous node drains across all
-  disruption mechanisms (consolidation, drift, and expiration)
+- `consolidateAfter: 5m` to `10m` for prod clusters; the longer end gives
+  pods time to land on the right node before Karpenter judges the old one
+  empty, and 10 minutes is the production value one large EKS estate
+  reported (see the worked NodePool below)
+- `disruption.budgets` configured to limit simultaneous node drains across
+  all disruption mechanisms (consolidation, drift, and expiration), with a
+  zero-disruption schedule over business hours where SLOs are tight
 - `expireAfter: 720h` (30 days) to force a rolling refresh of nodes for
   patching cadence
 
@@ -303,6 +308,80 @@ governing how aggressively Karpenter replaces nodes.
 
 Tune up or down based on the observed pod-disruption rate vs the savings
 delivered.
+
+#### A worked NodePool guardrail set
+
+The NodePool `requirements` block is the cost control surface: every
+constraint in it is enforced at provisioning, before a pod can land on an
+instance it should not. A production set that one Equifax engineer described
+running across more than 100 microservices at about 85% Spot with four-nines
+availability (Seshadri Reddy Kommepalli, FinOps X 2026; the figures are the
+speaker's) looks like this, using the label names from the Karpenter
+documentation:
+
+```yaml
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: general
+spec:
+  template:
+    spec:
+      requirements:
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["c", "m", "r"]
+        - key: karpenter.k8s.aws/instance-generation   # no old generations
+          operator: Gte
+          values: ["6"]
+        - key: karpenter.k8s.aws/instance-size          # no oversized nodes
+          operator: NotIn
+          values: ["12xlarge", "16xlarge", "24xlarge", "32xlarge", "metal"]
+        - key: karpenter.sh/capacity-type               # tried in the order reserved, spot, on-demand
+          operator: In
+          values: ["spot", "on-demand"]
+      expireAfter: 720h
+  limits:
+    cpu: 1000          # a ceiling on the pool, not a target
+    memory: 2000Gi
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 10m
+    budgets:
+      - nodes: 10%
+      - schedule: "0 9 * * mon-fri"   # no voluntary disruption in business hours
+        duration: 8h
+        nodes: "0"
+```
+
+What each line buys. The generation floor keeps the pool on current
+price-performance. The size exclusion stops one large pod request from
+pulling in a node that then runs at 15% for a month. `limits` caps what the
+pool can spend if a deployment misbehaves. Listing both capacity types lets
+Spot carry the base and On-Demand absorb exhaustion; the pool-wide ratio is
+then a metric to alert on (the cross-AZ pattern below is the failure mode).
+
+The NodePool only works with scheduling constraints on the workload side,
+because the two-minute Spot interruption notice (an instance-metadata item
+and an EventBridge event, delivered on a best-effort basis) is survivable only
+if it never hits a whole service at once:
+
+- `topologySpreadConstraints` on `topology.kubernetes.io/zone` and
+  `kubernetes.io/hostname`, plus pod anti-affinity, so one interruption takes
+  a fraction of the replicas.
+- `karpenter.sh/do-not-disrupt: "true"` on the critical tier, with a separate
+  On-Demand NodePool those pods select, so Karpenter never consolidates them
+  away.
+- A PodDisruptionBudget with `maxUnavailable: 1` on every service with an
+  SLO, so consolidation, drift and Spot replacement evict one pod at a time
+  (next section).
+
+Sources: <https://karpenter.sh/docs/concepts/nodepools/>,
+<https://karpenter.sh/docs/concepts/scheduling/> and
+<https://karpenter.sh/docs/concepts/disruption/> (Karpenter project
+documentation, not AWS; read 14 October 2026);
+<https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html>
+for the interruption notice.
 
 #### Waste pattern: silent cross-AZ drift after Spot exhaustion
 
@@ -342,7 +421,9 @@ with no knowledge of the workload's availability commitment.
 PDB anti-pattern: setting `minAvailable: 100%` because "we cannot tolerate
 any disruption." This blocks all consolidation. The right answer is
 `minAvailable: N-1` where N is the replica count, with a corresponding
-`maxUnavailable` budget on the Deployment.
+`maxUnavailable` budget on the Deployment. `maxUnavailable: 1` is the same
+budget written the other way round, and it is the form that keeps
+consolidation, drift and Spot replacement to one pod at a time per service.
 
 ### Spot / preemptible diversification
 

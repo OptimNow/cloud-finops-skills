@@ -172,8 +172,12 @@ ORDER BY monthly_cost DESC;
 2. **Owner identification**: tag-based first, account-context fallback.
    If no owner can be identified, the resource enters a 30-day grace
    period with a `wasteline-orphan-pending-deletion` tag.
-3. **Notification**: owner gets 14 days to claim or refute. No reply =
-   continue with deletion.
+3. **Notification, in the "alert first, delete next" shape**: the deletion
+   job publishes its target list a fixed lead time before it runs (14 days
+   here; one 140-account estate uses a Friday list for a Monday run), the
+   owner can put a resource on an exemption list or tag that the job honours,
+   and the exemption list is itself reviewed on a cadence so it does not
+   become permanent. No reply = continue with deletion.
 4. **Decommission with rollback path**: snapshot retained for 30 days
    post-delete in case the resource turns out to have been load-bearing
    in a way nobody surfaced.
@@ -211,6 +215,7 @@ during the observation window.
 | Lambda with zero invocations | `Invocations` = 0 over 30 days | CloudWatch Lambda metrics |
 | DynamoDB table with no read/write | `ConsumedRead/WriteCapacity` = 0 over 30 days | CloudWatch DDB metrics |
 | Redshift cluster low activity | CPU < 5% AND `DatabaseConnections` near zero | CloudWatch Redshift metrics |
+| Kinesis stream with no consumers | `IncomingRecords` > 0 AND `GetRecords.Records` = 0 AND `SubscribeToShardEvent.Records` = 0 over 14 days | CloudWatch Kinesis stream metrics + `describe-stream-summary` ([aws-kinesis-stream-no-consumers](../playbooks/aws-kinesis-stream-no-consumers.md)) |
 
 ### Detection example (NAT Gateway zombies)
 
@@ -730,7 +735,13 @@ roadmap.
 - Continuous waste detection feeding directly into the team's existing
   workflows (PR cost annotations, Slack notifications, JIRA tickets)
 - Automated decommission for the obvious tier (orphaned snapshots past
-  the grace period, unattached EBS volumes past 30 days untagged)
+  the grace period, unattached EBS volumes past 30 days untagged), run as
+  "alert first, delete next": the target list goes out on a fixed lead time,
+  an exemption tag or list is honoured and reviewed quarterly, and the first
+  production run only publishes the list. An Equifax engineer, Seshadri Reddy
+  Kommepalli, described this shape across 140 accounts at FinOps X 2026,
+  with a 7-day lookback for orphaned volumes where churn is known to be
+  ephemeral; the 30-day default above is the safer start
 - Likely tier still requires owner ack; possible tier always requires
   human review
 - Realised savings tracked as a continuous KPI; waste is a metric that

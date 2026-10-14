@@ -12,7 +12,7 @@ fcp_maturity_entry: "Walk"
 # FinOps on Databricks
 
 > Databricks-specific FinOps guidance covering cost data foundations (system tables,
-> budget policies, serverless and model-serving attribution), allocation and
+> serverless usage policies, serverless and model-serving attribution), allocation and
 > governance, commitment instruments, and 18 inefficiency patterns for diagnosing
 > waste and building optimisation roadmaps.
 
@@ -75,28 +75,50 @@ on workload type).
 
 Source: https://docs.databricks.com/aws/en/admin/system-tables/billing
 
-### Budget policies - programmatic spend governance
+### Serverless usage policies and budgets - attribution and alerting are separate
 
-Budget policies are Databricks' first-class spend-control primitive (GA 2025). Define
-a policy that attaches to compute (cluster, job, warehouse, serverless endpoint) and
-enforces a spend cap with alert and/or hard-stop modes.
+Databricks now calls budget policies **serverless usage policies**, and the
+documentation describes them as an attribution object, not a spend control. A
+policy carries a set of tags; serverless work that runs under it (notebooks,
+jobs, Lakeflow pipelines, apps, model serving endpoints, Lakebase projects)
+lands in `system.billing.usage` with those tags in the `custom_tags` column.
+The policy does not tag classic compute, the documentation does not list SQL
+warehouses, and nothing in it caps or stops spend.
 
-**What budget policies enable:**
-- **Serverless cost attribution before the fact** - tag the workload with
-  the policy ID, and all serverless DBU consumption rolls up to that policy in
-  billing reports (this is the canonical way to attribute serverless spend, since
-  serverless workloads don't expose node-level visibility).
-- **Spend caps with alerts** at configurable thresholds (e.g. 50%, 80%, 100%).
-- **Hard-stop enforcement** for non-production policies - workload terminates when
-  the cap is reached.
-- **Workspace or account scope** - policies can be enforced org-wide or per-workspace.
+**What a usage policy does:**
+- **Serverless cost attribution before the fact.** Serverless compute exposes no
+  node-level tags, so the policy is the documented way to make a serverless DBU
+  arrive in the billing table already labelled with team and cost centre.
+- **Account-level assignment** to users, groups or service principals, scoped
+  to every workspace or to a chosen list. A user with one policy gets it
+  applied automatically; a user with several must pick one, and the default is
+  the first alphabetically, which is worth knowing when a team's usage shows
+  up under the wrong label.
 
-**FinOps integration pattern:** create one budget policy per team or per cost-centre,
-require all serverless workloads to declare a policy at submission time, and
-reconcile against `system.billing.usage` monthly. This converts serverless from an
-attribution-blind cost into a per-team accountable line item.
+**What alerts, and what blocks.** Alerting is the separate **budgets** feature:
+an account-level budget with up to four monthly thresholds and email
+notifications, filterable by workspace and by tag, which is where the usage
+policy's tags earn their keep. The documentation says not to use budgets as an
+absolute spend cap, because usage data can arrive up to 24 hours late. The one
+blocking control it documents is **Block usage** on a Unity Gateway threshold,
+and it describes that enforcement as approximate. The runtime caps a FinOps
+team expects (idle timeout, hourly burn, allowed instance types) live in
+compute policies, covered under "Allocation and Governance" below.
 
-Source: https://docs.databricks.com/aws/en/admin/usage/budget-policies
+**FinOps integration pattern:** one usage policy per team or cost centre,
+assigned to the groups that submit serverless work; one budget per cost
+centre, filtered on the policy's tags, with thresholds at 50%, 80% and 100% of
+plan; a monthly reconciliation of `custom_tags` in `system.billing.usage`
+against the policy list, with serverless usage that carries no policy tag
+routed to a visible "unattributed" line. This turns serverless from an
+attribution-blind cost into a per-team line item. It does not make it a capped
+one.
+
+Sources: <https://docs.databricks.com/aws/en/admin/usage/budget-policies> and
+<https://docs.databricks.com/aws/en/admin/account-settings/budgets> (both read
+14 October 2026). An earlier version of this section described budget policies
+as a spend cap with hard-stop enforcement; the documentation does not support
+that, and the text was corrected in October 2026.
 
 ### Serverless attribution - what changes vs classic compute
 
@@ -106,9 +128,10 @@ differs from classic compute in two FinOps-relevant ways:
 1. **No node-level visibility.** You don't see the underlying VMs - Databricks
    manages capacity and charges per DBU consumed. Cluster-level monitoring
    patterns (autoscaler tuning, node pool selection) don't apply.
-2. **Attribution flows through workload IDs and budget policies, not cluster tags.**
-   Tag the *workload* (job, warehouse, endpoint) or attach a budget policy; the tag
-   propagates to `system.billing.usage` via `usage_metadata`.
+2. **Attribution flows through workload IDs and usage policies, not cluster tags.**
+   Tag the *workload* (job, warehouse, endpoint) or run it under a serverless
+   usage policy; the tags propagate to `system.billing.usage` (`usage_metadata`
+   for workload tags, `custom_tags` for policy tags).
 
 The serverless billing system table - `system.billing.usage` filtered to serverless
 SKUs, plus the more detailed serverless-specific tables - is the right starting
@@ -387,6 +410,47 @@ LIMIT 50;
 
 The query is illustrative - your `system.billing.list_prices` schema and
 identity-metadata fields may differ; adapt column names to your account.
+
+### Compute policies - the runtime enforcement layer for classic compute
+
+A usage policy labels serverless spend; it constrains nothing. On classic
+compute (all-purpose and job clusters) the constraining object is the
+**compute policy**: a JSON document that fixes, bounds or requires attributes
+of any cluster created under it. Four attributes do most of the FinOps work:
+
+| Attribute | What it controls | Policy shape |
+|---|---|---|
+| `custom_tags.<key>` | Presence and value of a tag on every cluster under the policy | `fixed` (one value), `allowlist` (a set) or `regex` (a shape); any limiting type makes the key required unless `isOptional` is true |
+| `autotermination_minutes` | Idle time before the cluster shuts itself down; `0` means never | `fixed`, or `range` with a `maxValue` so nobody can raise it past the ceiling |
+| `dbus_per_hour` | Hourly DBU burn, a calculated attribute covering driver and workers | `range` with a `maxValue`, which the documentation presents as the direct way to cap cost per cluster |
+| `node_type_id` | Which instance types a user can pick | `allowlist`, or `regex` to admit a family range |
+
+A policy that requires a `cost_centre` tag, caps `autotermination_minutes` at
+60, caps `dbus_per_hour` at a value sized to the team's plan and restricts
+`node_type_id` to a short list is the Databricks equivalent of the IaC and SCP
+prevention layer in `finops-tagging.md`: the violation is rejected at creation,
+not reported after the invoice.
+
+```json
+{
+  "custom_tags.cost_centre": { "type": "allowlist", "values": ["CC-1200", "CC-1210", "CC-1340"] },
+  "autotermination_minutes": { "type": "range", "maxValue": 60, "defaultValue": 30 },
+  "dbus_per_hour": { "type": "range", "maxValue": 50 },
+  "node_type_id": { "type": "allowlist", "values": ["m6id.xlarge", "m6id.2xlarge"], "defaultValue": "m6id.xlarge" }
+}
+```
+
+Two operating notes. A policy binds only the users it is granted to, and a
+user who holds the unrestricted cluster-creation entitlement is bound by
+none, so the entitlement audit comes before the policy design. And a ceiling
+that is too tight produces override requests within months: a Databricks
+product manager, Sadhana Bala, described the "day-one caps, month-six
+exceptions" cycle at FinOps X 2026 as the common shape across customers. Set
+the ceilings from the team's own 90-day usage rather than a round number, and
+review them each quarter.
+
+Source: <https://docs.databricks.com/aws/en/admin/clusters/policy-definition>
+(read 14 October 2026).
 
 ### Query-level attribution on SQL warehouses
 
