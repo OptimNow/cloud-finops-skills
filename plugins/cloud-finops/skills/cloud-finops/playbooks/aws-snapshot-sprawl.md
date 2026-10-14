@@ -29,6 +29,11 @@ against live pricing before sizing a business case.
   compliance retention requirement explains it
 - Dev / test accounts hold larger snapshot inventory than production
   (a clear smell)
+- Manual RDS snapshots named after an incident, an upgrade or a ticket, with
+  no `owner` or `purpose` tag, taken by an on-call engineer under pressure.
+  AWS keeps manual snapshots until someone deletes them: they sit outside the
+  backup retention period and do not expire, so the incident ends and the
+  snapshot does not
 
 ## Detection
 
@@ -56,6 +61,22 @@ aws ec2 describe-snapshots --owner-ids self \
   --output table
 ```
 
+Manual RDS snapshots need their own pass, because the automated-backup
+retention window never touches them:
+
+```bash
+# Manual RDS snapshots older than 30 days with no owner or purpose tag
+CUTOFF=$(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%SZ)
+aws rds describe-db-snapshots --snapshot-type manual \
+  --query "DBSnapshots[?SnapshotCreateTime<='${CUTOFF}'].{Id:DBSnapshotIdentifier,Db:DBInstanceIdentifier,Created:SnapshotCreateTime,Gb:AllocatedStorage,Tags:TagList}" \
+  --output json \
+  | jq '[.[] | select(((.Tags // []) | map(.Key)) as $k | ($k | index("owner")) == null or ($k | index("purpose")) == null)]'
+```
+
+Source: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html
+(manual snapshots are not subject to the backup retention period and do not
+expire; read 14 October 2026).
+
 ## Fix
 
 1. Tag every snapshot with `owner`, `purpose`, and `retention-until` as a
@@ -70,6 +91,11 @@ aws ec2 describe-snapshots --owner-ids self \
 5. Test restore on a sample once - if no one in the org has restored a
    snapshot from this set in 12 months, the recovery story is not
    credible and the snapshots are theatre, not insurance.
+6. Put "tag or delete the manual snapshot" on the incident close-out
+   checklist. The on-call engineer who took it is rarely the person running
+   the clean-up automation, which is why incident-time snapshots are the
+   backup waste nobody owns (an observation from an Equifax engineer,
+   Seshadri Reddy Kommepalli, at FinOps X 2026).
 
 ## Anti-pattern
 

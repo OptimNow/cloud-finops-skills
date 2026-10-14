@@ -16,21 +16,21 @@ the token and agent playbooks and understates AI coverage.
 | waste_category | aws | azure | gcp | cross-cloud | total |
 |---|---|---|---|---|---|
 | orphaned | 4 | 4 | 2 | 1 | 11 |
-| idle | 4 | 2 | 1 | - | 7 |
+| idle | 5 | 2 | 1 | - | 8 |
 | overprovisioned | 7 | 3 | 2 | - | 12 |
 | commitment-mismatch | 1 | 1 | 1 | - | 3 |
 | schedule-blindness | - | - | - | 1 | 1 |
 | modernization | 3 | - | - | - | 3 |
 | ai-ml-inefficiency | - | - | - | 2 | 2 |
 | egress | 2 | - | - | - | 2 |
-| **total** | 21 | 10 | 6 | 4 | 41 |
+| **total** | 22 | 10 | 6 | 4 | 42 |
 
 ## Confidence distribution
 
 | confidence | playbooks |
 |---|---|
 | obvious | 16 |
-| likely | 19 |
+| likely | 20 |
 | possible | 6 |
 
 ## Gaps (zero cells)

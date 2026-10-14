@@ -511,7 +511,9 @@ Source: https://cast.ai/blog/2026-state-of-kubernetes-resource-optimization-cpu-
 The remainder of this reference is a curated catalogue of 26 GCP inefficiency
 patterns covering compute, storage, databases, networking, and operational
 mechanics. Use these as a diagnostic checklist when building optimisation roadmaps.
-Source: PointFive Cloud Efficiency Hub.
+Source: the [Cloud Efficiency Hub](https://www.pointfive.co/efficiency-hub), an open,
+practitioner-governed library powered by PointFive, credited here as the Hub
+asks of anyone who reuses its content.
 
 ## Compute Optimization Patterns (10)
 
