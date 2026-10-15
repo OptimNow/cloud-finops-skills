@@ -134,7 +134,12 @@ Agents require access to real-time cost data alongside operational data. An agen
 can identify a spending anomaly but cannot correlate it to a specific resource, workflow,
 or decision point is only half useful. MCP-based connectivity (e.g., OptimNow's finops-tagging
 MCP server) provides standardized interfaces for cost data, tagging, and governance without
-custom integration code per data source.
+custom integration code per data source. Give the agent the metrics contract, not
+only the raw cost table: when the effective savings rate or the unit cost it reports
+comes from the governed definition the Finance dashboard reads
+(`finops-kpis-benchmarking.md`, "One definition, every consumer"), the two agree, and
+an agent that has to derive a KPI from columns is a defect in the data layer, not in
+the prompt.
 
 **2. Memory with cost controls**
 Stateful agents accumulate context over time - necessary for meaningful investigation but

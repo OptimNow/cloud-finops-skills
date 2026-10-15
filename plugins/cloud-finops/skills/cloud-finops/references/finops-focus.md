@@ -92,7 +92,7 @@ claim.
 | **1.1** | 7 November 2024 | `ServiceSubcategory`, `CommitmentDiscountQuantity` and `CommitmentDiscountUnit`, `CapacityReservationId` and `CapacityReservationStatus`, `SkuMeter`, `SkuPriceDetails`, and a `ProviderVersion` metadata property so a dataset states which spec version it targets. |
 | **1.2** | 29 May 2025 | `InvoiceId` promoted from `x_InvoiceId`, `PricingCurrency` promoted from `x_PricingCurrency`, multi-currency and virtual-currency columns, unit-cost metrics, and a schema wide enough to carry SaaS and PaaS billing next to cloud. The version AWS and Azure target today and the first with a real reconciliation key. |
 | **1.3** | 5 December 2025 | A separate Contract Commitment dataset, split cost allocation columns, Service Provider and Host Provider columns (the Provider and Publisher columns are deprecated and scheduled for removal from 1.4), and **recency metadata**: providers timestamp a dataset and flag whether a period is final or still subject to revision. |
-| **1.4** | 4 June 2026 | Two datasets for reconciliation (**Invoice Detail**, recording charges as they appear on the issued invoice, and **Billing Period**, with issuer-set period boundaries and status), an Invoice Reconciliation feature that joins Invoice Detail to cost and usage on `InvoiceId`, a rounding-variance tolerance for high-precision cost data against two-decimal invoice totals, three named **correction-handling** styles (Replacement, Delta, Ledger) that a generator must document, and a Dataset Completeness attribute requiring native columns to be carried as `x_` columns rather than silently dropped. |
+| **1.4** | 4 June 2026 | Two datasets for reconciliation (**Invoice Detail**, recording charges as they appear on the issued invoice, and **Billing Period**, with issuer-set period boundaries and status), an Invoice Reconciliation feature that joins Invoice Detail to cost and usage on `InvoiceId`, a rounding-variance tolerance for high-precision cost data against two-decimal invoice totals, three named **correction-handling** styles (Replacement, Delta, Ledger) that a generator must document, and a Dataset Completeness attribute requiring native columns to be carried as `x_` columns rather than silently dropped. In all, the release adds 2 datasets, 47 columns and 6 attributes, and the Contract Commitment dataset grows from 13 to 30 columns. |
 
 Sources: FOCUS 1.3 announcement
 (<https://www.finops.org/insights/introducing-focus-1-3/>), FOCUS 1.4 announcement
@@ -217,6 +217,18 @@ The rule: **pin the target version, then write one explicit column map per provi
 need as `x_` columns in the normalised table rather than renaming them into
 standard-looking names. FOCUS 1.4's Dataset Completeness attribute pushes providers
 the same way: a native column may be dropped only with a documented justification.
+
+The practical form of that map is a gold view that coalesces a renamed column
+across versions: `COALESCE(InvoiceId, x_InvoiceId)`,
+`COALESCE(PricingCurrency, x_PricingCurrency)` and
+`COALESCE(SkuMeter, x_SkuMeterName)` carry an Azure source from its 1.0 column
+names to its 1.2 ones without a change downstream. A provider moving versions then
+changes one view, not every consumer, and the pinned normalised table keeps its
+shape. A proprietary billing format offers no such seam, which is part of the case
+for FOCUS. Technique from the FOCUS Project (Beau Nelford, FinOps X 2026); the
+Azure column pairs are from the 1.2-preview table at
+<https://learn.microsoft.com/en-us/azure/cost-management-billing/dataset-schema/cost-usage-details-focus>
+(read 15 October 2026).
 
 ### Billing period and invoice timing
 
@@ -519,9 +531,30 @@ Three classes of source, in increasing order of effort:
 - **On-premises and private cloud.** No export exists; the organisation defines the
   charge rows itself (an allocated share of a host, a storage tier, a network port) and
   emits them in FOCUS shape. The Foundation's FinOps for Data Center working group
-  publishes the modelling guidance, and Heineken's and UHG's talks are the practitioner
-  accounts. Schema-wise this is the easiest source: the hard part is agreeing the cost
-  model, not the columns.
+  paper gives the method (CC BY 4.0, last updated 12 March 2026). Two elements:
+  **Asset Cost**, knowing the assets and their costs well enough to price services,
+  and **Service Chargeback**, how services are offered, priced and consumed. An
+  internal rate card built from hardware, facilities, platform software, operational
+  staffing and supporting services, expressed in consumable units (vCPU-hours,
+  GB-months, GB transferred). Usage metered from hypervisor counters, SNMP, switch and
+  router statistics and power telemetry; where metering is incomplete, the annual
+  cost of a service divided by a realistic expected consumption. Records mapped to
+  FOCUS 1.3 (`ConsumedQuantity` and `PricingQuantity` for the usage, `PricingUnit`
+  and `ConsumedUnit` for the unit, `ServiceCategory` from the rate card,
+  `BillingAccountId` for the estate owner) on a monthly billing period, a simplified
+  dataset being acceptable to start. The rate card is reviewed on a fixed cycle,
+  annually or twice a year, not re-cut after every usage swing. Two rules from the
+  paper decide whether the numbers mean anything: "rates based on perfect
+  utilization produce artificially low prices", so price at a steady, realistic
+  utilisation and report idle capacity as its own cost line rather than folding it
+  into the rates; and the goal is "clarity, predictability, and shared understanding
+  rather than perfection", not accounting-level reconciliation. Heineken's and UHG's
+  talks are the practitioner accounts, and Sony's PlayStation Network team used the
+  same two elements to put a data centre and AWS on one basis
+  (`finops-kpis-benchmarking.md`, "Comparing environments"). Schema-wise this is the
+  easiest source: the hard part is agreeing the cost model, not the columns. Source:
+  <https://www.finops.org/wg/finops-for-data-center-practical-cost-modeling-focus-alignment/>
+  (read 15 October 2026).
 
 Whatever the source, the rule from the divergence catalogue holds: pin the version,
 write the column map, keep the provider's `x_` columns, flag conformance gaps on the
@@ -595,6 +628,10 @@ cannot:
   per provider, typed, cased), enriched (business keys, tag_source, finalisation
   status). Call them bronze, silver and gold if the data team already uses that
   vocabulary; the point is that each layer is rebuilt for a different reason.
+  Gold holds conformed views and business keys, not KPI arithmetic: a KPI such
+  as effective savings rate or unit cost is defined once, in a metrics layer that
+  every BI tool and agent queries (`finops-kpis-benchmarking.md`, "One
+  definition, every consumer").
 
 ---
 

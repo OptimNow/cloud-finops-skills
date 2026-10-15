@@ -474,8 +474,21 @@ to risk appetite.
 **Key metrics:**
 - **SP/RI Utilisation:** Target >80%. Below this, the commitment is oversized.
 - **SP/RI Coverage:** Target 70% (Walk maturity), 80%+ (Run maturity).
-- **Effective Savings Rate:** actual savings / theoretical maximum savings. Measures
-  how well commitments are matched to real usage.
+- **Effective Savings Rate (ESR):** savings generated / on-demand equivalent (ODE)
+  spend, where ODE is what the covered usage would have cost with no discount
+  applied. This is the FinOps Foundation definition. It decomposes as utilisation
+  x coverage x discount (90% utilisation x 100% coverage x 50% discount is an ESR
+  of 45%), and it can be netted of the cost of achieving the savings (tooling,
+  management time). On FOCUS data the Foundation's use case computes it per
+  service as (sum of `ContractedCost` minus sum of `EffectiveCost`) / sum of
+  `ContractedCost`. The two denominators, ODE from native billing data and
+  `ContractedCost` from FOCUS, give different numbers, so a reported ESR names
+  the one in use. An earlier version of this line defined ESR as actual savings
+  over the theoretical maximum, which is a realisation ratio, not ESR.
+  Sources: <https://www.finops.org/?p=16534> (FinOps Foundation playbook
+  "How to Calculate Effective Savings Rate", updated 17 March 2026) and
+  <https://focus.finops.org/docs/use-cases/v1-4/determine-effective-savings-rate-by-service/>
+  (both read 15 October 2026).
 - **Break-even period:** should be <9 months for 1-year terms, <15 months for 3-year.
 - **Commitment waste:** hours where committed capacity had no matching usage.
 

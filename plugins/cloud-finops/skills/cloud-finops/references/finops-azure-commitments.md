@@ -1012,8 +1012,17 @@ each block should be.
 - **Reservation/SP Utilisation:** Target >80%. Below this, the commitment is
   oversized.
 - **Reservation/SP Coverage:** Target 70% (Walk maturity), 80%+ (Run maturity).
-- **Effective Savings Rate:** actual savings / theoretical maximum. Measures how
-  well commitments are matched to real usage.
+- **Effective Savings Rate (ESR):** savings generated / on-demand equivalent (ODE)
+  spend, where ODE is what the covered usage would have cost with no discount
+  applied: the FinOps Foundation definition, which decomposes as utilisation x
+  coverage x discount. On FOCUS data, (sum of `ContractedCost` minus sum of
+  `EffectiveCost`) / sum of `ContractedCost` per service. Name the denominator
+  in use; the two give different numbers. An earlier version of this line
+  defined ESR as actual savings over the theoretical maximum, which is a
+  realisation ratio, not ESR. Sources: <https://www.finops.org/?p=16534> (FinOps Foundation playbook
+  "How to Calculate Effective Savings Rate", updated 17 March 2026) and
+  <https://focus.finops.org/docs/use-cases/v1-4/determine-effective-savings-rate-by-service/>
+  (both read 15 October 2026).
 - **Break-even period:** should be <9 months for 1-year terms, <15 months for 3-year.
 - **Commitment waste:** hours where committed capacity had no matching usage.
 - **Refund headroom:** remaining $ available under the $50K/12-month refund cap. This
