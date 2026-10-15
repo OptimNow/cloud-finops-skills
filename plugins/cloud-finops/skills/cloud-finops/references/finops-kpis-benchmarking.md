@@ -58,7 +58,7 @@ live indicators; past that, attention fragments.
 | Stage | KPI family | Examples | What it proves |
 |---|---|---|---|
 | Crawl | Measurement coverage | % spend allocated, % tagged (mandatory set), % spend under anomaly monitoring | The measurement system is being built |
-| Walk | Efficiency mechanics | Commitment coverage %, commitment utilisation %, realised savings ($, cumulative), waste backlog burn-down, % spend on modern generations | The practice removes waste and manages rate |
+| Walk | Efficiency mechanics | Commitment coverage %, commitment utilisation %, effective savings rate (the Foundation definition, in `finops-aws-commitments.md`), realised savings ($, cumulative), waste backlog burn-down, % spend on modern generations | The practice removes waste and manages rate |
 | Walk | Engagement | Time-to-action on anomaly alerts, % findings actioned within SLA, forecast variance (actual vs forecast, monthly) | The organisation responds to the signal |
 | Run | Unit economics | Cost per customer / order / tenant / 1K API calls / inference, gross-margin impact of cloud COGS, cost per business transaction by product | Spend scales sub-linearly with the business |
 
@@ -66,6 +66,32 @@ Mechanics worth pinning down per KPI, once, in writing: the data source
 (FOCUS-conformed export, provider API), the owner, the review cadence, and the
 decision the KPI is supposed to move, since a KPI that moves no decision is
 reporting rather than an indicator.
+
+**One definition, every consumer.** Writing a KPI down is not enough once more
+than one tool reads the data. Most estates run several BI tools, and when each
+dashboard carries its own effective-savings-rate formula the CFO gets several
+answers; an AI agent asked the same question against the raw table produces one
+more, because it cannot look at an unfamiliar column and guess well. The fix is
+to define each KPI once, in a version-controlled metrics layer (a YAML
+definition per metric, reviewed by Finance, held in git), and to serve it from
+a semantic engine that every dashboard, notebook and agent queries instead of
+recomputing the ratio against tables. The engines are standard features of the
+platforms a FOCUS dataset already sits on: Snowflake semantic views (a
+schema-level object holding logical tables, facts, dimensions and metrics,
+queried with SELECT and exposed to Cortex Analyst, Cortex Agents and BI tools),
+Databricks metric views (Unity Catalog objects defined in YAML with measures and
+dimensions, consumed by dashboards, Genie and external tools such as Power BI,
+Tableau and Sigma) and dbt's MetricFlow (YAML semantic models and metrics
+committed to git, with MetricFlow generating the SQL for each integration). Two
+rules follow. The FOCUS gold layer holds conformed views, not KPI arithmetic: a
+KPI welded into a gold table at one grain gives a different answer from the
+same table at another. And the engine is optional on day one, since the same
+discipline can be a set of plain SQL views over gold, but the single definition
+is not. Pattern presented by Beau Nelford (FinOps Foundation, FOCUS Project) at
+FinOps X 2026; engine descriptions from
+<https://docs.snowflake.com/en/user-guide/views-semantic/overview>,
+<https://docs.databricks.com/aws/en/metric-views/> and
+<https://docs.getdbt.com/docs/build/about-metricflow> (read 15 October 2026).
 
 Two portfolio-level indicators deserve special care:
 
@@ -142,6 +168,27 @@ Choosing the denominator is the actual work:
   framing rule carries to any sector: do not open the leadership conversation
   with the capacity tier, the TCO model or the unit of compute; open with the
   unit the room already counts.
+
+**Comparing environments.** A hybrid or repatriation question ("is the data
+centre cheaper than cloud for this workload?") is a unit-economics question with
+one extra constraint: the unit must pass three tests before any comparison is
+made. It reflects workload behaviour, it correlates with cost in both
+environments, and it is measured the same way in both. An infrastructure rate or
+a volume figure fails the third test, because the data centre has no native
+price and meters differently; a business event such as a session or a
+transaction passes. Then the mechanic that decides the result: capacity-priced
+cost (owned hardware, a reserved F-SKU, a committed GPU block) has a unit cost
+that falls as utilisation rises, because the denominator grows against a fixed
+numerator, while usage-priced cloud has a roughly flat unit cost, so the
+crossover is a function of achieved utilisation, and the idle-capacity line the
+data-centre rate-card method requires (`finops-focus.md`, "Beyond the three
+clouds") is what keeps the comparison honest. Sony Interactive Entertainment's
+PlayStation Network team is the worked illustration: after moving the baseline
+of a voice-chat service on-premises and keeping bursts on AWS, they tracked cost
+per voice-chat bridge for a year; the on-premises unit cost fell as utilisation
+rose, the cloud unit cost stayed flat, and the data centre, more expensive per
+session at the start, ended cheaper, with the speaker's own caveat that it was
+not cheaper by default (Yuya Miyahara, FinOps X 2026; no figures given).
 
 The trend, not the level, is the deliverable: a unit cost of 0.42 means
 nothing in isolation, but a unit cost down 12% year-on-year while volume grew
