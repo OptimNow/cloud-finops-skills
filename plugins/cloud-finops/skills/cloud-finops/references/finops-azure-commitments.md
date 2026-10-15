@@ -429,6 +429,45 @@ depending on who pulls the number.
 
 Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/track-consumption-commitment
 
+### Net discount under a MACC with an Azure Commitment Discount
+
+Many MACC customers also hold an Azure Commitment Discount (ACD) of a few points on
+pay-as-you-go consumption. Reservations typically do not receive the ACD: they
+decrement the MACC, but at reservation list price. Savings plans receive it only when
+a separate ACD line was negotiated for them. Read the customer's MACC: its discount
+table lists which instruments carry which percentage.
+
+The rule, with reservation discount `d` and ACD `a` on pay-as-you-go:
+
+```
+net discount           = 1 - (1 - d) / (1 - a)
+break-even utilisation = (1 - d) / (1 - a)
+```
+
+Below the break-even utilisation the reservation loses money against discounted
+pay-as-you-go. Worked at `a = 8%` with West Europe list discounts (Retail Prices API,
+15 October 2026):
+
+| Instrument | List discount `d` | Net discount at 8% ACD | Break-even utilisation |
+|---|---|---|---|
+| Blob Hot LRS 100 TiB, 1 year | 15-18% | 8-11% | 89-92% |
+| Blob Hot LRS 100 TiB, 3 years | 31-34% | 25-28% | 72-75% |
+| Premium SSD P30, 1 year | 5% | -3% | never |
+| SQL Database GP Gen5 vCore, 1 year | 35% | 29% | 71% |
+| SQL Database GP Gen5 vCore, 3 years | 55% | 51% | 49% |
+| PostgreSQL Flexible GP Ddsv5 vCore, 1 year | 40% | 35% | 65% |
+| PostgreSQL Flexible GP Ddsv5 vCore, 3 years | 60% | 57% | 43% |
+| Fabric CU, 1 year | 40.5% | 35% (ACD alone); 24% with a 15% Fabric pay-as-you-go discount stacked | 65%; 76% stacked |
+
+The sequencing consequence: shallow instruments (1-year storage, disk reservations,
+the Savings Plan for Databases on provisioned SQL at 12-20%) drop to the bottom of the
+list under a MACC, while deep instruments (3-year database and compute reservations)
+keep most of their value. Advisor and the portal quote savings list against list and
+do not apply this adjustment. One timing point: an upfront 3-year reservation bought in
+the last MACC year decrements the commitment immediately for the whole term, a
+legitimate lever against a forecast shortfall; a monthly-billed reservation only counts
+the instalments that fall inside the MACC window.
+
 ### Commitment sizing methodology - granularity, Advisor calibration, tooling
 
 The earlier sections cover **what** to commit to (RI vs SP, scope, term, family). This
@@ -586,6 +625,37 @@ https://techcommunity.microsoft.com/blog/finopsblog/cost-management-with-azure-r
 
 Source: https://learn.microsoft.com/en-us/azure/advisor/advisor-reference-cost-recommendations
 
+**Which products Advisor covers, and how to pull the feed.** Advisor emits reservation
+recommendations for VMs, App Service, Dedicated Host, Azure VMware Solution, Azure Data
+Explorer, Data Factory, Azure Files, managed disks, Blob storage (Blob v2 and ADLS
+Gen2), Cosmos DB, Database for MySQL, Database for PostgreSQL, SQL PaaS databases,
+Synapse (SQL DW), NetApp Files, Azure Cache for Redis, Red Hat and SUSE, Azure OpenAI
+provisioned throughput and Microsoft Fabric, plus the compute and database savings
+plans (Advisor cost recommendations reference, read 15 October 2026). Each
+recommendation carries a term (P1Y or P3Y), a look-back period (7, 30 or 60 days), a
+quantity and an annual saving quoted list against list per subscription. The REST
+feed:
+
+```
+GET {scope}/providers/Microsoft.Consumption/reservationRecommendations?api-version=2026-06-01
+    &$filter=properties/scope eq 'Shared' AND properties/resourceType eq '<type>'
+             AND properties/lookBackPeriod eq 'Last60Days'
+```
+
+Scope is a subscription, resource group, billing account, billing profile or, through
+the filter, a management group. Allowed `resourceType` values: VirtualMachines,
+SQLDatabases, PostgreSQL, ManagedDisk, MySQL, RedHat, MariaDB, RedisCache, CosmosDB,
+SqlDataWarehouse, SUSELinux, AppService, BlockBlob, AzureDataExplorer,
+VMwareCloudSimple. Azure Files and Fabric are not in the API filter list: read those
+from the portal purchase blade (Reservations > Add > product > Recommended tab). Two
+more calibration points: every recommendation is gross of any MACC or EA discount (see
+"Net discount under a MACC with an Azure Commitment Discount"), and a product's
+recommendation appears only when the estimated saving clears Advisor's internal
+threshold, so a missing 1-year blob recommendation next to a 3-year one says something
+about the shallow 1-year discount, not about the data. Source:
+https://learn.microsoft.com/en-us/rest/api/consumption/reservation-recommendations/list
+(read 15 October 2026).
+
 #### Tooling decision - Power BI / FinOps Hubs / third-party
 
 All three options consume the same underlying Azure data sources, so all three face the
@@ -742,6 +812,41 @@ Is the database workload stable and predictable (90+ days)?
 - Are overprovisioned tiers (Business Critical on non-prod, RA-GRS backup storage
   on non-critical DBs) inflating the baseline you would commit to?
 
+**What cannot be reserved.** DTU-based SQL tiers (Basic, Standard, Premium); Azure
+SQL Database serverless compute (Learn: "Reservation discounts don't apply to Azure
+SQL Database serverless", read 15 October 2026); the PostgreSQL and MySQL Flexible
+Server Burstable tier (only General Purpose and Memory Optimized have reservation SKUs
+in the price list); Cosmos DB serverless; and the storage, backup, IOPS and licence
+meters of every database service, since reservations cover compute vCores only. The
+reservable base of a mid-size estate is therefore often a fraction of the "database"
+line in Cost Management: size it from the vCore meters, not from the service total.
+
+**Reservation units per service:**
+- **SQL Database and SQL MI:** one vCore per region + service tier + hardware
+  generation, with size flexibility within the tier and region, elastic pools
+  included. Zone redundancy is a separate reservation type ("vCore ZR"; West Europe
+  GP Gen5 ZR add-on $572 for 1 year and $1,188 for 3 years against $0.100463 per
+  vCore-hour pay-as-you-go; Hyperscale Gen5 vCore $1,144 / $2,376; Retail Prices
+  API, 15 October 2026). Reservations cover the primary and the billable secondary
+  replicas.
+- **PostgreSQL Flexible:** one vCore per region + tier + compute series (Ddsv4,
+  Ddsv5, Dsv6, Edsv5 and so on). Advisor includes zone-redundant HA standby vCores in
+  its recommended quantity, which implies the standby compute is reservable
+  (moderate confidence; Learn does not state it).
+- **Cosmos DB:** fixed reservations in 100 RU/s units, 20% for 1 year and 30% for
+  3 years below 1 M RU/s (larger quantities tier deeper; read the page), bought
+  without a region but applied per region with ratios (most regions 1.0, France
+  Central 1.25, France South 1.625); autoscale throughput consumes the reservation
+  with a 1.5 multiplier; serverless and storage are excluded. Source:
+  https://learn.microsoft.com/en-us/azure/cosmos-db/reserved-capacity (page dated
+  27 April 2026).
+
+**Sizing with daily data.** Unlike savings plans, database reservations are
+count-based: Cost Management daily vCore-hours divided by 24 gives the vCores billed
+per day, and the 90-day minimum (or P10) per key is the quantity to reserve. No hourly
+join is needed (contrast "Why daily data hurts Savings Plan sizing more than RI
+sizing" above). Under a MACC, apply the net-discount rule before ranking candidates.
+
 ### Savings Plan for Databases (announced March 2026)
 
 A spend-based commitment discount for eligible database services. Customers commit
@@ -782,6 +887,21 @@ recommendations available in Azure Advisor and the Azure portal.
 Serverless over a 1-year term. Actual discounts vary by service and usage pattern.
 Azure Pricing Calculator and pricing pages had not yet been updated at time of
 announcement - verify current rates before purchasing.
+
+**Terms and coverage as published (Azure savings plans page and Redmondmag, 10 April
+2026; both read 15 October 2026).** 1-year term only. Covered: Azure SQL Database
+(provisioned, serverless and Hyperscale), SQL Managed Instance, Azure Database for
+PostgreSQL, Azure Database for MySQL, Azure Cosmos DB, Azure DocumentDB and Database
+Migration Service; SQL Server hourly licences on Azure VMs and Arc draw down the
+commitment at 0% discount, as above. Indicative 1-year discounts: SQL Database
+serverless 35%; SQL Database provisioned, PostgreSQL and MySQL about 20%; Cosmos DB
+12% (Redmondmag table; the Azure page says "0% to 35%"). The plan cannot be modified
+or cancelled. It combines with reservations, and the billing engine applies the
+highest-percentage usage first; portal recommendations use the last 30 days of
+pay-as-you-go usage. Position: this is the only commitment instrument that reaches
+SQL serverless. On provisioned workloads a 3-year reservation beats it by a wide
+margin, and under a MACC its 12-20% tiers lose most of their value (see "Net discount
+under a MACC with an Azure Commitment Discount").
 
 ### DTU vs vCore pricing
 
@@ -841,6 +961,92 @@ announcement - verify current rates before purchasing.
 - Use regional failover (manual) instead of multi-master where possible
 - Place read regions close to users, write region close to data sources
 - Monitor cross-region replication lag to validate region necessity
+
+---
+
+## Storage reserved capacity - Blob, ADLS Gen2, Files, managed disks
+
+Storage is the commitment surface most Azure estates leave uncovered, and the one
+where the discount shape differs most from compute: shallow 1-year terms, a strict
+matching key, and an hourly use-it-or-lose-it model with no size flexibility. The
+figures below are West Europe USD list prices from the Azure Retail Prices API
+(queried 15 October 2026, `serviceName eq 'Storage' and armRegionName eq
+'westeurope' and type eq 'Reservation'`), illustrative and dated; other regions and
+redundancies follow similar ratios but must be read from the portal or the API.
+
+| Instrument | Unit and term | Matching key | What is discounted | 1-year / 3-year discount (West Europe list, 15 October 2026) |
+|---|---|---|---|---|
+| Blob and ADLS Gen2 reserved capacity | 100 TiB or 1 PiB per month; 1 or 3 years; upfront or monthly | Region + access tier (Hot, Cool, Archive) + redundancy | "Data Stored" capacity meters only | Hot LRS 100 TiB 18% / 34%; Hot LRS 1 PiB 22% / 38%; Cool LRS 100 TiB 18% / 34%; Archive LRS 100 TiB 11% / 18% |
+| Azure Files reserved capacity | 10 TiB or 100 TiB; 1 or 3 years | Region + tier (Premium, Hot, Cool) + redundancy | Provisioned (Premium) or stored capacity | Premium LRS 10 TiB 18% / 34%; Premium ZRS 10 TiB 18% / 34% |
+| Premium SSD managed disk reservation | Per disk, P30 to P80 only; 1 year only | Region + disk SKU, no size flexibility | The disk's monthly rate | P30 to P80 LRS: 5% |
+
+**Blob and ADLS Gen2.** Eligible: standard GPv2 and Blob storage accounts, block
+blobs and ADLS Gen2. Not eligible: GPv1, premium block blob accounts, page blobs,
+queues, tables (Azure Files has its own reservation, below). Cold does not appear in
+the reservation documentation or the pricing grid; treat it as not reservable and
+verify if a customer asks. The key is strict: a Hot LRS West Europe reservation covers
+no Cool data, no ZRS data and no France Central data, so each key needs its own
+reservation. Only the capacity meters are discounted; operations, bandwidth,
+early-deletion and index charges stay pay-as-you-go. The reservation applies hourly:
+hours above the reserved quantity bill at pay-as-you-go, unused reserved hours are
+lost, and coverage resets every hour. Exchange is unlimited but storage-for-storage
+only and goes through a support request; refunds sit inside the $50,000 rolling
+12-month cap. No savings plan covers storage, so the 1 February 2027 exchange
+retirement should not reach storage reservations (moderate confidence: the exchange
+page does not name storage).
+
+Illustrative prices, Hot LRS West Europe (Retail Prices API, 15 October 2026):
+pay-as-you-go $0.0196 per GB-month for the first 50 TB, $0.018816 for the next 450 TB,
+$0.018032 above 500 TB. 100 TiB reserved: $19,749 for 1 year (about $0.0161 per
+GiB-month, 18% below the first tier) and $47,687 for 3 years (about $0.0129, 34%).
+1 PiB reserved: $192,368 for 1 year (22%) and $458,723 for 3 years (38%). Cool LRS
+100 TiB: $10,076 / $24,330 against $0.01 pay-as-you-go (18% / 34%). Archive LRS
+100 TiB: $1,969 / $5,441 against $0.0018 (11% / 18%).
+
+Sizing: take 90 days of daily stored capacity per key (Azure Monitor `BlobCapacity`
+split by `BlobTier`, or the Cost Management "Data Stored" meter quantity), use the P10
+as the floor, subtract any planned lifecycle tiering (Hot to Cool or Archive moves
+shrink the Hot key), then count whole 100 TiB blocks. Tier first, reserve second: a
+Hot reservation bought before a lifecycle policy lands locks a shrinking base for 1 or
+3 years. Calibration: the 1-year blob discount is shallow (11 to 18%), and under a
+MACC with an ACD on pay-as-you-go it collapses to single digits (see "Net discount
+under a MACC with an Azure Commitment Discount"). The 3-year term is where blob
+reservations carry value; the trade-off is a 3-year lock on the key that tiering
+projects tend to shrink.
+
+**Azure Files.** Units of 10 TiB and 100 TiB, 1 or 3 years, per region + tier
+(Premium, Hot, Cool) + redundancy. Premium Files bill on provisioned GiB whether used
+or not, so the base is very stable, which makes Premium Files a better reservation
+candidate per TiB than blob. Sequence: shrink over-provisioned premium shares first
+(provisioned v1 sizes shares for IOPS, so many are oversized), then reserve.
+Illustrative prices, West Europe (Retail Prices API, 15 October 2026): Premium LRS
+provisioned $0.192 per GiB-month pay-as-you-go; Premium LRS 10 TiB $19,346 for 1 year
+(18%) and $46,714 for 3 years (34%); Premium ZRS 10 TiB $24,183 / $58,393 against
+$0.24 (18% / 34%). Whether the reservation applies to the provisioned v2 billing model
+is not documented: verify before recommending it on v2 accounts.
+
+**Premium SSD managed disks.** Premium SSD P30 to P80 only (P1 to P20 are listed as
+"currently unavailable"), 1-year term only, LRS SKUs only in the price list (no ZRS
+reservation SKU observed). Not eligible: Standard SSD and HDD, Premium SSD v2, Ultra,
+unmanaged disks. The reservation is per disk SKU and region with no size flexibility
+(a P40 reservation does not cover two P30 disks); quantity is the number of disks. It
+applies hourly, and a disk in the "Reserved" state (attached to a deallocated VM)
+still bills and still consumes the reservation. Illustrative prices, West Europe
+(Retail Prices API, 15 October 2026): P30 LRS $148.68 per month pay-as-you-go against
+$1,695 for 1 year (5.0% discount); P40 $284.94 against $3,248; P50 $545.10 against
+$6,214; P70 $1,982.17 against $22,596; P80 $3,964.34 against $45,193, all 5.0%.
+Calibration: 5% is below the ACD most MACC customers hold on pay-as-you-go; under an
+8% ACD the reservation costs about 3% more than discounted pay-as-you-go. The disk
+levers that pay are Premium to Standard SSD rightsizing where premium IOPS are not
+needed, deleting unattached disks (`azure-orphan-disks` playbook) and reviewing disks
+attached to long-deallocated VMs. A disk reservation only makes sense on a large,
+stable P30+ fleet with no ACD or an ACD below 5%.
+
+Sources: https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-reserved-capacity,
+https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/understand-storage-charges
+and https://learn.microsoft.com/en-us/azure/virtual-machines/disks-reserved-capacity
+(all read 15 October 2026); https://azure.microsoft.com/en-us/pricing/details/storage/blobs/
+and https://prices.azure.com/api/retail/prices (queried 15 October 2026).
 
 ---
 

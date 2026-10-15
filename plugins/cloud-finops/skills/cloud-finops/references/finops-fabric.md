@@ -211,22 +211,49 @@ and <https://learn.microsoft.com/en-us/fabric/enterprise/licenses> (both read
 
 ---
 
-## Fabric Reserved Capacity
+## Fabric reservation - CU-based, 1 or 3 years
 
-- 1-year commitment, applied at the F-SKU level (e.g. one reservation per F64).
-- **Saving: roughly 40-50% vs PAYG capacity** - verify current rate against the
-  Microsoft Fabric reserved capacity page before quoting.
-- Scope and exchange rules: similar to Azure VM Reservations but capacity-
-  specific. Exchanges allowed within the F-SKU family with the standard Azure
-  reservation mechanics (see `finops-azure-commitments.md` for exchange /
-  refund / cap details, which apply identically here).
-- **No 3-year option as of April 2026.** Fabric Reserved Capacity is 1-year only.
-- **Sequencing:** only commit after cleanup and capacity sizing have stabilised.
-  Reserving before cleanup locks the wrong F-SKU into a 1-year contract - the
-  same mistake as committing to over-provisioned Databricks compute, with the
-  same recovery cost.
+Fabric reserved capacity is bought in **capacity units (CU)**, in 1-CU increments,
+per region, for 1 or 3 years, paid upfront or monthly. It is not tied to an F-SKU:
+every hour, the reserved CUs apply to the total CUs of all running capacities in the
+region within scope. 64 reserved CUs cover one F64 or two F32; an F128 against 64
+reserved CUs bills the other 64 CUs at pay-as-you-go. (An earlier version of this
+section said 1-year only and per F-SKU; both statements were outdated by October
+2026.)
 
-Source: https://azure.microsoft.com/en-us/pricing/details/microsoft-fabric/
+- **What it covers:** the Fabric capacity meters only. OneLake storage, networking,
+  capacity overage (billed at 3x pay-as-you-go) and Autoscale Billing for Spark are
+  excluded.
+- **Pricing shape (West Europe, Retail Prices API, 15 October 2026, illustrative):**
+  pay-as-you-go $0.22 per CU-hour; 1-year reservation $1,146 per CU per year, 40.5%
+  below pay-as-you-go; 3-year reservation $3,438 per CU, exactly 3 x the 1-year
+  price. The 3-year term buys a price lock and no extra discount, so default to
+  1 year.
+- **Pause competes with the reservation.** A paused capacity emits no usage, so its
+  reserved hours are lost. Decide per capacity: reserve only the capacities that run
+  more than the break-even share of hours, `(1 - d) / (1 - a)`, with `d` the
+  reservation discount and `a` any pay-as-you-go discount the customer holds. That
+  is about 60% of hours at list price, and 70 to 76% under a MACC with an 8% ACD and
+  a 15% Fabric pay-as-you-go discount. A capacity paused nights and weekends runs
+  about 36% of hours, below any break-even, so for it pausing beats reserving.
+- **Smoothing does not change the billed CUs.** A provisioned F64 bills 64 CU every
+  running hour whatever its utilisation. Size the reservation on the always-on
+  provisioned CUs, not on the Capacity Metrics app's smoothed consumption; use the app
+  to decide whether the SKU can be scaled down before reserving.
+- **Scope, exchange and refund** follow the standard reservation rules: shared scope
+  at enrollment or billing-profile level, refund inside the $50,000 rolling 12-month
+  cap, and Synapse Dedicated SQL pool reservations can be exchanged into Fabric
+  capacity. The net-discount rule under a MACC and the liquidity mechanics are in
+  `finops-azure-commitments.md`.
+- **Recommendations:** Advisor and the portal purchase blade produce Fabric
+  reservation recommendations; the Consumption REST API does not list Fabric.
+- **Sequencing:** commit only after cleanup and capacity sizing have stabilised.
+  Reserving before cleanup locks the wrong CU count for a year, the same mistake as
+  committing to over-provisioned Databricks compute, with the same recovery cost.
+
+Sources: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/fabric-capacity
+and https://azure.microsoft.com/en-us/pricing/details/microsoft-fabric/ (both read
+15 October 2026).
 
 ---
 

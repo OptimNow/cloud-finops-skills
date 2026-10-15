@@ -100,6 +100,9 @@ rules).
 - `references/finops-azure-commitments.md` - reservation vs savings plan
   decision trees, portfolio liquidity, the 1 February 2027 exchange
   retirement rules
+- `references/finops-azure-commitments.md`, "Storage reserved capacity" - the
+  hourly use-it-or-lose-it mechanics of blob, Files and disk reservations,
+  where the same unused-hours waste appears on a stricter matching key
 - `playbooks/aws-expiring-commitment-no-decision.md` - the AWS member of
   the commitment-mismatch family
 - `playbooks/gcp-cud-mismatch.md` - the GCP member of the family

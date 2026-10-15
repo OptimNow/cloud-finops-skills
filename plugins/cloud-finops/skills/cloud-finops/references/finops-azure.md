@@ -946,6 +946,12 @@ covers different services:
 Database Reserved Capacity does not auto-apply Hybrid Benefit - SQL Server with
 Software Assurance must still be enabled separately on Azure SQL DB / MI.
 
+SQL Database serverless, the DTU tiers and the Flexible Server Burstable tier are not
+reservable, and the figures above are illustrative upper bounds. The sizing method, the
+full exclusion list and the net-discount rule under a MACC live in
+`finops-azure-commitments.md` ("Database commitment decision tree" and "Net discount
+under a MACC with an Azure Commitment Discount").
+
 ### KQL: database optimisation triage
 
 ```kusto
