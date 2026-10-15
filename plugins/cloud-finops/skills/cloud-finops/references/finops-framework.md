@@ -162,6 +162,23 @@ Mapping vs the 2024 framework:
 | (none) | Executive Strategy Alignment | Manage the FinOps Practice (NEW) |
 | Onboarding Workloads | (folded - see above) | (removed) |
 
+**Technology Categories and Scopes.** The same 2026 revision added a Technology
+Categories section: Public Cloud, SaaS, Data Center, Data Cloud Platforms and AI
+each have a page stating how the capabilities, personas and measures of success
+apply to that kind of spend (the framework landing page also lists Private Cloud
+and Licenses), and the definition of a Scope was refined to "a defined segment of
+spending across technology categories", aligned to a business construct such as a
+product, a cost centre or an environment. The Foundation describes the Scope
+refinement as improved documentation, not a change of purpose. The practical
+effect is a mandate: a practitioner can hold a data centre, a SaaS estate or an
+AI platform to the same transparency standard as public cloud and point at the
+framework when asked why. Sony's PlayStation Network team used it that way to put
+a data centre and AWS on one unit-cost basis (see "Comparing environments" in
+`finops-kpis-benchmarking.md` and the data-centre rate-card method in
+`finops-focus.md`). Sources:
+<https://www.finops.org/insights/2026-finops-framework/> (19 March 2026) and
+<https://www.finops.org/framework/> (both read 15 October 2026).
+
 ### Domain 1: Understand Usage & Cost
 
 | Capability | Description |
