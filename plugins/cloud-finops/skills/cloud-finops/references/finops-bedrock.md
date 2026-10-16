@@ -580,6 +580,11 @@ FinOps implications for GovCloud planning:
 - Verify GovCloud-specific pricing separately - GovCloud rates commonly differ from
   commercial-region rates.
 
+Since 6 October 2026, AgentCore short-term memory bills by data volume (ingestion,
+retrieval and storage per GB, with a 12 KB to 64 KB billable size per event) rather
+than per event. The cost-design consequences, including event expiry as a storage
+lever, are in `finops-agentic.md`, "Memory with cost controls".
+
 ---
 
 > *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

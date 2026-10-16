@@ -152,6 +152,10 @@ right tool for detailed attribution and custom tooling.
 - **Savings Plans recommendations** - commitment purchase recommendations based on usage
 - **Cost anomaly detection** - ML-based anomaly alerts (set up before you need them)
 - **Cost categories** - virtual tags for billing-layer cost allocation
+- **Bedrock product attributes** (since 8 October 2026) - group and filter Bedrock cost
+  by model, model provider, inference type and feature in Cost Explorer, Budgets and
+  Dashboards; the attribute keys, the 1 September 2026 data start and the known gaps
+  are in `finops-bedrock.md`, "Cost Explorer integration"
 
 ### AWS Managed Dashboards (zero-setup native visibility)
 
@@ -236,6 +240,20 @@ Container rightsizing requires different tooling than EC2 rightsizing.
 - For EKS, use Kubernetes VPA (Vertical Pod Autoscaler) recommendations or cast.ai
 - Right-size the pod requests/limits before right-sizing the underlying node group
 - Node group rightsizing savings are partially offset by bin-packing efficiency changes
+
+**Scale ECS services on `LiveTaskCount` (no charge, October 2026).** ECS publishes
+`LiveTaskCount` as a service utilisation metric at no cost and without opting in to
+Container Insights. It counts tasks in the `ACTIVATING`, `RUNNING` and `DEACTIVATING`
+states, so a task still draining connections during a scale-in is counted, which is
+what an auto scaling alarm or capacity view needs. `RunningTaskCount` counts only
+tasks whose current and desired states are both `RUNNING`; AWS positions it as a
+health signal. Since 1 October 2026 the Container Insights `RunningTaskCount` metric
+is no longer billed, with no action needed. Every other Container Insights metric is
+still charged as a CloudWatch custom metric, so a cluster that turned on Container
+Insights only to get a task count can now drop it and use the free service metrics.
+Sources: [AWS What's New, 13 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/ecs-service-metrics/),
+[ECS service utilisation metrics](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service_utilization.html)
+(both read 16 October 2026).
 
 ### GPU instance rightsizing
 
