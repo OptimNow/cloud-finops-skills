@@ -89,6 +89,9 @@ AI workloads are volatile. Standard annual budget cycles do not fit.
 - Build flexibility for training runs, testing phases, and scaling events
 - Consider company-level spend caps during early adoption to allow experimentation
   without runaway exposure
+- Manage the line on a rolling forecast with the annual budget as the guardrail;
+  when the forecast lands outside its band, re-forecast with tighter guardrails
+  before cutting (`finops-forecasting.md`, "Volatile and AI workloads")
 
 ### Fund incrementally, not upfront
 
@@ -199,7 +202,9 @@ communication:
 
 - Frame AI investments in business outcomes, not technical metrics
 - Provide regular updates before surprises occur - weekly during rapid scaling phases
-- Use scenario planning to show cost ranges under different growth assumptions
+- Use scenario planning to show cost ranges under different growth assumptions:
+  base, expected and aggressive per AI line, with the driver assumptions written
+  beside each (the method is in `finops-forecasting.md`)
 - Build trust through transparency about both successes and failures
 - Create executive dashboards that show cost-to-value ratios, not just spend
 

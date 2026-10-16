@@ -17,13 +17,13 @@
 <text x="16" y="184" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370">Quantify Business Value</text>
 <rect x="24" y="199" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="210" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Planning &amp; Estimating</text>
-<text x="682" y="210" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary</text>
-<rect x="24" y="223" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
+<text x="682" y="210" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary + 1 secondary</text>
+<rect x="24" y="223" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="234" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Forecasting</text>
-<text x="682" y="234" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (4)</text>
+<text x="682" y="234" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary + 4 secondary</text>
 <rect x="24" y="247" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
 <text x="48" y="258" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Budgeting</text>
-<text x="682" y="258" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (4)</text>
+<text x="682" y="258" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (5)</text>
 <rect x="24" y="271" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="282" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">KPIs &amp; Benchmarking</text>
 <text x="682" y="282" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary</text>

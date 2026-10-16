@@ -129,7 +129,43 @@ become difficult to reverse.
 1. Start with visibility - developers need to see the cost impact of their code
 2. Add guardrails - implement soft limits that warn before hard limits that block
 3. Provide alternatives - when blocking expensive patterns, suggest cost-effective options
-4. Measure prevention value - track costs avoided through shift-left practices
+4. Measure prevention rate (below), not only the costs avoided
+
+**Prevention rate and the enforcement ladder.** Prevention rate is the number of
+new cost issues fixed before merge divided by the number of new cost issues
+introduced in the period, counted per pull request against a written policy set
+(a bucket without a lifecycle policy and a database on a version past standard
+support are two issues; fixing one before merge is 50%). It is the shift-left KPI
+to report, and it sits in the Walk "Engagement" row of the KPI portfolio in
+`finops-kpis-benchmarking.md`. Policies climb a ladder one at a time:
+
+| Step | What the engineer sees |
+|---|---|
+| Observe | Nothing yet: a quarter of data on which issues arrive from which teams |
+| Inform | A comment in the pull request, no obligation |
+| Soft-enforce | A visible failed check that does not block the merge |
+| Block | The merge needs an approval; an override is recorded |
+
+Promote two or three policies per quarter, starting with the one other
+capabilities depend on (tagging, when allocation and showback rest on it), and
+give engineers a way to dismiss an issue with a recorded reason. Turning every
+policy on at once teaches teams to ignore all of them.
+
+Tool documentation follows the same shape. Infracost's guardrails notify,
+comment, or block with "Require approval before merging", and send a further
+notification when an admin overrides; its tagging policies validate required keys
+and allowed values (regular expressions) at pull-request time, with a recommended
+"warning period of 1-3 months before putting policies into enforcement mode"; its
+FinOps policies ("70+ AWS, Azure, and Google best practices") are set to block or
+warn one by one, with the advice to pick "the top 3-5 to focus on each quarter".
+The vendor's page reports one customer at 80% prevention (6.5K of 8.1K new
+issues), one estate's figure. Ali Khajeh-Hosseini (Infracost) described the
+progression he has seen across customers at FinOps X 2026 as about 20% at inform,
+50% at soft-enforce and 95% at block: indicative, from one vendor's customer base,
+not a benchmark. Sources: https://www.infracost.io/docs/infracost_cloud/guardrails/,
+https://www.infracost.io/docs/infracost_cloud/tagging_policies/ and
+https://www.infracost.io/docs/infracost_cloud/finops_policies/ (all read 16
+October 2026).
 
 **Common shift-left patterns:**
 - Requiring cost estimates in pull requests for infrastructure changes
