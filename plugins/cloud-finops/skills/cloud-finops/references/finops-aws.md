@@ -157,6 +157,46 @@ right tool for detailed attribution and custom tooling.
   Dashboards; the attribute keys, the 1 September 2026 data start and the known gaps
   are in `finops-bedrock.md`, "Cost Explorer integration"
 
+### AWS Pricing Calculator in the console (estimates on your own rates)
+
+The Pricing Calculator inside the Billing and Cost Management console is a different
+tool from the public calculator.aws site. It needs an account and has its own APIs,
+and it is the one that can price an estimate on the organisation's own rates rather
+than list prices. It produces two kinds of estimate:
+
+| | Workload estimate | Bill estimate |
+|---|---|---|
+| What it models | The added usage of one workload; nothing outside it is counted | The whole consolidated bill: last month's usage, active Savings Plans and RIs, sharing preferences, discounts and credits as on the latest anniversary bill, plus the changes you model |
+| Who can run it | Standalone, management and member accounts | Management and standalone accounts only |
+| Commitments | Cannot model new commitments; can apply existing coverage | Add, change or remove EC2 RIs and Compute or EC2 Instance Savings Plans without touching the real bill |
+| Speed | Immediate | 20 minutes to 12 hours per run |
+| Cost (as of October 2026) | Free | 5 free per month, then $2 each |
+
+Workload estimates are priced at one of three **rate types**: before discounts, after
+discounts (the organisation's volume and pricing discounts, and tiering), or after
+discounts and purchase commitments (Savings Plan and RI coverage percentages taken from
+last month's usage). A management account sets the rate type its member accounts see.
+The rates refresh from the last completed anniversary bill and are available by the 15th
+of the month. Usage can be imported from the account's own cost and usage data or from
+a public-calculator share link (Savings Plans or RIs in a public estimate are dropped on
+import).
+
+**How to use it for a decision.** Build one workload estimate, duplicate it, change one
+variable (Graviton against x86, a different instance family, another Region), and read
+the two side by side; keep both in the same Region unless the Region is the variable.
+For a commitment purchase, a bill estimate shows the effect on the whole bill, which a
+workload estimate cannot. Two limits shape the routine: a bill scenario goes stale after
+the last day of the month it was created in and can no longer run, and an account can
+create 50 workload estimates a month. The estimate is an input to the forecast, not the
+forecast itself (`finops-forecasting.md`).
+
+Sources: [AWS Cloud Financial Management blog, 6 October 2026](https://aws.amazon.com/blogs/aws-cloud-financial-management/estimate-and-compare-aws-costs-with-the-aws-pricing-calculator-part-1-creating-and-comparing-workload-estimates/),
+[Pricing Calculator user guide](https://docs.aws.amazon.com/cost-management/latest/userguide/pricing-calculator.html),
+[rate types](https://docs.aws.amazon.com/cost-management/latest/userguide/pc-rates-discounts.html),
+[bill estimates](https://docs.aws.amazon.com/cost-management/latest/userguide/pc-bill-estimate.html),
+[quotas](https://docs.aws.amazon.com/cost-management/latest/userguide/management-limits.html)
+(all read 16 October 2026).
+
 ### AWS Managed Dashboards (zero-setup native visibility)
 
 As of August 2026, AWS Billing and Cost Management offers a set of curated

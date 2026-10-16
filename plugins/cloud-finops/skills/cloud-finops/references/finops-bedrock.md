@@ -133,22 +133,27 @@ AWS Bedrock costs appear in AWS Cost Explorer under the Bedrock service namespac
 with the usual dimensions (usage type, operation such as InvokeModel,
 InvokeModelWithResponseStream or BatchInference, Region, linked account).
 
-**Bedrock product attributes (since 8 October 2026).** Cost Explorer, AWS Budgets and
-Cost Management Dashboards can group and filter Bedrock cost by four standardised
-attributes, at no extra charge, in all commercial Regions except GovCloud and China:
+**Bedrock product attributes (since 8 October 2026).** Cost Explorer and Cost
+Management Dashboards can group and filter Bedrock cost by four standardised
+attributes, and AWS Budgets can filter by them (not group), at no extra charge, in all
+commercial Regions except GovCloud and China:
 
 | Attribute (API key) | Values look like |
 |---|---|
-| Model (`model`) | Claude Sonnet 5, Claude Haiku 4.5, Nova Lite |
+| Model (`model`) | Claude Sonnet 5, Claude Haiku 4.5 |
 | Model provider (`provider`) | Anthropic, Cohere, OpenAI |
-| Inference type (`inferenceType`) | input tokens, output tokens, cache read, cache write, with "global" variants for cross-region inference |
-| Feature (`feature`) | On-demand inference, batch, reranker |
+| Inference type (`inferenceType`) | input tokens, output tokens, prompt cache read input tokens |
+| Feature (`feature`) | on-demand inference, reranker |
+
+The values above are the ones AWS documents; list the full set in your own account
+(`get-dimension-values`, below) before building a filter on a value not shown here.
 
 In the API they are the `PRODUCT_ATTRIBUTE` group-by type and the `ProductAttributes`
 filter (`aws ce get-dimension-values --dimension PRODUCT_ATTRIBUTE` lists the keys).
-Attribute data starts on **1 September 2026**: a query on an earlier date fails with
-`DataUnavailableException`, so a 13-month model-level trend is not available before
-September 2027. The attributes combine with cost allocation tags on Application
+Attribute data starts on **1 September 2026** (AWS documentation), so a
+13-month model-level trend is not available before September 2027; expect a query on
+an earlier date to fail or return nothing rather than to fall back to usage types.
+Costs with no value for the chosen attribute are grouped into one bucket. The attributes combine with cost allocation tags on Application
 Inference Profiles, Projects or Workspaces and with IAM principal tags, which is what
 turns "spend by model" into "spend by model by team".
 
@@ -175,7 +180,9 @@ grain remains per usage type per day.
 
 Sources: <https://aws.amazon.com/about-aws/whats-new/2026/10/aws-bedrock-attributes-in-cost-explorer/>,
 <https://aws.amazon.com/about-aws/whats-new/2026/07/aws-data-exports-amazon-bedrock-product-metadata/>,
-<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-management.html>
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-management.html>,
+<https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html>
+(re-checked 16 October 2026)
 
 ### Cost Anomaly Detection for Bedrock foundation models
 
