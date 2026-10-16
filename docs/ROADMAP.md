@@ -69,6 +69,9 @@ Written against the 2026-09-30 state: 35 references, 37 playbooks (AWS 21,
 Azure 8, GCP 4, cross-cloud 4), 13 of 22 FCP capabilities with a primary owner.
 State at 2026-10-13: 36 references, 41 playbooks (AWS 21, Azure 10, GCP 6,
 cross-cloud 4), still 13 of 22 with a primary owner.
+State at 2026-10-16: 37 references, 42 playbooks (AWS 22, Azure 10, GCP 6,
+cross-cloud 4), 14 of 22 with a primary owner (Forecasting moved to [x] with
+`finops-forecasting.md`).
 
 1. **Storage tiering for Azure Blob and GCS - SHIPPED 2026-10-01** (lot of
    the 1st). Four playbooks porting the AWS split:
