@@ -203,12 +203,52 @@ differences from warehouse compute:
    per-token (or credit-per-call) rate that varies by function and underlying
    model. Cortex LLM functions in particular have a wide credit range across
    models (e.g. cheaper Llama-class models vs Anthropic Claude-class models).
-2. **No node-level rightsizing.** Cortex is fully managed - no warehouse to size,
-   no autoscaler to tune. The optimisation lever is **prompt design and model
-   selection**, not infrastructure.
+2. **No node-level rightsizing for the AI part, but the warehouse still bills.**
+   Token credits are serverless, and the main lever on them is **prompt design and
+   model selection**. The query that calls an AI function still runs in a
+   warehouse, though, and "the cost associated with keeping a warehouse active
+   continues to apply" while it runs. Snowflake recommends a warehouse "no larger
+   than MEDIUM" for AI function calls, because "using a larger warehouse than
+   necessary does not increase performance".
 3. **Resource monitors do not cover Cortex.** Use AI feature budgets (above) for
    scope-level alerting and custom actions, and per-user quotas (below) for
    per-person blocking.
+
+**Each surface bills on its own unit.** "Credits per token" is true of the first
+surface only:
+
+- **AI functions** (AI_COMPLETE, AI_CLASSIFY, AI_FILTER, AI_AGG and the rest):
+  tokens processed. Input and output are both billable for the functions that
+  generate text; Cortex Guard counts input only; AI_PARSE_DOCUMENT bills per page;
+  audio bills at 50 tokens per second. The warehouse running the query bills on
+  top, as above.
+- **Cortex Search:** embedding tokens on inserted or changed rows only; serving
+  compute per GB per month of uncompressed indexed data for as long as the service
+  is available, whether or not it answers queries; warehouse credits for a refresh
+  only when changes are found; storage at a flat rate per TB. The serving line is
+  the one that accrues on an index nobody queries.
+- **Cortex Analyst:** billed "based on the number of messages processed", counting
+  successful (HTTP 200) responses only. The full conversation history is
+  reprocessed on each turn, so a long conversation costs more per message, and the
+  warehouse that runs the generated SQL bills separately. Called through Cortex
+  Agents, it bills per token instead.
+- **Cortex Agents:** orchestration "is charged based on the tokens used", and each
+  tool bills on its own terms (Cortex Analyst per token, Cortex Search by index
+  size and time, custom tools by the warehouse they run on). To cap a single run,
+  Snowflake's guidance is to "set an orchestration budget on the agent", the one
+  per-request spend control on the platform; it sits beside the budgets and
+  quotas, which act per scope and per user.
+- **Cortex Code:** metered under its own `CORTEX_CODE_CLI` and
+  `CORTEX_CODE_SNOWSIGHT` service types. Not to be confused with Snowflake
+  Copilot, the free SQL assistant in Snowsight, which Snowflake is replacing with
+  Cortex Code.
+
+Sources: https://docs.snowflake.com/en/user-guide/snowflake-cortex/aisql-cost,
+https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview,
+https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst,
+https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents and
+https://docs.snowflake.com/en/user-guide/snowflake-copilot (all read 16 October
+2026).
 
 **Per-user quotas.** A quota object (`CREATE SNOWFLAKE.CORE.QUOTA`) caps the credits
 each user can spend in AI domains: AI functions, Snowflake Intelligence (now Snowflake
@@ -241,10 +281,36 @@ https://docs.snowflake.com/en/release-notes/2026/other/2026-09-16-weekly-per-use
 https://docs.snowflake.com/en/release-notes/2026/other/2026-09-15-cortex-ai-gateway
 (read 2 October 2026).
 
-Surface Cortex consumption via `QUERY_ATTRIBUTION_HISTORY` filtered to Cortex-
-related warehouses or via the dedicated Cortex usage views. Tag Cortex calls with
-session metadata (`SET QUERY_TAG = 'team:ds, app:rag-pipeline'`) so credit
-attribution carries the application context into `QUERY_HISTORY`.
+**Where Cortex consumption is recorded.** Each surface has its own
+`SNOWFLAKE.ACCOUNT_USAGE` view, all with one year of retention:
+
+| View | What one row holds |
+|---|---|
+| `CORTEX_AISQL_USAGE_HISTORY` | AI function usage per function, model, query and warehouse, aggregated by the hour the query completed; `TOKENS_GRANULAR` and `TOKEN_CREDITS_GRANULAR` split input and output; carries `QUERY_ID`, `QUERY_TAG`, `USER_ID` and `WAREHOUSE_ID`. `TOKEN_CREDITS` "does not include warehouse usage credits". Usage from 17 November 2025; AI_PARSE_DOCUMENT is not in it |
+| `CORTEX_AI_FUNCTIONS_USAGE_HISTORY` | All AI functions, AI_PARSE_DOCUMENT included |
+| `CORTEX_AGENT_USAGE_HISTORY` | One row per agent call: `TOKEN_CREDITS`, plus `METADATA.sql_query_credits` for the warehouse credits the agent's SQL consumed. Latency up to 1 hour, up to 8 hours for the SQL credit fields. Snowflake CoWork requests are recorded in `SNOWFLAKE_COWORK_USAGE_HISTORY` instead |
+| `CORTEX_ANALYST_USAGE_HISTORY`, `CORTEX_SEARCH_SERVING_USAGE_HISTORY`, `CORTEX_SEARCH_DAILY_USAGE_HISTORY`, `CORTEX_CODE_CLI_USAGE_HISTORY`, `CORTEX_CODE_SNOWSIGHT_USAGE_HISTORY`, `AI_GATEWAY_USAGE_HISTORY` | One surface each |
+
+`CORTEX_FUNCTIONS_USAGE_HISTORY`, the view older queries were written against, now
+carries the note "This view is no longer updated. Use the
+CORTEX_AISQL_USAGE_HISTORY view instead." For the account total, filter
+`METERING_DAILY_HISTORY` on `SERVICE_TYPE = 'AI_SERVICES'` (Cortex Code has its own
+service types). The Account Usage index lists further Cortex views (fine-tuning,
+provisioned throughput, REST API, document processing) for the surfaces an
+account uses.
+
+Tag Cortex calls with session metadata (`SET QUERY_TAG = 'team:ds,
+app:rag-pipeline'`): the tag lands in the `QUERY_TAG` column of
+`CORTEX_AISQL_USAGE_HISTORY`, which makes it the attribution key for AI function
+spend, and the warehouse side of the same query attributes through
+`QUERY_ATTRIBUTION_HISTORY`.
+
+Sources: https://docs.snowflake.com/en/sql-reference/account-usage (the view
+index), https://docs.snowflake.com/en/sql-reference/account-usage/cortex_aisql_usage_history,
+https://docs.snowflake.com/en/sql-reference/account-usage/cortex_agent_usage_history,
+https://docs.snowflake.com/en/sql-reference/account-usage/cortex_functions_usage_history
+and https://docs.snowflake.com/en/sql-reference/account-usage/metering_daily_history
+(all read 16 October 2026).
 
 ---
 

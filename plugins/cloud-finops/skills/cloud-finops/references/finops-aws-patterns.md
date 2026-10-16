@@ -770,7 +770,9 @@ The optimisation sequence matters. Follow this order:
   I/O operations. For read/write-intensive workloads, evaluate Aurora I/O-Optimized
   which eliminates I/O charges at a higher storage rate
 - Aurora clusters running MySQL 5.7 or PostgreSQL 11 that have not been upgraded
-  will incur Extended Support surcharges automatically
+  will incur Extended Support surcharges automatically; the opt-out at creation
+  (`EngineLifecycleSupport`) is in `finops-aws.md`, "Extended Support version
+  audits"
 - Aurora Auto Scaling manages read replica count dynamically - use it to avoid
   over-provisioning read capacity
 

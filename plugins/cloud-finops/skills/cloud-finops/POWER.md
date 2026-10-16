@@ -251,6 +251,15 @@ keywords:
   - model pricing comparison
   - instance pricing comparison
   - ai pricing hub
+  - forecasting
+  - forecast accuracy
+  - forecast drift
+  - rolling forecast
+  - driver-based forecast
+  - budget variance
+  - shift left finops
+  - prevention rate
+  - cortex usage views
 ---
 
 # Cloud FinOps - Expert Guidance
@@ -300,10 +309,10 @@ methodology questions - not for routine billing-mechanics queries.
 | GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery billing export, BigQuery optimisation, FOCUS export, Sustained Use Discounts, SUDs, Committed Use Discounts, CUDs, Flexible CUDs, Flexible Savings Plans, Spot VMs, Cloud Carbon Footprint | `references/finops-gcp.md` |
 | GCP Vertex AI billing, Gemini Enterprise Agent Platform, Vertex provisioned throughput, Gemini pricing, AI Studio, Gemini Developer API, Flexible Savings Plans, FSP, Priority / Flex tiers, Vertex batch prediction, default PAYG spillover | `references/finops-vertexai.md` |
 | Tagging strategy, naming conventions, IaC enforcement, MCP governance | `references/finops-tagging.md` |
-| FinOps framework 2026, 4 domains, 22 capabilities including Executive Strategy Alignment, Usage Optimization, Architecting & Workload Placement, Sustainability, KPIs & Benchmarking, Governance Policy & Risk, Automation Tools & Services, maturity model, phases, personas | `references/finops-framework.md` |
+| FinOps framework 2026, 4 domains, 22 capabilities including Executive Strategy Alignment, Usage Optimization, Architecting & Workload Placement, Sustainability, KPIs & Benchmarking, Governance Policy & Risk, Automation Tools & Services, maturity model, phases, personas, shift-left FinOps, prevention rate, shift-left enforcement ladder | `references/finops-framework.md` |
 | Databricks clusters, jobs, Spark optimisation, Unity Catalog costs, allocation and governance, DBU executor attribution, DBCU commitments, Photon multiplier, serverless premium, amortised vs PAYG split, Azure VM RI vs DBU clarification | `references/finops-databricks.md` |
 | Microsoft Fabric capacity FinOps, F-SKUs, Capacity Units, CU smoothing window, throttling, pause/resume, Fabric reservation (CU-based, 1 or 3 years), pause vs reservation, Pro/PPU to Fabric migration governance, Capacity Metrics app, shared-capacity allocation | `references/finops-fabric.md` |
-| Snowflake warehouses, query optimisation, storage, credits, QUERY_ATTRIBUTION_HISTORY, Budgets, Cortex governance, resource monitor scope | `references/finops-snowflake.md` |
+| Snowflake warehouses, query optimisation, storage, credits, QUERY_ATTRIBUTION_HISTORY, Budgets, Cortex governance, Cortex AI usage views, CORTEX_AISQL_USAGE_HISTORY, Cortex Agents orchestration budget, Cortex Analyst per-message billing, resource monitor scope | `references/finops-snowflake.md` |
 | AI coding tools, Cursor costs, Claude Code costs, Copilot costs, Windsurf costs, Codex costs, dev tool FinOps, seat + usage billing, BYOK coding agents, LiteLLM proxy | `references/finops-ai-dev-tools.md` |
 | OCI compute, storage, networking optimisation, Cost Reports, FOCUS Reports, cost-tracking tags, Budgets, Universal Credits | `references/finops-oci.md` |
 | GreenOps, cloud carbon, sustainability, carbon-aware workloads | `references/greenops-cloud-carbon.md` |
@@ -311,6 +320,7 @@ methodology questions - not for routine billing-mechanics queries.
 | ITAM, IT asset management, BYOL, marketplace channel governance, licence compliance, vendor negotiation, FinOps-ITAM collaboration, entitlement management, consumption-based SaaS overages | `references/finops-itam.md` |
 | Cost anomaly management, anomaly detection, masked anomalies, layered detection, threshold tuning, AWS Cost Anomaly Detection config, Azure anomaly detection, GCP budget anomaly alerts, new-region detection, security integration | `references/finops-anomaly-management.md` |
 | FinOps KPIs, KPI portfolio by maturity, unit economics denominators, cost per customer / order / transaction, realised vs potential savings reporting, forecast variance, benchmarking (internal and external, data-quality caveats), executive reporting, CFO / CIO narrative, executive strategy alignment, maturity scorecard | `references/finops-kpis-benchmarking.md` |
+| FinOps forecasting, forecast vs budget vs estimate, Forecast Accuracy Rate, Forecast Drift Rate, forecast variance bands by maturity, trend-based vs driver-based forecasts, rolling forecast, re-forecast cadence, living forecast, AI forecast scenarios (base, expected, aggressive), forecasting on amortised cost, forecast miss classification | `references/finops-forecasting.md` |
 | Cost allocation methodology, showback, EffectiveCost vs BilledCost (FOCUS), amortised vs unblended (AWS legacy), blended-cost trap, defensible allocation keys, shared-services allocation (network, observability, security, ingress), InvoiceId reconciliation, unallocated spend signal, showback report design and routing | `references/finops-allocation-showback.md` |
 | Chargeback, soft chargeback, hard chargeback, financial accountability, Finance and accounting prerequisites for chargeback, ERP readiness (SAP CO, Oracle, Workday, NetSuite), inter-BU P&L impact, CFO sponsorship, transfer pricing for intercompany cloud recharge, cross-border tax (VAT, withholding, permanent establishment, Pillar 2, GILTI / FDII / BEAT), SOX-equivalent controls, separate provider invoices per business unit, invoice units vs internal recharge, methodology dispute process, chargeback-revolt anti-pattern | `references/finops-chargeback.md` |
 | Onboarding workloads, migration-time cost hygiene, intake gate, mandatory tags at go-live, 60-90 day forecast-then-commit rule, double-bubble cost (parallel-run source and target), migration cost estimate vs actuals, network-cost trap (data-centre to cloud), M&A integration patterns, FOCUS-during-migration, architecture review integration, post-migration FinOps owner | `references/finops-onboarding-workloads.md` |

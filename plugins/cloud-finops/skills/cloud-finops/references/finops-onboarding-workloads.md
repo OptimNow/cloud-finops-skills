@@ -420,6 +420,8 @@ it post-migration costs a quarter of engineering time.
   matters
 - `finops-anomaly-management.md` - new workloads should be added to the
   anomaly-monitoring scope as part of the intake gate
+- `finops-forecasting.md` - how the intake forecast is measured and re-cut once
+  the workload runs (accuracy, drift, driver-led cadence)
 - `optimnow-methodology.md` - "Diagnose before prescribing" applies
   especially to migration: understand what the workload does
   before recommending architecture or commitment

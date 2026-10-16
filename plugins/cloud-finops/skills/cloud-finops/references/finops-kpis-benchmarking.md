@@ -59,7 +59,7 @@ live indicators; past that, attention fragments.
 |---|---|---|---|
 | Crawl | Measurement coverage | % spend allocated, % tagged (mandatory set), % spend under anomaly monitoring | The measurement system is being built |
 | Walk | Efficiency mechanics | Commitment coverage %, commitment utilisation %, effective savings rate (the Foundation definition, in `finops-aws-commitments.md`), realised savings ($, cumulative), waste backlog burn-down, % spend on modern generations | The practice removes waste and manages rate |
-| Walk | Engagement | Time-to-action on anomaly alerts, % findings actioned within SLA, forecast variance (actual vs forecast, monthly) | The organisation responds to the signal |
+| Walk | Engagement | Time-to-action on anomaly alerts, % findings actioned within SLA, forecast variance and forecast drift (monthly; measures in `finops-forecasting.md`), shift-left prevention rate (`finops-framework.md`) | The organisation responds to the signal |
 | Run | Unit economics | Cost per customer / order / tenant / 1K API calls / inference, gross-margin impact of cloud COGS, cost per business transaction by product | Spend scales sub-linearly with the business |
 
 Mechanics worth pinning down per KPI, once, in writing: the data source
@@ -104,7 +104,12 @@ Two portfolio-level indicators deserve special care:
   because it compounds everything else: allocation quality, anomaly response,
   commitment discipline. A practice that lands within a mid-single-digit
   percentage band month after month has earned the executive room's trust in
-  every other number it shows.
+  every other number it shows. That band is this library's bar for executive
+  trust, stricter than the FinOps Foundation's Budgeting ceilings for budget
+  against actual spend (20% at Crawl, 15% at Walk, 12% at Run); use the
+  Foundation's ceilings as the maturity gate and the tighter band as the target.
+  How to compute accuracy and drift, and the method behind a forecast that
+  holds, are in `finops-forecasting.md`.
 
 **Documented example: the five-minute budget, and the initiative trap.** One
 online-marketplace group applied the DevOps rule "if it hurts, do it more often" to cloud
@@ -261,7 +266,9 @@ What changes at the executive altitude:
 - **Tie to the planning cycle.** The KPI narrative earns its seat when it
   feeds budget season: forecast variance history is what justifies next year's
   cloud budget number, and realised-savings history is what justifies the
-  FinOps practice's own funding.
+  FinOps practice's own funding. Between budget seasons, carry the forecast
+  rather than the budget: re-cut from driver changes, reported with its drift
+  and the driver that moved it (`finops-forecasting.md`, "Cadence").
 
 Anti-patterns at this altitude: inventing executive-only metrics that
 reconcile to nothing the practice runs day-to-day (two sets of books);
@@ -292,6 +299,8 @@ scorecard is that rubric applied to your estate with evidence attached.
 - `finops-ai-value-management.md` - stage gates and the AI Investment
   Council, the value-side twin of this file
 - `finops-chargeback.md` - what changes when the numbers start moving money
+- `finops-forecasting.md` - forecast accuracy and drift, variance bands and the
+  re-forecast cadence behind the forecast-variance KPI
 - `optimnow-methodology.md` - the connect-cost-to-value lens and the CFO test
 
 ---

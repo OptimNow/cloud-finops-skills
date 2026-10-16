@@ -661,6 +661,32 @@ Make version audits a recurring FinOps action item:
 
 Source: https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-opensearch-service-additional-upgrade-runway-support-dates
 
+**RDS for MySQL and PostgreSQL, and Aurora: prevent the charge at creation.** RDS
+Extended Support charges begin "the day after the RDS end of standard support
+date", apply to standby instances in Multi-AZ deployments, and stop when the
+database is upgraded to a version in standard support or deleted; they restart if
+that version later enters Extended Support. Extended Support runs for up to 3
+years past the end of standard support, after which RDS upgrades the major version
+automatically. Enrolment is the `EngineLifecycleSupport` parameter, and the
+default enrols: a database created or restored without the setting is moved into
+paid Extended Support when its version reaches end of standard support. To opt
+out, pass `open-source-rds-extended-support-disabled` at create or restore time
+(`--engine-lifecycle-support` in the CLI, `engine_lifecycle_support` on the
+Terraform `aws_db_instance` and `aws_rds_cluster` resources, whose default is the
+enrolling value). With the opt-out set, creating a database on a major version
+already past its end of standard support fails, so the module default works as a
+guardrail and turns a recurring bill finding into a decision at pull-request time. The setting can be changed at
+any time with no downtime, but disabling it on a database already past its
+standard support date upgrades it to the next supported major version
+automatically, so flip it on a running production instance only inside an upgrade
+window. For Aurora and Multi-AZ DB clusters the setting lives at the cluster
+level. Sources: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html,
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support-charges.html
+and the `EngineLifecycleSupport` parameter in
+https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBInstance.html
+(all read 16 October 2026); Terraform AWS provider documentation for
+`aws_db_instance` and `aws_rds_cluster` (read 16 October 2026).
+
 ---
 
 ## AWS-specific quick wins

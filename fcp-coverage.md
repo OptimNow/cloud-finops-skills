@@ -22,9 +22,9 @@ Marker legend:
 
 ## Quantify Business Value
 
-- [x] **Planning & Estimating** - finops-ai-value-management.md
-- [~] **Forecasting** _(secondary: finops-ai-value-management.md; finops-aws-commitments.md; finops-azure-commitments.md; finops-onboarding-workloads.md)_
-- [~] **Budgeting** _(secondary: finops-allocation-showback.md; finops-anomaly-management.md; finops-chargeback.md; finops-onboarding-workloads.md)_
+- [x] **Planning & Estimating** - finops-ai-value-management.md _(secondary: finops-forecasting.md)_
+- [x] **Forecasting** - finops-forecasting.md _(secondary: finops-ai-value-management.md; finops-aws-commitments.md; finops-azure-commitments.md; finops-onboarding-workloads.md)_
+- [~] **Budgeting** _(secondary: finops-allocation-showback.md; finops-anomaly-management.md; finops-chargeback.md; finops-forecasting.md; finops-onboarding-workloads.md)_
 - [x] **KPIs & Benchmarking** - finops-kpis-benchmarking.md
 - [x] **Unit Economics** - finops-for-ai.md _(secondary: finops-ai-value-management.md; finops-kpis-benchmarking.md)_
 
@@ -49,8 +49,8 @@ Marker legend:
 
 ---
 
-**Primary coverage**: 13 / 22 (59%) - capabilities with at least one reference whose `fcp_capability` is the primary classification.
+**Primary coverage**: 14 / 22 (63%) - capabilities with at least one reference whose `fcp_capability` is the primary classification.
 
-**Any-coverage** (primary OR secondary): 21 / 22 (95%) - includes 8 capabilities marked `[~]` that are touched by another reference's `fcp_capabilities_secondary` but have no primary owner yet.
+**Any-coverage** (primary OR secondary): 21 / 22 (95%) - includes 7 capabilities marked `[~]` that are touched by another reference's `fcp_capabilities_secondary` but have no primary owner yet.
 
 **True gaps** (no primary AND no secondary): 1. These are tracked in docs/ROADMAP.md with rationale and trigger-to-revisit.

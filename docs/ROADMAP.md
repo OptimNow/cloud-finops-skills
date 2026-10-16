@@ -69,6 +69,9 @@ Written against the 2026-09-30 state: 35 references, 37 playbooks (AWS 21,
 Azure 8, GCP 4, cross-cloud 4), 13 of 22 FCP capabilities with a primary owner.
 State at 2026-10-13: 36 references, 41 playbooks (AWS 21, Azure 10, GCP 6,
 cross-cloud 4), still 13 of 22 with a primary owner.
+State at 2026-10-16: 37 references, 42 playbooks (AWS 22, Azure 10, GCP 6,
+cross-cloud 4), 14 of 22 with a primary owner (Forecasting moved to [x] with
+`finops-forecasting.md`).
 
 1. **Storage tiering for Azure Blob and GCS - SHIPPED 2026-10-01** (lot of
    the 1st). Four playbooks porting the AWS split:
@@ -90,9 +93,13 @@ cross-cloud 4), still 13 of 22 with a primary owner.
    utilisation formula, the hourly-vs-token shape and the spillover switch,
    with figures routed to the pricing hub. The only open user request, waiting
    since June.
-5. **`finops-forecasting.md`.** Budget season is the trigger named in the
-   deferred table, and it is now. Moves Forecasting from secondary-only to a
-   primary owner in the FCP matrix.
+5. **`finops-forecasting.md` - SHIPPED 2026-10-16.** Budget season was the
+   trigger named in the deferred table. Forecasting now has a primary owner in
+   the FCP matrix. The first version carries the Foundation's three forecast
+   measures and the variance bands, the trend-to-driver method ladder, the
+   driver-led re-forecast cadence and AI forecast scenarios. Next depth when an
+   engagement asks: worked driver models per workload type, and forecast
+   collection from owners at Run.
 6. **`finops-gcp-patterns.md` split.** The GCP file carries 12 enumerated
    patterns inline against a 1,495-line AWS catalogue; the split mirrors the
    AWS and Azure structure and is a token-efficiency fix as much as a
@@ -298,7 +305,7 @@ this table is now the record).
 |---|---|---|---|
 | `finops-tools-services.md` | P2 | Next engagement raises a vendor-evaluation question | OptimNow has implicit views (FinOps Toolkit, MCP, OpenCost) but no formal write-up; better to write against a real client question than a generic checklist |
 | `finops-practice-operations.md` | P2 | Next Walk to Run client engagement starts | `optimnow-methodology.md` covers the consultancy-positioning lens; this would be the operator-grade discipline below it (three-cadence operating model, per-Capability scorecard, allied-discipline integration charter) |
-| `finops-forecasting.md` | **Scheduled** (ranked list item 5) | Fired: budget season (September-November 2026) | `finops-ai-value-management.md` covers AI forecasting. Input already in the library: the budget-by-exception example in `finops-kpis-benchmarking.md` (#240) |
+| `finops-forecasting.md` | **Shipped 2026-10-16** | (closed) | Shipped on the budget-season trigger. Built from the Foundation's Forecasting, Budgeting and Planning & Estimating capability pages and two FinOps X 2026 practitioner talks; AI-specific budgeting stays in `finops-ai-value-management.md` |
 | `finops-unit-economics.md` | P2 | Non-AI unit-economics demand emerges | Same reasoning as forecasting; AI-side covered by AI value management and finops-for-ai files |
 | `finops-education-enablement.md` | P2 | Demand emerges; consider folding into practice-operations | Smaller scope than the other P2 files; could double as a section in practice-operations |
 | `finops-benchmarking.md` | **Shipped 2026-08-21** | (closed) | Shipped as `finops-kpis-benchmarking.md` (primary capability: KPIs & Benchmarking), reopened by maintainer decision 2026-08-20. The data-quality caveats that justified the deferral became the file's benchmarking section |
