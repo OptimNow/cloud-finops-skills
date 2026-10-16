@@ -295,6 +295,45 @@ Sources: [AWS What's New, 13 October 2026](https://aws.amazon.com/about-aws/what
 [ECS service utilisation metrics](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service_utilization.html)
 (both read 16 October 2026).
 
+### Lambda Web Functions and Event Functions (October 2026)
+
+Since 12 October 2026 Lambda has two function types with different billing shapes.
+Existing functions are now called **Event Functions**: a name change only, with the same
+pricing and usage types. **Web Functions** are a new type that runs an HTTP server
+(Express, Hono and similar, with no adapter) behind a built-in HTTPS endpoint.
+
+| | Event Functions | Web Functions |
+|---|---|---|
+| Concurrency per environment | One request at a time | Up to 128 (default 64), sharing CPU and memory |
+| Compute billed on | Wall-clock duration times configured memory, I/O wait included | Active vCPU-seconds; time spent waiting on I/O is not billed |
+| Memory billed on | Included in duration | GB-seconds held by each environment for its whole life, including idle time between requests |
+| Requests | Per request | Per request, at 1.5x the Event Functions request charge (us-east-1 price list, 16 October 2026) |
+| Shape | Memory 128 MB to 10,240 MB, x86 or Arm | Fixed: 2 Arm64 vCPUs, up to 2 GB, Node.js 24 only, five Regions at launch |
+| Scaling floor | Provisioned concurrency available | None: scales from zero, no reserved environments |
+
+**Where Web Functions win and lose.** The saving comes from concurrency: a web handler
+that spends most of each request waiting on a database or an API pays for that wait on
+Event Functions and not on Web Functions, and many requests share one environment's
+memory. The cost is memory that accrues while an environment sits idle, and Lambda keeps
+spare environments ahead of demand; AWS does not say whether that headroom is billed.
+Low, spiky traffic with long idle gaps can therefore cost more than on Event Functions.
+Cap the bill with `maxEnvironments`, and compare on a week of real traffic, not on unit
+rates.
+
+**Two things to settle before a migration case.** AWS has not stated whether Compute
+Savings Plans cover Web Functions, and the Compute Savings Plans rate file for us-east-1
+(13 October 2026) lists no Web Functions usage type, so model them uncovered until AWS
+says otherwise. In CUR they appear as `Lambda-Web-Request-ARM`,
+`Lambda-Web-vCPU-Second-ARM` and `Lambda-Web-Memory-GB-Second-ARM` (us-east-1 price
+list; other Regions carry the usual prefix).
+
+Sources: [AWS What's New, 12 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/aws-lambda-web-functions/),
+[Lambda pricing](https://aws.amazon.com/lambda/pricing/),
+[Web Functions guide](https://docs.aws.amazon.com/lambda/latest/dg/web-functions.html),
+[scaling](https://docs.aws.amazon.com/lambda/latest/dg/web-functions-scaling.html),
+[Lambda FAQs](https://aws.amazon.com/lambda/faqs/), AWS Price List API for Lambda and
+Compute Savings Plans, us-east-1 (all read 16 October 2026).
+
 ### GPU instance rightsizing
 
 GPU instances (G4dn, G5, G6, P3, P4d/P4de, P5/P5e/P5en, Inf2, Trn1) are

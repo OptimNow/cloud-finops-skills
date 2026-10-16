@@ -218,10 +218,19 @@ v2.1.268 closes the loop for gateway deployments: with `pricing:` set in the gat
 `/cost` and telemetry match the gateway's spend meter. Before this, contracted rates had
 to be configured client-side and could drift from what the gateway metered - which made
 developer-visible cost and the enforced cap disagree. Set rates once, at the gateway.
+v2.1.286 (30 September 2026) fixed two under-counts in the gateway's spend meter: it
+priced 1-hour prompt cache writes at the cheaper 5-minute rate, and on streamed turns
+that ran a server-side tool such as web search it counted only the first model call's
+input tokens. Nobody was over-billed; the meter read low, so a gateway spend limit
+could trip later than set. On the published multipliers (1.25x input for a 5-minute
+write, 2x for a 1-hour write) a 1-hour write was metered at 1.25 / 2 = 62.5% of its
+cost. Run v2.1.286 or later, and reconcile gateway spend history from before the fix
+against the Anthropic invoice rather than the meter.
 For gateway users the practical effect is that ClaudeXray and LiteLLM are no longer
 needed *purely* for budget-cap visibility; they remain valuable for metadata injection,
 cross-tool aggregation and analytics. Sources:
 https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md,
+https://github.com/anthropics/claude-code/releases/tag/v2.1.286,
 https://code.claude.com/docs/en/costs, https://code.claude.com/docs/en/statusline.
 
 ---
@@ -460,8 +469,9 @@ generation, or codebase analysis tasks.
 (the default) writes the prefix up to the latest eligible message on every request that
 misses the cache. A request above 272K input tokens is repriced in full (2x input, 1.5x
 output), so long agent contexts can double their cost at one boundary. And the speed
-tiers are premiums: Fast at 2x and Ultrafast at 6x (generally available on GPT-6 Astra;
-GPT-5.6 Sol in preview only), chosen per request with `service_tier`. Govern them as
+tiers are premiums: Fast at 2x and Ultrafast at 6x (listed for GPT-6 Astra and
+GPT-6.1 Sol on OpenAI's pricing page, read 16 October 2026), chosen per request with
+`service_tier`. Govern them as
 Anthropic Fast mode is governed: allow-list, never default. Source: <https://developers.openai.com/api/docs/pricing>.
 
 **LiteLLM budget caps** - set hard or soft budget limits per team or project at the proxy
