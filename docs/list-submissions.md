@@ -242,6 +242,10 @@ been merged by then ("already submitted" is accurate either way; do not write
 
 ### hesreallyhim/awesome-claude-code
 
+Status 2026-10-17: not yet submitted. The repository had issue creation limited
+to collaborators that day (a temporary GitHub interaction limit); retry the form
+once new "[Resource]:" issues from outside contributors appear again.
+
 Web form only, filled by a human:
 `https://github.com/hesreallyhim/awesome-claude-code/issues/new?template=recommend-resource.yml`.
 Eligibility: the form requires 14 days of development since the first commit or 100
@@ -262,6 +266,9 @@ most, descriptive, and does not address the reader. Tick the five required boxes
 leave the sixth ("Do not check the following box") unchecked as instructed.
 
 ### Anthropic Claude directory (plugin bundle)
+
+Status 2026-10-17: submitted through the developer portal, awaiting Anthropic's
+review. The portal shows the state; nothing to resubmit.
 
 The link `https://clau.de/plugin-directory-submission` redirects to
 `https://claude.com/docs/directory/publish`. The submission itself is made in the
