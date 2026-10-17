@@ -85,8 +85,41 @@ are a template for evaluating any seat + usage tool.
 
 Cursor has two cost layers: a fixed subscription and variable usage-based token charges.
 
-*Seat prices below are list price as of August 2026. This category reprices its tiers
-several times a year - check the vendor's pricing page before quoting a figure.*
+**Current plans (read 17 October 2026).** Cursor is now sold through the X
+Subscription, and each paid plan includes one usage pool shared across Cursor and Grok.
+Two changes alter the cost shape, not only the price:
+
+- **The pool covers Cursor's own models only** (Grok and Composer). Claude, GPT and
+  Gemini sit outside it: on Premium and above they bill at API list price from the first
+  request, paid from prepaid credit, and on Teams and Enterprise at API list price plus a
+  Cursor Token Rate ($0.25 per million tokens as of 17 October 2026). Plus has no
+  third-party models at all. A team that relies on Claude or GPT inside Cursor has moved
+  from a seat with an included allowance to metered spend from token one.
+- **The pool resets weekly, not monthly.** Usage reports and forecasts built on a
+  monthly pool now misread when the allowance runs out.
+
+| Plan | Pool size (relative to Plus) | Third-party models |
+|---|---|---|
+| Plus | 1x | Not available |
+| Premium | 4x | API list price from first request |
+| Super | 15x | API list price from first request |
+| Ultra | 50x | API list price from first request |
+| Teams (a Premium, Super or Ultra seat) | Matches the seat tier | API list price plus Cursor Token Rate |
+| Enterprise | Pooled usage | API list price plus Cursor Token Rate |
+
+On Teams and Enterprise, Cursor Router's Balance and Intelligence modes choose a Cursor or
+a third-party model per request; a route to a third-party model bills as third-party
+usage, so the router can create spend nobody chose. Cost mode always draws from the
+pool. Prepaid credit pays for third-party models and for Cursor-model use beyond the
+pool, Auto Top-up refills it below a threshold, and a monthly additional-usage limit
+caps paid usage whatever the credit balance. Sources:
+[models and pricing](https://cursor.com/docs/models-and-pricing),
+[pricing](https://cursor.com/pricing) (read 17 October 2026; no start date stated).
+
+**Legacy plans keep working as they are.** Hobby, Start, Pro, Pro+, Ultra and Teams
+Standard and Premium seats keep two monthly pools (Cursor Models and Other Models) and
+on-demand usage. The table below describes them. *Seat prices are list price as of
+August 2026.*
 
 | Plan | Seat cost | Included usage | Overage billing |
 |---|---|---|---|
@@ -98,9 +131,9 @@ several times a year - check the vendor's pricing page before quoting a figure.*
 | Teams Premium | $120/seat/month | Larger pool per seat | Per token at model rates |
 | Enterprise | Custom | Custom | Custom |
 
-Annual billing on Pro reduces the seat cost to ~$16/month. Cursor renames and
-restructures tiers frequently - verify the current lineup at cursor.com/pricing
-before building a seat forecast.
+Annual billing on Pro reduced the seat cost to ~$16/month. Cursor renames and
+restructures tiers frequently - check which lineup each seat is on before building a
+seat forecast, because a mixed estate of legacy and current plans has two cost shapes.
 
 ### Token rate variability
 
@@ -110,10 +143,12 @@ widest range:
 - **Auto mode** (Cursor's default routing): the earlier flat Auto rate was retired -
   Auto now bills at the API rate of whichever model it routes to, so its cost tracks
   the routing mix rather than a fixed figure
-- **First-party models** (Composer, Grok variants): included in the plan's "Cursor
-  Models" pool with no separately published per-token rate
-- **Premium models** (e.g. the Claude Opus family): billed through at the provider's
-  published per-token rate, so the cost follows the model's own rate card
+- **First-party models** (Composer, Grok variants): included in the plan's pool with
+  no separately published per-token rate
+- **Third-party models** (e.g. the Claude Opus family): on legacy plans they draw from
+  the "Other Models" pool and then bill at the provider's rate; on current plans they
+  bill at API list price from the first request, outside the pool (see "Current plans"
+  above)
 
 A 10-50x gap exists between the cheapest and most expensive models available in Cursor.
 Even small shifts in model distribution across a team show up on the invoice fast.
@@ -341,8 +376,18 @@ the pre-transition baseline per developer, and expect the variance to be
 concentrated in whoever routes to the most expensive models; (2) check whether
 Enterprise admin model-routing controls are set, rather than left at
 default; (3) confirm the variable-spend line is budgeted in the right cost centre,
-since a usage-based charge often lands differently from a per-seat one.
-Source: https://docs.github.com/en/copilot/how-tos/manage-and-track-spending/prepare-for-your-move-to-usage-based-billing
+since a usage-based charge often lands differently from a per-seat one;
+(4) re-baseline after a forced model swap. On 16 November 2026 Copilot retires Claude
+Opus 4.8, Claude Opus 5 and GPT-5.6 Terra from every surface (chat, inline edits, ask
+and agent modes, completions). The suggested replacements are Claude Opus 5.5 for both
+Opus models and GPT-6.1 Sol or GPT-6 Luna for GPT-5.6 Terra, and on Business and
+Enterprise they are switched on automatically unless an administrator turned off the
+default enablement. Under AI Credits the credit cost per request follows the model, so
+the swap moves per-developer spend with no change in behaviour; check which replacement
+each team lands on, because the two GPT options sit at different points on the rate
+card. Opus 4.8 stays for individual subscribers on annual plans.
+Sources: https://docs.github.com/en/copilot/how-tos/manage-and-track-spending/prepare-for-your-move-to-usage-based-billing,
+[GitHub changelog, 15 October 2026](https://github.blog/changelog/2026-10-15-upcoming-deprecation-of-selected-github-copilot-models-in-mid-november).
 
 Enterprise total cost of ownership is $60/seat/month when including the required GitHub
 Enterprise Cloud subscription - a detail that often surprises procurement. Note GitHub
@@ -438,6 +483,11 @@ full context window.
 If overages consistently exceed the subscription cost, either upgrade the tier or
 investigate whether usage patterns can be adjusted. If included usage is consistently
 underconsumed, you may be over-provisioned on seats.
+
+**Usage caps on credit-funded plans** - where a tool funds overage from prepaid credit
+(current Cursor plans), set the monthly additional-usage limit and the Auto Top-up
+threshold deliberately; together they are the only hard ceiling on third-party model
+spend, and an Auto Top-up with no monthly limit has none.
 
 **Seat hygiene** - audit active vs licensed seats quarterly. Offboard promptly. Identify
 developers who have not used the tool in 30+ days and reclaim seats.
@@ -557,8 +607,8 @@ developers also using direct Anthropic or OpenAI API keys for custom scripts.
 This is not inherently wasteful. Different tools serve different workflows. But it
 becomes a cost problem when:
 
-- The same developer is paying for Cursor Business ($40/month) and a Claude Max 5x
-  subscription ($100/month) but only actively using one
+- The same developer is paying for a Cursor Teams seat and a Claude Max 5x
+  subscription but only actively using one
 - Cursor is routing requests to Claude models while the team also pays for direct
   Anthropic API usage for the same models
 - Multiple API keys exist across the organisation with no centralised tracking, creating
@@ -587,7 +637,7 @@ becomes a cost problem when:
 
 | Tool | Type | Seat cost | Token / usage model | Enterprise option | Proxy-compatible |
 |---|---|---|---|---|---|
-| **Cursor** | Seat + usage | $20 (Pro) / $40 (Teams Standard) / $120 (Teams Premium) | Usage pool per plan + per-token overage at model rates | Yes (custom) | No (vendor-mediated) |
+| **Cursor** | Seat + usage | Teams seats at the Premium, Super or Ultra tier (current plans, October 2026); legacy Teams Standard / Premium seats still run | Weekly pool for Cursor's own models; third-party models metered from the first request (current plans) | Yes (custom) | No (vendor-mediated) |
 | **Claude Code** | BYOK or subscription | $20 (Pro) / $100 (Max 5x) / $200 (Max 20x) | API key: per-token at current Claude-model rates (see `finops-anthropic.md` for the rate structure) | Via Anthropic Enterprise | Yes (API key mode) |
 | **OpenAI Codex** | BYOK or subscription | $20 (ChatGPT Plus) and up | API key: per-token at current Codex-model rates (see OpenAI pricing page) | Via OpenAI Enterprise | Yes (API key mode) |
 | **GitHub Copilot** | Seat + usage | $10 (Pro) / $100 (Max) / $19 (Business) / $39 (Enterprise) | AI-credit overage priced on underlying model cost (legacy $0.04/request retired June 2026) | Yes ($60/seat total with GH Enterprise Cloud) | No (vendor-mediated) |

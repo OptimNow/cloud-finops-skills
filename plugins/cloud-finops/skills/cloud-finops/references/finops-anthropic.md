@@ -96,8 +96,11 @@ Verify the current figure on the pricing page or the live hub before quoting it.
 ### Fast mode pricing
 
 Fast mode runs the same model at higher output tokens per second, at premium
-pricing. It is in **research preview** and it is **not a general tier** - the scope
-is narrow enough that it is easy to over-plan for:
+pricing. It is **not a general tier** - the scope is narrow enough that it is easy to
+over-plan for. Since 15 October 2026, Opus 5.5 fast mode is out of research preview: it
+needs no beta header and no access request, and has a default fast-mode rate limit in
+the Start, Build and Scale usage tiers. Opus 5 and Opus 4.8 fast mode remain in research
+preview behind the access request:
 
 | Model | Standard | Fast mode | Premium |
 |---|---|---|---|
@@ -112,8 +115,14 @@ is narrow enough that it is easy to over-plan for:
   nothing extra but silently loses the latency it thinks it bought.
 - Fast mode pricing applies **across the full context window**, including
   requests over 200K input tokens - there is no separate long-context tier on top.
-- **Claude API only**, including Managed Agents. Not available on Amazon Bedrock,
-  Google Cloud, or Microsoft Foundry, so a Bedrock-based estate cannot use it at all.
+- **Claude API**, including Managed Agents, on all three models; and, for **Opus 5.5
+  only**, Claude in Microsoft Foundry on deployments hosted on Azure (not on Foundry
+  deployments hosted on Anthropic). Not available on Amazon Bedrock, Google Cloud or
+  Claude Platform on AWS, so a Bedrock-based estate cannot use it at all.
+- **The access request no longer gates Opus 5.5.** Any key in the Start tier or above
+  can send `speed: "fast"` and pay 2x, so the allow-list has to live in the gateway or
+  client configuration, not in Anthropic's approval step. `usage.speed` in each
+  response records which speed ran, which is the field to alert on.
 - **Not compatible with the Batch API or Priority Tier.**
 - Fast mode draws on **separate rate limits** from standard Opus.
 - Switching speed mid-conversation **invalidates the prompt cache** - a Fast-mode
@@ -295,9 +304,10 @@ on 7 February 2026.
   full Fast mode uncached input rates. The effect on the bill resembles a
   retroactive repricing, but the mechanism is a lost cache, not a recharge of
   earlier requests.
-- **Not available via cloud provider routes**: Fast mode is explicitly unavailable on
-  Amazon Bedrock, Google Vertex AI, and Microsoft Azure Foundry. This fragments spend
-  away from consolidated cloud agreements toward direct Anthropic invoices.
+- **Mostly outside cloud provider routes**: Fast mode is unavailable on Amazon Bedrock
+  and Google Vertex AI, and on Microsoft Foundry it exists only for Opus 5.5 on
+  Azure-hosted deployments (since 15 October 2026). Elsewhere it fragments spend away
+  from consolidated cloud agreements toward direct Anthropic invoices.
 
 ### Context window pricing - per-model, not uniform
 
@@ -331,7 +341,8 @@ Source: https://platform.claude.com/docs/en/about-claude/pricing
 ### Fast mode controls available to admins
 
 - Fast mode for Teams and Enterprise plans is **disabled by default** and requires
-  explicit admin enablement
+  explicit admin enablement (this is the Claude plan setting; on the API, Opus 5.5 fast
+  mode has needed no access request since 15 October 2026, see "Fast mode pricing")
 - Fast mode requires extra usage to be activated
 
 **Recommended policy:**
@@ -514,8 +525,8 @@ A forecast based solely on base token pricing is insufficient:
 
 ### Provider strategy
 
-Fast mode's exclusion from Bedrock, Vertex, and Azure Foundry is a deliberate channel
-choice. If your strategy relies on CSP-consolidated billing and commitment vehicles,
+Fast mode's exclusion from Bedrock and Vertex (and, on Foundry, from every model but
+Opus 5.5 on Azure-hosted deployments) is a deliberate channel choice. If your strategy relies on CSP-consolidated billing and commitment vehicles,
 this feature gap introduces spend fragmentation that governance must account for.
 Managed Agents further fragment spend as they represent a distinct service tier.
 
