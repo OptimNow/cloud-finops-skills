@@ -300,6 +300,33 @@ attribution for inference out of the box. Account and project separation handles
 team-level allocation. Application-layer instrumentation is required for feature-level
 and per-request attribution.
 
+**Direct model APIs (Anthropic, OpenAI): the same split, with provider-native keys.**
+
+- **Team boundary.** One Anthropic workspace or one OpenAI project per team or product,
+  and one API key per service inside it. Keep production out of Anthropic's Default
+  Workspace: it cannot take spend limits, and its usage reports with a `null`
+  `workspace_id`, so it lands in the unallocated bucket.
+- **Billing data.** Anthropic's Usage and Cost Admin API needs an Admin key (workspace
+  keys do not work). Its usage report filters and groups by API key, workspace, model
+  and service tier; its cost report groups by workspace or description only, daily, so
+  a per-key cost split is computed from the usage report. Priority Tier cost is not in
+  the cost endpoint and has to be reconciled from the invoice. OpenAI's Costs API
+  groups by `project_id`, `user_id`, `line_item`, `api_key_id` and `api_source` in daily
+  buckets; its Usage API adds `model`, `batch` and `service_tier`.
+- **Charge the effective rate, not the list price.** Two teams on the same model can
+  pay different prices per token: one with a high cache-read share, one on batch, one
+  through Bedrock rather than the provider directly. Allocate the cost the provider
+  billed for each key or project, not tokens times the list rate, or the team that did
+  the caching work subsidises the team that did not.
+- **Feature and customer level** still comes from request metadata stamped by a gateway
+  or SDK wrapper (feature, customer, environment, trace ID), as in Phase 1 above.
+
+Sources: [Anthropic workspaces](https://platform.claude.com/docs/en/manage-claude/workspaces),
+[Anthropic Usage and Cost API](https://platform.claude.com/docs/en/manage-claude/usage-cost-api),
+[OpenAI API reference, usage and costs](https://platform.openai.com/docs/api-reference/usage)
+(read 16 October 2026); lead: [Finout blog, 13 October 2026](https://www.finout.io/blog/how-to-allocate-anthropic-openai-and-gpu-spend-to-teams)
+(vendor blog).
+
 ### Unallocated % as an AI allocation KPI
 
 Allocation quality deserves its own tracked KPI for AI spend, the same way
@@ -636,6 +663,19 @@ deployments:
   defaults are high, so the control is the stricter override you set - a GCP-native
   example of token budget enforcement that complements budget alerts and anomaly
   detection (see `finops-gcp.md`).
+- A provider's usage tier is a ceiling, not a budget. Since 6 October 2026, OpenAI
+  has three paid API usage tiers, Build, Launch and Grow, beside Free. An organisation
+  moves up automatically once its total credit purchases reach $5, $100 and $500
+  respectively; the old rule's days-since-first-payment condition is gone. Each tier
+  carries a monthly usage limit ($500, $5,000 and $200,000 a month) and generally
+  higher rate limits. Two consequences: buying credits raises the ceiling with no
+  approval step, and at Grow the ceiling sits far above most single workloads. The
+  usage limit is separate from the spend limits the customer sets, so set those per
+  project; a hard spend limit returns HTTP 429. Rate limits also move with the tier,
+  so a load test run before a top-up can understate the throughput available after
+  it. Thresholds as published on 6 October 2026:
+  [changelog](https://developers.openai.com/api/docs/changelog),
+  [usage tiers](https://developers.openai.com/api/docs/guides/rate-limits).
 
 **Governance policies to establish:**
 - Require AI cost estimates (COGS modelling) before feature deployment

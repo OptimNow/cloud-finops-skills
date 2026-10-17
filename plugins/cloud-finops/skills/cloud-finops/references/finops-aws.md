@@ -152,6 +152,50 @@ right tool for detailed attribution and custom tooling.
 - **Savings Plans recommendations** - commitment purchase recommendations based on usage
 - **Cost anomaly detection** - ML-based anomaly alerts (set up before you need them)
 - **Cost categories** - virtual tags for billing-layer cost allocation
+- **Bedrock product attributes** (since 8 October 2026) - group and filter Bedrock cost
+  by model, model provider, inference type and feature in Cost Explorer, Budgets and
+  Dashboards; the attribute keys, the 1 September 2026 data start and the known gaps
+  are in `finops-bedrock.md`, "Cost Explorer integration"
+
+### AWS Pricing Calculator in the console (estimates on your own rates)
+
+The Pricing Calculator inside the Billing and Cost Management console is a different
+tool from the public calculator.aws site. It needs an account and has its own APIs,
+and it is the one that can price an estimate on the organisation's own rates rather
+than list prices. It produces two kinds of estimate:
+
+| | Workload estimate | Bill estimate |
+|---|---|---|
+| What it models | The added usage of one workload; nothing outside it is counted | The whole consolidated bill: last month's usage, active Savings Plans and RIs, sharing preferences, discounts and credits as on the latest anniversary bill, plus the changes you model |
+| Who can run it | Standalone, management and member accounts | Management and standalone accounts only |
+| Commitments | Cannot model new commitments; can apply existing coverage | Add, change or remove EC2 RIs and Compute or EC2 Instance Savings Plans without touching the real bill |
+| Speed | Immediate | 20 minutes to 12 hours per run |
+| Cost (as of October 2026) | Free | 5 free per month, then $2 each |
+
+Workload estimates are priced at one of three **rate types**: before discounts, after
+discounts (the organisation's volume and pricing discounts, and tiering), or after
+discounts and purchase commitments (Savings Plan and RI coverage percentages taken from
+last month's usage). A management account sets the rate type its member accounts see.
+The rates refresh from the last completed anniversary bill and are available by the 15th
+of the month. Usage can be imported from the account's own cost and usage data or from
+a public-calculator share link (Savings Plans or RIs in a public estimate are dropped on
+import).
+
+**How to use it for a decision.** Build one workload estimate, duplicate it, change one
+variable (Graviton against x86, a different instance family, another Region), and read
+the two side by side; keep both in the same Region unless the Region is the variable.
+For a commitment purchase, a bill estimate shows the effect on the whole bill, which a
+workload estimate cannot. Two limits shape the routine: a bill scenario goes stale after
+the last day of the month it was created in and can no longer run, and an account can
+create 50 workload estimates a month. The estimate is an input to the forecast, not the
+forecast itself (`finops-forecasting.md`).
+
+Sources: [AWS Cloud Financial Management blog, 6 October 2026](https://aws.amazon.com/blogs/aws-cloud-financial-management/estimate-and-compare-aws-costs-with-the-aws-pricing-calculator-part-1-creating-and-comparing-workload-estimates/),
+[Pricing Calculator user guide](https://docs.aws.amazon.com/cost-management/latest/userguide/pricing-calculator.html),
+[rate types](https://docs.aws.amazon.com/cost-management/latest/userguide/pc-rates-discounts.html),
+[bill estimates](https://docs.aws.amazon.com/cost-management/latest/userguide/pc-bill-estimate.html),
+[quotas](https://docs.aws.amazon.com/cost-management/latest/userguide/management-limits.html)
+(all read 16 October 2026).
 
 ### AWS Managed Dashboards (zero-setup native visibility)
 
@@ -236,6 +280,59 @@ Container rightsizing requires different tooling than EC2 rightsizing.
 - For EKS, use Kubernetes VPA (Vertical Pod Autoscaler) recommendations or cast.ai
 - Right-size the pod requests/limits before right-sizing the underlying node group
 - Node group rightsizing savings are partially offset by bin-packing efficiency changes
+
+**Scale ECS services on `LiveTaskCount` (no charge, October 2026).** ECS publishes
+`LiveTaskCount` as a service utilisation metric at no cost and without opting in to
+Container Insights. It counts tasks in the `ACTIVATING`, `RUNNING` and `DEACTIVATING`
+states, so a task still draining connections during a scale-in is counted, which is
+what an auto scaling alarm or capacity view needs. `RunningTaskCount` counts only
+tasks whose current and desired states are both `RUNNING`; AWS positions it as a
+health signal. Since 1 October 2026 the Container Insights `RunningTaskCount` metric
+is no longer billed, with no action needed. Every other Container Insights metric is
+still charged as a CloudWatch custom metric, so a cluster that turned on Container
+Insights only to get a task count can now drop it and use the free service metrics.
+Sources: [AWS What's New, 13 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/ecs-service-metrics/),
+[ECS service utilisation metrics](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service_utilization.html)
+(both read 16 October 2026).
+
+### Lambda Web Functions and Event Functions (October 2026)
+
+Since 12 October 2026 Lambda has two function types with different billing shapes.
+Existing functions are now called **Event Functions**: a name change only, with the same
+pricing and usage types. **Web Functions** are a new type that runs an HTTP server
+(Express, Hono and similar, with no adapter) behind a built-in HTTPS endpoint.
+
+| | Event Functions | Web Functions |
+|---|---|---|
+| Concurrency per environment | One request at a time | Up to 128 (default 64), sharing CPU and memory |
+| Compute billed on | Wall-clock duration times configured memory, I/O wait included | Active vCPU-seconds; time spent waiting on I/O is not billed |
+| Memory billed on | Included in duration | GB-seconds held by each environment for its whole life, including idle time between requests |
+| Requests | Per request | Per request, at 1.5x the Event Functions request charge (us-east-1 price list, 16 October 2026) |
+| Shape | Memory 128 MB to 10,240 MB, x86 or Arm | Fixed: 2 Arm64 vCPUs, up to 2 GB, Node.js 24 only, five Regions at launch |
+| Scaling floor | Provisioned concurrency available | None: scales from zero, no reserved environments |
+
+**Where Web Functions win and lose.** The saving comes from concurrency: a web handler
+that spends most of each request waiting on a database or an API pays for that wait on
+Event Functions and not on Web Functions, and many requests share one environment's
+memory. The cost is memory that accrues while an environment sits idle, and Lambda keeps
+spare environments ahead of demand; AWS does not say whether that headroom is billed.
+Low, spiky traffic with long idle gaps can therefore cost more than on Event Functions.
+Cap the bill with `maxEnvironments`, and compare on a week of real traffic, not on unit
+rates.
+
+**Two things to settle before a migration case.** AWS has not stated whether Compute
+Savings Plans cover Web Functions, and the Compute Savings Plans rate file for us-east-1
+(13 October 2026) lists no Web Functions usage type, so model them uncovered until AWS
+says otherwise. In CUR they appear as `Lambda-Web-Request-ARM`,
+`Lambda-Web-vCPU-Second-ARM` and `Lambda-Web-Memory-GB-Second-ARM` (us-east-1 price
+list; other Regions carry the usual prefix).
+
+Sources: [AWS What's New, 12 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/aws-lambda-web-functions/),
+[Lambda pricing](https://aws.amazon.com/lambda/pricing/),
+[Web Functions guide](https://docs.aws.amazon.com/lambda/latest/dg/web-functions.html),
+[scaling](https://docs.aws.amazon.com/lambda/latest/dg/web-functions-scaling.html),
+[Lambda FAQs](https://aws.amazon.com/lambda/faqs/), AWS Price List API for Lambda and
+Compute Savings Plans, us-east-1 (all read 16 October 2026).
 
 ### GPU instance rightsizing
 

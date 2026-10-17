@@ -148,6 +148,34 @@ context windows that balloon to hundreds of thousands of tokens. Effective archi
 use short-term memory for recent exchanges and long-term memory for persistent preferences
 and organisational context, with explicit token budgets for each layer.
 
+**AgentCore short-term memory bills by data volume, not by event (since 6 October
+2026).** Through 5 October the AgentCore pricing page listed one short-term memory
+dimension, a flat rate per new event. From 6 October it lists three: ingestion and
+retrieval per GB of event data, and storage per GB-month prorated over each event's
+time to live (TTL). Ingestion and retrieval bill each event at a minimum of 12 KB and
+a maximum of 64 KB whatever its real size; storage uses the real size. Long-term
+memory pricing did not change. What this changes for cost design:
+
+- **Small, frequent events got cheaper to write.** On the rates listed in October
+  2026, ingesting an event at the 12 KB floor costs about one twentieth of the old
+  per-event rate, and one at the 64 KB cap about one quarter (arithmetic from the
+  pricing page; re-check the page before quoting a number).
+- **Reading and keeping history now cost money.** Retrieval is billed per GB read,
+  so an agent that reloads its whole session history on every turn pays for that
+  read each time. Fetch the last few events, not the full list.
+- **Event expiry is now a cost lever.** Storage accrues for as long as an event
+  lives. The expiry is set per memory resource in days (`eventExpiryDuration`, 3 to
+  365 in the CreateMemory API reference; the CDK construct defaults to 90), so a
+  resource left at 90 days for an agent that needs a few days of context pays for
+  months of idle storage. Set it to the shortest horizon the agent needs.
+- **Very small events do not shrink below the floor.** Splitting state into many tiny
+  events bills each one at 12 KB on write and read; batch small updates.
+
+Sources: [AWS What's New, 12 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/agentcore-memory-consumption-based-pricing/),
+[Amazon Bedrock AgentCore pricing](https://aws.amazon.com/bedrock/agentcore/pricing/),
+[CreateMemory API reference](https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_CreateMemory.html)
+(all read 16 October 2026).
+
 As of August 2026, Bedrock AgentCore memory, policy, and a new managed harness are
 available in AWS GovCloud (US-West), extending these pillars to regulated and government
 cloud environments for cost-governance planning. Source: AWS What's New - Bedrock.

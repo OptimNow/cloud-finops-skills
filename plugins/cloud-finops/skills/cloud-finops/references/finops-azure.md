@@ -181,6 +181,49 @@ Azure pricing varies significantly by region. India is cheaper, Brazil is expens
 Dev/test workloads can often use cheaper regions without user-facing impact.
 Use the Retail Prices API to compare regions programmatically.
 
+**Regional price increase from 1 February 2027 (announced October 2026).** Microsoft
+notified customers through Azure Service Health that prices for Virtual Machines and
+Azure Storage will rise in seven regions on 1 February 2027:
+
+| Region | Increase |
+|---|---|
+| North Europe (Dublin) | 17% |
+| France Central, France South | 11% |
+| West Europe (Amsterdam), Norway East, Norway West | 9% |
+| Southeast Asia (Singapore) | 8% |
+
+The notice excludes the v1 and v2 VM series and the newest v7 series (Dsv7, Ddsv7,
+Dlsv7, Dldsv7, Esv7, Edsv7), and a list of storage services that includes General Block
+Blob, Standard Page Blob, Tables, Queues and Storage Bandwidth. It does not name the
+affected subscriptions or resources, so exposure has to be worked out from the estate.
+
+What to do before the date:
+
+- **Size the exposure.** Group the last three months of cost by region and meter
+  category in Cost Management, keep the seven regions and the non-excluded VM series
+  and storage meters, and apply the percentages. That gives the 2027 budget delta and
+  shows whether it is material.
+- **Decide on placement for movable workloads.** For dev/test and batch work, compare
+  the post-increase price in these regions against a neighbouring region (Sweden
+  Central against North Europe, for example) with the Retail Prices API, and count the
+  egress and latency cost of moving. Data residency usually rules out a move for
+  production data; it rarely rules it out for build agents and test environments.
+- **Treat commitment protection as unconfirmed.** Several partners report that a
+  reservation bought before 1 February 2027 keeps its price for the term, and that
+  savings plans are not protected. Microsoft has not stated either in a public page;
+  confirm with the account team before buying reservations early to beat the increase,
+  and remember that reservation exchange rules change on the same date
+  (`finops-azure-commitments.md`).
+
+Sourcing note: the Service Health notice is visible only in customers' portals and has
+no public Microsoft page. The region list, percentages and exclusions above are as quoted
+from the notice in a [Microsoft Q&A thread](https://learn.microsoft.com/en-in/answers/questions/6026564/clarification-required-azure-vm-and-storage-pricin)
+and reported consistently by partners ([Cloudy with a Chance of Licensing](https://cloudywithachanceoflicensing.com/2026/10/13/microsoft-increase-azure-prices-from-february-2027/),
+[FinOps Weekly](https://finopsweekly.com/news/azure-updates-2026-10-08/)), all read 16
+October 2026. Check the notice in the Service Health blade for the exact scope. Reports
+of a separate global uplift of about 25% on v1 and v2 series, replacing the regional
+increase for those series, were not confirmed on any Microsoft page.
+
 ---
 
 

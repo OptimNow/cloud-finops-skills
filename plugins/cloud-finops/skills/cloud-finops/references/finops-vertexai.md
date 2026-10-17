@@ -350,10 +350,30 @@ limit. When a project hits its limit the agent's API calls temporarily pause; wh
 overages are enabled, excess usage transitions to consumption rates instead and can draw
 against an FSP.
 
-*Scope caveat:* the announcement describes this in the context of Gemini Enterprise
-agent projects, not as a blanket control over all Agent Platform API traffic. Confirm it
-covers the specific APIs you intend to cap before relying on it as the guardrail for an
-estate. Source:
+**Generally available since 13 October 2026, with a defined scope.** A spend cap
+budget pauses new usage of one eligible service in one project once the budget's
+estimated cost passes the cap, until the next monthly period. Eligible services: Gemini
+API, Gemini Enterprise Agent Platform (formerly Vertex AI), Cloud Run and Cloud Run
+functions. Folder, organisation, label, multi-project and multi-service budgets are out
+of scope, and so are reseller accounts and subscription costs such as Gemini Enterprise
+seats. Four mechanics decide whether it works as a guardrail:
+
+- **It reads gross list price.** The estimate excludes credits and savings, so an
+  account with large credits or committed use discounts hits the cap well before its
+  net spend reaches it. Size the cap on gross cost.
+- **It also pauses committed capacity.** While enforced, the cap blocks usage covered by
+  CUDs and Provisioned Throughput, so a cap on a project with PT stops requests the
+  commitment already pays for. It does not stop persistent resources, which keep
+  accruing.
+- **A manual lift switches it off for the month.** Lifting an enforced cap restores
+  calls, and the cap will not trigger again that period unless the amount is raised.
+  It lifts on its own at the start of the next period.
+- **It is not instant.** Cost data can lag by a day or more and overage is billed, so
+  set the cap slightly below the real limit.
+
+Sources: [Cloud Billing release notes, 13 October 2026](https://docs.cloud.google.com/billing/docs/release-notes),
+[spend cap budgets](https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps)
+(read 17 October 2026); the August announcement:
 https://cloud.google.com/blog/products/ai-machine-learning/flexible-billing-and-cost-controls-for-agents-on-google-cloud
 
 ---

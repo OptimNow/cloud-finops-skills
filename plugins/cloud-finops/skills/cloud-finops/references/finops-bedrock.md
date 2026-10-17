@@ -44,6 +44,26 @@ current Bedrock models (4x on Amazon Nova, 5x on Claude, as of August 2026).
 Workloads with high output ratios (agentic tasks, long-form generation) carry
 disproportionately higher costs. Size against the multiplier, not the input rate.
 
+**Video models bill per second of input, and some bill outside Bedrock.** TwelveLabs
+Pegasus 1.5 (on Bedrock since 8 October 2026) takes a video and returns text, including
+time-coded segment metadata. It carries two meters: a price per second of video input
+and a price per 1M output tokens, the same structure as Pegasus 1.2. Three things shape
+the bill:
+
+- **Output can grow with the video.** The output cap rose from 4,096 tokens on 1.2 to
+  98,304 on 1.5, and segment-by-segment metadata over a two-hour video uses it. Set
+  `maxOutputTokens` to what the downstream step needs.
+- **It runs only through cross-Region inference** (US geo or Global profiles), on
+  InvokeModel and its streaming variant, Standard tier only. Video up to 25 MB can be
+  sent inline; longer video (up to 2 hours) is read from S3.
+- **It is billed through AWS Marketplace.** AWS states that the charges appear "under
+  the model provider (not under Amazon Bedrock)", so a Cost Explorer view or CUR query
+  filtered on the Bedrock service misses them. Filter on the provider as well.
+
+Sources: [model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-twelvelabs-pegasus-v1-5.html),
+[request parameters](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-pegasus-1-5.html),
+[Bedrock pricing](https://aws.amazon.com/bedrock/pricing/) (all read 16 October 2026).
+
 ---
 
 ## Model pricing reference
@@ -133,22 +153,27 @@ AWS Bedrock costs appear in AWS Cost Explorer under the Bedrock service namespac
 with the usual dimensions (usage type, operation such as InvokeModel,
 InvokeModelWithResponseStream or BatchInference, Region, linked account).
 
-**Bedrock product attributes (since 8 October 2026).** Cost Explorer, AWS Budgets and
-Cost Management Dashboards can group and filter Bedrock cost by four standardised
-attributes, at no extra charge, in all commercial Regions except GovCloud and China:
+**Bedrock product attributes (since 8 October 2026).** Cost Explorer and Cost
+Management Dashboards can group and filter Bedrock cost by four standardised
+attributes, and AWS Budgets can filter by them (not group), at no extra charge, in all
+commercial Regions except GovCloud and China:
 
 | Attribute (API key) | Values look like |
 |---|---|
-| Model (`model`) | Claude Sonnet 5, Claude Haiku 4.5, Nova Lite |
+| Model (`model`) | Claude Sonnet 5, Claude Haiku 4.5 |
 | Model provider (`provider`) | Anthropic, Cohere, OpenAI |
-| Inference type (`inferenceType`) | input tokens, output tokens, cache read, cache write, with "global" variants for cross-region inference |
-| Feature (`feature`) | On-demand inference, batch, reranker |
+| Inference type (`inferenceType`) | input tokens, output tokens, prompt cache read input tokens |
+| Feature (`feature`) | on-demand inference, reranker |
+
+The values above are the ones AWS documents; list the full set in your own account
+(`get-dimension-values`, below) before building a filter on a value not shown here.
 
 In the API they are the `PRODUCT_ATTRIBUTE` group-by type and the `ProductAttributes`
 filter (`aws ce get-dimension-values --dimension PRODUCT_ATTRIBUTE` lists the keys).
-Attribute data starts on **1 September 2026**: a query on an earlier date fails with
-`DataUnavailableException`, so a 13-month model-level trend is not available before
-September 2027. The attributes combine with cost allocation tags on Application
+Attribute data starts on **1 September 2026** (AWS documentation), so a
+13-month model-level trend is not available before September 2027; expect a query on
+an earlier date to fail or return nothing rather than to fall back to usage types.
+Costs with no value for the chosen attribute are grouped into one bucket. The attributes combine with cost allocation tags on Application
 Inference Profiles, Projects or Workspaces and with IAM principal tags, which is what
 turns "spend by model" into "spend by model by team".
 
@@ -175,7 +200,9 @@ grain remains per usage type per day.
 
 Sources: <https://aws.amazon.com/about-aws/whats-new/2026/10/aws-bedrock-attributes-in-cost-explorer/>,
 <https://aws.amazon.com/about-aws/whats-new/2026/07/aws-data-exports-amazon-bedrock-product-metadata/>,
-<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-management.html>
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-management.html>,
+<https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html>
+(re-checked 16 October 2026)
 
 ### Cost Anomaly Detection for Bedrock foundation models
 
@@ -500,6 +527,38 @@ between economic and uneconomic at scale.
 
 Sources: https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html, https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-bedrock-one-hour-duration-prompt-caching/
 
+**When caching stops working, nothing errors.** A request with a missing or misplaced
+cache point still succeeds; it is billed at the full input rate, or it writes the cache
+on every call and never reads it. The break-even maths above then runs in reverse: an
+agent that writes a 5-minute cache on every turn pays 1.25x on that prefix instead of
+1x. Five failure modes were documented together in October 2026 (a practitioner post
+by the author of a cache-monitoring tool, drawn from open-source framework bug
+reports); the mechanism behind each is confirmed in the AWS and Anthropic caching docs:
+
+| Failure | Mechanism (primary docs) | Signal |
+|---|---|---|
+| The cache point stays on an early message while the agent loop grows | Only the prefix up to a cache point is cached; the point has to move to the last block of the newest message, whatever its role | Cache reads flat while input tokens climb across a session |
+| A wide turn (many parallel tool calls) pushes the last cache entry out of reach | Bedrock "only looks back approximately 20 content blocks" from a cache point; the Claude API counts a run of tool calls as one position, Bedrock's docs do not say so | A zero cache read right after the widest turns |
+| Per-request text sits before the cache point | Cache hits need an identical prefix: a timestamp, request ID, user name or reordered JSON keys make every prefix unique, and changing `tools` invalidates the `system` and `messages` caches | Writes on every call, reads near zero |
+| A framework or gateway stops sending the cache point | No cache point means no caching and no error | Cache reads and writes both zero |
+| A streamed reply is stored as many content blocks | Follows from the lookback limit; observed in one framework, not in AWS docs | Count content blocks in a stored assistant message |
+
+**Monitor the hit rate, not the bill.** The Converse `usage` object returns
+`cacheReadInputTokens` and `cacheWriteInputTokens` (with `cacheDetails` splitting writes
+by TTL), and `inputTokens` there counts only uncached tokens. CloudWatch publishes
+`CacheReadInputTokenCount` and `CacheWriteInputTokenCount` in the `AWS/Bedrock`
+namespace per `ModelId`. Alert on a falling read share per model, and re-check after
+every framework upgrade, model ID change or switch to an application inference profile
+ARN, which are the changes that drop cache points silently. The cache minimum ranges
+from 512 to 4,096 tokens per checkpoint depending on the model, counted over the whole
+prefix, and caching is not available on batch inference.
+
+Sources: [Bedrock prompt caching](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html),
+[Anthropic prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching),
+[Converse TokenUsage](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_TokenUsage.html),
+[Bedrock runtime metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html)
+(all read 16 October 2026); lead: [FinOps Weekly, 14 October 2026](https://finopsweekly.com/blog/five-ways-claude-prompt-caching-quietly-breaks-on-amazon-bedrock/).
+
 ### Service tiers and speed tiers
 
 Bedrock prices the same model differently by service tier, selected per request:
@@ -521,8 +580,21 @@ is repriced (2x input, cache write and cache read; 1.5x output). On the bedrock-
 endpoint, output tokens also burn down the TPM quota at 10x, which matters when sizing
 quotas, not the bill.
 
-Source: <https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-6-astra.html>
-(read 2 October 2026).
+**GPT-6.1 Sol has the same Ultrafast tier (since 8 October 2026).** It is also 6x
+Standard on every token type, selected with `service_tier: "ultrafast"` (AWS documents
+it for the Responses API), with Priority, Flex and Reserved unavailable and the same
+272K long-context rule. Caching still applies under Ultrafast, but inside the 6x tier:
+Sol's cache read is 0.05x its own input rate, so a cached Ultrafast request is still
+priced at six times the cached Standard one. Routing adds a second premium: In-Region
+access on bedrock-mantle and US cross-Region inference cost 10% more than Global
+cross-Region inference on both tiers. AWS has not published the CUR usage type string
+for Ultrafast; the tier shows in the `ServiceTier` and `ResolvedServiceTier`
+CloudWatch dimensions, which is where to alert until it does.
+
+Sources: <https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-6-astra.html>
+(read 2 October 2026), <https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-6-1-sol.html>
+and <https://aws.amazon.com/about-aws/whats-new/2026/10/openai-gpt-sol-ultrafast-amazon/>
+(read 16 October 2026).
 
 ### Context window management
 
@@ -579,6 +651,11 @@ FinOps implications for GovCloud planning:
   documented for commercial regions to GovCloud (US-West) workloads.
 - Verify GovCloud-specific pricing separately - GovCloud rates commonly differ from
   commercial-region rates.
+
+Since 6 October 2026, AgentCore short-term memory bills by data volume (ingestion,
+retrieval and storage per GB, with a 12 KB to 64 KB billable size per event) rather
+than per event. The cost-design consequences, including event expiry as a storage
+lever, are in `finops-agentic.md`, "Memory with cost controls".
 
 ---
 

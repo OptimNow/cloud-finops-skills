@@ -32,6 +32,10 @@ contract sits at the Billing Account level.
 **Set up before anything else:**
 - [ ] Billing administrator IAM grants for the FinOps team
 - [ ] Budgets with email + Pub/Sub alerts at 50% / 80% / 100% thresholds, per project
+- [ ] A spend cap budget on each project that runs Gemini API, Agent Platform or Cloud
+      Run, as the hard stop beside the alert budgets (GA since 13 October 2026; it reads
+      gross list price and pauses committed capacity too - see `finops-vertexai.md`,
+      "Project-level spend caps for agent workloads")
 - [ ] BigQuery billing export enabled (see below) - this is the canonical analytics path
 - [ ] Pricing data export to BigQuery for SKU price reconciliation
 - [ ] AI Cost Summary Agent widget in Billing Overview (preview) for AI workload visibility
