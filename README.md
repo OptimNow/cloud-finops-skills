@@ -458,7 +458,11 @@ FinOps Foundation.
 ## License
 
 Licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
-See [LICENSE.md](./LICENSE.md).
+See [LICENSE.md](./LICENSE.md) for the full licence text.
 
 You are free to use, adapt, and redistribute this skill - including for commercial
 purposes - as long as you credit OptimNow and share any derivatives under the same license.
+When redistributing the material, please include this attribution:
+
+> Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under
+> [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).

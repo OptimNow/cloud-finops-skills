@@ -32,7 +32,11 @@ cloud-finops-skills/
 ├── README.md              <- Public-facing documentation
 ├── AGENTS.md              <- Agent-facing repo brief (truncated tree, defers to CLAUDE.md)
 ├── INSTALLATION.md        <- Setup instructions (12 tool integrations) + response contract
-├── LICENSE.md             <- CC BY-SA 4.0
+├── LICENSE.md             <- CC BY-SA 4.0, full legal text (GitHub only detects
+│                             the licence from the canonical text; a summary
+│                             reads as "Other" and Glama grades it F)
+├── glama.json             <- Glama listing manifest (maintainers), read by the
+│                             Glama crawler at the repository root
 ├── PRIVACY.md             <- Privacy policy for the skill, the hosted connector and
 │                             the PyPI package (the directory listing asks for its URL)
 ├── CONTRIBUTING.md        <- Contribution guide (types, process, push-backs)
