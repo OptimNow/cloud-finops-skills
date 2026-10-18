@@ -327,7 +327,7 @@ Record the actual dates and PR URLs below as they happen.
 
 | Target | Date | URL | Outcome |
 |---|---|---|---|
-| 1 | 2026-09-27 | https://github.com/punkpeye/awesome-mcp-servers/pull/15223 | Opened; validator labels has-glama, has-emoji, valid-name. 2026-10-15: maintainer asked for the Glama listing to be claimed and scored. 2026-10-17: claimed, Glama build and release done, canonical licence text merged (PR #255). Awaiting the Glama score, then the reply |
+| 1 | 2026-09-27 | https://github.com/punkpeye/awesome-mcp-servers/pull/15223 | Merged by punkpeye on 2026-10-18, after the Glama listing was claimed and scored on 2026-10-17 (his 2026-10-15 condition). Entry live under Cloud Platforms |
 | 2 | 2026-09-30 | https://github.com/VoltAgent/awesome-agent-skills/pull/1131 | Opened; anchor was eatmoreduck/boss-zhipin-scraper that day. Awaiting maintainer |
-| 3 | 2026-10-17 | https://github.com/TensorBlock/awesome-mcp-servers/issues/4024 | Issue form submitted; their automation opened draft docs PR #4025 the same day (labels community-intake, needs-triage, ready-for-pr). Awaiting maintainer |
+| 3 | 2026-10-17 | https://github.com/TensorBlock/awesome-mcp-servers/issues/4024 | Bot-generated docs PR #4025 merged by a maintainer on 2026-10-18 (docs/knowledge-management--memory.md); issue closed as completed |
 | 4 | 2026-10-17 | https://github.com/punkpeye/awesome-remote-mcp-servers/pull/2103 | Opened the same day as target 3 (Jean's call); validator labels endpoint-ok, has-connector. Awaiting maintainer |
