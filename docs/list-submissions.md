@@ -328,6 +328,6 @@ Record the actual dates and PR URLs below as they happen.
 | Target | Date | URL | Outcome |
 |---|---|---|---|
 | 1 | 2026-09-27 | https://github.com/punkpeye/awesome-mcp-servers/pull/15223 | Merged by punkpeye on 2026-10-18, after the Glama listing was claimed and scored on 2026-10-17 (his 2026-10-15 condition). Entry live under Cloud Platforms |
-| 2 | 2026-09-30 | https://github.com/VoltAgent/awesome-agent-skills/pull/1131 | Opened; anchor was eatmoreduck/boss-zhipin-scraper that day. Awaiting maintainer |
+| 2 | 2026-09-30 | https://github.com/VoltAgent/awesome-agent-skills/pull/1131 | Merged by a maintainer on 2026-10-15. Entry live under Community Skills > Specialized Domains |
 | 3 | 2026-10-17 | https://github.com/TensorBlock/awesome-mcp-servers/issues/4024 | Bot-generated docs PR #4025 merged by a maintainer on 2026-10-18 (docs/knowledge-management--memory.md); issue closed as completed |
-| 4 | 2026-10-17 | https://github.com/punkpeye/awesome-remote-mcp-servers/pull/2103 | Opened the same day as target 3 (Jean's call); validator labels endpoint-ok, has-connector. Awaiting maintainer |
+| 4 | 2026-10-17 | https://github.com/punkpeye/awesome-remote-mcp-servers/pull/2103 | Validator labels endpoint-ok, has-connector. 2026-10-18: maintainer flagged a merge conflict (main had added coldHat at the same spot); main merged into the branch, entry kept before coldHat. Awaiting maintainer |
