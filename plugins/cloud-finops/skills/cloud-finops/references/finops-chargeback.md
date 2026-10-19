@@ -290,6 +290,12 @@ The FinOps practitioner's job is not to answer these questions; it is to
 surface them at the right moment so the right Finance role can address them
 before the hard-chargeback go-live commitment is made.
 
+**Where an ITFM or TBM function exists**, it is usually the function that executes the
+chargeback (journal entries to the GL), while FinOps owns the attribution model and its
+data. The ownership split for that and the four other FinOps-ITFM handoffs (savings
+recognition, pre-close forecast, variance decomposition, terminology) is in
+`finops-practice-operations.md`.
+
 ---
 
 ## Chargeback-specific cadence

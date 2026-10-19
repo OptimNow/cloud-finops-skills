@@ -255,7 +255,7 @@ a data centre and AWS on one unit-cost basis (see "Comparing environments" in
 | Invoicing & Chargeback | Reconciling invoices and implementing financial accountability (showback, soft chargeback, hard chargeback) |
 | FinOps Assessment | Measuring maturity across all capabilities and producing per-capability scorecards |
 | Automation, Tools & Services | Evaluating and integrating tools and automation that support FinOps capabilities. FOCUS-conformant exports are available from AWS, Azure, GCP, Oracle, Tencent, Huawei, OVHCloud, Alibaba, and Nebius. |
-| Intersecting Disciplines | Integration with adjacent operating disciplines (ITAM, ITSM, ITFM, Security, Sustainability, Procurement) |
+| Intersecting Disciplines | Integration with adjacent operating disciplines (ITAM, ITSM, ITFM, Security, Sustainability, Procurement); the FinOps-ITFM handoffs are in `finops-practice-operations.md` |
 
 ### Building FinOps teams: Reactive vs intentional approaches
 
