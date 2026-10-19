@@ -90,7 +90,10 @@ Without request-level attribution, everything downstream is guesswork.
 invocation. Minimum required fields:
 - Feature or product name
 - User or session identifier
-- Model name and version
+- Model name and version (map each channel's model string to one canonical developer,
+  family and version; FOCUS 1.5, not yet ratified, proposes `ModelDeveloper`,
+  `ModelFamily`, `ModelId` and `ModelVersion` as the vocabulary, see `finops-focus.md`,
+  "The version ladder")
 - Prompt template version or ID
 - Environment (prod / staging / dev)
 

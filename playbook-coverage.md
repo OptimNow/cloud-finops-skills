@@ -17,20 +17,20 @@ the token and agent playbooks and understates AI coverage.
 |---|---|---|---|---|---|
 | orphaned | 4 | 4 | 2 | 1 | 11 |
 | idle | 5 | 2 | 1 | - | 8 |
-| overprovisioned | 7 | 3 | 2 | - | 12 |
+| overprovisioned | 7 | 3 | 3 | - | 13 |
 | commitment-mismatch | 1 | 1 | 1 | - | 3 |
 | schedule-blindness | - | - | - | 1 | 1 |
 | modernization | 3 | - | - | - | 3 |
 | ai-ml-inefficiency | - | - | - | 2 | 2 |
 | egress | 2 | - | - | - | 2 |
-| **total** | 22 | 10 | 6 | 4 | 42 |
+| **total** | 22 | 10 | 7 | 4 | 43 |
 
 ## Confidence distribution
 
 | confidence | playbooks |
 |---|---|
 | obvious | 16 |
-| likely | 20 |
+| likely | 21 |
 | possible | 6 |
 
 ## Gaps (zero cells)

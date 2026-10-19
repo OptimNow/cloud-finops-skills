@@ -94,8 +94,12 @@ claim.
 | **1.3** | 5 December 2025 | A separate Contract Commitment dataset, split cost allocation columns, Service Provider and Host Provider columns (the Provider and Publisher columns are deprecated and scheduled for removal from 1.4), and **recency metadata**: providers timestamp a dataset and flag whether a period is final or still subject to revision. |
 | **1.4** | 4 June 2026 | Two datasets for reconciliation (**Invoice Detail**, recording charges as they appear on the issued invoice, and **Billing Period**, with issuer-set period boundaries and status), an Invoice Reconciliation feature that joins Invoice Detail to cost and usage on `InvoiceId`, a rounding-variance tolerance for high-precision cost data against two-decimal invoice totals, three named **correction-handling** styles (Replacement, Delta, Ledger) that a generator must document, and a Dataset Completeness attribute requiring native columns to be carried as `x_` columns rather than silently dropped. In all, the release adds 2 datasets, 47 columns and 6 attributes, and the Contract Commitment dataset grows from 13 to 30 columns. |
 
+| **1.5** | Not ratified; approval and ratification scheduled for 3 December 2026 | In development, per the working group's scope page (October 2026): a **SKU Price** dataset carrying a provider's prices separately from consumption, linked to cost rows through the SKU Price ID; four model-identity properties in `SkuPriceDetails` (`ModelDeveloper`, `ModelFamily`, `ModelId`, `ModelVersion`); and two token properties, `TokenCacheAction` (Uncached, Read, Write, Other) and `TokenDirection` (Input, Output). All six properties are recommended, not required, so a conformant 1.5 dataset may omit them. A Recommendation dataset was moved to a later release. |
+
 Sources: FOCUS 1.3 announcement
-(<https://www.finops.org/insights/introducing-focus-1-3/>), FOCUS 1.4 announcement
+(<https://www.finops.org/insights/introducing-focus-1-3/>), FOCUS 1.5 release scope
+(<https://focus.finops.org/?p=19885>, read 19 October 2026; the page states it is not a
+commitment by the working group), FOCUS 1.4 announcement
 (<https://www.finops.org/insights/introducing-focus-1-4/>), Dataset Completeness
 attribute (<https://focus.finops.org/docs/specification/v1-4/attributes/dataset-completeness>).
 
@@ -109,6 +113,11 @@ attribute (<https://focus.finops.org/docs/specification/v1-4/attributes/dataset-
   Until a provider ships them, month-end finalisation is a guess (see the finalisation
   section). The FOCUS validator supports 1.3 conformance testing; 1.4 validator support
   was announced for later in Q3 2026.
+- **Do not build against 1.5 names until 1.5 is ratified.** The model and token
+  properties are the vocabulary to aim AI cost attribution at (`finops-for-ai.md`,
+  Phase 1), but they can still change before ratification, and because they are
+  recommended rather than required, a pipeline must cope with a 1.5 export that omits
+  them.
 
 ---
 
@@ -588,7 +597,7 @@ not need them. The Crawl-stage table that answers the first year of questions:
 
 | Column | Why it is in the minimum set |
 |---|---|
-| `ProviderName` | The partition key for everything |
+| `ServiceProviderName` | The partition key for everything. It replaced `ProviderName` in 1.3, and 1.4 removed `ProviderName`; while exports still arrive as 1.0 or 1.2, derive it in the gold view as `COALESCE(ServiceProviderName, ProviderName)` so every downstream query survives the upgrade. Carry `HostProviderName` too where marketplace or resold charges appear |
 | `BillingAccountId`, `SubAccountId`, `SubAccountName` | Hierarchy: payer and linked account, billing profile and subscription, billing account and project |
 | `BillingPeriodStart`, `ChargePeriodStart`, `ChargePeriodEnd` | Invoice period and usage period, kept separate (see invoice timing above) |
 | `InvoiceId` | The reconciliation key; null until the invoice is issued |
@@ -645,7 +654,8 @@ cannot:
   per-provider column map by hand against the minimum viable schema above, noting the
   drops and the reasons.
 - Load the minimum set into one table (DuckDB or a spreadsheet is enough at this stage)
-  and produce `SUM(BilledCost) BY ProviderName, ServiceCategory` for one month.
+  and produce `SUM(BilledCost) BY ServiceProviderName, ServiceCategory` for one month
+  (derived as above while the exports are pre-1.3).
   Reconcile each provider's sum to its invoice. Write down the differences; most are
   invoice-timing and a handful are precision.
 - Output: a one-page note stating the target version, the column map, the known
