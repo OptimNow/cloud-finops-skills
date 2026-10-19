@@ -55,7 +55,7 @@
 <text x="682" y="534" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">2 primary + 3 secondary</text>
 <rect x="24" y="547" width="14" height="14" rx="3" fill="#e2f4b8" stroke="#c9cdd4"/>
 <text x="48" y="558" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Governance, Policy &amp; Risk</text>
-<text x="682" y="558" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (2)</text>
+<text x="682" y="558" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">secondary only (3)</text>
 <rect x="24" y="571" width="14" height="14" rx="3" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="3 2"/>
 <text x="48" y="582" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">FinOps Education &amp; Enablement</text>
 <text x="682" y="582" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">deferred (ROADMAP)</text>

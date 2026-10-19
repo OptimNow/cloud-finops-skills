@@ -40,7 +40,7 @@ Marker legend:
 
 - [~] **Executive Strategy Alignment** _(secondary: finops-kpis-benchmarking.md)_
 - [x] **FinOps Practice Operations** - finops-framework.md; optimnow-methodology.md _(secondary: finops-ai-value-management.md; finops-onboarding-workloads.md; finops-practice-operations.md)_
-- [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-tagging.md)_
+- [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-practice-operations.md; finops-tagging.md)_
 - [ ] **FinOps Education & Enablement** - **GAP** (see docs/ROADMAP.md for deferred capabilities)
 - [x] **Invoicing & Chargeback** - finops-chargeback.md _(secondary: finops-focus.md; finops-practice-operations.md)_
 - [~] **FinOps Assessment** _(secondary: finops-framework.md)_

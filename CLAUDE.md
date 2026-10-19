@@ -123,7 +123,7 @@ cloud-finops-skills/
 │       ├── finops-forecasting.md           <- Forecasting method, measures, cadence, scenarios
 │       ├── finops-allocation-showback.md   <- Allocation methodology + showback
 │       ├── finops-chargeback.md            <- Chargeback + Finance/accounting prerequisites
-│       ├── finops-practice-operations.md   <- Practice operations: ITFM and intersecting disciplines
+│       ├── finops-practice-operations.md   <- Practice operations: operating model, RACI, forums, ITFM
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
 │       ├── finops-focus.md                 <- FOCUS multi-cloud normalisation + ingestion
