@@ -72,6 +72,9 @@ cross-cloud 4), still 13 of 22 with a primary owner.
 State at 2026-10-16: 37 references, 42 playbooks (AWS 22, Azure 10, GCP 6,
 cross-cloud 4), 14 of 22 with a primary owner (Forecasting moved to [x] with
 `finops-forecasting.md`).
+State at 2026-10-19: 38 references, 43 playbooks (AWS 22, Azure 10, GCP 7,
+cross-cloud 4), 15 of 22 with a primary owner (Intersecting Disciplines moved to [x]
+with `finops-practice-operations.md`).
 
 1. **Storage tiering for Azure Blob and GCS - SHIPPED 2026-10-01** (lot of
    the 1st). Four playbooks porting the AWS split:
@@ -304,7 +307,7 @@ this table is now the record).
 | Proposed file | Priority | Trigger to revisit | Why deferred |
 |---|---|---|---|
 | `finops-tools-services.md` | P2 | Next engagement raises a vendor-evaluation question | OptimNow has implicit views (FinOps Toolkit, MCP, OpenCost) but no formal write-up; better to write against a real client question than a generic checklist |
-| `finops-practice-operations.md` | P2 | Next Walk to Run client engagement starts | `optimnow-methodology.md` covers the consultancy-positioning lens; this would be the operator-grade discipline below it (three-cadence operating model, per-Capability scorecard, allied-discipline integration charter) |
+| `finops-practice-operations.md` | **Initiated 2026-10-19** (operating model, RACI, forums, ITFM) | Next Walk to Run client engagement starts, for the scorecard | Covers the operating model (centralise the rate, distribute the usage; central, virtual, hub-and-spoke and distributed team models; reporting line and executive sponsor), a responsibility matrix across Engineering, Product, Finance, ITFM, Procurement and Leadership, the governance forums and their cadence, decision rights and escalation, working with each function, and the ITFM / TBM interface (five handoffs, shared identifiers, bridge), from Foundation, AWS, Microsoft and Google primary pages and the Foundation's June 2026 ITFM paper. Primary capability Intersecting Disciplines, with FinOps Practice Operations and Governance, Policy & Risk as secondaries. Still deferred: the per-Capability scorecard. `optimnow-methodology.md` keeps the consultancy-positioning lens |
 | `finops-forecasting.md` | **Shipped 2026-10-16** | (closed) | Shipped on the budget-season trigger. Built from the Foundation's Forecasting, Budgeting and Planning & Estimating capability pages and two FinOps X 2026 practitioner talks; AI-specific budgeting stays in `finops-ai-value-management.md` |
 | `finops-unit-economics.md` | P2 | Non-AI unit-economics demand emerges | Same reasoning as forecasting; AI-side covered by AI value management and finops-for-ai files |
 | `finops-education-enablement.md` | P2 | Demand emerges; consider folding into practice-operations | Smaller scope than the other P2 files; could double as a section in practice-operations |

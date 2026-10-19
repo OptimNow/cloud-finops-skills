@@ -183,6 +183,11 @@ summary paraphrases the talk rather than quoting it.
 A weekly re-cut is not a weekly re-plan. Keep the budget fixed for its cycle, move
 the forecast, and report the gap between the two; that gap is the signal.
 
+Where an ITFM or TBM function owns period close, the forecast also has a fixed
+delivery date: projected period-end actuals, variance drivers and the planned actions
+behind them reach ITFM before close, not after it, so it can present Finance with a
+defensible range (`finops-practice-operations.md`, "The five intersection points").
+
 ---
 
 ## Volatile and AI workloads: forecast scenarios, not a number

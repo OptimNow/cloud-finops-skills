@@ -79,7 +79,7 @@ ALL_TOOLS=(claude-code claude-projects cursor windsurf chatgpt gemini gemini-cli
 # The routing rows live inside quoted heredocs (so the backticks and <slug>
 # placeholders around them stay literal), so each builder breaks its heredoc
 # for one printf rather than switching to an unquoted heredoc.
-NAMED_WASTE_PATTERNS="zombie NAT, snapshot sprawl, idle ELB, Kinesis stream with no consumers, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste, expiring commitment without a renewal decision, unused Azure reservation, GCP CUD mismatch, S3 incomplete multipart uploads, S3 noncurrent version sprawl, S3 cold data in Standard, NAT-to-gateway-endpoint substitution, idle Azure VM (stopped not deallocated), orphaned Azure public IPs and NICs, Azure snapshot sprawl, gp2-to-gp3 migration, Graviton candidate, Azure Blob version and soft-delete sprawl, Azure Blob cold data in Hot, GCS soft-delete and noncurrent version sprawl, GCS cold data in Standard"
+NAMED_WASTE_PATTERNS="zombie NAT, snapshot sprawl, idle ELB, Kinesis stream with no consumers, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste, expiring commitment without a renewal decision, unused Azure reservation, GCP CUD mismatch, S3 incomplete multipart uploads, S3 noncurrent version sprawl, S3 cold data in Standard, NAT-to-gateway-endpoint substitution, idle Azure VM (stopped not deallocated), orphaned Azure public IPs and NICs, Azure snapshot sprawl, gp2-to-gp3 migration, Graviton candidate, Azure Blob version and soft-delete sprawl, Azure Blob cold data in Hot, GCS soft-delete and noncurrent version sprawl, GCS cold data in Standard, GCP Cloud Logging ingestion sprawl"
 
 # Emit the "Named waste pattern" routing row. $1 is the knowledge-file column,
 # which is the only thing that differs between the two variants.
@@ -456,7 +456,7 @@ install_cursor() {
 build_cursor_rule() {
   cat <<'EOF'
 ---
-description: Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic). Use for cost questions on AWS, Azure, GCP, Anthropic, open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM), Bedrock, Vertex AI, Azure OpenAI, Databricks, Microsoft Fabric, Snowflake, OCI, AI coding tools, self-hosted vs managed AI inference, agentic FinOps, GenAI capacity planning, AI value management, GreenOps, FinOps Framework, SaaS asset management, ITAM, anomaly management, allocation and showback, chargeback, onboarding workloads, Kubernetes FinOps, waste detection, KPIs and benchmarking, forecasting, FOCUS multi-cloud cost data normalisation.
+description: Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic). Use for cost questions on AWS, Azure, GCP, Anthropic, open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM), Bedrock, Vertex AI, Azure OpenAI, Databricks, Microsoft Fabric, Snowflake, OCI, AI coding tools, self-hosted vs managed AI inference, agentic FinOps, GenAI capacity planning, AI value management, GreenOps, FinOps Framework, SaaS asset management, ITAM, anomaly management, allocation and showback, chargeback, onboarding workloads, Kubernetes FinOps, waste detection, KPIs and benchmarking, forecasting, FinOps practice operations (operating model, RACI, governance, ITFM), FOCUS multi-cloud cost data normalisation.
 globs:
   - "**/*"
 alwaysApply: false
@@ -688,6 +688,7 @@ Use these knowledge files for the following query types:
 | FinOps forecasting, forecast accuracy and drift, variance bands by maturity, trend vs driver-based forecasts, re-forecast cadence, AI forecast scenarios | finops-forecasting.md |
 | Cost allocation methodology and showback, FOCUS EffectiveCost vs BilledCost, defensible allocation keys, shared-services hard cases | finops-allocation-showback.md |
 | Chargeback, soft-to-hard maturity, Finance and accounting prerequisites (ERP, transfer pricing, cross-border tax, SOX), chargeback-revolt anti-pattern | finops-chargeback.md |
+| FinOps operating model and team structure, RACI, governance forums and steering committee, decision rights and escalation, working with Engineering / Finance / Procurement, FinOps and ITFM / TBM handoffs (savings recognition, chargeback execution, pre-close forecast, variance), shared identifiers, intersecting disciplines | finops-practice-operations.md |
 | Onboarding workloads, migration-time cost hygiene, intake gate, 60-90 day forecast-then-commit rule, double-bubble cost, M&A integration | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, FOCUS-emitting K8s allocation, container rightsizing, Karpenter, Spot diversification | finops-kubernetes.md |
 | FOCUS, multi-cloud cost data normalisation, FOCUS versions 1.0-1.4, provider export differences (Tags shape, precision, x_ columns), billing data ingestion pipeline, workload identity federation, month-end finalisation, parallel-run migration, FOCUS for SaaS and on-prem sources, FinOps hubs, CID FOCUS dashboard | finops-focus.md |
@@ -708,7 +709,7 @@ build_grouped_instructions() {
   cat <<'EOF'
 # Cloud FinOps Expert Assistant
 
-You are an expert FinOps practitioner. Help users understand and optimise spend on cloud (AWS / Azure / GCP / OCI), AI platforms (Anthropic, Bedrock, Azure OpenAI / Foundry, Vertex AI, open-weight vendor APIs such as DeepSeek / Qwen / Kimi / GLM), data platforms (Databricks, Microsoft Fabric, Snowflake), AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf, Gemini Code Assist), SaaS, and cross-cutting concerns (tagging, FinOps Framework, GreenOps, ITAM, anomaly management, allocation/showback, chargeback, onboarding, Kubernetes, waste detection, KPIs and benchmarking, forecasting, FOCUS multi-cloud cost data).
+You are an expert FinOps practitioner. Help users understand and optimise spend on cloud (AWS / Azure / GCP / OCI), AI platforms (Anthropic, Bedrock, Azure OpenAI / Foundry, Vertex AI, open-weight vendor APIs such as DeepSeek / Qwen / Kimi / GLM), data platforms (Databricks, Microsoft Fabric, Snowflake), AI coding tools (Cursor, Claude Code, Copilot, Codex, Windsurf, Gemini Code Assist), SaaS, and cross-cutting concerns (tagging, FinOps Framework, GreenOps, ITAM, anomaly management, allocation/showback, chargeback, onboarding, Kubernetes, waste detection, KPIs and benchmarking, forecasting, FinOps practice operations (operating model, RACI, governance, ITFM), FOCUS multi-cloud cost data).
 
 Your knowledge files are grouped thematically and updated weekly. Always retrieve the relevant grouped file before answering - do not rely on general training data for billing specifics.
 
@@ -725,7 +726,7 @@ Use these knowledge files for the following query types:
 | Databricks (DBCU, allocation, Photon), Microsoft Fabric (F-SKUs, CU smoothing), Snowflake (QUERY_ATTRIBUTION_HISTORY, Cortex) | data-platforms.md |
 | OCI (Cost Reports, FOCUS, cost-tracking tags, Universal Credits) | oci.md |
 | FinOps Framework 2026 (4 domains, 22 capabilities), tagging, SaaS management, ITAM, GreenOps, Kubernetes FinOps, waste detection playbooks, FOCUS multi-cloud cost data normalisation and ingestion | cross-cutting.md |
-| Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene + M&A), KPIs and benchmarking, forecasting, executive reporting | finops-discipline.md |
+| Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene + M&A), KPIs and benchmarking, forecasting, FinOps practice operations (operating model, RACI, governance, ITFM), executive reporting | finops-discipline.md |
 EOF
   emit_named_pattern_row 'playbooks.md'
   cat <<'EOF'
@@ -816,7 +817,8 @@ build_gemini_grouped_knowledge() {
   cat_required "$outdir/finops-discipline.md" \
     "$refs/finops-anomaly-management.md" "$refs/finops-allocation-showback.md" \
     "$refs/finops-chargeback.md" "$refs/finops-onboarding-workloads.md" \
-    "$refs/finops-kpis-benchmarking.md" "$refs/finops-forecasting.md"
+    "$refs/finops-kpis-benchmarking.md" "$refs/finops-forecasting.md" \
+    "$refs/finops-practice-operations.md"
   cat_required "$outdir/methodology.md" \
     "$refs/optimnow-methodology.md"
 

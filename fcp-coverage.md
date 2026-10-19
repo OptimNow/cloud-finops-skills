@@ -24,7 +24,7 @@ Marker legend:
 
 - [x] **Planning & Estimating** - finops-ai-value-management.md _(secondary: finops-forecasting.md)_
 - [x] **Forecasting** - finops-forecasting.md _(secondary: finops-ai-value-management.md; finops-aws-commitments.md; finops-azure-commitments.md; finops-onboarding-workloads.md)_
-- [~] **Budgeting** _(secondary: finops-allocation-showback.md; finops-anomaly-management.md; finops-chargeback.md; finops-forecasting.md; finops-onboarding-workloads.md)_
+- [~] **Budgeting** _(secondary: finops-allocation-showback.md; finops-anomaly-management.md; finops-chargeback.md; finops-forecasting.md; finops-onboarding-workloads.md; finops-practice-operations.md)_
 - [x] **KPIs & Benchmarking** - finops-kpis-benchmarking.md
 - [x] **Unit Economics** - finops-for-ai.md _(secondary: finops-ai-value-management.md; finops-kpis-benchmarking.md)_
 
@@ -39,18 +39,18 @@ Marker legend:
 ## Manage the FinOps Practice
 
 - [~] **Executive Strategy Alignment** _(secondary: finops-kpis-benchmarking.md)_
-- [x] **FinOps Practice Operations** - finops-framework.md; optimnow-methodology.md _(secondary: finops-ai-value-management.md; finops-onboarding-workloads.md)_
-- [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-tagging.md)_
+- [x] **FinOps Practice Operations** - finops-framework.md; optimnow-methodology.md _(secondary: finops-ai-value-management.md; finops-onboarding-workloads.md; finops-practice-operations.md)_
+- [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-practice-operations.md; finops-tagging.md)_
 - [ ] **FinOps Education & Enablement** - **GAP** (see docs/ROADMAP.md for deferred capabilities)
-- [x] **Invoicing & Chargeback** - finops-chargeback.md _(secondary: finops-focus.md)_
+- [x] **Invoicing & Chargeback** - finops-chargeback.md _(secondary: finops-focus.md; finops-practice-operations.md)_
 - [~] **FinOps Assessment** _(secondary: finops-framework.md)_
 - [~] **Automation, Tools & Services** _(secondary: finops-tagging.md; finops-waste-detection-playbooks.md)_
-- [~] **Intersecting Disciplines** _(secondary: finops-itam.md; finops-sam.md; greenops-cloud-carbon.md)_
+- [x] **Intersecting Disciplines** - finops-practice-operations.md _(secondary: finops-itam.md; finops-sam.md; greenops-cloud-carbon.md)_
 
 ---
 
-**Primary coverage**: 14 / 22 (63%) - capabilities with at least one reference whose `fcp_capability` is the primary classification.
+**Primary coverage**: 15 / 22 (68%) - capabilities with at least one reference whose `fcp_capability` is the primary classification.
 
-**Any-coverage** (primary OR secondary): 21 / 22 (95%) - includes 7 capabilities marked `[~]` that are touched by another reference's `fcp_capabilities_secondary` but have no primary owner yet.
+**Any-coverage** (primary OR secondary): 21 / 22 (95%) - includes 6 capabilities marked `[~]` that are touched by another reference's `fcp_capabilities_secondary` but have no primary owner yet.
 
 **True gaps** (no primary AND no secondary): 1. These are tracked in docs/ROADMAP.md with rationale and trigger-to-revisit.

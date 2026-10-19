@@ -64,6 +64,7 @@ set with its facets.
 | Playbook | Pattern | Waste category | Confidence |
 |---|---|---|---|
 | [gcp-cloud-functions-cold-starts](gcp-cloud-functions-cold-starts.md) | Cloud Functions Cold Starts | overprovisioned | possible |
+| [gcp-cloud-logging-ingestion-sprawl](gcp-cloud-logging-ingestion-sprawl.md) | Cloud Logging Ingestion Sprawl | overprovisioned | likely |
 | [gcp-cud-mismatch](gcp-cud-mismatch.md) | Resource-Based CUD Mismatch | commitment-mismatch | likely |
 | [gcp-gcs-cold-data-in-standard](gcp-gcs-cold-data-in-standard.md) | GCS Cold Data Sitting in Standard | overprovisioned | possible |
 | [gcp-gcs-soft-delete-and-version-sprawl](gcp-gcs-soft-delete-and-version-sprawl.md) | GCS Soft-Delete and Noncurrent Version Sprawl | orphaned | likely |

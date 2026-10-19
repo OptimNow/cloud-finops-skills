@@ -834,6 +834,8 @@ Is the database workload stable and predictable (90+ days of consistent usage)?
 │
 └── YES → Has the workload been right-sized? (steps 1-8 of RDS framework above)
     ├── NO → Right-size first, commit second. Do not lock in waste.
+    │         (A keel sized to the post-rightsizing floor can be bought now:
+    │         see finops-aws-commitments.md, keel commitment.)
     │
     └── YES → What database service?
         │

@@ -228,6 +228,11 @@ GCP CUDs come in two distinct flavours that are easy to conflate:
 | **Resource-based CUD** | Specific vCPU + memory in a region | Up to 57% (3yr) | Low - locked to machine series and region | 1yr or 3yr |
 | **Spend-based / Flexible CUD** | $/hr spend on Compute Engine | **Up to 28% (1yr) or 46% (3yr)** | High - any machine series in any region | 1yr or 3yr |
 
+**Sizing while optimisation is under way.** A CUD's monthly fee applies for the whole
+term, so size the first commitment to a conservative estimate of the usage that will
+remain after rightsizing, buy it without waiting for the optimisation to finish, and
+commit the rest later (the keel rule in `finops-aws-commitments.md` applies unchanged).
+
 **Resource-based CUDs** are the deeper-discount path for predictable, stable
 workloads on a known machine series (N2, E2, etc.). The trade-off is rigidity -
 they do not transfer if you migrate to a different series or to GKE / Cloud Run.
@@ -776,6 +781,11 @@ By default, Cloud Logging retains logs for 30 days. However, many organisations 
 - Set log-specific retention policies aligned with usage and compliance requirements
 - Reduce retention on verbose log types such as DEBUG, INFO, or system health logs
 - Route non-essential logs to a lower-cost or exclusionary sink (e.g., exclude from ingestion)
+- Retention is the smaller lever: ingestion is charged once per GiB and includes 30 days,
+  and an extra month of retention costs a small fraction of that charge. For the
+  ingestion side (exclusion filters, Data Access audit logs enabled org-wide with
+  `allServices`, the VPC Flow Logs exclusion trap), see
+  `playbooks/gcp-cloud-logging-ingestion-sprawl.md`
 
 **Overprovisioned Throughput In Pub Sub Lite**
 Service: GCP Pub/Sub Lite | Type: Overprovisioned Resource Allocation

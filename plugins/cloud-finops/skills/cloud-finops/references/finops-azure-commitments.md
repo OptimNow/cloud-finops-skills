@@ -768,6 +768,8 @@ Is the database workload stable and predictable (90+ days)?
 |
 \-- YES -> Has the database been right-sized and optimised? (steps 1-6 above)
     +-- NO -> Optimise first, commit second. Do not lock in waste.
+    |         (A keel sized to the post-optimisation floor can be bought now:
+    |         see finops-aws-commitments.md, keel commitment.)
     |
     \-- YES -> What is the database estate profile?
         |

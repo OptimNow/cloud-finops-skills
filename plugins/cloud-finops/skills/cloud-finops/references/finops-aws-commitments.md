@@ -344,6 +344,21 @@ forecast, and belongs in the phased blocks below. Re-measure the keel quarterly;
 moves when workloads are decommissioned or migrated, not when traffic fluctuates,
 and a falling keel is an early liquidity warning.
 
+**Do not wait for optimisation to finish before buying the keel.** "Optimise first,
+commit second" is the right rule for everything above the floor, but applied to the
+whole estate it can leave months of on-demand rates on usage that will survive any
+optimisation. When rightsizing will take a quarter or more, size the keel against a
+conservative estimate of the usage that will remain *after* optimisation, not against
+today's run rate, buy it now, and keep the rest uncommitted until the optimisation
+lands. The sizing has to be conservative because a commitment bills for its whole term
+whatever the usage: AWS Savings Plans and RIs charge the commitment hourly, and Google
+states that the CUD monthly fee "applies to your purchased commitments for the entire
+duration of the commitment period"
+([Google Cloud CUDs](https://docs.cloud.google.com/docs/cuds), read 19 October 2026).
+A practitioner case from FinOps X 2026 (StitcherAI, a private-equity carve-in with no
+prior FinOps practice) describes this sequence: commit early on the post-optimisation
+floor, optimise the rest after.
+
 ### Phased purchasing
 
 Avoid buying the full commitment in a single transaction. Purchase in blocks to create
