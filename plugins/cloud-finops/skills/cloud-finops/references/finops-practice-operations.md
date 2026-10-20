@@ -30,7 +30,8 @@ governance part of **Governance, Policy & Risk**.
 
 The Framework's own background is in `finops-framework.md` (phases, maturity, the
 State of FinOps placement data); the consultancy lens is in `optimnow-methodology.md`.
-A per-capability scorecard is not covered yet.
+A per-capability maturity scorecard is not covered yet; for a maturity assessment,
+start from the Framework's maturity model in `finops-framework.md`.
 
 | If the question is about | Go to |
 |---|---|

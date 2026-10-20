@@ -21,13 +21,18 @@ fcp_maturity_entry: "Crawl"
 
 ## Scope of this file
 
-This file covers owned and colocated data centres and the vendor platforms that put
-cloud-style billing on hardware in the customer's own site. It does not yet cover the
-accounting side of owned capacity (depreciation policy, capital against operating
-expenditure, colocation lease treatment), capacity planning lead times and headroom,
-Google Distributed Cloud billing, or mainframe and edge estates. For those, say that
-the library does not cover them rather than improvise. Several on-premises topics already live
-elsewhere, and this file points to them rather than repeating them:
+This file covers owned and colocated data centres and the vendor platforms that bring
+cloud-style billing to hardware on the customer's own site.
+
+**Not covered yet:** the accounting of owned capacity (depreciation policy, capital
+against operating expenditure, colocation lease treatment), capacity planning lead
+times and headroom, Google Distributed Cloud billing, and mainframe or edge estates.
+When a question depends on one of these, say that this library does not cover it and
+point to the primary source (the provider's documentation or the accounting standard)
+instead of answering from memory.
+
+Several on-premises topics already live elsewhere, and this file points to them
+rather than repeating them:
 
 | If the question is about | Go to |
 |---|---|
