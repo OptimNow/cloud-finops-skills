@@ -62,6 +62,21 @@ on 20.
 | `Project` | Group resources by initiative or product | `agent-smith`, `customer-portal` |
 | `Application` | Identify the workload or service | `api-gateway`, `ml-training` |
 
+### Test the business dimension against external reporting
+
+`CostCenter` maps spend to the budget structure. A second test is whether spend can
+also be reported along the dimensions the company uses with investors: open the latest
+quarterly earnings report and check that every reporting segment can be reached from a
+tag or a virtual-tag rule. One practitioner's team aligned its cloud tags to revenue
+segments shortly before a corporate split was announced, and that alignment became
+the cost baseline for both future companies (Ashley Hromatko, "The Unexpected Lessons
+of a Corporate Split: A FinOps / ITFM Perspective", Medium, 20 October 2026). Shared
+corporate functions (Finance, IT, Legal, Marketing) will not map cleanly to one
+segment; give them an explicit shared-services value rather than forcing one. Extend
+the same mapping beyond cloud, to on-premises, SaaS, licences and hardware, where it
+is cheapest to do before it is needed (`finops-onboarding-workloads.md`, "Divestiture
+and separation").
+
 ### Extended tags (Walk/Run maturity)
 
 | Tag key | Purpose | Example values |
@@ -71,6 +86,7 @@ on 20.
 | `Schedule` | Enable automated start/stop | `business-hours`, `always-on`, `weekdays` |
 | `BackupPolicy` | Drive automated backup configuration | `daily-30d`, `weekly-1y`, `none` |
 | `EndDate` | Flag temporary resources for cleanup | `2026-03-31` |
+| `Disposition` | Track what happens to a resource in a migration or divestiture | `move`, `stay`, `clone`, `retire` |
 
 ### Naming convention design
 

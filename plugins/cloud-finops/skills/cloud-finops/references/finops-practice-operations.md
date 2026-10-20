@@ -247,6 +247,16 @@ The speakers reported that company-wide launch freezes for capacity stopped once
 review was in place. For AI features, the funding side of the same gate is in
 `finops-ai-value-management.md`.
 
+**Optimisation debt.** Sometimes the right decision is to defer optimisation: during a
+migration factory, a corporate separation or a launch, rightsizing the environment just
+moved competes with moving the next one. Treat the deferral as a decision with an
+owner, not an omission. Record each item in a register (what was deferred, the
+estimated monthly cost, the owner, the review date) and review the register when the
+event ends. The term comes from one practitioner's account of a corporate split, who
+compares it to technical debt: unrecorded, temporary cost becomes the new baseline
+(Ashley Hromatko, "The Unexpected Lessons of a Corporate Split: A FinOps / ITFM
+Perspective", Medium, 20 October 2026).
+
 A decision right that exists only in a slide deck is negotiated again at every incident.
 
 ---

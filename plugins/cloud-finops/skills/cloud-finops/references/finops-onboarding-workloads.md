@@ -13,7 +13,8 @@ fcp_maturity_entry: "Walk"
 
 > Onboarding is the FCP capability that governs how new workloads enter the
 > cloud estate - whether from on-premises migration, cloud-to-cloud move,
-> account consolidation, or M&A integration. It is the cheapest moment in
+> account consolidation, or M&A integration - and how they leave it in a
+> divestiture. It is the cheapest moment in
 > the workload's lifetime to enforce tagging, allocation, forecasting, and
 > commitment-strategy alignment. Miss the window and the same hygiene work
 > costs 5-10x more to retrofit post-migration.
@@ -272,6 +273,76 @@ not 6 weeks. Plan accordingly.
 
 ---
 
+## Divestiture and separation
+
+The reverse of an integration: one company becomes two, and every shared account,
+contract, platform and commitment has to be assigned to one of them, cloned, or
+retired. A split rarely creates new FinOps problems; it exposes the inventory,
+allocation and contract gaps the estate already had. The practice below follows one
+practitioner's account of a year-long separation ([Ashley Hromatko, "The Unexpected Lessons of a Corporate Split: A FinOps / ITFM Perspective", Medium, 20 October 2026](https://medium.com/@ashley.hromatko/the-unexpected-lessons-of-a-corporate-split-a-finops-itfm-perspective-da6d24ea32bd)); the figures in it
+are that company's, not benchmarks.
+
+### Before a separation is announced: what makes it cheap
+
+- **Allocation that matches how the company reports.** Tags or virtual-tag rules that
+  map spend to the segments the company reports to investors give each future company
+  a cost baseline from day one (`finops-tagging.md`, "Test the business dimension
+  against external reporting"). In the account above, a tagging update aligned to
+  revenue segments shortly before the announcement became the starting point for the
+  whole split.
+- **An inventory keyed to the future owner.** For each application: where it runs,
+  which company it will belong to, where it has to move, its dependencies, its
+  technical complexity and its disposition. Physical location is not ownership: a
+  data centre assigned to one company can host the other's workloads. In the account
+  above, estimates of the application count ranged from 600 to 1,400 until the
+  inventory was rebuilt from the CMDB, application records and cloud tags.
+- **Separability as a design input.** Several applications deployed into shared
+  Azure subscriptions more than five years earlier could not move as whole
+  subscriptions, so each was migrated resource by resource. The author does not
+  recommend one subscription per application (security, operational and platform
+  constraints apply); the design question is whether account and subscription
+  boundaries follow lines along which the business could plausibly separate.
+- **Commitments that can be transferred or divided.** See "Commitments in a
+  separation" below.
+
+### During the separation
+
+- **Disposition and ownership tags.** A disposition value per resource (move, stay,
+  clone, retire) and a current owner. The same attributes later feed reporting on
+  transition service agreements (TSAs) and cross-company charges.
+- **Shared platforms first.** Foundational services used by many applications (in
+  the account above, Power Platform and Microsoft Fabric capacity) have to be
+  duplicated and running before dependent applications can move, and teams need the
+  new paths, URLs and security groups. Cloned shared applications leave the longest
+  tail of duplicate infrastructure, licensing, storage and support cost.
+- **Forecast by scenario, not by version.** Assumptions change faster than a
+  forecast cycle (`finops-forecasting.md`, "Re-forecasting through a structural
+  change").
+- **Record the optimisation you defer.** Over-provisioning accepted to keep the
+  migration schedule is a business trade-off, not a cost failure, provided it is
+  recorded and revisited (`finops-practice-operations.md`, "Optimisation debt").
+- **Funding speed is a delivery dependency.** When a migration waits on approval for
+  infrastructure, licences or cloud capacity, the approval path sets the schedule.
+
+### Commitments in a separation
+
+COMMITMENTS_PLACEHOLDER
+
+### After Day 1
+
+Day 1 independence is not the end of the financial work. Review, per company:
+
+- workloads still running under TSAs, and their exit dates;
+- duplicate infrastructure left by cloned applications;
+- workloads over-provisioned to meet migration deadlines (the optimisation-debt
+  register);
+- commitments re-sized to each company's new consumption, after the 60-90 day
+  stabilisation window above;
+- ownership and tags updated to the new organisations;
+- budget against actual reporting restored for each company.
+
+---
+
 ## Land FOCUS exports during migration
 
 The migration window is when standing up FOCUS-conformant exports is
@@ -355,6 +426,9 @@ it post-migration costs a quarter of engineering time.
   kickoff.
 - **M&A integration measured in weeks, not quarters.** 6-week timelines
   produce 24-month integration debt.
+- **Signing a multi-year commitment without asking what happens on a
+  divestiture.** A commitment that cannot be divided goes to one company,
+  and the other buys again at a worse rate.
 - **FOCUS-after-migration thinking.** The migration window is the cheapest
   moment; deferring is more expensive.
 - **Architecture review without cost analysis.** Locks in structural debt
