@@ -142,6 +142,11 @@ roughly 70% of cloud spend (a working estimate; verify in the estate). The
 remainder is shared services, and that is where allocation methodology earns
 its credibility.
 
+A product feature that runs as code inside shared services has no resource to
+allocate at all; pricing it needs request-level attribution joined with experiment
+data, covered in `finops-kpis-benchmarking.md` ("Pricing a feature that is code,
+not a resource").
+
 ### Network cost
 
 Network cost is the hardest shared-services allocation problem OptimNow has

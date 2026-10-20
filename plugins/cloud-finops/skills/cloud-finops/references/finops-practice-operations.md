@@ -233,6 +233,19 @@ Where the platform can enforce a decision right, use it rather than a meeting:
 - **AWS:** Budget Actions can run automatically or "require workflow approval", which
   puts an approval gate on the response to an overrun.
 
+A documented example of a decision right on capacity rather than spend: Meta's product
+teams review each feature before launch (James Kneeland and Joshua Louie, FinOps X 2026).
+Capacity budgets are set per product area in a planning cycle and released in tranches;
+a launch review tool turns the feature's measured business impact and capacity cost
+(the method is in `finops-kpis-benchmarking.md`, "Pricing a feature that is code, not a
+resource") into a simple return figure, and a reviewer close to the product makes one of
+three calls: approve, defer to the next capacity tranche, or send back to optimise.
+Strategic exceptions are allowed and recorded. Leadership allocates the budgets between
+areas and does not rank features across areas whose business metrics are not comparable.
+The speakers reported that company-wide launch freezes for capacity stopped once the
+review was in place. For AI features, the funding side of the same gate is in
+`finops-ai-value-management.md`.
+
 A decision right that exists only in a slide deck is negotiated again at every incident.
 
 ---

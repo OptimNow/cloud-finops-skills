@@ -195,6 +195,32 @@ rose, the cloud unit cost stayed flat, and the data centre, more expensive per
 session at the start, ended cheaper, with the speaker's own caveat that it was
 not cheaper by default (Yuya Miyahara, FinOps X 2026; no figures given).
 
+**Pricing a feature that is code, not a resource.** Resource-level allocation stops at
+the service: a feature that changes behaviour inside shared, monolithic services has
+no resource of its own to tag. Meta's product teams price it from data they already
+had (James Kneeland and Joshua Louie, FinOps X 2026). Join the shared services' usage
+logs, built for observability, with the experiment platform's exposure logs, so every
+experiment reports its capacity delta against its control group beside its product
+metrics, with the same significance testing. Two conditions make the join work:
+
+- **The originating feature travels with the request.** Each downstream service has to
+  know which product surface or feature caused the call. OpenTelemetry Baggage is a
+  standard carrier: a key-value store propagated with the request context, which a
+  service must explicitly copy into its spans, metrics or logs, and which travels in
+  HTTP headers, so it must not hold sensitive data
+  ([OpenTelemetry Baggage](https://opentelemetry.io/docs/concepts/signals/baggage/),
+  read 20 October 2026).
+- **Internal unit prices stay fixed during the measurement.** Price the capacity delta
+  at the current internal rate and reprice separately, so a rate change does not
+  appear as a feature effect.
+
+After launch, an inverted holdout (most users get the feature, a small group does not)
+checks the estimate against what the feature consumed in production. The limits are
+the ones Meta named: a change that cuts across many features (a shared library, a
+notification that drives usage elsewhere) and a low-level platform optimisation
+cannot be isolated by a user experiment. The decision this measurement feeds is in
+`finops-practice-operations.md`, "Decision rights and escalation".
+
 The trend, not the level, is the deliverable: a unit cost of 0.42 means
 nothing in isolation, but a unit cost down 12% year-on-year while volume grew
 30% is a sentence an executive can repeat to the board.
