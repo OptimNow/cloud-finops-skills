@@ -246,6 +246,9 @@ them, particularly on billing mechanics and capacity economics.
 - "Our Snowflake bill doubled in a quarter. Is it the warehouses, storage or Cortex, and what do we check first?"
 - "Finance wants to charge teams for shared Kubernetes clusters. What has to be true before we move from showback to chargeback?"
 - "Our AI coding tool spend tripled in 6 months. How do we control it without banning the tools?"
+- "Finance wants a 12-month cloud forecast with an accuracy target. Which measures should we report, and how tight should the band be at our maturity?"
+- "Who should own commitment purchases between FinOps, Engineering and Procurement, and which meetings do we need to run the practice?"
+- "We run half our workloads in our own data centres. How do we give app teams a monthly bill for on-prem capacity they will accept?"
 
 ---
 

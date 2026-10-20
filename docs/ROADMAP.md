@@ -55,6 +55,14 @@ becomes a routing item, not a reason to write more.
    targeting the lot shipped on the 1st, on both surfaces, with the
    visible-evidence discipline. Record the verdicts in
    `pipeline/coverage-probes.md`.
+   Queued for the next cycle (2026-10-20), two probes per file, one advisory
+   and one symptom- or account-phrased: forecast accuracy against drift
+   (`finops-forecasting.md`), commitment ownership and policy-exception
+   decision rights (`finops-practice-operations.md`), an on-premises internal
+   bill and per-core hybrid billing (`finops-on-prem-hybrid.md`), and Cloud
+   Logging ingestion with the VPC Flow Logs exclusion trap
+   (`gcp-cloud-logging-ingestion-sprawl`). Exact wording and grounding
+   markers are in the maintainer-local battery.
 4. Hygiene pass: footers, as-of dates older than two quarters, the price-figure
    grep as a review prompt, and the cross-repo table in `CLAUDE.md` for any
    pricing-hub or ROI-calculator claim touched since the last pass.
