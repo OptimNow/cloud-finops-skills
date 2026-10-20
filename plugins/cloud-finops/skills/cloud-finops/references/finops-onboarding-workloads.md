@@ -422,6 +422,8 @@ it post-migration costs a quarter of engineering time.
   anomaly-monitoring scope as part of the intake gate
 - `finops-forecasting.md` - how the intake forecast is measured and re-cut once
   the workload runs (accuracy, drift, driver-led cadence)
+- `finops-on-prem-hybrid.md` - the internal bill for the capacity a workload leaves
+  or stays on, hybrid platform billing, and cloud exit data transfer waivers
 - `optimnow-methodology.md` - "Diagnose before prescribing" applies
   especially to migration: understand what the workload does
   before recommending architecture or commitment

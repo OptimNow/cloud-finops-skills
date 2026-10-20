@@ -193,7 +193,9 @@ of a voice-chat service on-premises and keeping bursts on AWS, they tracked cost
 per voice-chat bridge for a year; the on-premises unit cost fell as utilisation
 rose, the cloud unit cost stayed flat, and the data centre, more expensive per
 session at the start, ended cheaper, with the speaker's own caveat that it was
-not cheaper by default (Yuya Miyahara, FinOps X 2026; no figures given).
+not cheaper by default (Yuya Miyahara, FinOps X 2026; no figures given). How
+the data-centre side gets a bill to compare in the first place, and how the hybrid
+platforms are billed, is in `finops-on-prem-hybrid.md`.
 
 **Pricing a feature that is code, not a resource.** Resource-level allocation stops at
 the service: a feature that changes behaviour inside shared, monolithic services has

@@ -557,7 +557,9 @@ Three classes of source, in increasing order of effort:
   utilization produce artificially low prices", so price at a steady, realistic
   utilisation and report idle capacity as its own cost line rather than folding it
   into the rates; and the goal is "clarity, predictability, and shared understanding
-  rather than perfection", not accounting-level reconciliation. Heineken's and UHG's
+  rather than perfection", not accounting-level reconciliation. Running the internal
+  bill once the rate card exists (service-owner meters, the service graph, idle capacity,
+  peak-based pricing) is in `finops-on-prem-hybrid.md`. Heineken's and UHG's
   talks are the practitioner accounts, and Sony's PlayStation Network team used the
   same two elements to put a data centre and AWS on one basis
   (`finops-kpis-benchmarking.md`, "Comparing environments"). Schema-wise this is the

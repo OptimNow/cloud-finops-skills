@@ -126,6 +126,7 @@ cloud-finops-skills/
 │       ├── finops-practice-operations.md   <- Practice operations: operating model, RACI, forums, ITFM
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
+│       ├── finops-on-prem-hybrid.md        <- On-prem and hybrid: internal bill, hybrid platforms, exit fees
 │       ├── finops-focus.md                 <- FOCUS multi-cloud normalisation + ingestion
 │       └── finops-waste-detection-playbooks.md  <- Eight-category waste taxonomy + WasteLine
 ├── plugins/cloud-finops/skills/cloud-finops/playbooks/  <- named-pattern runbooks (`<scope>-<pattern>.md`,
