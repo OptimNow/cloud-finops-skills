@@ -326,7 +326,43 @@ are that company's, not benchmarks.
 
 ### Commitments in a separation
 
-COMMITMENTS_PLACEHOLDER
+A commitment bought for one company has to land somewhere when it becomes two. In
+the practitioner account above, a three-year consumption commitment about halfway
+through its term at the separation date could not be divided: it went to the larger
+consumer, and the other company signed a new agreement at extra cost. The providers'
+documentation (read 20 October 2026) sets the mechanics:
+
+| Provider and instrument | What happens when part of the estate leaves | Exit options |
+|---|---|---|
+| AWS Reserved Instances and Savings Plans | They move with the member account that bought them and are not retained by the old organisation; a Savings Plan stops applying to the old consolidated bill once its owner account leaves ([AWS Organizations, account migration](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_account_migration.html); [turning off RI and Savings Plans sharing](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html)) | Savings Plans cannot be cancelled during the term ([Savings Plans and RIs](https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-ris.html)), and AWS documents no resale or self-service transfer; Support is the documented route for moving them back. Only EC2 Standard RIs can be sold on the RI Marketplace; Convertible RIs cannot ([RI Marketplace](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html)) |
+| Azure reservations | They transfer automatically between EA enrollments, except when the currency changes; other agreement-to-agreement paths are listed in the product transfer matrix, and a move to pay-as-you-go (MOSP) is not supported ([product transfer hub](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/subscription-transfer)). Changing the directory moves the reservation order to another tenant without changing billing ownership | Exchange; refund within an annual cap per billing profile or enrollment ([exchange and refund](https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations)) |
+| Azure savings plans | They can move between supported agreements, but cannot be cancelled, exchanged or refunded, and their directory cannot change after purchase ([manage savings plans](https://learn.microsoft.com/en-us/azure/cost-management-billing/savings-plan/manage-savings-plan)) | None beyond the transfer matrix |
+| Azure MACC | A subscription holding an active MACC cannot be cancelled or transferred until the MACC expires ([product transfer hub](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/subscription-transfer)). Microsoft documents no way to transfer or split a MACC | Contractual only |
+| GCP resource-based CUDs | They move with the project when the project changes billing account, and stop applying in the old billing account even where CUD sharing was enabled ([change a project's billing account](https://cloud.google.com/billing/docs/how-to/modify-project)) | Cannot be cancelled; merge and split only within the same project and region |
+| GCP spend-based CUDs | Bought at billing-account level; the billing account cannot be changed by the customer ([spend-based CUDs](https://cloud.google.com/docs/cuds-spend-based)) | Cannot be cancelled; Cloud Billing Support is the only route to another billing account |
+
+Four rules follow when a separation is possible within the term:
+
+- **Buy where the unit that may leave lives.** AWS commitments and GCP resource-based
+  CUDs follow the account or project that holds them. A commitment bought centrally
+  stays with the parent, which then loses the usage that was filling it.
+- **Shorten what cannot be exited.** Savings plans on both AWS and Azure and all GCP
+  CUDs are non-cancellable. For workloads that may leave, prefer 1-year terms or the
+  instruments that keep an exit (Azure reservations, AWS Standard RIs), at the cost
+  of a smaller discount. The author of the account above passed up discounts on
+  renewals for the same reason: a discount is one term of an agreement, and
+  flexibility has value too.
+- **Map each commitment to a documented transfer path before signing.** Where the
+  documentation shows none (a MACC, an AWS Savings Plan between payers, a GCP
+  spend-based CUD), the answer depends on the provider's support or account team.
+- **Settle consumption commitments in the separation agreement.** Nothing in the
+  documentation divides a MACC or an enterprise consumption commitment, so its
+  allocation between the two companies, including any shortfall, is a contract term
+  to negotiate, not a technical step.
+
+Before the account or subscription moves, export its cost and usage history and its
+commitment utilisation reports: under the AWS account-migration checklist, the account
+loses access to the old organisation's history.
 
 ### After Day 1
 
