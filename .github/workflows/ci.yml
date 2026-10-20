@@ -67,6 +67,12 @@ jobs:
       - name: Installer artefacts within the size ceiling
         run: bash scripts/check-artefact-size.sh
 
+      # The ChatGPT instructions field holds about 8000 characters, and the
+      # routing table grows with every reference; the build only warned, so
+      # it drifted to 9671 characters before anyone noticed (2026-10-20).
+      - name: ChatGPT instructions within the editor limit
+        run: bash scripts/check-chatgpt-instructions.sh
+
       # The plugin folder is plugins/cloud-finops/ (since 2026-10-01), and every
       # file under it is part of the Claude directory listing. Two holds to keep
       # off: a non-image, non-font file over 256 KiB, or more than 512 files
