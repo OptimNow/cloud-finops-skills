@@ -30,7 +30,7 @@ governance part of **Governance, Policy & Risk**.
 
 The Framework's own background is in `finops-framework.md` (phases, maturity, the
 State of FinOps placement data); the consultancy lens is in `optimnow-methodology.md`.
-A per-capability scorecard is still deferred (`docs/ROADMAP.md`).
+A per-capability scorecard is not covered yet.
 
 | If the question is about | Go to |
 |---|---|
@@ -237,8 +237,8 @@ A documented example of a decision right on capacity rather than spend: Meta's p
 teams review each feature before launch (James Kneeland and Joshua Louie, FinOps X 2026).
 Capacity budgets are set per product area in a planning cycle and released in tranches;
 a launch review tool turns the feature's measured business impact and capacity cost
-(the method is in `finops-kpis-benchmarking.md`, "Pricing a feature that is code, not a
-resource") into a simple return figure, and a reviewer close to the product makes one of
+(the method is the "Pricing a feature that is code" paragraph of the "Unit economics"
+section in `finops-kpis-benchmarking.md`) into a simple return figure, and a reviewer close to the product makes one of
 three calls: approve, defer to the next capacity tranche, or send back to optimise.
 Strategic exceptions are allowed and recorded. Leadership allocates the budgets between
 areas and does not rank features across areas whose business metrics are not comparable.

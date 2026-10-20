@@ -6,7 +6,7 @@ fcp_capabilities_secondary: ["Invoicing & Chargeback", "Data Ingestion", "Archit
 fcp_phases: ["Inform", "Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Platform Engineering", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Procurement", "ITAM", "Leadership"]
-fcp_maturity_entry: "Walk"
+fcp_maturity_entry: "Crawl"
 ---
 
 # FinOps for On-Premises and Hybrid Estates
@@ -24,23 +24,25 @@ fcp_maturity_entry: "Walk"
 This file covers owned and colocated data centres and the vendor platforms that put
 cloud-style billing on hardware in the customer's own site. It does not yet cover the
 accounting side of owned capacity (depreciation policy, capital against operating
-expenditure, colocation lease treatment) or capacity planning lead times; both are
-listed as open work in `docs/ROADMAP.md`. Several on-premises topics already live
+expenditure, colocation lease treatment), capacity planning lead times and headroom,
+Google Distributed Cloud billing, or mainframe and edge estates. For those, say that
+the library does not cover them rather than improvise. Several on-premises topics already live
 elsewhere, and this file points to them rather than repeating them:
 
 | If the question is about | Go to |
 |---|---|
 | Building the data-centre rate card and mapping on-premises rows to FOCUS | `finops-focus.md`, "Beyond the three clouds" |
-| Comparing the data centre and a cloud on one unit cost; the utilisation crossover | `finops-kpis-benchmarking.md`, "Comparing environments" |
+| Comparing the data centre and a cloud on one unit cost; the utilisation crossover | `finops-kpis-benchmarking.md`, "Unit economics" section (paragraph "Comparing environments") |
 | Migrating a workload from on-premises: baselines, network cost model, double-bubble cost | `finops-onboarding-workloads.md` |
 | BYOL, licence mobility and Azure Hybrid Benefit in the cloud | `finops-itam.md`, `finops-azure-commitments.md` |
 | Self-hosting AI inference against a managed API, hybrid model routing | `finops-ai-self-hosted-vs-managed.md` |
 | Chargeback design, ERP readiness, transfer pricing | `finops-chargeback.md` |
 | Power, PUE and carbon of owned facilities | `greenops-cloud-carbon.md` |
 
-The Framework treats the data centre as one of its scopes, so the same capabilities
-apply; `finops-framework.md` carries the scope definitions and the State of FinOps
-data on how many practices now manage data centres and private cloud.
+The Framework's 2026 revision lists Data Center as one of its Technology Categories,
+with a page on how the same capabilities apply to it; `finops-framework.md` carries
+the category and Scope definitions and the State of FinOps data on how many
+practices now manage data centres and private cloud.
 
 ---
 
@@ -124,9 +126,10 @@ Three rules decide whether consumers accept the bill:
   operations, on the reasoning that platform teams are needed whether a workload runs
   on-premises or in a cloud, which keeps the two comparable.
 - **Idle capacity is a separate line, not an overhead.** Folding unused capacity into
-  the rates raises every consumer's price for a decision none of them made. Report it to
-  whoever owns capacity planning, as the Foundation paper asks. (At Target, unused
-  capacity sits with a separate capacity team.)
+  the rates raises every consumer's price for a decision none of them made; the
+  Foundation paper asks for idle capacity to be tracked as its own line. Route that line
+  to whoever owns capacity planning, as Target does: its unused capacity sits with a
+  separate capacity team.
 - **Charge reserved capacity at the peak it forces.** Meta charges bursty demand at the
   peak capacity it obliges the company to reserve, unless the workload runs on a
   non-guaranteed elastic tier; allocated quota that goes unused is not reclaimed
@@ -135,7 +138,8 @@ Three rules decide whether consumers accept the bill:
   causes the spike, which a flat average rate hides.
 
 For a feature that runs inside shared services and has no resource of its own, see
-`finops-kpis-benchmarking.md`, "Pricing a feature that is code, not a resource".
+the "Unit economics" section of `finops-kpis-benchmarking.md` (paragraph "Pricing a
+feature that is code, not a resource").
 
 ---
 
@@ -147,9 +151,11 @@ platform make that table maintainable (practitioner-reported):
 
 - **One meter schema for private and public sources**: a source-type field, the
   consumer, the shared identifier, the meter type, and daily average, maximum and
-  minimum. The columns the FOCUS mapping already names (`ConsumedQuantity`,
-  `PricingQuantity`, `ServiceProviderName` for the internal team that exposes the
-  service) carry the same information.
+  minimum. The FOCUS mapping in `finops-focus.md` carries the quantity
+  (`ConsumedQuantity`, `PricingQuantity`) and the estate owner (`BillingAccountId`);
+  name the internal team that exposes the service in `ServiceProviderName`, and keep
+  the daily maximum and minimum as extra columns, because FOCUS has none for them and
+  utilisation insights (such as Target's, below) are computed from the maximum.
 - **Price outside the usage record.** Usage rows hold quantities; the price joins at
   query time from the rate history. A reprice then changes no stored usage.
 - **Push over pull.** A feed the service owner publishes is slower to onboard than a
@@ -232,9 +238,11 @@ mechanisms now reduce it:
   read 20 October 2026). Microsoft announced a similar programme for Azure in 2024;
   its terms could not be read on a Microsoft page for this file, so check them directly
   before relying on them.
-- **The EU Data Act.** From 11 January 2024 to 12 January 2027, providers may charge
-  customers only the costs they incur for switching and data egress; from 12 January
-  2027 they may not charge for the operations needed to switch or for data egress at all
+- **The EU Data Act.** For data processing services offered to customers in the EU
+  (it is an EU regulation; customers elsewhere depend on the provider's own exit
+  programme above): from 11 January 2024 to 12 January 2027, providers may charge
+  only the costs they incur for switching and data egress; from 12 January 2027 they
+  may not charge for the operations needed to switch or for data egress at all
   ([European Commission, Data Act explained](https://digital-strategy.ec.europa.eu/en/factpages/data-act-explained),
   read 20 October 2026).
 
@@ -280,7 +288,6 @@ the exit as a project with an end date, and model the run-state network cost sep
 - `finops-onboarding-workloads.md` - migration from on-premises
 - `finops-itam.md` - licence mobility and BYOL
 - `finops-practice-operations.md` - decision rights, including Meta's launch review
-- `docs/ROADMAP.md` - what this file does not cover yet
 
 ---
 

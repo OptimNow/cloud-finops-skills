@@ -144,8 +144,8 @@ its credibility.
 
 A product feature that runs as code inside shared services has no resource to
 allocate at all; pricing it needs request-level attribution joined with experiment
-data, covered in `finops-kpis-benchmarking.md` ("Pricing a feature that is code,
-not a resource").
+data, covered in the "Unit economics" section of `finops-kpis-benchmarking.md`
+(paragraph "Pricing a feature that is code, not a resource").
 
 ### Network cost
 

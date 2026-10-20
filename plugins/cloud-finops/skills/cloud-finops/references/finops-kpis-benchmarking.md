@@ -174,29 +174,6 @@ Choosing the denominator is the actual work:
   with the capacity tier, the TCO model or the unit of compute; open with the
   unit the room already counts.
 
-**Comparing environments.** A hybrid or repatriation question ("is the data
-centre cheaper than cloud for this workload?") is a unit-economics question with
-one extra constraint: the unit must pass three tests before any comparison is
-made. It reflects workload behaviour, it correlates with cost in both
-environments, and it is measured the same way in both. An infrastructure rate or
-a volume figure fails the third test, because the data centre has no native
-price and meters differently; a business event such as a session or a
-transaction passes. Then the mechanic that decides the result: capacity-priced
-cost (owned hardware, a reserved F-SKU, a committed GPU block) has a unit cost
-that falls as utilisation rises, because the denominator grows against a fixed
-numerator, while usage-priced cloud has a roughly flat unit cost, so the
-crossover is a function of achieved utilisation, and the idle-capacity line the
-data-centre rate-card method requires (`finops-focus.md`, "Beyond the three
-clouds") is what keeps the comparison honest. Sony Interactive Entertainment's
-PlayStation Network team is the worked illustration: after moving the baseline
-of a voice-chat service on-premises and keeping bursts on AWS, they tracked cost
-per voice-chat bridge for a year; the on-premises unit cost fell as utilisation
-rose, the cloud unit cost stayed flat, and the data centre, more expensive per
-session at the start, ended cheaper, with the speaker's own caveat that it was
-not cheaper by default (Yuya Miyahara, FinOps X 2026; no figures given). How
-the data-centre side gets a bill to compare in the first place, and how the hybrid
-platforms are billed, is in `finops-on-prem-hybrid.md`.
-
 **Pricing a feature that is code, not a resource.** Resource-level allocation stops at
 the service: a feature that changes behaviour inside shared, monolithic services has
 no resource of its own to tag. Meta's product teams price it from data they already
@@ -222,6 +199,29 @@ the ones Meta named: a change that cuts across many features (a shared library, 
 notification that drives usage elsewhere) and a low-level platform optimisation
 cannot be isolated by a user experiment. The decision this measurement feeds is in
 `finops-practice-operations.md`, "Decision rights and escalation".
+
+**Comparing environments.** A hybrid or repatriation question ("is the data
+centre cheaper than cloud for this workload?") is a unit-economics question with
+one extra constraint: the unit must pass three tests before any comparison is
+made. It reflects workload behaviour, it correlates with cost in both
+environments, and it is measured the same way in both. An infrastructure rate or
+a volume figure fails the third test, because the data centre has no native
+price and meters differently; a business event such as a session or a
+transaction passes. Then the mechanic that decides the result: capacity-priced
+cost (owned hardware, a reserved F-SKU, a committed GPU block) has a unit cost
+that falls as utilisation rises, because the denominator grows against a fixed
+numerator, while usage-priced cloud has a roughly flat unit cost, so the
+crossover is a function of achieved utilisation, and the idle-capacity line the
+data-centre rate-card method requires (`finops-focus.md`, "Beyond the three
+clouds") is what keeps the comparison honest. Sony Interactive Entertainment's
+PlayStation Network team is the worked illustration: after moving the baseline
+of a voice-chat service on-premises and keeping bursts on AWS, they tracked cost
+per voice-chat bridge for a year; the on-premises unit cost fell as utilisation
+rose, the cloud unit cost stayed flat, and the data centre, more expensive per
+session at the start, ended cheaper, with the speaker's own caveat that it was
+not cheaper by default (Yuya Miyahara, FinOps X 2026; no figures given). How
+the data-centre side gets a bill to compare in the first place, and how the hybrid
+platforms are billed, is in `finops-on-prem-hybrid.md`.
 
 The trend, not the level, is the deliverable: a unit cost of 0.42 means
 nothing in isolation, but a unit cost down 12% year-on-year while volume grew

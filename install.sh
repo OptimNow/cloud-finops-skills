@@ -688,10 +688,10 @@ Use these knowledge files for the following query types:
 | FinOps forecasting, forecast accuracy and drift, variance bands by maturity, trend vs driver-based forecasts, re-forecast cadence, AI forecast scenarios | finops-forecasting.md |
 | Cost allocation methodology and showback, FOCUS EffectiveCost vs BilledCost, defensible allocation keys, shared-services hard cases | finops-allocation-showback.md |
 | Chargeback, soft-to-hard maturity, Finance and accounting prerequisites (ERP, transfer pricing, cross-border tax, SOX), chargeback-revolt anti-pattern | finops-chargeback.md |
-| FinOps operating model and team structure, RACI, governance forums and steering committee, decision rights and escalation, working with Engineering / Finance / Procurement, FinOps and ITFM / TBM handoffs (savings recognition, chargeback execution, pre-close forecast, variance), shared identifiers, intersecting disciplines | finops-practice-operations.md |
+| FinOps operating model, RACI, governance forums, decision rights, ITFM / TBM handoffs | finops-practice-operations.md |
 | Onboarding workloads, migration-time cost hygiene, intake gate, 60-90 day forecast-then-commit rule, double-bubble cost, M&A integration | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, FOCUS-emitting K8s allocation, container rightsizing, Karpenter, Spot diversification | finops-kubernetes.md |
-| On-premises and hybrid FinOps: data-centre internal bill, service-owner meters, idle capacity, on-prem usage ingestion, AWS Outposts / Azure Local / Azure Arc / Exadata Cloud@Customer / VMware core licensing, repatriation and cloud exit fees | finops-on-prem-hybrid.md |
+| On-prem and hybrid: data-centre internal bill, Outposts / Azure Local / Arc / VMware billing, exit fees | finops-on-prem-hybrid.md |
 | FOCUS, multi-cloud cost data normalisation, FOCUS versions 1.0-1.4, provider export differences (Tags shape, precision, x_ columns), billing data ingestion pipeline, workload identity federation, month-end finalisation, parallel-run migration, FOCUS for SaaS and on-prem sources, FinOps hubs, CID FOCUS dashboard | finops-focus.md |
 | Waste detection playbooks, eight-category waste taxonomy, two-signal classification, egress / data transfer waste, WasteLine appliance | finops-waste-detection-playbooks.md |
 EOF
