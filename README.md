@@ -145,7 +145,7 @@ MCP connector is optional and documented in its own repository; see
 |---|---|
 | **AI & GenAI economics** | FinOps for AI (inference economics, unit economics, ROI), agentic FinOps (agent cost anatomy, x402 / MPP), AI value management (Investment Council, stage gates), GenAI capacity planning (provisioned vs shared, spillover), self-hosted vs managed inference, open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM), AI coding tools (Cursor, Claude Code, Copilot, Windsurf, Codex) |
 | **AI platform billing** | Anthropic (Fast mode, long-context cliffs, prompt caching), AWS Bedrock, Azure OpenAI Service (PTUs, spillover), GCP Vertex AI |
-| **Cloud providers** | AWS (CUR / Data Exports, rightsizing, SageMaker, Savings Plans / RIs / EDP, billing hierarchy and separate invoices per business unit, pattern catalogue), Azure (Cost Management, Reservations, AHB, EA-to-MCA, pattern catalogue), GCP (CUDs, BigQuery), OCI |
+| **Cloud providers** | AWS (CUR / Data Exports, rightsizing, SageMaker, Savings Plans / RIs / EDP, billing hierarchy and separate invoices per business unit, pattern catalogue), Azure (Cost Management, Reservations, AHB, EA-to-MCA, pattern catalogue), GCP (CUDs, BigQuery), OCI, on-premises and hybrid (data-centre internal bill, Outposts, Azure Local, Arc, VMware core licensing, cloud exit fees) |
 | **Data platforms** | Databricks (DBU / DBCU, allocation), Microsoft Fabric (F-SKUs, CU smoothing), Snowflake (warehouses, Cortex governance) |
 | **FinOps disciplines** | The FinOps Framework (22 capabilities, maturity model), tagging governance, allocation and showback (FOCUS), chargeback (Finance / tax prerequisites), anomaly management, KPIs and benchmarking, forecasting, FinOps practice operations (operating model, RACI, governance forums, ITFM interface), workload onboarding and M&A, Kubernetes (EKS / GKE / AKS) |
 | **SaaS & licensing** | SaaS asset management (SMPs, shadow IT, renewals), ITAM collaboration (BYOL, marketplace governance, entitlements) |
@@ -246,6 +246,9 @@ them, particularly on billing mechanics and capacity economics.
 - "Our Snowflake bill doubled in a quarter. Is it the warehouses, storage or Cortex, and what do we check first?"
 - "Finance wants to charge teams for shared Kubernetes clusters. What has to be true before we move from showback to chargeback?"
 - "Our AI coding tool spend tripled in 6 months. How do we control it without banning the tools?"
+- "Finance wants a 12-month cloud forecast with an accuracy target. Which measures should we report, and how tight should the band be at our maturity?"
+- "Who should own commitment purchases between FinOps, Engineering and Procurement, and which meetings do we need to run the practice?"
+- "We run half our workloads in our own data centres. How do we give app teams a monthly bill for on-prem capacity they will accept?"
 
 ---
 

@@ -30,7 +30,8 @@ governance part of **Governance, Policy & Risk**.
 
 The Framework's own background is in `finops-framework.md` (phases, maturity, the
 State of FinOps placement data); the consultancy lens is in `optimnow-methodology.md`.
-A per-capability scorecard is still deferred (`docs/ROADMAP.md`).
+A per-capability maturity scorecard is not covered yet; for a maturity assessment,
+start from the Framework's maturity model in `finops-framework.md`.
 
 | If the question is about | Go to |
 |---|---|
@@ -232,6 +233,19 @@ Where the platform can enforce a decision right, use it rather than a meeting:
   exception into an auditable, time-boxed record.
 - **AWS:** Budget Actions can run automatically or "require workflow approval", which
   puts an approval gate on the response to an overrun.
+
+A documented example of a decision right on capacity rather than spend: Meta's product
+teams review each feature before launch (James Kneeland and Joshua Louie, FinOps X 2026).
+Capacity budgets are set per product area in a planning cycle and released in tranches;
+a launch review tool turns the feature's measured business impact and capacity cost
+(the method is the "Pricing a feature that is code" paragraph of the "Unit economics"
+section in `finops-kpis-benchmarking.md`) into a simple return figure, and a reviewer close to the product makes one of
+three calls: approve, defer to the next capacity tranche, or send back to optimise.
+Strategic exceptions are allowed and recorded. Leadership allocates the budgets between
+areas and does not rank features across areas whose business metrics are not comparable.
+The speakers reported that company-wide launch freezes for capacity stopped once the
+review was in place. For AI features, the funding side of the same gate is in
+`finops-ai-value-management.md`.
 
 A decision right that exists only in a slide deck is negotiated again at every incident.
 

@@ -217,6 +217,21 @@ taken before anyone knows which driver moved tends to remove the use case that w
 working. The scenario names and the 90-day cadence are that speaker's practice;
 the range-and-confidence requirement is the Foundation's.
 
+The scenarios need a driver underneath them, and the right driver differs by use
+case. Palo Alto Networks forecasts each class of AI spend from a different one
+(Abhinav Lad and Kuntal Patel, FinOps X 2026):
+
+| AI use case | Forecast driver | What breaks a trend model |
+|---|---|---|
+| AI embedded in a revenue-generating product | AI cost as a share of that product's revenue | Nothing new: capacity behaves like other compute and takes commitments |
+| AI coding and productivity tools | Adoption rate per business unit x a cost-per-user target, with a separate power-user tier | Pilot cost is near zero and sandbox cost is noise, then spend steps up on the day security, legal and governance clear general access; forecast that date as a step, not a trend |
+| Internal enterprise assistants | Volume: users first, then tickets or requests handled | Usage follows the process the assistant serves, not the headcount |
+
+Adoption differs widely between business units (in their case, about 90% in one
+engineering team and 22% in another function; the speakers' figures), so a single
+company-wide adoption rate misforecasts both ends. The drivers are that company's
+practice, not a Foundation standard.
+
 Two links into the rest of the library. A provisioned or reserved AI capacity
 commitment should be sized on the post-spike baseline, never during a surge (the
 rule is in `finops-genai-capacity.md`). And the people who build, evaluate and run

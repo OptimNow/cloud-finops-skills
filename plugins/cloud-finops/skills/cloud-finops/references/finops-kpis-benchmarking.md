@@ -174,6 +174,32 @@ Choosing the denominator is the actual work:
   with the capacity tier, the TCO model or the unit of compute; open with the
   unit the room already counts.
 
+**Pricing a feature that is code, not a resource.** Resource-level allocation stops at
+the service: a feature that changes behaviour inside shared, monolithic services has
+no resource of its own to tag. Meta's product teams price it from data they already
+had (James Kneeland and Joshua Louie, FinOps X 2026). Join the shared services' usage
+logs, built for observability, with the experiment platform's exposure logs, so every
+experiment reports its capacity delta against its control group beside its product
+metrics, with the same significance testing. Two conditions make the join work:
+
+- **The originating feature travels with the request.** Each downstream service has to
+  know which product surface or feature caused the call. OpenTelemetry Baggage is a
+  standard carrier: a key-value store propagated with the request context, which a
+  service must explicitly copy into its spans, metrics or logs, and which travels in
+  HTTP headers, so it must not hold sensitive data
+  ([OpenTelemetry Baggage](https://opentelemetry.io/docs/concepts/signals/baggage/),
+  read 20 October 2026).
+- **Internal unit prices stay fixed during the measurement.** Price the capacity delta
+  at the current internal rate and reprice separately, so a rate change does not
+  appear as a feature effect.
+
+After launch, an inverted holdout (most users get the feature, a small group does not)
+checks the estimate against what the feature consumed in production. The limits are
+the ones Meta named: a change that cuts across many features (a shared library, a
+notification that drives usage elsewhere) and a low-level platform optimisation
+cannot be isolated by a user experiment. The decision this measurement feeds is in
+`finops-practice-operations.md`, "Decision rights and escalation".
+
 **Comparing environments.** A hybrid or repatriation question ("is the data
 centre cheaper than cloud for this workload?") is a unit-economics question with
 one extra constraint: the unit must pass three tests before any comparison is
@@ -193,7 +219,9 @@ of a voice-chat service on-premises and keeping bursts on AWS, they tracked cost
 per voice-chat bridge for a year; the on-premises unit cost fell as utilisation
 rose, the cloud unit cost stayed flat, and the data centre, more expensive per
 session at the start, ended cheaper, with the speaker's own caveat that it was
-not cheaper by default (Yuya Miyahara, FinOps X 2026; no figures given).
+not cheaper by default (Yuya Miyahara, FinOps X 2026; no figures given). How
+the data-centre side gets a bill to compare in the first place, and how the hybrid
+platforms are billed, is in `finops-on-prem-hybrid.md`.
 
 The trend, not the level, is the deliverable: a unit cost of 0.42 means
 nothing in isolation, but a unit cost down 12% year-on-year while volume grew

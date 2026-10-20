@@ -30,7 +30,9 @@ using it. Spend follows the same curve, but visibility does not. Finance sees a 
 invoice with a single number. Engineering cannot explain what is behind it.
 
 This makes AI dev tools a FinOps blind spot in many organisations - growing fast, poorly
-attributed, and governed reactively if at all.
+attributed, and governed reactively if at all. For forecasting, treat the day governance
+clears general access as a step in spend, and forecast from adoption rate per business
+unit times a cost-per-user target (`finops-forecasting.md`, "Volatile and AI workloads").
 
 ---
 

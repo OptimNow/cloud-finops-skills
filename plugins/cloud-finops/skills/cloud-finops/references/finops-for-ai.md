@@ -124,7 +124,11 @@ In production RAG architectures, the surrounding infrastructure - referred to as
 harness - includes every component that supports the model call but is not itself a model
 call. In observed enterprise deployments, the harness represents 40-60% of total AI
 feature cost. In RAG-heavy architectures with multi-region data pipelines, it can exceed
-inference cost.
+inference cost. A named case: Palo Alto Networks reported that in its first phase of
+enterprise AI, retrieval and memory for RAG (chunking, embedding, vector storage and
+corpus refresh) cost more than the LLM calls themselves, and that charging RAG back
+across the many agents sharing one corpus was still unsolved (Abhinav Lad and Kuntal
+Patel, FinOps X 2026; no figures given).
 
 **The emerging SaaS dimension:** Beyond infrastructure harness costs, AI agents are
 introducing a new cost category: per-query charges from SaaS vendors. As agents interact
@@ -139,6 +143,7 @@ thousands of times daily can generate costs that dwarf traditional per-seat lice
 |---|---|---|---|
 | Vector DB (managed) | Storage GB + read/write units | High - marketplace billing | Project isolation, app metering, virtual tagging |
 | Embedding generation | Token volume per ingestion + query | Medium | Per-request metadata logging |
+| Corpus refresh | Re-chunk, re-embed and re-index frequency x corpus size changed | High - shared by every agent that reads the corpus | Charge to the corpus owner, then split by retrieval volume per agent; set the refresh cadence as a cost decision |
 | Object storage | Corpus size, retrieval frequency | Low-Medium | Native tags + lifecycle policies |
 | GPU compute (self-hosted) | GPU-hours x instance rate | Medium | K8s labels + DCGM + OpenCost/Kubecost |
 | KV / in-memory cache | Memory GB-hours | Low | Tags + namespace isolation |
@@ -553,6 +558,15 @@ September 2026).
 - Always define `max_tokens` on every model call - unbounded responses are a common
   and avoidable source of cost overruns
 - Tune `temperature`, `top_p`, `top_k` for concise output on structured tasks
+- Constrain classification and extraction answers to a schema (a boolean, an enum,
+  named fields) instead of prose. Output is the expensive side of the rate card: on
+  every current Claude model the output rate is five times the base input rate
+  ([Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing), read
+  20 October 2026). A strict schema also removes the retry a malformed answer would
+  trigger: OpenAI's Structured Outputs guarantee adherence to the supplied JSON Schema,
+  with "no need to validate or retry incorrectly formatted responses"
+  ([OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs),
+  read 20 October 2026)
 
 **Caching:**
 - Cache system prompts and static context (Anthropic and OpenAI support prompt caching)

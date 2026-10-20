@@ -55,6 +55,14 @@ becomes a routing item, not a reason to write more.
    targeting the lot shipped on the 1st, on both surfaces, with the
    visible-evidence discipline. Record the verdicts in
    `pipeline/coverage-probes.md`.
+   Queued for the next cycle (2026-10-20), two probes per file, one advisory
+   and one symptom- or account-phrased: forecast accuracy against drift
+   (`finops-forecasting.md`), commitment ownership and policy-exception
+   decision rights (`finops-practice-operations.md`), an on-premises internal
+   bill and per-core hybrid billing (`finops-on-prem-hybrid.md`), and Cloud
+   Logging ingestion with the VPC Flow Logs exclusion trap
+   (`gcp-cloud-logging-ingestion-sprawl`). Exact wording and grounding
+   markers are in the maintainer-local battery.
 4. Hygiene pass: footers, as-of dates older than two quarters, the price-figure
    grep as a review prompt, and the cross-repo table in `CLAUDE.md` for any
    pricing-hub or ROI-calculator claim touched since the last pass.
@@ -75,6 +83,8 @@ cross-cloud 4), 14 of 22 with a primary owner (Forecasting moved to [x] with
 State at 2026-10-19: 38 references, 43 playbooks (AWS 22, Azure 10, GCP 7,
 cross-cloud 4), 15 of 22 with a primary owner (Intersecting Disciplines moved to [x]
 with `finops-practice-operations.md`).
+State at 2026-10-20: 39 references, 43 playbooks (unchanged), 15 of 22 with a
+primary owner (`finops-on-prem-hybrid.md` takes Allocation, already covered).
 
 1. **Storage tiering for Azure Blob and GCS - SHIPPED 2026-10-01** (lot of
    the 1st). Four playbooks porting the AWS split:
@@ -308,6 +318,7 @@ this table is now the record).
 |---|---|---|---|
 | `finops-tools-services.md` | P2 | Next engagement raises a vendor-evaluation question | OptimNow has implicit views (FinOps Toolkit, MCP, OpenCost) but no formal write-up; better to write against a real client question than a generic checklist |
 | `finops-practice-operations.md` | **Initiated 2026-10-19** (operating model, RACI, forums, ITFM) | Next Walk to Run client engagement starts, for the scorecard | Covers the operating model (centralise the rate, distribute the usage; central, virtual, hub-and-spoke and distributed team models; reporting line and executive sponsor), a responsibility matrix across Engineering, Product, Finance, ITFM, Procurement and Leadership, the governance forums and their cadence, decision rights and escalation, working with each function, and the ITFM / TBM interface (five handoffs, shared identifiers, bridge), from Foundation, AWS, Microsoft and Google primary pages and the Foundation's June 2026 ITFM paper. Primary capability Intersecting Disciplines, with FinOps Practice Operations and Governance, Policy & Risk as secondaries. Still deferred: the per-Capability scorecard. `optimnow-methodology.md` keeps the consultancy-positioning lens |
+| `finops-on-prem-hybrid.md` | **Initiated 2026-10-20** (method and platform billing) | Each gap below closes on its own trigger | First version: the internal bill for owned capacity (service-owner meters, service graph, idle capacity line, peak-based pricing), on-premises usage ingestion, a cost score as the behavioural measure (Target and Meta, FinOps X 2026), hybrid platform billing (Outposts, Azure Local, Arc, Exadata Cloud@Customer, VMware core counting) and cloud exit waivers, all read on primary pages on 2026-10-20. Open work is listed in "Completing finops-on-prem-hybrid.md" below |
 | `finops-forecasting.md` | **Shipped 2026-10-16** | (closed) | Shipped on the budget-season trigger. Built from the Foundation's Forecasting, Budgeting and Planning & Estimating capability pages and two FinOps X 2026 practitioner talks; AI-specific budgeting stays in `finops-ai-value-management.md` |
 | `finops-unit-economics.md` | P2 | Non-AI unit-economics demand emerges | Same reasoning as forecasting; AI-side covered by AI value management and finops-for-ai files |
 | `finops-education-enablement.md` | P2 | Demand emerges; consider folding into practice-operations | Smaller scope than the other P2 files; could double as a section in practice-operations |
@@ -343,6 +354,44 @@ that asks for a cross-provider guardrail or policy-as-code design.
 
 When picking up a deferred item: read the rationale above and confirm the trigger is real
 before starting the file.
+
+## Completing finops-on-prem-hybrid.md
+
+The first version (2026-10-20) covers the method and the hybrid platforms' billing.
+What it needs before it can be called complete, each with what would close it:
+
+1. **Accounting for owned capacity (deliberately left out).** Depreciation policy and
+   useful life, capital against operating expenditure, how a hardware refresh moves the
+   rate, colocation contracts (committed power in kW, cross-connects, remote hands) and
+   lease treatment under IFRS 16 / ASC 842. Closes on: a citable accounting source
+   (standard-setter text or a Big Four technical guide) plus the maintainer's
+   practitioner review. Do not write rules here from talks alone; this is accounting
+   policy, and a wrong rule costs a client an audit finding.
+2. **Azure exit data transfer waiver.** Microsoft announced free data transfer out when
+   leaving Azure in 2024, but no Microsoft page could be read on 2026-10-20 (the update
+   page renders empty without a browser). Closes on: the Microsoft Learn or Azure
+   update page read directly, with the support-request and subscription-cancellation
+   conditions quoted.
+3. **VMware 72-core minimum order.** Secondary sources (heise, partners) report a
+   72-core minimum per order from April 2025; Broadcom's KB 313548 confirms only the
+   16-core-per-CPU rule. Closes on: a Broadcom page or KB stating the minimum.
+4. **Google Distributed Cloud billing.** The pricing page URL tried on 2026-10-20
+   returned 404. Closes on: the current Google Distributed Cloud (connected and air-gapped)
+   pricing page, to add a row to the hybrid platforms table.
+5. **Capacity planning practice.** Lead times for hardware, utilisation targets and
+   headroom policy, ideally from a mid-size estate rather than Target or Meta scale.
+   Closes on: YouTube digest talk 64 ("Making FOCUS Work in Practice: Lessons from
+   Elo's FinOps Journey Beyond Cloud", batch 13) or talk 66 ("The Last Cloud Bill"),
+   or a client engagement.
+6. **A second practitioner case for the internal bill.** Target is the only detailed
+   case of service-owner meters; Meta's is internal capacity, not a data-centre bill.
+   Closes on: another documented case (Foundation case study, talk, engagement).
+7. **Other hybrid and private-cloud platforms.** Nutanix (per-core subscription),
+   Red Hat OpenShift on bare metal, HPE GreenLake and Dell APEX consumption models,
+   AWS Local Zones and Dedicated Local Zones. Closes on: demand from an engagement;
+   each needs its own primary pricing page.
+8. **Mainframe and edge.** Out of scope for now by decision (2026-10-20): mainframe
+   MSU-based pricing and in-store or edge infrastructure. Reopen only on demand.
 
 ## Closed gaps (May 2026 batch)
 
