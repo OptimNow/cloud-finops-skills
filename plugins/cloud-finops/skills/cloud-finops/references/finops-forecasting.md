@@ -183,6 +183,19 @@ summary paraphrases the talk rather than quoting it.
 A weekly re-cut is not a weekly re-plan. Keep the budget fixed for its cycle, move
 the forecast, and report the gap between the two; that gap is the signal.
 
+**Re-forecasting through a structural change.** A divestiture, a migration programme
+or an acquisition changes the assumptions under the forecast faster than any cadence.
+In one corporate split, the cloud forecast was rebuilt about 10 times in 12 months and
+the separation timeline moved from roughly 18-20 months to 9, because the answers to
+"which company gets this application, is it cloned or moved, does it stay on-premises,
+when does it move" kept changing (Ashley Hromatko, Medium, 20 October 2026; full citation in
+`finops-onboarding-workloads.md`, "Divestiture and separation"; the figures are that
+company's). Two practices follow. Model the change as scenarios keyed to those
+assumptions, so a changed answer re-runs a scenario instead of rebuilding the forecast;
+this works only when the application inventory behind the assumptions is reliable. And
+present the output as a range with its driving assumptions, so leaders see the cost of
+each decision rather than a single number that will move again.
+
 Where an ITFM or TBM function owns period close, the forecast also has a fixed
 delivery date: projected period-end actuals, variance drivers and the planned actions
 behind them reach ITFM before close, not after it, so it can present Finance with a

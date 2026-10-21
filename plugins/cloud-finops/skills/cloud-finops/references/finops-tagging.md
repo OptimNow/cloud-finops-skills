@@ -62,6 +62,21 @@ on 20.
 | `Project` | Group resources by initiative or product | `agent-smith`, `customer-portal` |
 | `Application` | Identify the workload or service | `api-gateway`, `ml-training` |
 
+### Test the business dimension against external reporting
+
+`CostCenter` maps spend to the budget structure. A second test is whether spend can
+also be reported along the dimensions the company uses with investors: open the latest
+quarterly earnings report and check that every reporting segment can be reached from a
+tag or a virtual-tag rule. One practitioner's team aligned its cloud tags to revenue
+segments shortly before a corporate split was announced, and that alignment became
+the cost baseline for both future companies (Ashley Hromatko, Medium, 20 October 2026; full citation in
+`finops-onboarding-workloads.md`, "Divestiture and separation"). Shared
+corporate functions (Finance, IT, Legal, Marketing) will not map cleanly to one
+segment; give them an explicit shared-services value rather than forcing one. Extend
+the same mapping beyond cloud, to on-premises, SaaS, licences and hardware, where it
+is cheapest to do before it is needed (`finops-onboarding-workloads.md`, "Divestiture
+and separation").
+
 ### Extended tags (Walk/Run maturity)
 
 | Tag key | Purpose | Example values |
@@ -71,6 +86,7 @@ on 20.
 | `Schedule` | Enable automated start/stop | `business-hours`, `always-on`, `weekdays` |
 | `BackupPolicy` | Drive automated backup configuration | `daily-30d`, `weekly-1y`, `none` |
 | `EndDate` | Flag temporary resources for cleanup | `2026-03-31` |
+| `Disposition` | Track what happens to a resource in a migration or divestiture | `move`, `stay`, `clone`, `retire` |
 
 ### Naming convention design
 
@@ -279,6 +295,17 @@ compliance. Ownerless tags drift and become inconsistent.
 Compliance achieved through manual audits degrades immediately when team attention moves
 elsewhere. Automated enforcement (Config rules, SCPs, Azure Policy) maintains compliance
 without ongoing human effort.
+
+**Encoding the org chart in tags**
+Team, business unit and cost-centre values change with every reorganisation, and
+resource tags do not follow. Tag one stable identifier (a product or application ID)
+and derive the hierarchy from a maintained, dated mapping table, so a reorganisation is
+one table change rather than a retagging campaign (the mapping layer is the virtual
+tagging described above). Two practitioner reports: 84.51° is moving to a product ID
+from which the team hierarchy is derived, after nested teams broke a flat team tag
+(Josh Anness, FinOps X 2026); Grainger replaced hand-edited attribution files with a
+mapping engine that also attributes untagged resources from account ownership,
+Kubernetes labels and resource metadata (J.C. Griffin, FinOps X 2026).
 
 **Skipping IaC alignment**
 Tagging new resources manually while existing IaC modules don't include tags means every

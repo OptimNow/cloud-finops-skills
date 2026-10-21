@@ -359,6 +359,11 @@ A practitioner case from FinOps X 2026 (StitcherAI, a private-equity carve-in wi
 prior FinOps practice) describes this sequence: commit early on the post-optimisation
 floor, optimise the rest after.
 
+**Divestiture risk.** If part of the estate could be sold or spun off within the term,
+check what happens to each commitment when its account
+leaves: see the "Commitments in a separation" table in
+`finops-onboarding-workloads.md` ("Divestiture and separation").
+
 ### Phased purchasing
 
 Avoid buying the full commitment in a single transaction. Purchase in blocks to create

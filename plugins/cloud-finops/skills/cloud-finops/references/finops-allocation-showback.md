@@ -192,6 +192,39 @@ land. It avoids
 the failure mode where a small team using one log line per minute pays a
 microscopic share of a $100K/month log platform.
 
+### Shared data platforms: streaming and document databases
+
+Allocate a shared data platform by the driver of its bill, never by an object count.
+Two equal topics or projects can differ by orders of magnitude in the volume they
+move or store, so a split by count charges the light users for the heavy ones.
+
+- **Self-managed Kafka.** The brokers expose per-topic bytes in and out
+  (`BrokerTopicMetrics` `BytesInPerSec` and `BytesOutPerSec`, tagged with the topic)
+  and partition size on disk (`kafka.log` `Size`)
+  ([Apache Kafka monitoring](https://kafka.apache.org/41/operations/monitoring/),
+  read 21 October 2026). Collect them through the observability layer and allocate
+  broker cost by throughput and retained bytes per topic, mapped to the owning team.
+  Managed Kafka services (Confluent Cloud, Amazon MSK) were not checked for this
+  section; read their own usage reports before applying the same key.
+- **MongoDB Atlas.** The bill itemises no finer than the cluster: costs group by
+  organisation, project, cluster and service
+  ([Atlas billing](https://www.mongodb.com/docs/atlas/billing/), which also offers a
+  FOCUS cost and usage report). A cluster shared by several teams therefore needs a
+  usage key. The `top` command returns per-collection operation counts and time; the
+  counters reset only when `mongod` restarts, so store deltas, and the command runs
+  against each `mongod`, not through `mongos`, so a sharded cluster is read member by
+  member ([`top`](https://www.mongodb.com/docs/manual/reference/command/top/), read
+  21 October 2026). Combine the deltas with storage per database.
+
+A case: Gerdau moved Kafka from a topic count to measured throughput per topic, and
+MongoDB from an even split to billing data combined with reads, writes and storage per
+project. The speaker reported that visibility at that grain came before reductions of
+about 42% on one MongoDB project (index and backup-policy work, pausing non-production)
+and 49% on one Databricks project (idle clusters, jobs scheduled at the wrong time), and
+of more than 80% for one application moved off a dedicated Atlas cluster onto a shared
+one (Thais Minelvino Dos Santos, FinOps X 2026). These are one organisation's figures,
+not benchmarks.
+
 ### Security tooling
 
 Security tools serve the organisation, not individual teams. Default to

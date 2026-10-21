@@ -689,7 +689,7 @@ Use these knowledge files for the following query types:
 | Allocation methodology and showback, EffectiveCost vs BilledCost, shared services | finops-allocation-showback.md |
 | Chargeback, soft-to-hard maturity, Finance prerequisites (ERP, transfer pricing, tax, SOX) | finops-chargeback.md |
 | FinOps operating model, RACI, governance forums, decision rights, ITFM / TBM handoffs | finops-practice-operations.md |
-| Onboarding workloads, intake gate, forecast-then-commit rule, double-bubble cost, M&A | finops-onboarding-workloads.md |
+| Onboarding workloads, intake gate, forecast-then-commit rule, double-bubble cost, M&A and divestiture | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, container rightsizing, Karpenter | finops-kubernetes.md |
 | On-prem and hybrid: data-centre internal bill, Outposts / Azure Local / Arc / VMware billing, exit fees | finops-on-prem-hybrid.md |
 | FOCUS normalisation, versions and export differences, ingestion pipeline, SaaS and on-prem sources | finops-focus.md |
@@ -732,7 +732,7 @@ Use these knowledge files for the following query types:
 | Databricks (DBCU, allocation, Photon), Microsoft Fabric (F-SKUs, CU smoothing), Snowflake (QUERY_ATTRIBUTION_HISTORY, Cortex) | data-platforms.md |
 | OCI (Cost Reports, FOCUS, cost-tracking tags, Universal Credits) | oci.md |
 | FinOps Framework 2026 (4 domains, 22 capabilities), tagging, SaaS management, ITAM, GreenOps, Kubernetes FinOps, waste detection playbooks, FOCUS multi-cloud cost data normalisation and ingestion, on-premises and hybrid FinOps (internal bill, Outposts, Azure Local, VMware, exit fees) | cross-cutting.md |
-| Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene + M&A), KPIs and benchmarking, forecasting, FinOps practice operations (operating model, RACI, governance, ITFM), executive reporting | finops-discipline.md |
+| Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene, M&A, divestiture), KPIs and benchmarking, forecasting, FinOps practice operations (operating model, RACI, governance, ITFM), executive reporting | finops-discipline.md |
 EOF
   emit_named_pattern_row 'playbooks.md'
   cat <<'EOF'

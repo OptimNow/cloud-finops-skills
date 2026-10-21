@@ -241,6 +241,11 @@ usage telemetry, not billing data.** The usage surfaces to watch:
 - **Azure OpenAI** - Azure Monitor metrics (`ProcessedPromptTokens`, `GeneratedTokens`,
   `TokenTransaction`) at 1-minute grain, split by `ModelDeploymentName`.
 
+**Volume or mix.** When AI spend jumps, check whether token volume moved with it before
+treating the jump as an anomaly: spend rising faster than tokens means the blended rate
+per token rose (a model, routing or caching change), not more usage (`finops-for-ai.md`,
+Phase 2, "Separate volume from mix").
+
 **The flat-line failure mode.** The masked anomaly has a token-native cousin. A stuck or
 retrying agent - a max-iteration loop, a retry storm against a failing tool, or a
 self-validating agent that never converges - holds token throughput roughly *flat* while

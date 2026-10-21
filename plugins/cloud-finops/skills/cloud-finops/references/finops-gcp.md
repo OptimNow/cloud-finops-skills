@@ -228,6 +228,11 @@ GCP CUDs come in two distinct flavours that are easy to conflate:
 | **Resource-based CUD** | Specific vCPU + memory in a region | Up to 57% (3yr) | Low - locked to machine series and region | 1yr or 3yr |
 | **Spend-based / Flexible CUD** | $/hr spend on Compute Engine | **Up to 28% (1yr) or 46% (3yr)** | High - any machine series in any region | 1yr or 3yr |
 
+**Divestiture risk.** Resource-based CUDs move with their project to a new billing
+account and stop applying in the old one; spend-based CUDs stay with the billing
+account unless Cloud Billing Support moves them. See "Commitments in a separation" in
+`finops-onboarding-workloads.md`.
+
 **Sizing while optimisation is under way.** A CUD's monthly fee applies for the whole
 term, so size the first commitment to a conservative estimate of the usage that will
 remain after rightsizing, buy it without waiting for the optimisation to finish, and

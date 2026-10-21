@@ -124,7 +124,7 @@ cloud-finops-skills/
 │       ├── finops-allocation-showback.md   <- Allocation methodology + showback
 │       ├── finops-chargeback.md            <- Chargeback + Finance/accounting prerequisites
 │       ├── finops-practice-operations.md   <- Practice operations: operating model, RACI, forums, ITFM
-│       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene + M&A
+│       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene, M&A, divestiture
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
 │       ├── finops-on-prem-hybrid.md        <- On-prem and hybrid: internal bill, hybrid platforms, exit fees
 │       ├── finops-focus.md                 <- FOCUS multi-cloud normalisation + ingestion
