@@ -360,7 +360,7 @@ prior FinOps practice) describes this sequence: commit early on the post-optimis
 floor, optimise the rest after.
 
 **Divestiture risk.** If part of the estate could be sold or spun off within the term,
-check what happens to each commitment when its account, subscription or project
+check what happens to each commitment when its account
 leaves: see the "Commitments in a separation" table in
 `finops-onboarding-workloads.md` ("Divestiture and separation").
 

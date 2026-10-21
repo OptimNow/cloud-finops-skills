@@ -361,8 +361,11 @@ Four rules follow when a separation is possible within the term:
   to negotiate, not a technical step.
 
 Before the account or subscription moves, export its cost and usage history and its
-commitment utilisation reports: under the AWS account-migration checklist, the account
-loses access to the old organisation's history.
+commitment utilisation reports. AWS states that organisation-level reporting and history
+are not kept when an account migrates, and deletes the organisational billing information
+in the old management account; the member account's own billing history stays
+accessible ([AWS Organizations, account migration](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_account_migration.html),
+read 21 October 2026).
 
 ### After Day 1
 

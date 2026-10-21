@@ -566,7 +566,7 @@ because the contractual amortisation is fixed.
 | Allocation gaps | Unmapped workspaces, missing executor labels, untagged workloads |
 | Commitment status | DBCU utilisation, RI utilisation on underlying VMs, PAYG-equivalent vs amortised delta |
 | Anomalies | DBU hour spikes, query activity spikes (>20% week-over-week threshold) |
-| Unit cost | Total cost per DBU: DBU cost plus allocated cloud infrastructure, divided by DBUs. The DBU rate is fixed by the SKU, so this ratio isolates infrastructure efficiency: spot adoption and VM rightsizing move it, DBU volume does not (84.51° used job cost per DBU to set targets, Josh Anness, FinOps X 2026) |
+| Unit cost | Total cost per DBU: DBU cost plus allocated cloud infrastructure, divided by DBUs. Compare it within one SKU and discount level, because the DBU rate differs by SKU and commitment discount, so a change in workload mix moves the ratio too; within one SKU it isolates infrastructure efficiency, where spot adoption and VM rightsizing move it and DBU volume does not (84.51° used job cost per DBU to set targets, Josh Anness, FinOps X 2026) |
 | Actions | Tune jobs, remove clusters, fix labels, scope new commitments |
 
 This feeds Finance, platform engineering, and data owners simultaneously - the

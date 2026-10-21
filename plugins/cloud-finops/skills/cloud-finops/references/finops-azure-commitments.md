@@ -1095,7 +1095,7 @@ and a falling keel is an early liquidity warning - on Azure doubly so after
 1 February 2027, when the refund cap becomes the main reshaping lever.
 
 **Divestiture risk.** If part of the estate could be sold or spun off within the term,
-check what happens to each commitment when its account, subscription or project
+check what happens to each commitment when its subscription
 leaves: see the "Commitments in a separation" table in
 `finops-onboarding-workloads.md` ("Divestiture and separation").
 
