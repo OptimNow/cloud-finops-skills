@@ -188,9 +188,9 @@ or an acquisition changes the assumptions under the forecast faster than any cad
 In one corporate split, the cloud forecast was rebuilt about 10 times in 12 months and
 the separation timeline moved from roughly 18-20 months to 9, because the answers to
 "which company gets this application, is it cloned or moved, does it stay on-premises,
-when does it move" kept changing (Ashley Hromatko, "The Unexpected Lessons of a
-Corporate Split: A FinOps / ITFM Perspective", Medium, 20 October 2026; the figures are
-that company's). Two practices follow. Model the change as scenarios keyed to those
+when does it move" kept changing (Ashley Hromatko, Medium, 20 October 2026; full citation in
+`finops-onboarding-workloads.md`, "Divestiture and separation"; the figures are that
+company's). Two practices follow. Model the change as scenarios keyed to those
 assumptions, so a changed answer re-runs a scenario instead of rebuilding the forecast;
 this works only when the application inventory behind the assumptions is reliable. And
 present the output as a range with its driving assumptions, so leaders see the cost of

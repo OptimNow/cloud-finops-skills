@@ -254,8 +254,8 @@ owner, not an omission. Record each item in a register (what was deferred, the
 estimated monthly cost, the owner, the review date) and review the register when the
 event ends. The term comes from one practitioner's account of a corporate split, who
 compares it to technical debt: unrecorded, temporary cost becomes the new baseline
-(Ashley Hromatko, "The Unexpected Lessons of a Corporate Split: A FinOps / ITFM
-Perspective", Medium, 20 October 2026).
+(Ashley Hromatko, Medium, 20 October 2026; full citation in
+`finops-onboarding-workloads.md`, "Divestiture and separation").
 
 A decision right that exists only in a slide deck is negotiated again at every incident.
 

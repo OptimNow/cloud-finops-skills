@@ -69,8 +69,8 @@ also be reported along the dimensions the company uses with investors: open the 
 quarterly earnings report and check that every reporting segment can be reached from a
 tag or a virtual-tag rule. One practitioner's team aligned its cloud tags to revenue
 segments shortly before a corporate split was announced, and that alignment became
-the cost baseline for both future companies (Ashley Hromatko, "The Unexpected Lessons
-of a Corporate Split: A FinOps / ITFM Perspective", Medium, 20 October 2026). Shared
+the cost baseline for both future companies (Ashley Hromatko, Medium, 20 October 2026; full citation in
+`finops-onboarding-workloads.md`, "Divestiture and separation"). Shared
 corporate functions (Finance, IT, Legal, Marketing) will not map cleanly to one
 segment; give them an explicit shared-services value rather than forcing one. Extend
 the same mapping beyond cloud, to on-premises, SaaS, licences and hardware, where it
