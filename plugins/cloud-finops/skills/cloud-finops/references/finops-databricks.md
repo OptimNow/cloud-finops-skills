@@ -411,6 +411,34 @@ LIMIT 50;
 The query is illustrative - your `system.billing.list_prices` schema and
 identity-metadata fields may differ; adapt column names to your account.
 
+### Classic compute total cost and instance pools
+
+Classic compute has two bills: DBUs from Databricks, and VMs, disks and network from the
+cloud provider. `system.billing.usage` carries only the first. Instance pools move the
+second bill away from its consumer:
+
+- Databricks charges no DBUs while instances sit idle in a pool, but the cloud provider
+  bills them ([Azure Databricks pools](https://learn.microsoft.com/en-us/azure/databricks/compute/pool-index)).
+- When clusters are created from pools, only workspace and pool tags propagate to the
+  VMs; cluster tags do not, so the pool's VM cost carries the pool owner's tags, not the
+  consuming team's ([usage detail tags](https://learn.microsoft.com/en-us/azure/databricks/admin/account-settings/usage-detail-tags)).
+  On Azure the default `DatabricksInstancePoolId` tag on those VMs is the join key on the
+  cloud side.
+
+Re-allocate pool infrastructure from the compute system tables: `system.compute.node_timeline`
+holds minute-by-minute records per instance (`cluster_id`, `instance_id`), and
+`system.compute.clusters` records `driver_instance_pool_id` and `worker_instance_pool_id`
+([compute system tables](https://docs.databricks.com/aws/en/admin/system-tables/compute);
+all three pages read 21 October 2026). Split each pool's cloud cost by the node-minutes of
+the clusters that used it. Pool VM cost not matched by any cluster's node-minutes is the
+pool's idle cost: keep it as a visible line for the pool owner, who controls the pool's
+minimum idle size. 84.51° re-allocates shared pool spend this way and reports DBU and
+infrastructure cost together as Databricks total cost (Josh Anness, FinOps X 2026).
+
+A community repository, `databricks-solutions/cloud-infra-costs`, combines classic DBU and
+cloud infrastructure cost and emits FOCUS 1.4; its own page states that Databricks support
+does not cover it, so treat it as a starting point to review, not a supported product.
+
 ### Compute policies - the runtime enforcement layer for classic compute
 
 A usage policy labels serverless spend; it constrains nothing. On classic
@@ -538,6 +566,7 @@ because the contractual amortisation is fixed.
 | Allocation gaps | Unmapped workspaces, missing executor labels, untagged workloads |
 | Commitment status | DBCU utilisation, RI utilisation on underlying VMs, PAYG-equivalent vs amortised delta |
 | Anomalies | DBU hour spikes, query activity spikes (>20% week-over-week threshold) |
+| Unit cost | Total cost per DBU: DBU cost plus allocated cloud infrastructure, divided by DBUs. The DBU rate is fixed by the SKU, so this ratio isolates infrastructure efficiency: spot adoption and VM rightsizing move it, DBU volume does not (84.51° used job cost per DBU to set targets, Josh Anness, FinOps X 2026) |
 | Actions | Tune jobs, remove clusters, fix labels, scope new commitments |
 
 This feeds Finance, platform engineering, and data owners simultaneously - the

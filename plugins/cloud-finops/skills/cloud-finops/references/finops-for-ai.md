@@ -451,6 +451,14 @@ understates the bill by a multiple before value is even discussed.
 **Step 4 - Track unit economics weekly**, not monthly. AI cost patterns shift faster
 than monthly reporting cycles can capture.
 
+**Separate volume from mix.** Spend change is token volume change times the change in
+the blended rate per token. If tokens grew 1.5x and spend 2x, the blended rate rose by
+2 / 1.5, about 1.33x: the mix moved toward dearer models, output-heavy tasks or
+uncached input, and the fix is routing or design, not volume. Track cost per token next
+to token volume for each use case. A flat cost per token while spend rises is growth; a
+rising one is a mix or design change to investigate. SAP tracks this as a
+"token-to-spend drift" metric (Frederik Pohl and Maida Nazifi, FinOps X 2026).
+
 **Core formula:**
 ```
 Unit margin = (Value per output × success_rate) − cost_per_unit

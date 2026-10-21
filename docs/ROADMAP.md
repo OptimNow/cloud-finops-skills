@@ -100,7 +100,15 @@ primary owner (`finops-on-prem-hybrid.md` takes Allocation, already covered).
 3. **Schedule blindness beyond compute.** Non-production data platforms always
    on: SQL serverless auto-pause, Fabric capacity pause, Snowflake
    auto-suspend. One cross-cloud playbook plus per-provider variants closes a
-   whole zero row of the matrix.
+   whole zero row of the matrix. Add MongoDB Atlas as a variant (from YouTube
+   batch 07, item 31.2; mechanics read 2026-10-21 on
+   https://www.mongodb.com/docs/atlas/pause-terminate-cluster/): M10 and larger
+   clusters can be paused, except on NVMe storage, and Free and Flex clusters
+   cannot be paused by hand; a paused cluster is charged for storage only; Atlas
+   resumes it after 30 days; a resumed cluster must run 60 minutes before it can
+   pause again; backups stop while it is paused and existing snapshots remain
+   until they expire. Check whether those snapshots count in the paused storage
+   charge before writing the variant (the page does not say).
 4. **Issue #97 as a mechanics section**, not a table, in
    `finops-azure-openai.md` and `finops-genai-capacity.md`: the break-even
    utilisation formula, the hourly-vs-token shape and the spillover switch,

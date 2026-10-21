@@ -296,6 +296,17 @@ Compliance achieved through manual audits degrades immediately when team attenti
 elsewhere. Automated enforcement (Config rules, SCPs, Azure Policy) maintains compliance
 without ongoing human effort.
 
+**Encoding the org chart in tags**
+Team, business unit and cost-centre values change with every reorganisation, and
+resource tags do not follow. Tag one stable identifier (a product or application ID)
+and derive the hierarchy from a maintained, dated mapping table, so a reorganisation is
+one table change rather than a retagging campaign (the mapping layer is the virtual
+tagging described above). Two practitioner reports: 84.51° is moving to a product ID
+from which the team hierarchy is derived, after nested teams broke a flat team tag
+(Josh Anness, FinOps X 2026); Grainger replaced hand-edited attribution files with a
+mapping engine that also attributes untagged resources from account ownership,
+Kubernetes labels and resource metadata (J.C. Griffin, FinOps X 2026).
+
 **Skipping IaC alignment**
 Tagging new resources manually while existing IaC modules don't include tags means every
 new deployment starts non-compliant. Tag requirements belong in the IaC templates, not
