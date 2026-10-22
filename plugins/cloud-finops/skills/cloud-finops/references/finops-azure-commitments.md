@@ -63,24 +63,17 @@ to be layered, not chosen in isolation.
    Reservation does not follow. A Savings Plan is spend-based and applies wherever it
    finds eligible usage - but the discount is ~7% shallower than a Reservation.
 
-4. **Reservation liquidity is shrinking; Savings Plans have none.** See the liquidity
-   mechanics table below for fees, caps, and operational rules. Hold two things together.
-   First, from 1 February 2027 reservation exchange retires for any service a savings plan
-   also covers (VMs, Dedicated Host, App Service, and the covered databases); refund and
-   trade-in to a savings plan survive. Second, for services a savings plan does not cover
-   (such as Azure VMware Solution) exchange continues. Microsoft's refund terms remain more
-   generous than AWS Standard RI marketplace selling, but read the fine print on the future
-   12% fee clause, and treat exchange as unavailable for covered services when planning.
+4. **Reservations keep a capped refund and trade-in; savings plans keep nothing.**
+   From 1 February 2027 reservation exchange retires for services a savings plan also
+   covers; the mechanics are in the liquidity table below and the operating rule in
+   "Commitment liquidity after February 2027". Savings plans cannot be exchanged,
+   cancelled or refunded, which is why phased purchasing matters most for them.
 
-5. **Savings Plans cannot be exchanged, cancelled, or refunded** once purchased. The
-   commitment runs for the full term. This makes phased purchasing and portfolio
-   diversification critical for Savings Plans (see "Commitment portfolio liquidity" below).
-
-6. **Spot is not a commitment** - it is a market mechanism with a 30-second eviction
+5. **Spot is not a commitment** - it is a market mechanism with a 30-second eviction
    notice and no SLA. It belongs in the compute cost strategy but should not be compared
    directly against commitment instruments.
 
-7. **Legacy VM series can no longer be reserved at all.** As of the Learn retirement page
+6. **Legacy VM series can no longer be reserved at all.** As of the Learn retirement page
    (updated 25 September 2026), new and renewed one-year **and** three-year Reserved VM
    Instances are unavailable for the affected A, B, D, E, F and L variants of the v1 to
    v3 series. Existing reservations run to term and cannot be renewed; when they expire,
@@ -104,7 +97,7 @@ to be layered, not chosen in isolation.
 
 | Mechanic | Fee | Annual cap | Notes |
 |---|---|---|---|
-| **Reservation exchange** | None | None | Same product family only. Does not count against the refund cap. **Retiring 1 February 2027 for services also covered by a savings plan** (VMs, Dedicated Host, App Service, and the covered databases). Reservations purchased before that date keep the right to one final exchange each. Because an exchange is processed as a cancel, refund, and repurchase, an exchange done after that date yields a non-exchangeable reservation. Reservations for services with no savings plan (such as Azure VMware Solution), for products that are deprecated and approaching end-of-life, and in clouds that do not support savings plans keep exchange. The end-of-life exclusion and the legacy VM retirement page (point 7) describe the v1 to v3 series differently; treat their exchange status as unsettled until Microsoft aligns the two pages. |
+| **Reservation exchange** | None | None | Same product family only. Does not count against the refund cap. **Retiring 1 February 2027 for services also covered by a savings plan** (VMs, Dedicated Host, App Service, and the covered databases). Reservations purchased before that date keep the right to one final exchange each. Because an exchange is processed as a cancel, refund, and repurchase, an exchange done after that date yields a non-exchangeable reservation. Reservations for services with no savings plan (such as Azure VMware Solution), for products that are deprecated and approaching end-of-life, and in clouds that do not support savings plans keep exchange. The end-of-life exclusion and the legacy VM retirement page (point 6) describe the v1 to v3 series differently; treat their exchange status as unsettled until Microsoft aligns the two pages. |
 | **Reservation refund (cancellation)** | None today | $50,000 per 12-month rolling window per Billing Profile (MCA) or enrollment (EA). **The cap restores day-by-day** - 365 days after a refund, the original $50K is fully reinstated. | "Refund" and "cancellation" are the same operation in current docs. Microsoft reserves the right to introduce a 12% early-termination fee in future - verify before relying on liquidity. |
 | **Reservation trade-in to Savings Plan** | None today | None | Convert RI to Savings Plan credit. No time limit, and the trade-in policy is unchanged by the 2027 exchange retirement. Up to 100 reservations per trade-in; the new savings plan's lifetime commitment must be at least the remaining commitment of the reservations returned. Microsoft does not charge an early-termination fee on trade-ins today but reserves the right to add one. Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/savings-plan/reservation-trade-in |
 | **Savings Plan cancel / exchange / refund** | N/A | N/A | Not allowed. SPs are non-refundable, non-exchangeable, non-cancellable. |
@@ -133,7 +126,7 @@ START: What Azure compute service runs the workload?
 │   │   └── NO → Is the workload stable and predictable (90+ days)?
 │   │       ├── NO → Stay on PAYG. Re-evaluate quarterly.
 │   │       │
-│   │       └── YES → Has it been right-sized? (see Compute rightsizing below)
+│   │       └── YES → Has it been right-sized? (finops-azure.md, rightsizing)
 │   │           ├── NO → Right-size first. Do not commit to waste.
 │   │           │
 │   │           └── YES → Will it stay on the same VM family + region?
@@ -161,27 +154,15 @@ START: What Azure compute service runs the workload?
 │       - Reservations may be necessary to secure capacity in constrained regions
 │       - Savings Plans do not reserve capacity - only provide pricing benefit
 │       - For ML training: consider Spot VMs with checkpointing
-│       - For containerised GPU workloads: see AKS GPU optimisation below
 │
 ├── Azure Kubernetes Service (AKS)
 │   │
 │   ├── AKS node pools run on VMs → commitment applies to underlying VMs
 │   │   (use VM decision tree above for node pool instances)
 │   │
-│   ├── Spot node pools → use Spot priority for fault-tolerant pods
-│   │   - Configure pod disruption budgets for graceful eviction
-│   │   - Use taints/tolerations to isolate Spot-eligible workloads
-│   │   - Can save 60-90% on non-critical node pools
-│   │
-│   ├── GPU node pools → special optimisation considerations
-│   │   - Enable Dynamic Resource Allocation (DRA) for GPU-aware scheduling
-│   │   - Use MPS (Multi-Process Service) for GPU sharing on NVIDIA GPUs
-│   │   - Consider MIG (Multi-Instance GPU) for A100/H100 partitioning
-│   │   - See "AKS GPU optimisation" section below for detailed guidance
-│   │
-│   └── Consider: cluster autoscaler + right-sized node pools before committing
-│       Pod rightsizing (VPA) saves 20-40%; node pool rightsizing saves 15-30%.
-│       Commit after these optimisations are stable, not before.
+│   └── Spot and GPU node pools, autoscaler and pod rightsizing: see
+│       finops-azure.md, "AKS optimisation in depth". Commit after those
+│       are stable, not before.
 │
 ├── App Service
 │   │
@@ -236,15 +217,8 @@ START: What Azure compute service runs the workload?
 | Payment options | Monthly or Upfront | Monthly or Upfront |
 | Scoping | Subscription, resource group, management group, shared | Subscription, resource group, management group, shared |
 
-**Key takeaway (updated for the 1 February 2027 exchange change):** Reservations still
-offer the deeper discount, but their flexibility edge narrows sharply. For services a
-savings plan also covers, reservation exchange retires on 1 February 2027, leaving only a
-capped refund and a one-way trade-in to a savings plan. Until that date the old logic held:
-reserve moderately stable workloads, exchange if things change. From that date, reserve a
-covered service only at high conviction across family, region, term, and workload
-continuation; instance size flexibility still handles size within the family. Default
-anything short of that to a savings plan. See "Commitment liquidity after February 2027"
-below for the operational rule.
+For the operating rule after the exchange retirement, see "Commitment liquidity after
+February 2027".
 
 ### Commitment liquidity after February 2027
 
@@ -286,53 +260,21 @@ workloads, savings plans for evolving or dynamic ones.
 
 ### Spot Virtual Machines
 
-For fault-tolerant, interruptible workloads, Spot offers up to 90% discount over PAYG.
+Spot offers up to 90% off pay-as-you-go for fault-tolerant, interruptible workloads:
+batch, dev/test, CI/CD, stateless AKS pods, ML training with checkpointing. The
+constraint is a 30-second eviction notice (2 minutes on AWS) and no SLA. Choose the
+eviction policy (Deallocate keeps the disk, Delete is cheapest), cap the maximum price
+at the pay-as-you-go rate, and track eviction rates by family and region. Spot is not a
+commitment: it takes interruptible capacity out of the commitment equation (Layer 1 of
+the layering strategy below).
 
-**Appropriate for Spot:** Batch processing, dev/test, CI/CD, stateless pods in AKS,
-ML training with checkpointing, scale-out processing with VMSS.
+### Instance size flexibility ratios come from the API, not the CSV
 
-**Not appropriate:** Stateful databases, workloads with strict SLA requirements,
-single-instance workloads with no failover.
-
-**Key constraint:** 30-second eviction notice (vs 2 minutes on AWS), no SLA guarantees.
-
-**Spot best practices:**
-- Start with 20-30% Spot allocation in non-production, increase based on stability
-- Use VMSS with Spot priority for auto-scaling pools with automatic fallback
-- Configure eviction policy: Deallocate (preserves disk) or Delete (lowest cost)
-- Set max price at PAYG rate - never bid above PAYG
-- For AKS: use Spot node pools with taints/tolerations for workload isolation
-- Monitor eviction rates by VM family and region - some combinations are more stable
-
-### Current operational risk: ISF ratio CSV deprecation (9 May 2026)
-
-**Action item with a clock on it.** From **9 May 2026**, Microsoft stops updating
-the public CSV file that publishes Instance Size Flexibility (ISF) ratios. Ratio
-data moves to **API and PowerShell only** after that date. The CSV will keep being
-served but will silently go stale.
-
-**Day 1 audit on any Azure-heavy engagement.** Ask whether any internal tool,
-spreadsheet, or automation parses the legacy ISF CSV. If yes, it needs migration
-to the Ratios API or PowerShell before the cutover - otherwise reservation-
-utilisation reporting drifts as new VM SKUs ship and stale ratios persist in
-downstream calculations. The drift is silent (no error) and only surfaces at the
-next reservation review when the numbers stop matching Azure Advisor.
-
+Since 9 May 2026 Microsoft no longer updates the public CSV of instance size
+flexibility ratios; the ratios are published through the API and PowerShell only. A
+tool that still parses the CSV reports reservation utilisation against stale ratios,
+silently, as new SKUs ship, so check for one at the start of an Azure engagement.
 Source: [Instance size flexibility for Azure Reservations](https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/instance-size-flexibility)
-
-### Azure Hybrid Benefit (AHB)
-
-Organisations with existing Windows Server or SQL Server licenses (with Software
-Assurance) can apply them to Azure resources, eliminating the licence premium.
-
-**Why AHB is the #1 quick win:**
-- Up to 40% savings on Windows VMs, up to 55% on SQL Database
-- No architectural change, no restart needed - single CLI command per VM
-- Also applies to SQL Managed Instance and Red Hat/SUSE Linux
-- No commitment, immediate effect; the only exposure is licence compliance (eligible
-  licences with active Software Assurance, assigned per VM)
-- Use the AHB Workbook from FinOps Toolkit for compliance tracking across the fleet
-- **Enable on all eligible VMs before evaluating any other commitment**
 
 ### Compute commitment layering strategy
 
@@ -354,7 +296,7 @@ alignment" below.
 Layer 0: Azure Hybrid Benefit (free - no commitment, immediate)
   ↓ eliminates licence cost on all eligible Windows/SQL VMs
 Layer 1: Spot (for interruptible workloads)
-  ↓ removes 15-40% of compute from the commitment equation
+  ↓ takes interruptible capacity out of the commitment equation
 Layer 2: Savings Plans for Compute (broad baseline)
   ↓ covers predictable floor across VMs/App Service/Container Instances
 Layer 3: Reservations (high-conviction, locked-in VM workloads)
@@ -609,18 +551,11 @@ calculation from the cost-plus-utilisation join, reconcile differences. Differen
 diagnostic - they usually reveal AHB not factored, scope mismatches, or workload context
 Advisor cannot know.
 
-**Agentic access to commitment recommendation data.** Since August 2026, the Azure
-Resource Manager MCP server (preview) exposes cost query and pricing tools by default,
-and an optional Cost Management toolset that adds reservation and Savings Plan
-insights alongside forecasting, budgets and alerts. This lets AI agents pull the same
-backward-looking recommendation feed described above natively (Advisor cost
-recommendations are mentioned in Microsoft's blog but not listed as a tool in the
-server's README, so verify before relying on that path). The same calibration caveats
-apply: agent-surfaced recommendations remain a sanity check, not a source of truth,
-and still need reconciling against your own cost-plus-utilisation join. See the
-agentic FinOps discussion in `finops-azure-billing.md` and the tag-hygiene pattern in
-`finops-tagging.md` for the broader MCP governance context. Sources:
-https://github.com/Azure/Azure-Resource-Manager-MCP (README),
+**Agentic access.** Since August 2026 the Azure Resource Manager MCP server (preview)
+exposes cost query and pricing tools, plus an optional Cost Management toolset with
+reservation and savings plan insights. Agent-surfaced recommendations carry the same
+calibration caveats; see "Agentic FinOps on Azure" in `finops-azure-billing.md`.
+Sources: https://github.com/Azure/Azure-Resource-Manager-MCP (README),
 https://techcommunity.microsoft.com/blog/finopsblog/cost-management-with-azure-resource-manager-mcp/4550182
 (Microsoft FinOps blog, 25 August 2026).
 
@@ -657,91 +592,23 @@ about the shallow 1-year discount, not about the data. Source:
 https://learn.microsoft.com/en-us/rest/api/consumption/reservation-recommendations/list
 (read 15 October 2026).
 
-#### Tooling decision - Power BI / FinOps Hubs / third-party
+#### Mapping the floor to instruments
 
-All three options consume the same underlying Azure data sources, so all three face the
-same daily-granularity constraint. The difference is **where the work happens and what
-it costs**.
+Once the always-on floor per SKU family and region is known (the join above), map it:
 
-**Custom Power BI on the FOCUS export.** Full control of the logic. Use the FinOps
-Toolkit Power BI templates as a starting point - they ship with commitment coverage,
-utilisation, and what-if commitment models. Cost: developer time to maintain. Best for
-customer-specific reports, when the customer wants to own the analytics layer, or when
-integration with non-Azure data is needed.
-
-**FinOps Hubs (Azure-native, open source).** Microsoft's reference implementation.
-Deploys an Azure Data Explorer or Fabric backend that ingests FOCUS exports, plus
-pre-built Power BI reports. Open source as software - but the ADX or Fabric capacity is
-real money: a small ADX cluster runs to a few hundred dollars a month and the smallest
-useful Fabric capacity to a few thousand (order of magnitude only; read current rates
-from the pricing pages). **The cost of running FinOps Hubs is itself a FinOps line item that should
-appear in the customer's cost model.** Best for customers committed to Azure-native,
-with engineering capacity to maintain it.
-
-**Third-party (Apptio Cloudability, Vantage, Cast.ai for AKS, Anodot, Spot.io, etc.).**
-Pre-built logic, multi-cloud, vendor managed. Cost: typically fixed $X/month or 1-3% of
-cloud spend. Best for customers with multi-cloud estates, no in-house FinOps engineering,
-or who want a managed view without maintaining infrastructure. Trade-off: dependency on
-the vendor data model, and vendor data typically lags Microsoft by 24-72 hours.
-
-**Decision tree:**
-
-```
-START: What does the customer need?
-|
-+-- Single-cloud Azure, small FinOps team, native preference
-|   \-- FinOps Hubs
-|
-+-- Multi-cloud, single pane of glass
-|   \-- Third-party (Apptio Cloudability, Vantage, etc.)
-|
-+-- Specific reports off-the-shelf cannot handle,
-|   OR existing Power BI / Fabric / Databricks practice
-|   \-- Custom Power BI on FOCUS exports + FinOps Toolkit templates
-|
-\-- Short engagement (< 2 weeks)
-    \-- Cost Management portal + manual Excel export
-        Tooling decisions belong in Phase 2 roadmap, not Phase 1
-```
-
-#### Six-step commitment strategy framework
-
-The sequence OptimNow runs on an Azure commitment engagement:
-
-**Step 1 - Data foundation.** Daily FOCUS export to Storage Account, 90 days minimum
-of history (trigger backfill if the export is new). Azure Monitor diagnostic settings
-emitting VM metrics to a Log Analytics workspace.
-
-**Step 2 - Identify the always-on baseline.** For each SKU family + region, compute
-hourly running vCPUs from Azure Monitor over 90 days. The 5th-10th percentile is the
-steady-state floor. **This is the step you cannot do from cost data alone - it is
-forced by the granularity gap.**
-
-**Step 3 - Coverage planning.** Map the floor to instruments:
 - High baseline + low variability + AHB-eligible Windows -> 3-year RI with AHB
-- High baseline + low variability + Linux or non-AHB -> 1-year RI if VM series supports
-  it (verify post-July 2026 eligibility), otherwise 3-year RI if conviction is high
-- Variable workload, stable $ floor -> Savings Plan, 1-year, sized at 70-80% of floor
+- High baseline + low variability + Linux or non-AHB -> 1-year RI if the VM series
+  supports it (verify post-July 2026 eligibility), otherwise 3-year RI if conviction
+  is high
+- Variable workload, stable $ floor -> 1-year Savings Plan sized below the floor (70-80%
+  of it is a working estimate, not a published benchmark)
 - Bursty / unpredictable -> PAYG with Spot for the spike layer
-- Older VM series approaching retirement -> Plan migration to newer generation or commit
-  via 3-year reservation if workload must remain on legacy series
+- Older VM series approaching retirement -> migrate to a newer generation, or commit
+  via 3-year reservation if the workload must stay on the legacy series
 
-**Step 4 - Validate against Advisor.** Pull Advisor's reservation and SP recommendations.
-Reconcile against your own calculation from Step 2. Differences usually reveal AHB not
-factored, scope mismatches, or workload changes Advisor cannot know.
-
-**Step 5 - Stagger purchases.** Do not buy the full recommendation at once. Stagger
-over 60-90 days so utilisation patterns confirm or surprise before each next tranche.
-Staggering matters more now that exchange retires for covered services on 1 February 2027:
-the recovery path for a wrong covered reservation is a capped refund or a one-way trade-in
-to a savings plan, not a free exchange. Size each tranche so a mistake fits inside the
-$50,000 refund window.
-
-**Step 6 - Quarterly re-evaluation.** For non-covered services, exchange RIs that no
-longer fit the workload; for covered services after 1 February 2027, use refund (within
-the cap) or trade-in to a savings plan instead. Track SP utilisation against committed
-$/hour. Adjust the next quarter's commitments based on prior actuals, not on Advisor's
-rolling backward-looking recommendation.
+Then validate against Advisor (above), buy in phased blocks ("Phased purchasing"
+below), and re-evaluate quarterly against actuals rather than against Advisor's rolling
+recommendation.
 
 ---
 
@@ -754,9 +621,9 @@ optimisations that should be applied before any commitment purchase.
 
 **Pre-commitment optimisation (do these first):**
 1. Enable Azure Hybrid Benefit on all eligible SQL Database and SQL MI instances
-2. Switch dev/test databases to SQL Serverless (auto-pause) - saves 70-90% on idle DBs
+2. Switch dev/test databases to SQL Serverless (auto-pause)
 3. Stop PostgreSQL/MySQL Flexible Servers outside business hours
-4. Consolidate small databases into Elastic Pools (20-40% savings)
+4. Consolidate small databases into Elastic Pools
 5. Review DTU vs vCore: migrate to vCore if AHB-eligible for licence savings
 6. Right-size overprovisioned compute and storage tiers
 
@@ -827,11 +694,9 @@ line in Cost Management: size it from the vCore meters, not from the service tot
 **Reservation units per service:**
 - **SQL Database and SQL MI:** one vCore per region + service tier + hardware
   generation, with size flexibility within the tier and region, elastic pools
-  included. Zone redundancy is a separate reservation type ("vCore ZR"; West Europe
-  GP Gen5 ZR add-on $572 for 1 year and $1,188 for 3 years against $0.100463 per
-  vCore-hour pay-as-you-go; Hyperscale Gen5 vCore $1,144 / $2,376; Retail Prices
-  API, 15 October 2026). Reservations cover the primary and the billable secondary
-  replicas.
+  included. Zone redundancy is a separate add-on reservation type ("vCore ZR"; read
+  its rate from the Retail Prices API). Reservations cover the primary and the billable
+  secondary replicas.
 - **PostgreSQL Flexible:** one vCore per region + tier + compute series (Ddsv4,
   Ddsv5, Dsv6, Edsv5 and so on). Advisor includes zone-redundant HA standby vCores in
   its recommended quantity, which implies the standby compute is reservable
@@ -866,30 +731,11 @@ Azure Database for MariaDB is **not** eligible - the service retired in Septembe
 the managed service (VMs, containers, or a third-party host) and no database
 commitment covers them.
 
-**Important caveat:** SQL Server on Azure VMs and SQL Server enabled by Azure Arc
-also consume the plan's hourly commitment, but at normal PAYG rates (no discount).
-If these workloads are in the mix, they reduce the effective savings from the plan.
-Factor this into sizing the hourly commitment.
-
 **Scoping:** Subscription, resource group, management group, or entire billing
 account.
 
 **Purchase options:** Monthly or upfront payment, optional auto-renewal. Personalised
 recommendations available in Azure Advisor and the Azure portal.
-
-**When to use vs Reservations:**
-- Choose Savings Plan for Databases when the database estate spans multiple services
-  or regions, or when architecture changes (migrations, service swaps) are expected
-  during the commitment period.
-- Choose Reservations when a single database service runs stably in a fixed
-  configuration and the deeper RI discount outweighs the flexibility benefit.
-- Layer both: use the Savings Plan for broad baseline coverage, then add RIs for the
-  most stable, high-spend database workloads.
-
-**Pricing note (March 2026):** The "up to 35%" figure is based on Azure SQL Database
-Serverless over a 1-year term. Actual discounts vary by service and usage pattern.
-Azure Pricing Calculator and pricing pages had not yet been updated at time of
-announcement - verify current rates before purchasing.
 
 **Terms and coverage as published (Azure savings plans page and Redmondmag, 10 April
 2026; both read 15 October 2026).** 1-year term only. Covered: Azure SQL Database
@@ -906,64 +752,8 @@ SQL serverless. On provisioned workloads a 3-year reservation beats it by a wide
 margin, and under a MACC its 12-20% tiers lose most of their value (see "Net discount
 under a MACC with an Azure Commitment Discount").
 
-### DTU vs vCore pricing
-
-- **DTU:** Predictable pricing, good for small/uncertain workloads
-- **vCore:** Better for migrations (license reuse via AHB), more control over
-  compute/storage
-- **Serverless (vCore):** Higher hourly rate but auto-pause makes it cheaper for
-  intermittent use
-
-### Database architecture principles
-
-- **Only keep active working set in relational DB.** Move cold data to Blob (Cool /
-  Archive tier).
-- **Avoid "one instance per application" by default.** Consolidate databases to
-  increase utilization.
-- **Active data in Premium, cold data in Blob.** Avoid storing backups on premium
-  disks.
-- **High availability has a cost.** Balance resilience requirements against budget
-  per environment.
-
-### PostgreSQL and MySQL Flexible Server optimisation
-
-**Compute rightsizing patterns:**
-- Use B-series (burstable) for dev/test with <30% average CPU
-- Monitor `cpu_percent` and `memory_percent` metrics over 30 days
-- Size for P75 utilisation, not peak - autoscaling handles spikes
-- Enable read replicas only when query offload justifies the cost
-
-**Storage optimisation:**
-- **Auto-grow**: Enable with 20% increment to prevent manual interventions
-- **IOPS scaling**: Use default provisioned IOPS unless workload requires more
-- **Backup retention**: 7 days default; only extend for compliance requirements
-- **Storage type**: Premium SSD only for production; Standard SSD for dev/test
-
-**High availability considerations:**
-- **Zone-redundant HA**: Doubles compute cost - use only for critical production
-- **Same-zone HA**: Lower cost option when RPO/RTO allows
-- **Read replicas**: More cost-effective than HA for read scaling
-- **Geo-redundant backup**: Only enable where DR requirements mandate
-
-### Cosmos DB cost optimisation patterns
-
-**Throughput optimisation:**
-- **Autoscale vs Manual**: Use autoscale for >3:1 peak-to-trough ratio
-- **Shared throughput**: Pool RU/s across containers with similar access patterns
-- **Serverless**: Consider for <1M requests/month or sporadic workloads
-- **Time-based scaling**: Use Azure Functions to scale RU/s by schedule
-
-**Data modelling for cost:**
-- **Partition key design**: Poor partitioning forces over-provisioning
-- **Document size**: Smaller documents = lower RU consumption
-- **Indexing policy**: Exclude unused paths to reduce write RUs
-- **TTL (Time-to-live)**: Auto-expire old data to control storage growth
-
-**Multi-region considerations:**
-- Each additional region multiplies RU/s cost
-- Use regional failover (manual) instead of multi-master where possible
-- Place read regions close to users, write region close to data sources
-- Monitor cross-region replication lag to validate region necessity
+Database usage optimisation (serverless auto-pause, Flexible Server start/stop, elastic
+pools, Cosmos DB autoscale) is in `finops-azure.md`, "Database optimisation patterns".
 
 ---
 
@@ -998,14 +788,6 @@ only and goes through a support request; refunds sit inside the $50,000 rolling
 retirement should not reach storage reservations (moderate confidence: the exchange
 page does not name storage).
 
-Illustrative prices, Hot LRS West Europe (Retail Prices API, 15 October 2026):
-pay-as-you-go $0.0196 per GB-month for the first 50 TB, $0.018816 for the next 450 TB,
-$0.018032 above 500 TB. 100 TiB reserved: $19,749 for 1 year (about $0.0161 per
-GiB-month, 18% below the first tier) and $47,687 for 3 years (about $0.0129, 34%).
-1 PiB reserved: $192,368 for 1 year (22%) and $458,723 for 3 years (38%). Cool LRS
-100 TiB: $10,076 / $24,330 against $0.01 pay-as-you-go (18% / 34%). Archive LRS
-100 TiB: $1,969 / $5,441 against $0.0018 (11% / 18%).
-
 Sizing: take 90 days of daily stored capacity per key (Azure Monitor `BlobCapacity`
 split by `BlobTier`, or the Cost Management "Data Stored" meter quantity), use the P10
 as the floor, subtract any planned lifecycle tiering (Hot to Cool or Archive moves
@@ -1022,10 +804,7 @@ projects tend to shrink.
 or not, so the base is very stable, which makes Premium Files a better reservation
 candidate per TiB than blob. Sequence: shrink over-provisioned premium shares first
 (provisioned v1 sizes shares for IOPS, so many are oversized), then reserve.
-Illustrative prices, West Europe (Retail Prices API, 15 October 2026): Premium LRS
-provisioned $0.192 per GiB-month pay-as-you-go; Premium LRS 10 TiB $19,346 for 1 year
-(18%) and $46,714 for 3 years (34%); Premium ZRS 10 TiB $24,183 / $58,393 against
-$0.24 (18% / 34%). Whether the reservation applies to the provisioned v2 billing model
+Whether the reservation applies to the provisioned v2 billing model
 is not documented: verify before recommending it on v2 accounts.
 
 **Premium SSD managed disks.** Premium SSD P30 to P80 only (P1 to P20 are listed as
@@ -1034,11 +813,7 @@ reservation SKU observed). Not eligible: Standard SSD and HDD, Premium SSD v2, U
 unmanaged disks. The reservation is per disk SKU and region with no size flexibility
 (a P40 reservation does not cover two P30 disks); quantity is the number of disks. It
 applies hourly, and a disk in the "Reserved" state (attached to a deallocated VM)
-still bills and still consumes the reservation. Illustrative prices, West Europe
-(Retail Prices API, 15 October 2026): P30 LRS $148.68 per month pay-as-you-go against
-$1,695 for 1 year (5.0% discount); P40 $284.94 against $3,248; P50 $545.10 against
-$6,214; P70 $1,982.17 against $22,596; P80 $3,964.34 against $45,193, all 5.0%.
-Calibration: 5% is below the ACD most MACC customers hold on pay-as-you-go; under an
+still bills and still consumes the reservation. Calibration: 5% is below the ACD most MACC customers hold on pay-as-you-go; under an
 8% ACD the reservation costs about 3% more than discounted pay-as-you-go. The disk
 levers that pay are Premium to Standard SSD rightsizing where premium IOPS are not
 needed, deleting unattached disks (`azure-orphan-disks` playbook) and reviewing disks
@@ -1066,24 +841,12 @@ size flexibility, trade-in to a savings plan, staggered expiry - are tabulated o
 "Reservation and Savings Plan liquidity mechanics" near the top of this file. Read
 that table first, then the portfolio consequences below.
 
-**Key insight (updated for 1 February 2027):** Reservations were more liquid than Savings
-Plans on Azure, the opposite of the common assumption. That edge is narrowing. Savings
-Plans still offer usage flexibility (any family, any region) but zero financial liquidity
-(no exchange, no refund, no cancellation). Reservations still allow refunds (within the
-$50K cap), trade-in to a Savings Plan (no fee, no limit), and instance size flexibility
-within the family, but reservation exchange retires on 1 February 2027 for any service a
-savings plan also covers. For those covered services the liquidity edge shrinks to the
-refund cap; exchange survives only for non-covered services such as VMware. When choosing
-between the two, factor this into the decision, not just discount depth and coverage
-breadth.
-
-**The $50,000 refund cap.** Microsoft imposes a rolling 12-month cap of $50,000 on
-Reservation refunds per Billing Profile (MCA) or enrollment (EA). Exchanges that still
-apply (non-covered services, or a final exchange on a pre-2027 covered reservation) do
-not count against this cap. Once exchange retires for covered services on 1 February 2027,
-the refund cap becomes the main reshaping lever for those reservations, so it binds harder
-on large portfolios. The cap restores day-by-day; spread cancellations across the 12-month
-window where possible.
+**The portfolio consequence.** Savings plans give usage flexibility (any family, any
+region) and no financial liquidity. Reservations keep a refund within the $50,000
+rolling cap and a trade-in to a savings plan, and for covered services that is all they
+keep after 1 February 2027, so the refund cap becomes the main reshaping lever and binds
+harder on large portfolios. It restores day by day: spread cancellations across the
+window.
 
 Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations
 
@@ -1106,18 +869,9 @@ Avoid buying the full commitment in a single transaction. Purchase in blocks to 
 a portfolio with staggered expiry dates. The cadence and block size should match
 your consumption profile - not a fixed rule.
 
-**Why phased purchasing matters on Azure:**
-- **Reduces lock-in risk:** if workloads migrate or are re-architected, only the
-  current block is at risk
-- **Creates natural re-evaluation points:** each purchase cycle forces a review of
-  utilisation, Advisor recommendations, and architecture direction
-- **Preserves refund headroom:** spreading purchases means smaller individual
-  Reservations, making it easier to stay within the $50K refund cap if changes are
-  needed (exchange headroom applies only to non-covered services after 1 Feb 2027)
-- **Aligns with MACC cadence:** phased purchasing can be timed to support MACC
-  burndown trajectory, avoiding end-of-period scrambles
-- **Captures pricing improvements:** newer VM generations (v5, v6) and architecture
-  shifts (ARM-based Dps/Eps families) can be reflected in subsequent blocks
+**Why phased purchasing matters on Azure:** smaller, staggered reservations keep each
+change inside the $50,000 refund cap, and purchases can be timed to the MACC burndown
+trajectory instead of an end-of-period scramble.
 
 <!-- Deliberate mirror: this cadence/block-size table also appears in
 finops-aws-commitments.md. Each commitments file is loaded standalone
@@ -1176,55 +930,30 @@ Quarter 4: Evaluate whether to buy more or hold
   -> Early blocks from previous year start approaching renewal
 ```
 
-**Portfolio view - staggered expiry example (1-year terms, quarterly cadence):**
-
-| Block | Purchased | Expires | % of total | Instrument | Rationale |
-|---|---|---|---|---|---|
-| Block 1 | Jan 2026 | Jan 2027 | 25% | Compute Savings Plan | Broad baseline across VMs + App Service |
-| Block 2 | Apr 2026 | Apr 2027 | 20% | VM Reservations (D-series) | Stable production VMs, deepest discount |
-| Block 3 | Jul 2026 | Jul 2027 | 15% | VM Reservations (E-series) | Memory-optimised database VMs |
-| Block 4 | Oct 2026 | Oct 2027 | 10% | DB Savings Plan | Database baseline across SQL + PostgreSQL |
-| PAYG | - | - | 30% | None | Buffer for variable / new workloads |
-
 **3-year term phasing:** For 3-year commitments (deeper discounts), purchase in
 smaller blocks (10-15%) at 6-month intervals. The longer the term, the smaller
 each block should be.
 
-**Portfolio management cadence:**
-- **At each purchase cycle** (weekly/monthly/quarterly depending on profile): review
-  Reservation and Savings Plan utilisation in Azure Cost Management. Flag any
-  commitment below 80%. Decide whether to buy the next block, adjust the mix, or
-  pause. Reshape earlier blocks if workloads have shifted: exchange for non-covered
-  services, refund or trade-in to a savings plan for covered services after 1 Feb 2027.
-- **At each expiry:** do not auto-renew blindly. Re-evaluate the workload: has it
-  grown, shrunk, migrated, or been decommissioned? Renew only what is still
-  justified. Azure Advisor provides renewal recommendations - use them as input,
-  not as the decision.
-- **Quarterly (regardless of purchase cadence):** strategic review of commitment
-  coverage ratio, instrument mix, MACC burndown trajectory, and upcoming expiries.
-- **Annually:** review the overall commitment strategy against the organisation's
-  Azure roadmap. Adjust coverage ratio, cadence, instrument mix, and MACC alignment.
+**Portfolio management cadence:** at each purchase cycle, review utilisation and flag
+any commitment below 80% before buying the next block; at each expiry, renew only what
+the workload still justifies (Advisor's renewal recommendation is an input, not the
+decision); quarterly, review coverage, instrument mix, MACC burndown and upcoming
+expiries together.
 
 **Commitment portfolio diagnostic questions:**
-- What percentage of your commitment portfolio expires in any single quarter? If
-  more than 30%, the portfolio is insufficiently diversified.
-- Are you buying commitments in phased blocks with staggered expiry, or purchasing
-  the full amount in a single transaction?
-- How much of your $50,000 Reservation refund cap have you used in the last 12 months?
-  With exchange retiring for covered services on 1 Feb 2027, this cap is the main
-  reshaping lever for those reservations, so headroom matters more.
-- Are Savings Plans covering workloads that are stable enough for Reservations
-  (leaving ~7% discount on the table)?
-- Is MACC burndown tracking integrated into the same review cadence as commitment
-  purchasing? If not, optimisation gains may create a MACC shortfall risk.
-- Are engineering teams planning VM family migrations (e.g. to ARM-based Dps/Eps)
-  that would strand existing Reservations? If so, favour Savings Plans for those
-  workloads, since exchange retires for covered services on 1 Feb 2027 and can no
-  longer rescue a stranded reservation.
+- What share of the portfolio expires in any single quarter? Above 30% (a working
+  estimate), it is insufficiently diversified.
+- How much of the $50,000 refund cap has been used in the last 12 months?
+- Are savings plans covering workloads stable enough for reservations (about 7 points
+  of discount left on the table)?
+- Is MACC burndown reviewed in the same session as commitment purchasing?
+- Are VM family migrations planned (for example to Dps/Eps) that would strand
+  reservations? Favour savings plans there: after 1 February 2027 exchange can no
+  longer rescue a stranded reservation on a covered service.
 
 **Key metrics:**
-- **Reservation/SP Utilisation:** Target >80%. Below this, the commitment is
-  oversized.
+- **Reservation/SP Utilisation:** Target >80% (a working estimate, not a published
+  benchmark). Below this, the commitment is oversized.
 - **Reservation/SP Coverage:** Target 70% (Walk maturity), 80%+ (Run maturity).
 - **Effective Savings Rate (ESR):** savings generated / on-demand equivalent (ODE)
   spend, where ODE is what the covered usage would have cost with no discount
@@ -1237,7 +966,8 @@ each block should be.
   "How to Calculate Effective Savings Rate", updated 17 March 2026) and
   <https://focus.finops.org/docs/use-cases/v1-4/determine-effective-savings-rate-by-service/>
   (both read 15 October 2026).
-- **Break-even period:** should be <9 months for 1-year terms, <15 months for 3-year.
+- **Break-even period:** under 9 months for 1-year terms and 15 months for 3-year (a
+  working estimate; compute it per instrument with the net-discount rule above).
 - **Commitment waste:** hours where committed capacity had no matching usage.
 - **Refund headroom:** remaining $ available under the $50K/12-month refund cap. This
   is the main reshaping lever for covered services once exchange retires on 1 Feb 2027.

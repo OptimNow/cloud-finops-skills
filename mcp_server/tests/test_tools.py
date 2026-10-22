@@ -90,7 +90,10 @@ def test_size_hint_is_present_and_plausible() -> None:
     """approx_tokens must track the real body size, not be a constant."""
     entries = {e["name"]: e["approx_tokens"] for e in tools.list_references()["references"]}
     biggest = max(entries, key=entries.get)
-    assert entries[biggest] > 15_000, "the largest reference should look large"
+    # 10,000 is where the server tells agents to fetch by section. The largest
+    # file was above 25,000 until the 2026-10-22 splits; the per-file budget
+    # (scripts/check-reference-size.sh) now keeps every file under 15,000.
+    assert entries[biggest] > 10_000, "the largest reference should look large"
     assert min(entries.values()) < entries[biggest] / 3, "the hint does not discriminate"
     for ref in metadata.get_index():
         assert entries[ref.name] == round(len(ref.path.read_text(encoding="utf-8")) / 4)
