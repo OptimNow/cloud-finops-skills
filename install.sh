@@ -799,7 +799,9 @@ build_gemini_grouped_knowledge() {
 
   cat_required "$outdir/aws.md" \
     "$refs/finops-aws.md" "$refs/finops-aws-commitments.md" \
-    "$refs/finops-aws-patterns.md" "$refs/finops-bedrock.md"
+    "$refs/finops-aws-patterns-compute.md" "$refs/finops-aws-patterns-storage.md" \
+    "$refs/finops-aws-patterns-databases.md" "$refs/finops-aws-patterns-networking.md" \
+    "$refs/finops-aws-patterns-other.md" "$refs/finops-bedrock.md"
   cat_required "$outdir/azure.md" \
     "$refs/finops-azure.md" "$refs/finops-azure-commitments.md" \
     "$refs/finops-azure-patterns.md" "$refs/finops-azure-openai.md"

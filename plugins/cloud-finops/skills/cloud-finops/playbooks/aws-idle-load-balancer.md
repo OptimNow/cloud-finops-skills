@@ -86,7 +86,7 @@ aws elbv2 describe-target-groups \
 
 ## See also
 
-- `references/finops-aws-patterns.md` - Networking Optimization Patterns,
+- `references/finops-aws-patterns-networking.md` - Networking Optimization Patterns,
   including the inactive ALB / NLB / CLB / GWLB patterns and LCU mechanics
 - `playbooks/aws-zombie-nat-gateway.md` - same idle-resource pattern,
   different service

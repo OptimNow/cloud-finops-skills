@@ -639,6 +639,14 @@ length and routinely dominates. Optimise both sides.
   the corpus. Context selection is a cost decision, not just a quality decision.
 - **RAG retrieval precision** - broad-match retrieval stuffs marginally relevant
   fragments into every prompt; tune top-k and relevance thresholds
+- **Images in the history** - on Claude an image costs about one visual token per
+  28 x 28 pixel patch, capped by the model's resolution tier, and like any input it is
+  billed again on every turn it stays in the history. The high-resolution tier
+  (Claude 4.7 and later) can use up to about three times the visual tokens of the
+  standard tier for the same image, so downsample when that fidelity is not needed
+  ([vision, resolution and token cost](https://platform.claude.com/docs/en/build-with-claude/vision),
+  read 22 October 2026). Referencing an image by Files API `file_id` keeps the request
+  payload small; it does not remove its tokens
 
 **The multilingual token tax:**
 
@@ -649,7 +657,8 @@ deployments:
 - Include language mix in cost-per-task baselines and forecasts; a rollout to new
   geographies raises unit cost with zero functional change
 - Compare tokenizer efficiency across candidate models for the dominant languages
-  (it varies by model family)
+  (it varies by model family and by generation: see the tokenizer note in
+  `finops-anthropic.md`)
 - On Vertex AI, character-based pricing can be cheaper for verbose target languages
   (see `finops-vertexai.md`)
 

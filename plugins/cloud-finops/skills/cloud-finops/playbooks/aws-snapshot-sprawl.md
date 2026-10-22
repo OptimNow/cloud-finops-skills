@@ -108,7 +108,7 @@ expire; read 14 October 2026).
 
 ## See also
 
-- `references/finops-aws-patterns.md` - Storage Optimization Patterns,
+- `references/finops-aws-patterns-storage.md` - Storage Optimization Patterns,
   including EBS Snapshot Archive tiering and the unaccessed-snapshot pattern
 - `references/finops-aws.md` - RDS backup and snapshot retention discipline
   in the database cost optimisation section

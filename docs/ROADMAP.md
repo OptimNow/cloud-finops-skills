@@ -108,7 +108,13 @@ primary owner (`finops-on-prem-hybrid.md` takes Allocation, already covered).
    resumes it after 30 days; a resumed cluster must run 60 minutes before it can
    pause again; backups stop while it is paused and existing snapshots remain
    until they expire. Check whether those snapshots count in the paused storage
-   charge before writing the variant (the page does not say).
+   charge before writing the variant (the page does not say). Add Databricks SQL
+   serverless as a variant (YouTube batch 08, item 37.4; mechanics read
+   2026-10-22 on https://docs.databricks.com/aws/en/compute/sql-warehouse/create):
+   serverless auto stop defaults to 10 minutes and an idle warehouse accrues
+   charges until it stops. Monitoring or health-check queries can keep it from
+   stopping; that a query inside the window resets the timer is inferred, since
+   the page does not define "idle", so test it before writing it as fact.
 4. **Issue #97 as a mechanics section**, not a table, in
    `finops-azure-openai.md` and `finops-genai-capacity.md`: the break-even
    utilisation formula, the hourly-vs-token shape and the spillover switch,
@@ -297,6 +303,15 @@ phrasing, and the reachable ceiling is the model offering to check the library.
   friction reduction matters, then mirror to Gemini.
 
 ## Depth passes (extend existing files when bandwidth allows)
+
+- **Redshift.** The library covers Redshift commitments (the decision tree in
+  `finops-aws-patterns-databases.md`) but not its usage cost. Verified on
+  2026-10-22 (https://aws.amazon.com/redshift/pricing/, YouTube batch 08, item
+  37.5): Concurrency Scaling is billed per second at the on-demand rate beyond
+  free credits, each cluster earns up to one hour of credits per day and banks up
+  to 30 hours. A persistent Concurrency Scaling charge points at undersized base
+  capacity or contending workloads. Write it when a Redshift question or probe
+  fails; `finops-aws.md` is over its token budget, so it may need its own file.
 
 - **Extend GreenOps depth to Azure and GCP.** The May 2026 GreenOps pass added AWS-specific
   depth to `references/greenops-cloud-carbon.md` (Sustainability Console v2 with Methodology v3

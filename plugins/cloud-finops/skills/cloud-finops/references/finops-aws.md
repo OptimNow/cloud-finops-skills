@@ -29,7 +29,7 @@ material it does not need:
 | You want | Read |
 |---|---|
 | Savings Plans, RIs, Spot, commitment decision tree, portfolio liquidity, EDP negotiation | `finops-aws-commitments.md` |
-| The enumerated per-service inefficiency catalogue | `finops-aws-patterns.md` |
+| The per-service inefficiency catalogue (index) | `finops-aws-patterns.md` |
 | A specific named waste pattern with a runnable detection query | `playbooks/aws-*.md` |
 
 ## AWS cost data foundation
@@ -742,8 +742,8 @@ https://aws.amazon.com/blogs/aws-cloud-financial-management/automation-and-trust
 
 Several AWS services charge an Extended Support surcharge for domains, clusters, or
 instances left on end-of-standard-support versions. This is the "outdated resource
-incurring extended support charges" pattern - see `finops-aws-patterns.md` for the
-enumerated entries (EKS clusters, OpenSearch/Elasticsearch domains).
+incurring extended support charges" pattern - see `finops-aws-patterns-compute.md` (EKS)
+and `finops-aws-patterns-databases.md` (OpenSearch).
 
 Make version audits a recurring FinOps action item:
 - Audit Amazon OpenSearch Service domains for legacy Elasticsearch (1.5-7.8) and
@@ -848,7 +848,7 @@ Database services often represent 20-40% of cloud spend, yet many organisations 
 
 ### Commitment and licensing
 
-Commitment mechanics for databases - which instrument covers RDS, how Reserved Instances interact with the Database Savings Plan, the size-flexibility rules - live in the "Database commitment discount decision tree" of `finops-aws-patterns.md`, which is where `finops-aws-commitments.md` routes the question. Two points belong with the workload rather than with the instrument:
+Commitment mechanics for databases - which instrument covers RDS, how Reserved Instances interact with the Database Savings Plan, the size-flexibility rules - live in the "Database commitment discount decision tree" of `finops-aws-patterns-databases.md`, which is where `finops-aws-commitments.md` routes the question. Two points belong with the workload rather than with the instrument:
 
 - **Commercial engines (Oracle, SQL Server)**: licence cost routinely exceeds infrastructure cost, so edition choice and BYOL move the bill more than instance sizing does. `finops-itam.md` covers the BYOL governance side.
 - **DynamoDB**: On-Demand versus Provisioned capacity swings cost by roughly an order of magnitude in either direction depending on traffic shape. Decide it from the measured traffic profile rather than from a default.

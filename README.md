@@ -310,10 +310,12 @@ for "how do I detect and fix this specific thing".
 | `find_playbooks(scope?, service?, waste_category?, confidence?)` | "Which VMs run for nothing?" "Why is the NAT bill so high?" "Which of my RIs are about to expire?" - finds the runbook for a specific waste suspicion. The server cannot see your account; the runbook's detection query is the answer it hands over |
 
 Both listings carry `approx_tokens` per entry, because the references vary by more
-than tenfold - roughly 2K tokens for the smallest, over 25K for the AWS pattern
-catalogue. The pattern catalogues are enumerated lists, so an agent that wants one pattern
-family passes `section` (`get_reference("finops-aws-patterns", section="storage")`)
-and pays for that section instead of the whole file. Matching is case-insensitive and
+than tenfold - roughly 2K tokens for the smallest, over 20K for the largest. An agent
+that needs one part of a large file passes `section`
+(`get_reference("finops-azure-patterns", section="storage")`) and pays for that section
+instead of the whole file. The AWS pattern catalogue needs no section call: it is split
+into one file per service family (`finops-aws-patterns-compute`, `-storage`,
+`-databases`, `-networking`, `-other`). Matching is case-insensitive and
 partial; a phrase that matches no heading returns the file's available headings rather
 than silently falling back to the full body.
 

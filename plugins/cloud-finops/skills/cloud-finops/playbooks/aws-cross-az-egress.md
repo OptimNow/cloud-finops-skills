@@ -110,7 +110,7 @@ LIMIT 50;
 
 ## See also
 
-- `references/finops-aws-patterns.md` - Networking Optimization Patterns,
+- `references/finops-aws-patterns-networking.md` - Networking Optimization Patterns,
   including cross-AZ transfer and the AZ-misaligned NAT Gateway pattern
 - `references/finops-aws.md` - CUR and Data Exports setup, where the
   usage-type breakdown comes from

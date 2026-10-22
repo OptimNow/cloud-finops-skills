@@ -134,7 +134,7 @@ arithmetic with current rates before defaulting to it.
   `playbooks/aws-s3-noncurrent-version-sprawl.md` - run the two
   garbage-collection rules first; they are realised savings with no
   access study
-- `references/finops-aws-patterns.md` - Storage Optimization Patterns, the
+- `references/finops-aws-patterns-storage.md` - Storage Optimization Patterns, the
   S3 storage-class and lifecycle-transition patterns (including the
   premature-tiering and small-object traps) and Storage Lens usage
 - `references/finops-waste-detection-playbooks.md` - the taxonomy and the

@@ -98,7 +98,7 @@ ORDER BY cost_30d DESC;
 
 ## See also
 
-- `references/finops-aws-patterns.md` - Storage Optimization Patterns,
+- `references/finops-aws-patterns-storage.md` - Storage Optimization Patterns,
   including EBS volume-type modernisation (gp2 / io1 to gp3 / io2) and the
   unattached-volume pattern
 - `playbooks/aws-snapshot-sprawl.md` - related snapshot accumulation

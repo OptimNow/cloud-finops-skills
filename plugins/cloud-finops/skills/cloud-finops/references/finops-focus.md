@@ -393,7 +393,12 @@ pipeline has to infer.
 **What happens at month end.** Providers keep writing rows for a closed month
 for several days: late-arriving usage, credits, support charges, marketplace invoices,
 commitment amortisation adjustments. A row delivered on the 3rd can change a total for
-a month that the dashboard showed as closed on the 1st.
+a month that the dashboard showed as closed on the 1st. On AWS a line is final once
+`bill/InvoiceId` is populated, but AWS can still update a finalised month for refunds,
+credits and support fees, and Developer, Business and Enterprise Support, calculated on
+final usage, lands on the sixth or seventh of the following month
+([viewing your finalized report](https://docs.aws.amazon.com/cur/latest/userguide/view-finalized-cur.html),
+read 22 October 2026). A close that freezes the month on day five misses it.
 
 **The inference pattern that works:**
 

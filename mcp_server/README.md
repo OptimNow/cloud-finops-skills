@@ -16,7 +16,7 @@ prompt, the agent calls tools to discover, filter, and fetch only what it needs.
 Six tools, all read-only, split across two surfaces.
 
 **References** - long-form provider and discipline files. They vary by more than
-tenfold, from ~160 lines (roughly 2K tokens) to ~1,800 lines (roughly 26K tokens), so
+tenfold, from ~160 lines (roughly 2K tokens) to ~1,900 lines (roughly 22K tokens), so
 budget context per file rather than assuming a uniform size. Every listing entry
 carries an `approx_tokens` hint for exactly that reason.
 
@@ -44,22 +44,25 @@ while costing a sixth of a call that every session makes.
 
 ### Section-level retrieval
 
-`get_reference` takes an optional `section`. It exists because the provider
-pattern catalogues (`finops-aws-patterns`, `finops-azure-patterns`) are
-enumerated lists (the AWS one past 25K tokens), and an agent asking about S3 lifecycle wants
-one heading out of them, not the file.
+`get_reference` takes an optional `section`. It exists because the largest
+references run past 20K tokens and the Azure pattern catalogue
+(`finops-azure-patterns`) is an enumerated list, and an agent asking about storage
+lifecycle wants one heading out of them, not the file. The AWS pattern catalogue
+was split by service family on 2026-10-22 (`finops-aws-patterns-compute`,
+`-storage`, `-databases`, `-networking`, `-other`, with `finops-aws-patterns` as
+the index), so it is fetched by file.
 
 ```python
-get_reference("finops-aws-patterns")                        # ~26,600 tokens
-get_reference("finops-aws-patterns", section="storage")     # ~4,800 tokens
-get_reference("finops-aws-patterns", section="networking")  # ~2,600 tokens
+get_reference("finops-azure-patterns")                       # ~8,800 tokens
+get_reference("finops-azure-patterns", section="storage")    # ~2,700 tokens
+get_reference("finops-aws", section="billing hierarchy")     # ~2,700 of ~21,600 tokens
 ```
 
 - Matches **H2 and H3** headings, case-insensitively and partially, so a natural
   phrase works. A heading's trailing count is ignored, so `"storage optimization
-  patterns"` finds `"Storage Optimization Patterns (28)"`. H3 is not an extra:
-  the two catalogues carry a single H2 each, so an H2-only splitter would leave
-  the largest files in the library un-sectionable.
+  patterns"` finds `"Storage Optimization Patterns (16)"`. H3 is not an extra:
+  the Azure catalogue carries a single H2, so an H2-only splitter would leave it
+  un-sectionable.
 - An H2 span includes its H3 children; an H3 span stops at its sibling. Headings
   inside fenced code blocks are not boundaries.
 - The returned `content` is prefixed with the reference's H1 so the chunk is
@@ -271,10 +274,10 @@ Calls `get_reference(name="finops-aws")` and gets back the full markdown body
 (about 1,400 lines, roughly 19K tokens) instead of the entire knowledge base. That is one
 of the larger references - see the size range noted above before fetching several.
 
-Agent prompt: *"What does the AWS pattern catalogue say about storage?"*
+Agent prompt: *"What does the Azure pattern catalogue say about storage?"*
 
-Calls `get_reference(name="finops-aws-patterns", section="storage")` and gets back
-the storage chapter (~4,800 tokens) rather than the whole catalogue (~26,600).
+Calls `get_reference(name="finops-azure-patterns", section="storage")` and gets back
+the storage chapter (~2,700 tokens) rather than the whole catalogue (~8,800).
 
 Agent prompt: *"Show me the obvious-confidence AWS waste playbooks."*
 

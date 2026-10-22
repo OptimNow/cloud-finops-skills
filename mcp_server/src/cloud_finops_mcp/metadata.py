@@ -407,13 +407,14 @@ def get_playbook_by_name(name: str) -> Playbook | None:
 # --- section splitting ------------------------------------------------------
 #
 # Section-level retrieval exists because the pattern catalogues are enumerated
-# lists: an agent asking about S3 lifecycle wants one of the seven headings in
-# finops-aws-patterns, not all 26K tokens of it.
+# lists: an agent asking about storage lifecycle wants one of the five headings
+# in finops-azure-patterns, not the whole file. (The AWS catalogue, which ran
+# to 26K tokens behind one H2 and seven H3s, was split into one file per
+# service family on 2026-10-22.)
 #
-# H3 is not optional here, it is the whole point. finops-aws-patterns carries
-# ONE H2 and seven H3s; finops-azure-patterns one H2 and five H3s. An
-# H2-only splitter would leave the two biggest files in the library
-# un-sectionable, which is exactly the case section retrieval was built for.
+# H3 is not optional here, it is the whole point. finops-azure-patterns carries
+# ONE H2 and five H3s. An H2-only splitter would leave it un-sectionable, which
+# is exactly the case section retrieval was built for.
 
 # ATX headings only. Setext (underlined) headings do not appear in this
 # content set and matching them would need lookahead over the next line.
