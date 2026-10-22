@@ -219,7 +219,7 @@ typically daily-grained. Token *usage* telemetry, by contrast, lands in minutes.
 workload where a misconfigured agent can burn thousands of dollars within hours, waiting
 for the cost export is waiting too long. The same holds for the new AWS Settings spend
 limit, which is a type of AWS Budgets and reads the same feed: it caps the month, it
-does not shorten detection (see `finops-aws.md`, spend limits). **Detect AI spend on
+does not shorten detection (see `finops-aws-billing.md`, spend limits). **Detect AI spend on
 usage telemetry, not billing data.** The usage surfaces to watch:
 
 - **AWS Bedrock** - CloudWatch runtime metrics in the `AWS/Bedrock` namespace
@@ -365,10 +365,10 @@ severity and audience need.
 ## Cross-references
 
 - `optimnow-methodology.md` - the maturity-aware framing this file builds on
-- `finops-aws.md` - AWS Cost Anomaly Detection in the broader AWS context; also the
+- `finops-aws-billing.md` - AWS Cost Anomaly Detection in the broader AWS context; also the
   cost-preventive SCP subsection (detection is reactive - denying expensive IAM
   actions at the organisation level is the preventive complement)
-- `finops-azure.md` - Azure Cost Management in the broader Azure context
+- `finops-azure-billing.md` - Azure Cost Management exports, budgets and alerts
 - `finops-gcp.md` - BigQuery billing export, the substrate for custom GCP anomaly
   detection
 - `finops-tagging.md` - tag dimensions are how layered detection becomes useful;

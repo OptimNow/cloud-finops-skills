@@ -17,7 +17,7 @@ fcp_maturity_entry: "Crawl"
 > look for and the remediation for each. A lookup surface, retrieved when hunting
 > a specific pattern. For named patterns with runnable detection queries, prefer
 > `playbooks/`. The other families are listed in `finops-aws-patterns.md`; billing
-> mechanics are in `finops-aws.md`, commitments in `finops-aws-commitments.md`.
+> mechanics are in `finops-aws-billing.md`, commitments in `finops-aws-commitments.md`.
 
 > Source: the [Cloud Efficiency Hub](https://www.pointfive.co/efficiency-hub),
 > an open, practitioner-governed library powered by PointFive, credited here as
@@ -117,7 +117,7 @@ The optimisation sequence matters. Follow this order:
   which eliminates I/O charges at a higher storage rate
 - Aurora clusters running MySQL 5.7 or PostgreSQL 11 that have not been upgraded
   will incur Extended Support surcharges automatically; the opt-out at creation
-  (`EngineLifecycleSupport`) is in `finops-aws.md`, "Extended Support version
+  (`EngineLifecycleSupport`) is in `finops-aws-billing.md`, "Extended Support version
   audits"
 - Aurora Auto Scaling manages read replica count dynamically - use it to avoid
   over-provisioning read capacity

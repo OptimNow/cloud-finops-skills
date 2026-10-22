@@ -197,7 +197,7 @@ and rollback. Two things are worth borrowing regardless of cloud. Autonomy is gr
 per action type, not per agent. And the top tier is still bounded by a **maximum
 financial impact**, which is the agentic equivalent of a spend cap and belongs in any
 agent's design, first-party or not. Tier detail and native examples are in
-`finops-aws.md`.
+`finops-aws-billing.md`.
 
 **Billing-model flexibility for agent spend.** Since 26 August 2026, Gemini
 Enterprise offers a Pay-as-you-go edition (compute and tokens at standard model API

@@ -14,7 +14,7 @@ fcp_maturity_entry: "Crawl"
 > The enumerated AWS inefficiency catalogue, split by service family so a
 > question loads only the family it is about. This file is the index: open the
 > family file below. For named waste patterns with runnable detection queries,
-> prefer `playbooks/`. For billing mechanics see `finops-aws.md`; for
+> prefer `playbooks/`. For billing mechanics see `finops-aws-billing.md`; for
 > commitments see `finops-aws-commitments.md`.
 
 ---

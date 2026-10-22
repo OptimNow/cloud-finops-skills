@@ -525,7 +525,7 @@ it post-migration costs a quarter of engineering time.
 - `finops-aws-commitments.md` - AWS-specific commitment timing for
   post-migration workloads (the 60-90 day rule applies)
 - `finops-azure-commitments.md` - Azure-specific commitment timing
-- `finops-azure.md` - the EA-to-MCA transition, a related onboarding
+- `finops-azure-billing.md` - the EA-to-MCA transition, a related onboarding
   scenario
 - `finops-gcp.md` - GCP-specific commitment timing
 - `finops-fabric.md` - the Pro/PPU-to-Fabric migration governance trap is

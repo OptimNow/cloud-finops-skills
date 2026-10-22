@@ -14,8 +14,9 @@ fcp_maturity_entry: "Walk"
 > Azure rate-optimisation instruments and the decisions around them: Reservations,
 > Savings Plans, Azure Hybrid Benefit, Spot, the compute and database commitment
 > decision trees, portfolio liquidity under the 1 February 2027 exchange retirement,
-> phased purchasing, and MACC alignment. For Azure billing data, rightsizing,
-> service optimisation and governance, see `finops-azure.md`.
+> phased purchasing, and MACC alignment. For Azure billing data, allocation and
+> governance, see `finops-azure-billing.md`; for rightsizing and service optimisation,
+> `finops-azure.md`.
 
 ---
 
@@ -47,8 +48,8 @@ to be layered, not chosen in isolation.
    with active Software Assurance assigned to it, and the assignment must hold up in
    a licence audit. Enable it on all eligible VMs before any other commitment
    decision. Windows licence costs can be a large share of a Windows VM's
-   pay-as-you-go rate (44% in the D4_v5 case study in `finops-azure.md`; read the
-   exact split for your SKU from the pricing calculator). Use the AHB Workbook from
+   pay-as-you-go rate; read the exact split for your SKU from the pricing
+   calculator. Use the AHB Workbook from
    FinOps Toolkit for
    compliance tracking across the fleet.
 
@@ -617,7 +618,7 @@ recommendations are mentioned in Microsoft's blog but not listed as a tool in th
 server's README, so verify before relying on that path). The same calibration caveats
 apply: agent-surfaced recommendations remain a sanity check, not a source of truth,
 and still need reconciling against your own cost-plus-utilisation join. See the
-agentic FinOps discussion in `finops-azure.md` and the tag-hygiene pattern in
+agentic FinOps discussion in `finops-azure-billing.md` and the tag-hygiene pattern in
 `finops-tagging.md` for the broader MCP governance context. Sources:
 https://github.com/Azure/Azure-Resource-Manager-MCP (README),
 https://techcommunity.microsoft.com/blog/finopsblog/cost-management-with-azure-resource-manager-mcp/4550182

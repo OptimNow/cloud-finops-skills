@@ -15,7 +15,7 @@ fcp_maturity_entry: "Crawl"
 > signal to look for and the remediation. A lookup surface: retrieve it when hunting a
 > specific pattern, not to answer a billing-mechanics question. For named waste
 > patterns with runnable detection queries prefer `playbooks/azure-*.md`; for billing
-> mechanics see `finops-azure.md`; for commitments see `finops-azure-commitments.md`.
+> mechanics see `finops-azure-billing.md`; for commitments see `finops-azure-commitments.md`.
 
 ---
 

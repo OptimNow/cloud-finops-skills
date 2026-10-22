@@ -134,9 +134,9 @@ primary owner (`finops-on-prem-hybrid.md` takes Allocation, already covered).
 
 Depth items that ride a quality lot when a content lot is light: OCI (182
 lines, six patterns: deepen or label it a foundations file in the routing
-table), the GreenOps Azure and GCP pass below, and any further split of
-`finops-azure.md` (1,838 lines, above the 1,500-line structural-edit
-threshold) before adding to it.
+table) and the GreenOps Azure and GCP pass below. (`finops-azure.md` and
+`finops-aws.md` were split into usage and billing files on 2026-10-22;
+`finops-azure-commitments.md` is the one file still over the token budget.)
 
 Deliberately not on the list: the last FCP cell (Education & Enablement) and
 the modernization and egress zero cells for Azure and GCP, which score well
@@ -311,7 +311,8 @@ phrasing, and the reachable ceiling is the model offering to check the library.
   free credits, each cluster earns up to one hour of credits per day and banks up
   to 30 hours. A persistent Concurrency Scaling charge points at undersized base
   capacity or contending workloads. Write it when a Redshift question or probe
-  fails; `finops-aws.md` is over its token budget, so it may need its own file.
+  fails; `finops-aws.md` (usage optimisation) is the likely home, or its own file if
+  it would push that file over budget.
 
 - **Extend GreenOps depth to Azure and GCP.** The May 2026 GreenOps pass added AWS-specific
   depth to `references/greenops-cloud-carbon.md` (Sustainability Console v2 with Methodology v3
@@ -369,10 +370,10 @@ write-up if engagement demand emerges.
 
 **Note on Governance, Policy & Risk**: no primary owner, and no deferral was
 recorded for it until now. It is covered as secondary in `finops-agentic.md` and
-`finops-tagging.md`. The provider files carry policy mechanics without declaring
-the capability: Azure Policy patterns and budgets in `finops-azure.md`, the spend
-limits and guardrail SCPs in `finops-aws.md`. A cheap first step is to declare it
-as secondary in those provider files. Trigger for a primary owner: an engagement
+`finops-tagging.md`, and since 2026-10-22 in the two provider billing files that
+carry the policy mechanics: Azure Policy patterns and budgets in
+`finops-azure-billing.md`, spend limits and guardrail SCPs in `finops-aws-billing.md`.
+Trigger for a primary owner: an engagement
 that asks for a cross-provider guardrail or policy-as-code design.
 
 When picking up a deferred item: read the rationale above and confirm the trigger is real

@@ -21,11 +21,16 @@ def test_index_is_sorted_by_name() -> None:
 
 
 def test_known_reference_has_expected_fcp_fields() -> None:
-    """finops-aws is a stable anchor: its FCP frontmatter is locked in main."""
+    """finops-aws is a stable anchor: its FCP frontmatter is locked in main.
+
+    Its primary capability became Usage Optimization on 2026-10-22, when the
+    billing sections moved to finops-aws-billing (commitments had moved to
+    finops-aws-commitments in August 2026).
+    """
     aws = metadata.get_by_name("finops-aws")
     assert aws is not None
     assert aws.fcp_domain == "Optimize Usage & Cost"
-    assert aws.fcp_capability == "Rate Optimization"
+    assert aws.fcp_capability == "Usage Optimization"
     assert "Engineering" in aws.fcp_personas_primary
     assert "Optimize" in aws.fcp_phases
     assert aws.fcp_maturity_entry == "Walk"

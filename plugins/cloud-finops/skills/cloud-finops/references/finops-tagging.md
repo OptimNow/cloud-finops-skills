@@ -230,7 +230,7 @@ signed-in user's identity (Reader + Resource Graph Reader for auditing; Contribu
 where writes are needed). Microsoft's own PoC catalogue includes a "Tag Hygiene Czar"
 agent that finds resources missing required tags, generates a patch template, and deploys
 on approval - the same read-freely / write-behind-confirmation guardrail described above.
-See `finops-azure.md` ("Agentic FinOps on Azure") for the full treatment.
+See `finops-azure-billing.md` ("Agentic FinOps on Azure") for the full treatment.
 
 Since August 2026, the Azure Resource Manager MCP server (preview) also extends this
 agentic pattern beyond tag hygiene into cost analysis: its Cost Management and Pricing

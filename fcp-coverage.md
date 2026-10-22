@@ -15,24 +15,24 @@ Marker legend:
 
 ## Understand Usage & Cost
 
-- [x] **Data Ingestion** - finops-focus.md _(secondary: finops-aws.md; finops-azure.md; finops-gcp.md; finops-oci.md; finops-on-prem-hybrid.md)_
-- [x] **Allocation** - finops-allocation-showback.md; finops-kubernetes.md; finops-on-prem-hybrid.md; finops-tagging.md _(secondary: finops-ai-dev-tools.md; finops-databricks.md; finops-focus.md; finops-for-ai.md; finops-onboarding-workloads.md)_
-- [~] **Reporting & Analytics** _(secondary: finops-allocation-showback.md; finops-aws.md; finops-azure.md; finops-focus.md; finops-gcp.md; finops-kpis-benchmarking.md)_
-- [x] **Anomaly Management** - finops-anomaly-management.md _(secondary: finops-agentic.md; finops-aws-patterns-compute.md; finops-aws-patterns-databases.md; finops-aws-patterns-networking.md; finops-aws-patterns-other.md; finops-aws-patterns-storage.md; finops-aws-patterns.md; finops-azure-patterns.md; finops-oci.md; finops-waste-detection-playbooks.md)_
+- [x] **Data Ingestion** - finops-aws-billing.md; finops-azure-billing.md; finops-focus.md _(secondary: finops-gcp.md; finops-oci.md; finops-on-prem-hybrid.md)_
+- [x] **Allocation** - finops-allocation-showback.md; finops-kubernetes.md; finops-on-prem-hybrid.md; finops-tagging.md _(secondary: finops-ai-dev-tools.md; finops-aws-billing.md; finops-azure-billing.md; finops-databricks.md; finops-focus.md; finops-for-ai.md; finops-onboarding-workloads.md)_
+- [~] **Reporting & Analytics** _(secondary: finops-allocation-showback.md; finops-aws-billing.md; finops-azure-billing.md; finops-focus.md; finops-gcp.md; finops-kpis-benchmarking.md)_
+- [x] **Anomaly Management** - finops-anomaly-management.md _(secondary: finops-agentic.md; finops-aws-billing.md; finops-aws-patterns-compute.md; finops-aws-patterns-databases.md; finops-aws-patterns-networking.md; finops-aws-patterns-other.md; finops-aws-patterns-storage.md; finops-aws-patterns.md; finops-azure-patterns.md; finops-oci.md; finops-waste-detection-playbooks.md)_
 
 ## Quantify Business Value
 
 - [x] **Planning & Estimating** - finops-ai-value-management.md _(secondary: finops-forecasting.md)_
 - [x] **Forecasting** - finops-forecasting.md _(secondary: finops-ai-value-management.md; finops-aws-commitments.md; finops-azure-commitments.md; finops-onboarding-workloads.md)_
-- [~] **Budgeting** _(secondary: finops-allocation-showback.md; finops-anomaly-management.md; finops-chargeback.md; finops-forecasting.md; finops-onboarding-workloads.md; finops-practice-operations.md)_
+- [~] **Budgeting** _(secondary: finops-allocation-showback.md; finops-anomaly-management.md; finops-aws-billing.md; finops-azure-billing.md; finops-chargeback.md; finops-forecasting.md; finops-onboarding-workloads.md; finops-practice-operations.md)_
 - [x] **KPIs & Benchmarking** - finops-kpis-benchmarking.md _(secondary: finops-on-prem-hybrid.md)_
 - [x] **Unit Economics** - finops-for-ai.md _(secondary: finops-ai-value-management.md; finops-kpis-benchmarking.md)_
 
 ## Optimize Usage & Cost
 
-- [x] **Architecting & Workload Placement** - finops-agentic.md; finops-ai-self-hosted-vs-managed.md; finops-onboarding-workloads.md _(secondary: finops-aws-commitments.md; finops-aws-patterns-compute.md; finops-aws-patterns-databases.md; finops-aws-patterns-networking.md; finops-aws-patterns-other.md; finops-aws-patterns-storage.md; finops-aws-patterns.md; finops-azure-commitments.md; finops-azure-patterns.md; finops-genai-capacity.md; finops-kubernetes.md; finops-on-prem-hybrid.md; finops-open-weight-vendors.md; finops-waste-detection-playbooks.md; greenops-cloud-carbon.md)_
-- [x] **Usage Optimization** - finops-ai-dev-tools.md; finops-anthropic.md; finops-aws-patterns-compute.md; finops-aws-patterns-databases.md; finops-aws-patterns-networking.md; finops-aws-patterns-other.md; finops-aws-patterns-storage.md; finops-aws-patterns.md; finops-azure-patterns.md; finops-bedrock.md; finops-databricks.md; finops-oci.md; finops-snowflake.md; finops-waste-detection-playbooks.md _(secondary: finops-agentic.md; finops-ai-self-hosted-vs-managed.md; finops-aws.md; finops-azure-openai.md; finops-azure.md; finops-fabric.md; finops-for-ai.md; finops-gcp.md; finops-genai-capacity.md; finops-kubernetes.md; finops-open-weight-vendors.md; finops-vertexai.md; greenops-cloud-carbon.md)_
-- [x] **Rate Optimization** - finops-aws-commitments.md; finops-aws.md; finops-azure-commitments.md; finops-azure-openai.md; finops-azure.md; finops-fabric.md; finops-gcp.md; finops-genai-capacity.md; finops-open-weight-vendors.md; finops-vertexai.md _(secondary: finops-ai-self-hosted-vs-managed.md; finops-aws-patterns-databases.md; finops-bedrock.md; finops-databricks.md; finops-oci.md; finops-snowflake.md)_
+- [x] **Architecting & Workload Placement** - finops-agentic.md; finops-ai-self-hosted-vs-managed.md; finops-onboarding-workloads.md _(secondary: finops-aws-commitments.md; finops-aws-patterns-compute.md; finops-aws-patterns-databases.md; finops-aws-patterns-networking.md; finops-aws-patterns-other.md; finops-aws-patterns-storage.md; finops-aws-patterns.md; finops-aws.md; finops-azure-commitments.md; finops-azure-patterns.md; finops-azure.md; finops-genai-capacity.md; finops-kubernetes.md; finops-on-prem-hybrid.md; finops-open-weight-vendors.md; finops-waste-detection-playbooks.md; greenops-cloud-carbon.md)_
+- [x] **Usage Optimization** - finops-ai-dev-tools.md; finops-anthropic.md; finops-aws-patterns-compute.md; finops-aws-patterns-databases.md; finops-aws-patterns-networking.md; finops-aws-patterns-other.md; finops-aws-patterns-storage.md; finops-aws-patterns.md; finops-aws.md; finops-azure-patterns.md; finops-azure.md; finops-bedrock.md; finops-databricks.md; finops-oci.md; finops-snowflake.md; finops-waste-detection-playbooks.md _(secondary: finops-agentic.md; finops-ai-self-hosted-vs-managed.md; finops-azure-openai.md; finops-fabric.md; finops-for-ai.md; finops-gcp.md; finops-genai-capacity.md; finops-kubernetes.md; finops-open-weight-vendors.md; finops-vertexai.md; greenops-cloud-carbon.md)_
+- [x] **Rate Optimization** - finops-aws-commitments.md; finops-azure-commitments.md; finops-azure-openai.md; finops-fabric.md; finops-gcp.md; finops-genai-capacity.md; finops-open-weight-vendors.md; finops-vertexai.md _(secondary: finops-ai-self-hosted-vs-managed.md; finops-aws-patterns-databases.md; finops-aws.md; finops-azure.md; finops-bedrock.md; finops-databricks.md; finops-oci.md; finops-snowflake.md)_
 - [x] **Licensing & SaaS** - finops-itam.md; finops-sam.md _(secondary: finops-ai-dev-tools.md; finops-on-prem-hybrid.md)_
 - [x] **Sustainability** - greenops-cloud-carbon.md
 
@@ -40,9 +40,9 @@ Marker legend:
 
 - [~] **Executive Strategy Alignment** _(secondary: finops-kpis-benchmarking.md)_
 - [x] **FinOps Practice Operations** - finops-framework.md; optimnow-methodology.md _(secondary: finops-ai-value-management.md; finops-onboarding-workloads.md; finops-practice-operations.md)_
-- [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-practice-operations.md; finops-tagging.md)_
+- [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-aws-billing.md; finops-azure-billing.md; finops-practice-operations.md; finops-tagging.md)_
 - [ ] **FinOps Education & Enablement** - **GAP** (see docs/ROADMAP.md for deferred capabilities)
-- [x] **Invoicing & Chargeback** - finops-chargeback.md _(secondary: finops-focus.md; finops-on-prem-hybrid.md; finops-practice-operations.md)_
+- [x] **Invoicing & Chargeback** - finops-chargeback.md _(secondary: finops-aws-billing.md; finops-azure-billing.md; finops-focus.md; finops-on-prem-hybrid.md; finops-practice-operations.md)_
 - [~] **FinOps Assessment** _(secondary: finops-framework.md)_
 - [~] **Automation, Tools & Services** _(secondary: finops-tagging.md; finops-waste-detection-playbooks.md)_
 - [x] **Intersecting Disciplines** - finops-practice-operations.md _(secondary: finops-itam.md; finops-sam.md; greenops-cloud-carbon.md)_

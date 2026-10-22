@@ -112,7 +112,7 @@ LIMIT 50;
 
 - `references/finops-aws-patterns-networking.md` - Networking Optimization Patterns,
   including cross-AZ transfer and the AZ-misaligned NAT Gateway pattern
-- `references/finops-aws.md` - CUR and Data Exports setup, where the
+- `references/finops-aws-billing.md` - CUR and Data Exports setup, where the
   usage-type breakdown comes from
 - `references/finops-kubernetes.md` - Karpenter and AZ-aware node
   scheduling
