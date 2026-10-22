@@ -29,7 +29,7 @@ material it does not need:
 | You want | Read |
 |---|---|
 | Savings Plans, RIs, Spot, commitment decision tree, portfolio liquidity, EDP negotiation | `finops-aws-commitments.md` |
-| The enumerated per-service inefficiency catalogue, one file per service family | `finops-aws-patterns.md` (index) |
+| The per-service inefficiency catalogue (index) | `finops-aws-patterns.md` |
 | A specific named waste pattern with a runnable detection query | `playbooks/aws-*.md` |
 
 ## AWS cost data foundation
@@ -742,9 +742,8 @@ https://aws.amazon.com/blogs/aws-cloud-financial-management/automation-and-trust
 
 Several AWS services charge an Extended Support surcharge for domains, clusters, or
 instances left on end-of-standard-support versions. This is the "outdated resource
-incurring extended support charges" pattern - see `finops-aws-patterns-compute.md` (EKS
-clusters) and `finops-aws-patterns-databases.md` (OpenSearch/Elasticsearch domains) for the
-enumerated entries.
+incurring extended support charges" pattern - see `finops-aws-patterns-compute.md` (EKS)
+and `finops-aws-patterns-databases.md` (OpenSearch).
 
 Make version audits a recurring FinOps action item:
 - Audit Amazon OpenSearch Service domains for legacy Elasticsearch (1.5-7.8) and

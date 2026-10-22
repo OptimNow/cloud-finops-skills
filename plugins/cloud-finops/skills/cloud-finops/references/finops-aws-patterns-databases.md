@@ -159,7 +159,7 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 | MemoryDB | Yes - node-type specific | Yes - up to 20% discount | No | Same mechanics as ElastiCache RIs |
 | Neptune | Yes - instance-type specific | Yes - up to 35% discount (Serverless) | No | Low discount depth compared to RDS RIs |
 | OpenSearch | Yes - instance-type specific | Yes - up to 20% discount | No | Also covers legacy Elasticsearch domains |
-| Redshift | Yes - node-type specific (All Upfront / Partial Upfront / No Upfront for 1yr) | No | No | Consider Redshift Serverless for variable workloads (no RI available). As of July 2026, 1-year Redshift RIs support All Upfront and Partial Upfront payment options alongside No Upfront. |
+| Redshift | Yes - node-type specific (All Upfront / Partial Upfront / No Upfront for 1yr) | No | No | Redshift Serverless has its own Serverless Reservations: a committed RPU level for 1 or 3 years (up to 24% and 45% off), managed at payer-account level and shareable across accounts, with usage above the committed level at on-demand rates ([Redshift pricing](https://aws.amazon.com/redshift/pricing/), read 22 October 2026). As of July 2026, 1-year Redshift RIs support All Upfront and Partial Upfront payment options alongside No Upfront. |
 | DocumentDB | Yes - instance-type specific | No | No | Same RI mechanics as RDS commercial engines |
 
 **Verify Database Savings Plan eligibility per engine and instance class** at the
@@ -228,8 +228,11 @@ Is the database workload stable and predictable (90+ days of consistent usage)?
         │       All Upfront yields the deepest discount (~42% on 1-year),
         │       Partial ~41%, No Upfront ~20%.
         │       Source: https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-redshift-ri-upfront-pricing-rg-instances/
-        │   → For variable workloads: Redshift Serverless (no RI, pay
-        │     per RPU-hour) may be cheaper than committed idle capacity
+        │   → For variable workloads: Redshift Serverless (pay per
+        │     RPU-hour) may be cheaper than committed idle capacity. Once
+        │     its base RPU usage is steady, a Serverless Reservation
+        │     (1 or 3 years, payer level) covers that floor; usage above
+        │     it stays on-demand
         │
         └── Neptune / OpenSearch / DocumentDB
             → Reserved Instances (instance-type specific)

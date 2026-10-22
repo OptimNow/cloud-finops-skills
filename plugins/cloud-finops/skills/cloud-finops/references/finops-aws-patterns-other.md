@@ -142,6 +142,7 @@ CloudWatch log groups often persist long after their usefulness has expired. In 
 - Identify log groups with significant stored log volume but no recent ingestion activity
 - Review historical usage to determine if log data is still being used for operational, security, or compliance purposes
 - Evaluate whether the log group is associated with an active application or AWS resource
+- Set a retention period: by default a log group keeps data indefinitely ("Never Expire") until one is set. Events past retention are marked for deletion and stop adding to storage cost at that point, although deletion can take up to 72 hours ([CloudWatch Logs, log groups and retention](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html), read 22 October 2026)
 
 ---
 

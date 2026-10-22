@@ -85,6 +85,16 @@ Third, Fable sits at 2x Opus-5 pricing (2.5x Opus 5.5), which makes "use the mos
 capable model" a materially different decision from "use the newest Opus": route to
 Fable on evidence, not by default.
 
+**A newer tokenizer raises the token count at the same rate card.** Claude Opus 4.7 and
+later models, Fable and Mythos included, use a tokenizer that produces approximately 30%
+more tokens for the same input text than earlier models; the exact increase depends on
+the content ([token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting),
+read 22 October 2026). A migration from an older model at an unchanged per-token price
+can therefore raise spend. Before moving a workload, count the same requests under the
+current and the target model with the token counting endpoint (free, rate-limited) and
+compare `input_tokens`; do not reuse counts measured on the older model, and do not
+apply 30% to the bill, because output length changes with the model too.
+
 **The Sonnet 5 introductory rate became the standard rate.** The $2/$10 launch
 price was announced as temporary, with a 50% increase scheduled for 1 September
 2026. Anthropic cancelled the increase before it took effect (pricing page, checked

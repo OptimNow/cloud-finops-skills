@@ -74,6 +74,15 @@ legitimately retain versions.
 4. Bake both into the bucket-creation IaC module alongside the multipart
    abort rule.
 
+**Buckets that hold Delta Lake tables.** Delta Lake keeps its own table
+versions and removes old data files with `VACUUM`. On a versioned bucket each
+file `VACUUM` deletes becomes a noncurrent version, so the storage it was
+meant to release stays billed. Databricks recommends not enabling versioning
+on buckets that store Delta Lake data and, where it stays on, retaining three
+versions under a lifecycle policy that keeps versions for 7 days or less
+([Delta Lake limitations on S3](https://docs.databricks.com/aws/delta/s3-limitations),
+read 22 October 2026).
+
 ## Anti-pattern
 
 - Turning versioning off to stop the growth. Suspending versioning does

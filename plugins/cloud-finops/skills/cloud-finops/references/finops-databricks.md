@@ -327,6 +327,15 @@ In many Databricks environments, large Delta tables are created without enabling
 - Enable Z-Ordering on appropriate columns to improve data skipping efficiency
 - Use `OPTIMIZE` and `VACUUM` to reduce file fragmentation and improve query performance
 
+Predictive optimization runs `OPTIMIZE`, `VACUUM` and `ANALYZE` automatically on Unity
+Catalog managed tables (not external tables), enabled at account, catalog, schema or
+table level. It runs on serverless compute for jobs and is billed under a serverless jobs
+SKU, so its cost appears as serverless jobs usage, not under the cluster or warehouse
+that queries the table; `system.storage.predictive_optimization_operations_history`
+records what ran on which table
+([predictive optimization](https://docs.databricks.com/aws/en/optimizations/predictive-optimization),
+read 22 October 2026).
+
 ---
 
 ## Other Optimization Patterns (2)
