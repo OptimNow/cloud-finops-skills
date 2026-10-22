@@ -97,9 +97,10 @@ cloud-finops-skills/
 │       │                                     (DeepSeek, Qwen, Kimi, GLM)
 │       ├── finops-ai-dev-tools.md          <- Cursor / Claude Code / Copilot / Windsurf / Codex
 │       ├── finops-anthropic.md             <- Anthropic billing
-│       ├── finops-aws.md                   <- AWS FinOps core (billing data, rightsizing,
-│       │                                     SageMaker, allocation, CloudFront, S3 Files,
-│       │                                     billing hierarchy and invoice units, multi-org)
+│       ├── finops-aws.md                   <- AWS usage optimisation (rightsizing, SageMaker,
+│       │                                     databases, CloudFront, S3 Files)
+│       ├── finops-aws-billing.md           <- AWS billing data, allocation, SCPs, Budgets,
+│       │                                     billing hierarchy, multi-org (split 2026-10-22)
 │       ├── finops-aws-commitments.md       <- AWS SPs / RIs / Spot, portfolio liquidity, EDP
 │       ├── finops-aws-patterns.md          <- Index to the AWS pattern catalogue (split by
 │       │                                     service family on 2026-10-22)
@@ -417,9 +418,9 @@ What the session established:
   which routinely produced guard-rail rejections or anchor failures for
   non-additive changes. The August 2026 split (see "Closed gaps" in
   [`docs/ROADMAP.md`](docs/ROADMAP.md)) removed both
-  from that band; the largest file is now `finops-aws.md` (~1,490 lines).
-  `finops-aws-patterns.md` (~1,500) was split by service family and
-  `finops-azure.md` (~1,890) into usage and billing files on 2026-10-22. Treat roughly 1,500 lines as the
+  from that band. On 2026-10-22 `finops-aws-patterns.md` (~1,500 lines) was split
+  by service family, and `finops-azure.md` (~1,890) and `finops-aws.md` (~1,490)
+  into usage and billing files; no file is above the threshold now. Treat roughly 1,500 lines as the
   threshold above which structural changes need manual integration. Additive
   edits (new subsection, new note) work fine at any size.
 

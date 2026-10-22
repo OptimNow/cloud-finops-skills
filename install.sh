@@ -656,7 +656,8 @@ Use these knowledge files for the following query types:
 
 | Query topic | Knowledge file |
 |---|---|
-| AWS cost management, EC2, CUR, rightsizing, SageMaker, RDS | finops-aws.md |
+| AWS rightsizing, SageMaker, RDS, CloudFront, S3 Files | finops-aws.md |
+| AWS CUR, exports, allocation, SCPs, Budgets, invoices | finops-aws-billing.md |
 | AWS Savings Plans, Reserved Instances, Spot, commitment strategy, EDP | finops-aws-commitments.md |
 | AWS optimisation pattern catalogue | finops-aws-patterns.md |
 | AWS Bedrock model pricing, Application Inference Profiles, prompt caching | finops-bedrock.md |
@@ -667,14 +668,14 @@ Use these knowledge files for the following query types:
 | Azure OpenAI / Foundry PTUs | finops-azure-openai.md |
 | Anthropic Claude billing, Fast mode, prompt caching, long-context | finops-anthropic.md |
 | GCP cost management, BigQuery export, CUDs, SUDs, Spot, Carbon Footprint | finops-gcp.md |
-| Vertex AI / Gemini pricing, Provisioned Throughput, context caching, Flexible Savings Plans, AI Studio | finops-vertexai.md |
+| Vertex AI / Gemini pricing, Provisioned Throughput, context caching, Flexible Savings Plans | finops-vertexai.md |
 | AI cost management, LLM economics, agentic patterns, ROI, methodology lens | finops-for-ai.md |
 | Agentic FinOps, agent cost anatomy, cost per completed task, agent payments (x402/MPP) | finops-agentic.md |
 | AI investment governance, stage gates, AI business case, value quantification | finops-ai-value-management.md |
 | GenAI capacity planning, provisioned vs shared, spillover | finops-genai-capacity.md |
-| Self-hosted vs managed inference, vLLM, GPU rental and vendor selection | finops-ai-self-hosted-vs-managed.md |
+| Self-hosted vs managed inference, vLLM, GPU rental | finops-ai-self-hosted-vs-managed.md |
 | Open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM), time-based pricing, licensing | finops-open-weight-vendors.md |
-| AI coding tools (Cursor, Copilot, Claude Code, Codex, Windsurf, Gemini Code Assist) | finops-ai-dev-tools.md |
+| AI coding tools (Cursor, Copilot, Claude Code, Codex, Windsurf) | finops-ai-dev-tools.md |
 | Databricks (system.billing.usage, DBCU, allocation, Photon) | finops-databricks.md |
 | Microsoft Fabric (F-SKUs, CU smoothing, pause/resume, governance trap) | finops-fabric.md |
 | Snowflake (query attribution, Budgets, Cortex, resource monitors) | finops-snowflake.md |
@@ -688,7 +689,7 @@ Use these knowledge files for the following query types:
 | FinOps KPIs, unit economics, benchmarking, executive reporting | finops-kpis-benchmarking.md |
 | Forecasting, accuracy and drift, variance bands, driver-based and AI forecasts | finops-forecasting.md |
 | Allocation methodology and showback, EffectiveCost vs BilledCost, shared services | finops-allocation-showback.md |
-| Chargeback, soft-to-hard maturity, Finance prerequisites (ERP, transfer pricing, tax, SOX) | finops-chargeback.md |
+| Chargeback, soft-to-hard maturity, Finance prerequisites (ERP, tax, SOX) | finops-chargeback.md |
 | FinOps operating model, RACI, governance forums, decision rights, ITFM / TBM handoffs | finops-practice-operations.md |
 | Onboarding workloads, intake gate, forecast-then-commit rule, double-bubble cost, M&A and divestiture | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, Karpenter | finops-kubernetes.md |
@@ -799,7 +800,8 @@ build_gemini_grouped_knowledge() {
   }
 
   cat_required "$outdir/aws.md" \
-    "$refs/finops-aws.md" "$refs/finops-aws-commitments.md" \
+    "$refs/finops-aws.md" "$refs/finops-aws-billing.md" \
+    "$refs/finops-aws-commitments.md" \
     "$refs/finops-aws-patterns-compute.md" "$refs/finops-aws-patterns-storage.md" \
     "$refs/finops-aws-patterns-databases.md" "$refs/finops-aws-patterns-networking.md" \
     "$refs/finops-aws-patterns-other.md" "$refs/finops-bedrock.md"

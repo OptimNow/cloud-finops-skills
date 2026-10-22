@@ -110,7 +110,7 @@ sizing, and the next month's CUR shows the realised delta.
   distribution, which this pattern deliberately complements
 - `playbooks/aws-cross-az-egress.md` - the other avoidable-transfer
   pattern inside a VPC
-- `references/finops-aws.md` - CUR / Data Exports setup behind the
+- `references/finops-aws-billing.md` - CUR / Data Exports setup behind the
   detection query
 - `references/finops-waste-detection-playbooks.md` - "egress / data
   transfer" category rubric

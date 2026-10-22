@@ -112,7 +112,7 @@ on one signal, you delete only after confirming.
 
 ## See also
 
-- `references/finops-aws.md` - AWS billing mechanics, CUR / FOCUS export
+- `references/finops-aws-billing.md` - AWS billing mechanics, CUR / FOCUS export
   setup
 - `playbooks/aws-cross-az-egress.md` - the related cross-AZ chatterbox
   pattern

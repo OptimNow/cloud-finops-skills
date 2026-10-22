@@ -15,8 +15,8 @@ fcp_maturity_entry: "Walk"
 > (Compute, EC2 Instance, SageMaker AI, Database), Reserved Instances, Spot, the
 > commitment decision tree, portfolio liquidity and phased purchasing, and EDP
 > negotiation. Kept separate from `finops-aws.md` so a commitment question does not
-> load the AWS pattern catalogue. For AWS billing data, rightsizing, allocation and
-> service-specific optimisation, see `finops-aws.md`.
+> load the AWS pattern catalogue. For AWS billing data and allocation, see
+> `finops-aws-billing.md`; for rightsizing and service-specific optimisation, `finops-aws.md`.
 
 ---
 

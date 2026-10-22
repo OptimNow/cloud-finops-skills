@@ -126,7 +126,7 @@ ORDER BY cost_30d DESC;
   and the "alert first, delete next" shape for automated clean-up
 - `playbooks/aws-idle-load-balancer.md` - the same idle-resource pattern on
   another hourly-billed service
-- `references/finops-aws.md` - billing data foundations behind the CUR query
+- `references/finops-aws-billing.md` - billing data foundations behind the CUR query
 - Billing units: https://aws.amazon.com/kinesis/data-streams/pricing/; metric
   names: https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html
   (both read 14 October 2026). The no-consumer billing consequence follows

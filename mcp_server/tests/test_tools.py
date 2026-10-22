@@ -211,7 +211,7 @@ def test_section_match_tolerates_word_order() -> None:
 
 def test_h2_sections_are_selectable_too() -> None:
     """H3 is essential for the catalogues, but H2 must work on normal files."""
-    result = tools.get_reference("finops-aws", section="Cost allocation")
+    result = tools.get_reference("finops-aws-billing", section="Cost allocation")
     assert result["partial"] is True
     assert result["section_level"] in (2, 3)
 

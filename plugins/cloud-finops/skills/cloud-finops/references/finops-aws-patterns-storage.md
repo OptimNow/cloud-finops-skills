@@ -15,7 +15,7 @@ fcp_maturity_entry: "Crawl"
 > to look for and the remediation for each. A lookup surface, retrieved when
 > hunting a specific pattern. For named patterns with runnable detection queries,
 > prefer `playbooks/`. The other families are listed in `finops-aws-patterns.md`;
-> billing mechanics are in `finops-aws.md`, commitments in `finops-aws-
+> billing mechanics are in `finops-aws-billing.md`, commitments in `finops-aws-
 > commitments.md`.
 
 > Source: the [Cloud Efficiency Hub](https://www.pointfive.co/efficiency-hub),

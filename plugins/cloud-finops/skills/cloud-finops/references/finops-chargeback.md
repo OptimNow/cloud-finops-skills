@@ -114,7 +114,7 @@ starts - an allocation model cannot produce an invoice.
   separate invoice document per unit while keeping one AWS Organization,
   consolidated billing and volume tiering. Cost Categories do not do this; they are a
   reporting layer with no effect on the invoice. See "AWS billing hierarchy and separate
-  invoices" in `finops-aws.md`.
+  invoices" in `finops-aws-billing.md`.
 - **Azure** - the construct is a **Billing Profile** under MCA. One Billing Profile
   generates one monthly invoice, and the payment method attaches there. **Invoice
   Sections are lines inside one invoice, not separate invoices**, and **reservations sit
@@ -442,7 +442,7 @@ team is being unreasonable.
   span cloud-marketplace purchases.
 - `finops-framework.md` - Invoicing & Chargeback capability in the FinOps
   Framework, plus the Manage the FinOps Practice domain context.
-- `finops-aws.md` - "AWS billing hierarchy and separate invoices": invoice
+- `finops-aws-billing.md` - "AWS billing hierarchy and separate invoices": invoice
   units, Billing Conductor, and why Cost Categories never change an invoice.
 - `finops-azure-billing.md` - "Billing scope hierarchy": Billing Profile as
   the invoice boundary, and the Invoice Section reservation trap.
