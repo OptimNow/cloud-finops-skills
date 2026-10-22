@@ -310,7 +310,7 @@ for "how do I detect and fix this specific thing".
 | `find_playbooks(scope?, service?, waste_category?, confidence?)` | "Which VMs run for nothing?" "Why is the NAT bill so high?" "Which of my RIs are about to expire?" - finds the runbook for a specific waste suspicion. The server cannot see your account; the runbook's detection query is the answer it hands over |
 
 Both listings carry `approx_tokens` per entry, because the references vary by more
-than tenfold - roughly 2K tokens for the smallest, about 19K for the largest. An agent
+than tenfold - roughly 2K tokens for the smallest, about 15K for the largest. An agent
 that needs one part of a large file passes `section`
 (`get_reference("finops-azure-patterns", section="storage")`) and pays for that section
 instead of the whole file. The AWS pattern catalogue needs no section call: it is split

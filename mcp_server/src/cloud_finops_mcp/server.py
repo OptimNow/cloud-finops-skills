@@ -162,7 +162,7 @@ mcp = FastMCP(
         "narrow by FinOps Capability/Phase facets, get_reference(name=, "
         "section=) to fetch one body. "
         "Every listing entry carries approx_tokens. Read it before fetching: "
-        "references run from about 2,000 to about 19,000 tokens. Above roughly "
+        "references run from about 2,000 to about 15,000 tokens. Above roughly "
         "10,000, call get_reference(name=, section=\"<heading phrase>\") and "
         "take the section you need - section matches H2 and H3 headings "
         "case-insensitively and partially, and a miss returns the file's "
@@ -232,7 +232,7 @@ def list_references() -> dict[str, Any]:
     ``approx_tokens``.
 
     Read ``approx_tokens`` before fetching: the library runs from about 2,000
-    to about 19,000 tokens per file. Above roughly 10,000, prefer
+    to about 15,000 tokens per file. Above roughly 10,000, prefer
     ``get_reference(name, section=...)`` and pull the part you need.
     """
     return _tools.list_references()
@@ -252,7 +252,7 @@ def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
 
     Pass ``section`` when the question is narrower than the file. The
     ``approx_tokens`` hint in the listing tells you when this matters: the
-    largest references run to about 19,000 tokens and the Azure pattern catalogue
+    largest references run to about 15,000 tokens and the Azure pattern catalogue
     is an enumerated list, so a question about storage lifecycle wants one
     section of ``finops-azure-patterns``, not all of it. Omit ``section`` for the whole
     file when you need the cross-cutting reasoning.

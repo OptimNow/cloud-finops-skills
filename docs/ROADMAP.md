@@ -135,8 +135,8 @@ primary owner (`finops-on-prem-hybrid.md` takes Allocation, already covered).
 Depth items that ride a quality lot when a content lot is light: OCI (182
 lines, six patterns: deepen or label it a foundations file in the routing
 table) and the GreenOps Azure and GCP pass below. (`finops-azure.md` and
-`finops-aws.md` were split into usage and billing files on 2026-10-22;
-`finops-azure-commitments.md` is the one file still over the token budget.)
+`finops-aws.md` were split into usage and billing files on 2026-10-22, and
+`finops-azure-commitments.md` was pruned under the budget the same day.)
 
 Deliberately not on the list: the last FCP cell (Education & Enablement) and
 the modernization and egress zero cells for Azure and GCP, which score well

@@ -16,7 +16,7 @@ prompt, the agent calls tools to discover, filter, and fetch only what it needs.
 Six tools, all read-only, split across two surfaces.
 
 **References** - long-form provider and discipline files. They vary by more than
-tenfold, from ~160 lines (roughly 2K tokens) to ~1,250 lines (roughly 19K tokens), so
+tenfold, from ~160 lines (roughly 2K tokens) to ~1,000 lines (roughly 15K tokens), so
 budget context per file rather than assuming a uniform size. Every listing entry
 carries an `approx_tokens` hint for exactly that reason.
 
@@ -45,7 +45,7 @@ while costing a sixth of a call that every session makes.
 ### Section-level retrieval
 
 `get_reference` takes an optional `section`. It exists because the largest
-references run to about 19K tokens and the Azure pattern catalogue
+references run to about 15K tokens and the Azure pattern catalogue
 (`finops-azure-patterns`) is an enumerated list, and an agent asking about storage
 lifecycle wants one heading out of them, not the file. The AWS pattern catalogue
 was split by service family on 2026-10-22 (`finops-aws-patterns-compute`,
@@ -271,8 +271,8 @@ skill into the prompt.
 Agent prompt: *"Pull the AWS reference."*
 
 Calls `get_reference(name="finops-aws")` and gets back the full markdown body
-(about 1,400 lines, roughly 19K tokens) instead of the entire knowledge base. That is one
-of the larger references - see the size range noted above before fetching several.
+(about 670 lines, roughly 9K tokens) instead of the entire knowledge base. Check the
+size range noted above before fetching several.
 
 Agent prompt: *"What does the Azure pattern catalogue say about storage?"*
 
