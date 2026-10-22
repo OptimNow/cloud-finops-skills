@@ -165,6 +165,10 @@ cloud-finops-skills/
 │                             markdown and the licence only: no image, no
 │                             `$VAR` beside a URL, no curl-pipe-to-shell, no
 │                             package launcher),
+│                             check-reference-size (token budget per file:
+│                             warns above 15,000 for a reference or
+│                             playbook and 6,000 for SKILL.md, fails above
+│                             30,000 and 8,000),
 │                             check-skill-description,
 │                             check-skill-power-parity (diffs the shared
 │                             SKILL.md / POWER.md body so the routing tables
@@ -173,7 +177,7 @@ cloud-finops-skills/
 │                             "percent", dash residue or "the single most";
 │                             allowlist in check-style-allow.txt) and
 │                             check-marketplace-version
-│                             - all seventeen run by the `CI` workflow, and
+│                             - all eighteen run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow
@@ -772,6 +776,21 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
 - Only `name` and `description` are required in the YAML frontmatter
 - Do not add a `license` field to the frontmatter (it renders as visible text in Claude.ai)
 
+**Size and admission (rule of 2026-10-22)**
+- **Every question pays for the whole file it is routed to.** The skill loads SKILL.md
+  on every activation and one reference or playbook per routed question, so the cost
+  of an answer is set by the size of that file, not of the library. Budget: about
+  15,000 tokens for a reference or playbook (characters / 4) and 6,000 for SKILL.md.
+  `scripts/check-reference-size.sh` warns above the budget and fails above 30,000 and
+  8,000. A file over budget is split by question or pruned in the PR that grows it;
+  the ceilings are never raised to make a PR pass.
+- **"Missing" is not "worth adding".** The content-scan digests label anything the
+  library lacks as "add". An item earns a place only if it corrects the library, is a
+  mechanic verified on a provider page that a model would get wrong from general
+  knowledge, or fixes a probe the skill answered badly. A practice a model already
+  knows, a case figure that illustrates no mechanic, and anything another file already
+  says (link to it instead) stay out.
+
 **Sourcing**
 - **Mechanics claims cite provider documentation, not newsletters.** Anything that
   states how billing actually works - eligibility, payment options, retirement dates,
@@ -1040,6 +1059,9 @@ from how the directory works:
       it; the playbook count is the one figure it carries, so update it when the
       playbook catalogue changed. It carries no reference count by design - see the
       no-hardcoded-counts rule above.
+- [ ] Every file the PR grows stays within its token budget (CI-gated by
+      `scripts/check-reference-size.sh`: a warning on a file the PR grew means
+      split or prune it here, not later)
 - [ ] SKILL.md description stays under 1024 characters (CI-gated by
       `scripts/check-skill-description.sh`, which also warns above 950 so the
       ceiling is visible before it is hit)

@@ -67,6 +67,14 @@ jobs:
       - name: Installer artefacts within the size ceiling
         run: bash scripts/check-artefact-size.sh
 
+      # Each routed question loads one whole reference or playbook, so a file
+      # that keeps absorbing additions makes every answer routed to it dearer.
+      # The library grew by about 20% in twelve days of October 2026 with no
+      # signal of which files carried it. Warns above budget, fails above the
+      # ceiling.
+      - name: Reference files within their token budget
+        run: bash scripts/check-reference-size.sh
+
       # The ChatGPT instructions field holds about 8000 characters, and the
       # routing table grows with every reference; the build only warned, so
       # it drifted to 9671 characters before anyone noticed (2026-10-20).
