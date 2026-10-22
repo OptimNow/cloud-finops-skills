@@ -100,15 +100,19 @@ def test_slimming_beats_the_size_hint_it_pays_for() -> None:
     """Task 3 must not undo task 2: the listing has to be materially smaller.
 
     Measured against the pre-change payload (28,180 chars / ~7,045 tokens on
-    the 2026-08-27 bundle). The ceiling is set well above the measured 16.3K
-    so content growth does not fail the build, but a regression that put the
-    dropped facets or the full descriptions back would blow straight through
-    it.
+    the 2026-08-27 bundle, about 850 chars per entry). The ceiling is per
+    entry, not for the whole listing: a total ceiling (20,000 chars until
+    2026-10-22) fails when the library grows, which is not what this test
+    guards. About 480 chars per entry is the slimmed shape; a regression that
+    put the dropped facets or the full descriptions back would blow straight
+    through 600.
     """
-    payload = json.dumps(tools.list_references())
-    assert len(payload) < 20_000, (
-        f"list_references payload is {len(payload)} chars - the slimming has "
-        "regressed or a costly field was added back"
+    listing = tools.list_references()
+    payload = json.dumps(listing)
+    per_entry = len(payload) / listing["total"]
+    assert per_entry < 600, (
+        f"list_references payload is {per_entry:.0f} chars per entry - the "
+        "slimming has regressed or a costly field was added back"
     )
 
 
@@ -124,10 +128,11 @@ def test_get_reference_returns_full_content() -> None:
 
 # --- get_reference(section=...) ---------------------------------------------
 #
-# The catalogue files are the reason this exists: finops-aws-patterns is
-# ~26,600 tokens of enumerated patterns behind a single H2 and seven H3s.
+# The catalogue files are the reason this exists: finops-azure-patterns is an
+# enumerated list behind a single H2 and five H3s. (The AWS catalogue, which
+# these tests used to target, was split into one file per family on 2026-10-22.)
 
-CATALOGUE = "finops-aws-patterns"
+CATALOGUE = "finops-azure-patterns"
 
 
 def test_omitted_section_is_byte_identical_to_the_file() -> None:
@@ -156,9 +161,9 @@ def test_blank_section_takes_the_full_body_path() -> None:
 def test_section_returns_only_that_section() -> None:
     result = tools.get_reference(CATALOGUE, section="Storage Optimization Patterns")
     assert result["partial"] is True
-    assert result["section"] == "Storage Optimization Patterns (28)"
+    assert result["section"] == "Storage Optimization Patterns (16)"
     assert result["section_level"] == 3
-    assert "### Storage Optimization Patterns (28)" in result["content"]
+    assert "### Storage Optimization Patterns (16)" in result["content"]
     # The neighbouring sections must not come along.
     assert "### Compute Optimization Patterns" not in result["content"]
     assert "### Networking Optimization Patterns" not in result["content"]
@@ -184,7 +189,7 @@ def test_section_is_materially_cheaper_than_the_whole_file() -> None:
 
 def test_section_match_is_case_insensitive_and_partial() -> None:
     """A model writes a phrase from the user's question, not a copied heading."""
-    canonical = tools.get_reference(CATALOGUE, section="Storage Optimization Patterns (28)")
+    canonical = tools.get_reference(CATALOGUE, section="Storage Optimization Patterns (16)")
     for phrase in (
         "storage",
         "STORAGE OPTIMIZATION",
@@ -214,7 +219,7 @@ def test_h2_sections_are_selectable_too() -> None:
 def test_section_miss_lists_the_available_headings() -> None:
     """Loud failure: not the whole file, not an empty result - the vocabulary.
 
-    Silently returning the body would hand back exactly the 26K tokens the
+    Silently returning the body would hand back exactly the tokens the
     caller asked to avoid, which is the silent-degradation failure this repo
     keeps re-learning.
     """
@@ -223,8 +228,8 @@ def test_section_miss_lists_the_available_headings() -> None:
     assert "error" in result
     assert CATALOGUE in result["error"]
     headings = result["available_sections"]
-    assert "### Storage Optimization Patterns (28)" in headings
-    assert "## AWS Optimization Patterns" in headings
+    assert "### Storage Optimization Patterns (16)" in headings
+    assert "## Azure Optimization Patterns" in headings
     # Every entry carries its level marker, so the listing is navigable.
     assert all(h.startswith("## ") or h.startswith("### ") for h in headings)
 
@@ -239,7 +244,7 @@ def test_section_miss_offers_near_misses() -> None:
     """A typo should come back with the heading it nearly named."""
     result = tools.get_reference(CATALOGUE, section="Storag Optimizaton Paterns")
     assert "error" in result
-    assert result["suggestions"][0] == "Storage Optimization Patterns (28)"
+    assert result["suggestions"][0] == "Storage Optimization Patterns (16)"
 
 
 def test_ambiguous_section_reports_the_runners_up() -> None:

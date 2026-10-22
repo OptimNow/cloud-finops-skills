@@ -90,7 +90,7 @@ needed to reach a decision.
   garbage-collection twin
 - `playbooks/aws-s3-cold-data-in-standard.md` - the transition (tiering)
   decision, which needs far more evidence than this one
-- `references/finops-aws-patterns.md` - Storage Optimization Patterns,
+- `references/finops-aws-patterns-storage.md` - Storage Optimization Patterns,
   including the missing-lifecycle-rule pattern for incomplete multipart
   uploads and Storage Lens usage
 - `references/finops-waste-detection-playbooks.md` - the eight-category

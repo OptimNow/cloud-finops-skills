@@ -93,7 +93,7 @@ legitimately retain versions.
 - `playbooks/aws-s3-cold-data-in-standard.md` - the tiering decision on
   the bytes that survive expiry
 - `playbooks/aws-snapshot-sprawl.md` - the EBS-side retention sprawl twin
-- `references/finops-aws-patterns.md` - Storage Optimization Patterns, the
+- `references/finops-aws-patterns-storage.md` - Storage Optimization Patterns, the
   S3 lifecycle and storage-class patterns plus Storage Lens usage
 - `references/finops-waste-detection-playbooks.md` - the eight-category
   taxonomy this pattern fits ("orphaned")

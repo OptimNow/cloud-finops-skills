@@ -101,7 +101,7 @@ aws ec2 describe-volumes \
   modernization pattern, same "newer generation, lower rate" shape
 - `playbooks/aws-orphaned-ebs-volumes.md` - run the orphan sweep first
   so you do not migrate volumes that should be deleted
-- `references/finops-aws-patterns.md` - the enumerated EBS pattern
+- `references/finops-aws-patterns-storage.md` - the enumerated EBS pattern
   catalogue
 - `references/finops-waste-detection-playbooks.md` - "modernization"
   category rubric

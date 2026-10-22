@@ -15,7 +15,7 @@ fcp_maturity_entry: "Walk"
 > (Compute, EC2 Instance, SageMaker AI, Database), Reserved Instances, Spot, the
 > commitment decision tree, portfolio liquidity and phased purchasing, and EDP
 > negotiation. Kept separate from `finops-aws.md` so a commitment question does not
-> load the full AWS pattern catalogue. For AWS billing data, rightsizing, allocation and
+> load the AWS pattern catalogue. For AWS billing data, rightsizing, allocation and
 > service-specific optimisation, see `finops-aws.md`.
 
 ---
@@ -224,8 +224,8 @@ START: What compute service runs the workload?
 | Payment options | No Upfront, Partial Upfront, All Upfront | No Upfront, Partial Upfront, All Upfront | No Upfront, Partial Upfront, All Upfront |
 | Discount by payment | All Upfront > Partial > No Upfront | All Upfront > Partial > No Upfront | All Upfront > Partial > No Upfront |
 
-A separate **Database Savings Plan** also exists (see the AWS database commitment
-section below). Plan-types reference:
+A separate **Database Savings Plan** also exists (see "Database commitment discount
+decision tree" in `finops-aws-patterns-databases.md`). Plan-types reference:
 https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html
 
 **Payment option guidance:**
@@ -290,7 +290,7 @@ Layer 3: EC2 Instance Savings Plans (high-stability EC2 workloads)
   ↓ captures the extra ~6% discount for workloads locked to a family+region
 Layer 4: SageMaker AI Savings Plan (if SageMaker spend is material)
   ↓ separate purchase - Compute SPs no longer cover SageMaker AI
-Layer 5: Database Savings Plan (if RDS/Aurora spend is material - see DB section)
+Layer 5: Database Savings Plan (if RDS/Aurora spend is material - see finops-aws-patterns-databases.md)
   ↓ separate purchase - Compute SPs do not cover managed databases
 Layer 6: Standard RIs (capacity reservation needs only)
   ↓ only where guaranteed AZ capacity is required (GPU, scarce types)

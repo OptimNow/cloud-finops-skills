@@ -109,10 +109,10 @@ async def test_e2e_get_reference_section(server_params: StdioServerParameters) -
             assert "section" in schema["get_reference"]["properties"]
             assert "section" not in schema["get_reference"].get("required", [])
 
-            whole = _payload(await session.call_tool("get_reference", {"name": "finops-aws-patterns"}))
+            whole = _payload(await session.call_tool("get_reference", {"name": "finops-azure-patterns"}))
             part = _payload(
                 await session.call_tool(
-                    "get_reference", {"name": "finops-aws-patterns", "section": "storage"}
+                    "get_reference", {"name": "finops-azure-patterns", "section": "networking"}
                 )
             )
             assert part["partial"] is True
@@ -120,7 +120,7 @@ async def test_e2e_get_reference_section(server_params: StdioServerParameters) -
 
             miss = _payload(
                 await session.call_tool(
-                    "get_reference", {"name": "finops-aws-patterns", "section": "kubernetes"}
+                    "get_reference", {"name": "finops-azure-patterns", "section": "kubernetes"}
                 )
             )
             assert "error" in miss and miss["available_sections"]

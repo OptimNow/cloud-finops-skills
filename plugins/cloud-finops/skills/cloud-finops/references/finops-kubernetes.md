@@ -407,7 +407,7 @@ Detection and mitigation (a named pattern since September 2026):
   Karpenter, not a preference, so pinning a NodePool to one zone trades away
   the resilience that makes Spot workable.
 - See the Spot best practices in `finops-aws-commitments.md` and the
-  networking patterns in `finops-aws-patterns.md`. Source: AWS Fundamentals,
+  networking patterns in `finops-aws-patterns-networking.md`. Source: AWS Fundamentals,
   "Networking Is Still Hard" (Tobias Schmidt, 8 September 2026),
   https://awsfundamentals.com/blog/cross-az-traffic-karpenter - a practitioner
   write-up, not AWS documentation.
@@ -580,7 +580,7 @@ own. It belongs to the Platform team's budget, not the application teams'.
   integration with EC2 Savings Plans and Compute Savings Plans; Spot best
   practices and cross-AZ traffic monitoring as a companion signal to Spot
   interruption handling
-- `finops-aws-patterns.md` - networking patterns, including cross-AZ data
+- `finops-aws-patterns-networking.md` - networking patterns, including cross-AZ data
   transfer cost attribution for Spot-driven node AZ drift
 - `finops-azure.md` - AKS-specific deep cuts (Node Auto Provisioning,
   Azure Linux 2 retirement, MIG / MPS / DRA for GPU partitioning)

@@ -101,7 +101,14 @@ cloud-finops-skills/
 │       │                                     SageMaker, allocation, CloudFront, S3 Files,
 │       │                                     billing hierarchy and invoice units, multi-org)
 │       ├── finops-aws-commitments.md       <- AWS SPs / RIs / Spot, portfolio liquidity, EDP
-│       ├── finops-aws-patterns.md          <- AWS enumerated pattern catalogue
+│       ├── finops-aws-patterns.md          <- Index to the AWS pattern catalogue (split by
+│       │                                     service family on 2026-10-22)
+│       ├── finops-aws-patterns-compute.md  <- AWS compute patterns (EC2, Lambda, EKS, EMR)
+│       ├── finops-aws-patterns-storage.md  <- AWS storage patterns (S3, EBS, EFS, snapshots)
+│       ├── finops-aws-patterns-databases.md <- AWS database patterns, RDS strategy,
+│       │                                     database commitment decision tree
+│       ├── finops-aws-patterns-networking.md <- AWS networking patterns (NAT, ELB, cross-AZ)
+│       ├── finops-aws-patterns-other.md    <- AWS logging, Config, CloudTrail, EDP, Marketplace
 │       ├── finops-bedrock.md               <- AWS Bedrock
 │       ├── finops-azure.md                 <- Azure FinOps core (cost data, rightsizing, AKS,
 │       │                                     Log Analytics, storage, networking, governance)
@@ -409,7 +416,8 @@ What the session established:
   non-additive changes. The August 2026 split (see "Closed gaps" in
   [`docs/ROADMAP.md`](docs/ROADMAP.md)) removed both
   from that band; the largest files are now `finops-azure.md` (~1,800 lines)
-  and `finops-aws-patterns.md` (~1,480). Treat roughly 1,500 lines as the
+  and `finops-aws.md` (~1,490). `finops-aws-patterns.md` (~1,500) was split
+  by service family on 2026-10-22. Treat roughly 1,500 lines as the
   threshold above which structural changes need manual integration. Additive
   edits (new subsection, new note) work fine at any size.
 
