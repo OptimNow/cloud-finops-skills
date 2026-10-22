@@ -120,7 +120,7 @@ starts - an allocation model cannot produce an invoice.
   Sections are lines inside one invoice, not separate invoices**, and **reservations sit
   on the Billing Profile**, not on the Invoice Section - so a BU mapped to an Invoice
   Section cannot be given its own invoice or its own reservation attribution natively.
-  See "MCA hierarchy (four billing levels)" in `finops-azure.md`.
+  See "Billing scope hierarchy" in `finops-azure-billing.md`.
 
 Two cases, and they are not the same problem:
 
@@ -444,7 +444,7 @@ team is being unreasonable.
   Framework, plus the Manage the FinOps Practice domain context.
 - `finops-aws.md` - "AWS billing hierarchy and separate invoices": invoice
   units, Billing Conductor, and why Cost Categories never change an invoice.
-- `finops-azure.md` - "MCA hierarchy (four billing levels)": Billing Profile as
+- `finops-azure-billing.md` - "Billing scope hierarchy": Billing Profile as
   the invoice boundary, and the Invoice Section reservation trap.
 
 ---

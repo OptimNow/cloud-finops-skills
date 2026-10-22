@@ -660,7 +660,8 @@ Use these knowledge files for the following query types:
 | AWS Savings Plans, Reserved Instances, Spot, commitment strategy, EDP | finops-aws-commitments.md |
 | AWS optimisation pattern catalogue | finops-aws-patterns.md |
 | AWS Bedrock model pricing, Application Inference Profiles, prompt caching | finops-bedrock.md |
-| Azure cost management, AKS, Log Analytics, storage, networking, MCA | finops-azure.md |
+| Azure rightsizing, AKS, Log Analytics, storage, networking | finops-azure.md |
+| Azure exports, allocation, Policy, budgets, MCA | finops-azure-billing.md |
 | Azure Reservations, Savings Plans, AHB, MACC, commitment strategy | finops-azure-commitments.md |
 | Azure optimisation pattern catalogue | finops-azure-patterns.md |
 | Azure OpenAI / Foundry PTUs | finops-azure-openai.md |
@@ -690,9 +691,9 @@ Use these knowledge files for the following query types:
 | Chargeback, soft-to-hard maturity, Finance prerequisites (ERP, transfer pricing, tax, SOX) | finops-chargeback.md |
 | FinOps operating model, RACI, governance forums, decision rights, ITFM / TBM handoffs | finops-practice-operations.md |
 | Onboarding workloads, intake gate, forecast-then-commit rule, double-bubble cost, M&A and divestiture | finops-onboarding-workloads.md |
-| Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, container rightsizing, Karpenter | finops-kubernetes.md |
+| Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, Karpenter | finops-kubernetes.md |
 | On-prem and hybrid: data-centre internal bill, Outposts / Azure Local / Arc / VMware billing, exit fees | finops-on-prem-hybrid.md |
-| FOCUS normalisation, versions and export differences, ingestion pipeline, SaaS and on-prem sources | finops-focus.md |
+| FOCUS normalisation, versions and export differences, ingestion pipeline | finops-focus.md |
 | Waste taxonomy (eight categories), two-signal classification, egress waste, WasteLine | finops-waste-detection-playbooks.md |
 EOF
   # A representative list, not the full one: the playbook files are named after
@@ -803,7 +804,8 @@ build_gemini_grouped_knowledge() {
     "$refs/finops-aws-patterns-databases.md" "$refs/finops-aws-patterns-networking.md" \
     "$refs/finops-aws-patterns-other.md" "$refs/finops-bedrock.md"
   cat_required "$outdir/azure.md" \
-    "$refs/finops-azure.md" "$refs/finops-azure-commitments.md" \
+    "$refs/finops-azure.md" "$refs/finops-azure-billing.md" \
+    "$refs/finops-azure-commitments.md" \
     "$refs/finops-azure-patterns.md" "$refs/finops-azure-openai.md"
   cat_required "$outdir/gcp.md" \
     "$refs/finops-gcp.md" "$refs/finops-vertexai.md"

@@ -30,7 +30,7 @@ it is re-cut. Neighbouring files own the decisions a forecast feeds:
 |---|---|
 | Forecasting a new workload before it exists (intake estimate, 12-month forecast document, the 60-90 day forecast-then-commit rule) | `finops-onboarding-workloads.md` |
 | How much to commit, and the keel below which no forecast is needed | `finops-aws-commitments.md`, `finops-azure-commitments.md` |
-| Budget alerts and forecast-based alerts in each provider's tooling | `finops-anomaly-management.md`, `finops-aws.md` (AWS Budgets and early controls), `finops-azure.md` |
+| Budget alerts and forecast-based alerts in each provider's tooling | `finops-anomaly-management.md`, `finops-aws.md` (AWS Budgets and early controls), `finops-azure-billing.md` (Azure Budgets and Alerts) |
 | Forecast variance as a KPI, and carrying it into the executive conversation | `finops-kpis-benchmarking.md` |
 | AI business cases, incremental funding and stage gates | `finops-ai-value-management.md` |
 | Current prices behind a forecast's unit costs | the AI Pricing Hub (<https://optimtoken.optimnow.io>); never a figure copied into a reference |

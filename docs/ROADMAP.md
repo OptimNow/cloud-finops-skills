@@ -134,9 +134,9 @@ primary owner (`finops-on-prem-hybrid.md` takes Allocation, already covered).
 
 Depth items that ride a quality lot when a content lot is light: OCI (182
 lines, six patterns: deepen or label it a foundations file in the routing
-table), the GreenOps Azure and GCP pass below, and any further split of
-`finops-azure.md` (1,838 lines, above the 1,500-line structural-edit
-threshold) before adding to it.
+table) and the GreenOps Azure and GCP pass below. (`finops-azure.md` was split
+into usage and billing files on 2026-10-22; `finops-aws.md` is the next file
+over the token budget.)
 
 Deliberately not on the list: the last FCP cell (Education & Enablement) and
 the modernization and egress zero cells for Azure and GCP, which score well
@@ -370,7 +370,8 @@ write-up if engagement demand emerges.
 **Note on Governance, Policy & Risk**: no primary owner, and no deferral was
 recorded for it until now. It is covered as secondary in `finops-agentic.md` and
 `finops-tagging.md`. The provider files carry policy mechanics without declaring
-the capability: Azure Policy patterns and budgets in `finops-azure.md`, the spend
+the capability: Azure Policy patterns and budgets in `finops-azure-billing.md` (which
+now declares it as secondary), the spend
 limits and guardrail SCPs in `finops-aws.md`. A cheap first step is to declare it
 as secondary in those provider files. Trigger for a primary owner: an engagement
 that asks for a cross-provider guardrail or policy-as-code design.

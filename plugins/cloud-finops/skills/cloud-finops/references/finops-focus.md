@@ -30,7 +30,7 @@ repeat what other references own:
 
 | Question | Go to |
 |---|---|
-| How to enable the export on one provider (console path, prerequisites, IAM) | `finops-aws.md` (Data Exports for FOCUS 1.2), `finops-azure.md` (Cost Management exports, MCA union pattern), `finops-gcp.md` (BigQuery FOCUS export), `finops-oci.md` (FOCUS Reports) |
+| How to enable the export on one provider (console path, prerequisites, IAM) | `finops-aws.md` (Data Exports for FOCUS 1.2), `finops-azure-billing.md` (Cost Management exports, MCA union pattern), `finops-gcp.md` (BigQuery FOCUS export), `finops-oci.md` (FOCUS Reports) |
 | Which cost column to use for showback, chargeback, invoice reconciliation (`BilledCost`, `EffectiveCost`, `ListCost`, `ContractedCost`) and the 0.5% drift rule | `finops-allocation-showback.md` |
 | Mapping Kubernetes labels into the FOCUS `Tags` column | `finops-kubernetes.md` |
 | The tag taxonomy itself (which keys, which values, enforcement) | `finops-tagging.md` |

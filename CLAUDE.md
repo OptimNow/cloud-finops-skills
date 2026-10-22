@@ -110,8 +110,10 @@ cloud-finops-skills/
 │       ├── finops-aws-patterns-networking.md <- AWS networking patterns (NAT, ELB, cross-AZ)
 │       ├── finops-aws-patterns-other.md    <- AWS logging, Config, CloudTrail, EDP, Marketplace
 │       ├── finops-bedrock.md               <- AWS Bedrock
-│       ├── finops-azure.md                 <- Azure FinOps core (cost data, rightsizing, AKS,
-│       │                                     Log Analytics, storage, networking, governance)
+│       ├── finops-azure.md                 <- Azure usage optimisation (rightsizing, AKS,
+│       │                                     Log Analytics, storage, networking)
+│       ├── finops-azure-billing.md         <- Azure billing data, allocation, tagging and
+│       │                                     Policy, budgets, EA-to-MCA (split 2026-10-22)
 │       ├── finops-azure-commitments.md     <- Azure RIs / SPs / AHB, liquidity, MACC
 │       ├── finops-azure-patterns.md        <- Azure enumerated pattern catalogue
 │       ├── finops-azure-openai.md          <- Azure OpenAI / PTUs
@@ -415,9 +417,9 @@ What the session established:
   which routinely produced guard-rail rejections or anchor failures for
   non-additive changes. The August 2026 split (see "Closed gaps" in
   [`docs/ROADMAP.md`](docs/ROADMAP.md)) removed both
-  from that band; the largest files are now `finops-azure.md` (~1,800 lines)
-  and `finops-aws.md` (~1,490). `finops-aws-patterns.md` (~1,500) was split
-  by service family on 2026-10-22. Treat roughly 1,500 lines as the
+  from that band; the largest file is now `finops-aws.md` (~1,490 lines).
+  `finops-aws-patterns.md` (~1,500) was split by service family and
+  `finops-azure.md` (~1,890) into usage and billing files on 2026-10-22. Treat roughly 1,500 lines as the
   threshold above which structural changes need manual integration. Additive
   edits (new subsection, new note) work fine at any size.
 
