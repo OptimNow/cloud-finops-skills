@@ -75,10 +75,28 @@ predates FOCUS and uses different terms.
 
 | FOCUS column | AWS legacy column | Cost Explorer view |
 |---|---|---|
-| `EffectiveCost` | `line_item_amortized_cost` | "Amortized" |
+| `EffectiveCost` | (no single column - derive per line item type, below) | "Amortized" |
 | `BilledCost` | `line_item_unblended_cost` | "Unblended" |
 | `ListCost` | (no direct column - compute as `pricing_public_on_demand_cost`) | n/a |
 | `ContractedCost` | (no direct column - compute from EDP / private pricing rate sheet) | n/a |
+
+**Deriving the amortised view from CUR 2.0.** CUR has no amortised-cost column. Take
+`line_item_unblended_cost` for every line item type except four. `SavingsPlanCoveredUsage`
+uses `savings_plan_savings_plan_effective_cost`; `DiscountedUsage` uses
+`reservation_effective_cost`; `SavingsPlanRecurringFee` contributes only the unused
+commitment (`savings_plan_total_commitment_to_date` minus `savings_plan_used_commitment`);
+`RIFee` contributes only the unused part (`reservation_unused_amortized_upfront_fee_for_billing_period`
+plus `reservation_unused_recurring_fee`). `SavingsPlanNegation`, `SavingsPlanUpfrontFee`
+and RI `Fee` rows drop out, because the covered-usage rows already carry that cost. Where
+the account has a negotiated discount, use the `net_` columns where they exist
+(`line_item_net_unblended_cost`, `reservation_net_effective_cost`,
+`savings_plan_net_savings_plan_effective_cost`). The
+unused-commitment rows sit with the account that bought the commitment, often the payer,
+so they need their own allocation rule. A FOCUS export's `EffectiveCost` does this
+derivation for you. Sources: CUR 2.0 [line item](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-line-item.html),
+[reservation](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-reservation.html)
+and [Savings Plan](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-savings-plan.html)
+columns, read 23 October 2026; the drop-outs follow from the column definitions.
 
 **Avoid `blended_cost` (AWS) for allocation entirely.** Blended cost is a
 payer-account averaging artefact: it averages Reservation-discounted rates
@@ -92,7 +110,7 @@ discount another team's spend?"
 
 If your billing pipeline only exposes one cost column, configure it to surface
 the amortised view (Azure: amortized cost export; AWS: Cost Explorer amortised
-view or CUR `line_item_amortized_cost`; GCP: BigQuery export's amortised cost
+view or the CUR derivation above; GCP: BigQuery export's amortised cost
 columns). FOCUS-conformant exports surface both `EffectiveCost` and
 `BilledCost` natively. With FOCUS exports on AWS (v1.2), Azure (v1.2 preview), GCP (v1.0 / 1.2 preview)
 and a growing set of other providers, a FOCUS export can be the primary allocation
@@ -376,8 +394,8 @@ A working data-quality dispute process:
   charges aligned to commitment purchase dates rather than consumption. Always
   use `EffectiveCost` for allocation.
 - **Using AWS `blended_cost` for showback or chargeback**. Payer-account
-  averaging artefact. Use amortised (`EffectiveCost` / `line_item_amortized_cost`)
-  for allocation; use unblended (`BilledCost` / `line_item_unblended_cost`)
+  averaging artefact. Use amortised (`EffectiveCost`, or the CUR derivation under
+  "Mapping to AWS legacy cost columns") for allocation; use unblended (`BilledCost` / `line_item_unblended_cost`)
   for invoice reconciliation. Never blended.
 - **Hiding unallocated spend**. Redistributing it across known teams penalises
   good tagging and removes the lever to fix the underlying problem.

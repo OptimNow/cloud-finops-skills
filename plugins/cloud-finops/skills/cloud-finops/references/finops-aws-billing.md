@@ -258,7 +258,8 @@ See `finops-tagging.md` for the full tagging strategy. AWS-specific notes:
 - AWS propagates some tags to billing automatically - verify which tags appear in CUR
 - Tag propagation is not instant - allow 24 hours for new tags to appear in billing
 - Some services do not support tagging (AWS Support, Route 53 Hosted Zones, some
-  data transfer charges) - use Cost Categories for virtual allocation of untaggable costs
+  data transfer charges) - account tags (below, "OU synchronisation") now cover them
+  at account level; use Cost Categories for anything finer
 - Enable "Tag policies" in AWS Organizations to enforce tag key capitalisation consistency
 - **IAM Principal Cost Allocation (2026):** tags applied to IAM users and roles can be
   propagated to CUR 2.0 and Cost Explorer with an `iamPrincipal/` prefix, enabling
@@ -641,13 +642,25 @@ answer it from inference.
 
 Neither Cost Categories nor invoice units follow the AWS Organizations OU hierarchy.
 Both take explicit account lists, so both drift the moment a new account is created in
-an OU. Tagging the accounts in Organizations does not solve it either: **Organizations
-account tags are not a Cost Explorer dimension**, and a Cost Category tag rule matches
-cost allocation tags on resources, not tags on the account object.
+an OU.
 
-One scheduled Lambda can maintain both: walk the OU tree with
-`ListAccountsForParent` recursively, then push the resolved account lists into
-`UpdateCostCategoryDefinition` and `UpdateInvoiceUnit`.
+**For Cost Categories, account tags close the gap.** Since 19 December 2025, tags on
+accounts in AWS Organizations can be activated as cost allocation tags (Billing and
+Cost Management, Cost Allocation Tags, filter on account tags; activation takes up to
+24 hours). Once active, they apply to all metered usage in the tagged account,
+including refunds, credits and charges that cannot carry a resource tag, and they work
+in Cost Explorer, CUR 2.0 and FOCUS exports, Budgets, Cost Categories and Cost Anomaly
+Detection. CUR 2.0 prefixes them, so an account tag and a resource tag with the same key
+stay distinct; do not start a key with `accountTag`. Tagging each account when it is
+created therefore replaces the explicit account list in a Cost Category rule
+([account tags for cost allocation](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/account-tags-cost-allocation.html),
+read 23 October 2026).
+
+**Invoice units still need the account list.** The account-tag documentation does not
+cover invoice units, so keep one scheduled Lambda for them: walk the OU tree with
+`ListAccountsForParent` recursively and push the resolved lists into
+`UpdateInvoiceUnit` (and into `UpdateCostCategoryDefinition` for any category not yet
+keyed on account tags).
 
 Run it **before month end**. Invoice unit assignment changes only take effect on the
 next billing cycle, so an account created on the 28th and synced on the 2nd sits on the
