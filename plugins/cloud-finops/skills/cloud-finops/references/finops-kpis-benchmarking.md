@@ -58,7 +58,7 @@ live indicators; past that, attention fragments.
 | Stage | KPI family | Examples | What it proves |
 |---|---|---|---|
 | Crawl | Measurement coverage | % spend allocated, % tagged (mandatory set), % spend under anomaly monitoring | The measurement system is being built |
-| Walk | Efficiency mechanics | Commitment coverage %, commitment utilisation %, effective savings rate (the Foundation definition, in `finops-aws-commitments.md`), realised savings ($, cumulative), waste backlog burn-down, % spend on modern generations | The practice removes waste and manages rate |
+| Walk | Efficiency mechanics | Commitment coverage %, commitment utilisation %, effective savings rate (the Foundation definition, in `finops-aws-commitments.md`), realised savings ($, cumulative), waste backlog burn-down, % spend on modern generations, AWS cost efficiency score (below) | The practice removes waste and manages rate |
 | Walk | Engagement | Time-to-action on anomaly alerts, % findings actioned within SLA, forecast variance and forecast drift (monthly; measures in `finops-forecasting.md`), shift-left prevention rate (`finops-framework.md`) | The organisation responds to the signal |
 | Run | Unit economics | Cost per customer / order / tenant / 1K API calls / inference, gross-margin impact of cloud COGS, cost per business transaction by product | Spend scales sub-linearly with the business |
 
@@ -66,6 +66,22 @@ Mechanics worth pinning down per KPI, once, in writing: the data source
 (FOCUS-conformed export, provider API), the owner, the review cadence, and the
 decision the KPI is supposed to move, since a KPI that moves no decision is
 reporting rather than an indicator.
+
+**A provider-defined efficiency score.** AWS Cost Optimization Hub publishes a daily
+cost efficiency score: 1 minus potential savings over total optimisable spend. Potential
+savings are deduplicated across rightsizing, idle, generation and commitment
+recommendations (stopping an idle instance shrinks the Savings Plan saving), and
+optimisable spend is net amortised cost, excluding credits and refunds, over a rolling
+30 days, taking the whole spend of each supported service (EC2, ECS, EKS, EBS, RDS,
+SageMaker, Redshift, Lambda, OpenSearch, MemoryDB, DynamoDB, ElastiCache). It needs
+Compute Optimizer enrolment
+([cost efficiency metric](https://docs.aws.amazon.com/cost-management/latest/userguide/coh-cost-efficiency.html),
+read 23 October 2026). Because AWS defines the recommendation set and the service list,
+the score can move with no change to the estate (an inference from the definition; AWS
+does not say so). A team that sets targets on it, or on its own variant, needs to
+version the definition: Capital One presented such a scheme at FinOps X 2026, with test,
+beta and active versions and the active one frozen for the year (Raymond Dao and Lauren
+Brown).
 
 **One definition, every consumer.** Writing a KPI down is not enough once more
 than one tool reads the data. Most estates run several BI tools, and when each
