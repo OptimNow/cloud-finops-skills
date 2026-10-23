@@ -242,9 +242,9 @@ been merged by then ("already submitted" is accurate either way; do not write
 
 ### hesreallyhim/awesome-claude-code
 
-Status 2026-10-17: not yet submitted. The repository had issue creation limited
-to collaborators that day (a temporary GitHub interaction limit); retry the form
-once new "[Resource]:" issues from outside contributors appear again.
+Status 2026-10-23: submitted as issue #3219 (see the log below). Issue creation had
+been limited to collaborators from 2026-10-17 (a temporary GitHub interaction limit);
+new "[Resource]:" issues from outside contributors reappeared on 2026-10-22.
 
 Web form only, filled by a human:
 `https://github.com/hesreallyhim/awesome-claude-code/issues/new?template=recommend-resource.yml`.
@@ -282,7 +282,7 @@ to enter or check:
 |---|---|
 | Plugin name | `cloud-finops` (keep; `displayName` is "Cloud FinOps by OptimNow") |
 | Repository | `OptimNow/cloud-finops-skills` |
-| Plugin path | empty (manifest at the repository root) |
+| Plugin path | `plugins/cloud-finops` (the manifest is in that folder since 2026-10-01) |
 | Marketplace manifest | `.claude-plugin/marketplace.json` (marketplace name `optimnow`) |
 | Branch or tag | empty, follows `main` |
 | Description (from plugin.json) | `Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic).` |
@@ -294,8 +294,25 @@ short form.
 
 ### JackyST0/awesome-agent-skills
 
-Requires 64 stars. The repository had 55 on 2026-09-26. Skip until
-`GET /repos/OptimNow/cloud-finops-skills` reports at least 64.
+Status 2026-10-23: submitted as PR #131 (see the log below). The list requires 64
+stars; the repository had 55 on 2026-09-26 and reached 64 on 2026-10-22.
+
+Rules: edit both `README.md` (bullet list) and `README_ZH.md` (table with a platform
+column); the URL must be identical in both and the category the same, or the list's
+`npm run check` (`scripts/sync-search-index.js --validate`) fails. Do not touch
+`docs/skills.json`, which their CI regenerates. Entry placed at the end of DevOps,
+after d1v, and validated locally with their script before submission:
+
+```
+- [cloud-finops-skills](https://github.com/OptimNow/cloud-finops-skills) - Cloud and AI cost management Skill: billing mechanics, commitments, allocation and waste-pattern runbooks for AWS, Azure and GCP.
+```
+
+```
+| cloud-finops-skills | 云与 AI 成本管理（FinOps）Skill：计费机制、承诺折扣、成本分摊与浪费模式排查手册，覆盖 AWS/Azure/GCP | Claude/Cursor/Copilot/Windsurf/Codex | [GitHub](https://github.com/OptimNow/cloud-finops-skills) |
+```
+
+The platform column lists only the tools INSTALLATION.md documents; `All` would also
+claim OpenCode and OpenClaw.
 
 ---
 
@@ -330,4 +347,6 @@ Record the actual dates and PR URLs below as they happen.
 | 1 | 2026-09-27 | https://github.com/punkpeye/awesome-mcp-servers/pull/15223 | Merged by punkpeye on 2026-10-18, after the Glama listing was claimed and scored on 2026-10-17 (his 2026-10-15 condition). Entry live under Cloud Platforms |
 | 2 | 2026-09-30 | https://github.com/VoltAgent/awesome-agent-skills/pull/1131 | Merged by a maintainer on 2026-10-15. Entry live under Community Skills > Specialized Domains |
 | 3 | 2026-10-17 | https://github.com/TensorBlock/awesome-mcp-servers/issues/4024 | Bot-generated docs PR #4025 merged by a maintainer on 2026-10-18 (docs/knowledge-management--memory.md); issue closed as completed |
-| 4 | 2026-10-17 | https://github.com/punkpeye/awesome-remote-mcp-servers/pull/2103 | Validator labels endpoint-ok, has-connector. 2026-10-18: maintainer flagged a merge conflict (main had added coldHat at the same spot); main merged into the branch, entry kept before coldHat. Awaiting maintainer |
+| 4 | 2026-10-17 | https://github.com/punkpeye/awesome-remote-mcp-servers/pull/2103 | Validator labels endpoint-ok, has-connector. 2026-10-18: maintainer flagged a merge conflict (main had added coldHat at the same spot); main merged into the branch, entry kept before coldHat. Merged by punkpeye on 2026-10-23 |
+| hesreallyhim | 2026-10-23 | https://github.com/hesreallyhim/awesome-claude-code/issues/3219 | Form validation bot: all checks passed (label validation-passed). Awaiting maintainer review |
+| JackyST0 | 2026-10-23 | https://github.com/JackyST0/awesome-agent-skills/pull/131 | Entry added to DevOps in README.md and README_ZH.md. Awaiting maintainer review |
