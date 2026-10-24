@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Finance"]
 fcp_maturity_entry: "Crawl"
+business_coverage: ["oci:bill:partial", "oci:budget:partial", "oci:commitments:partial", "oci:waste:partial"]
 ---
 
 # FinOps on OCI

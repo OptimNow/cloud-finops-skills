@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Security", "Finance"]
 fcp_maturity_entry: "Crawl"
+business_coverage: ["aws:bill:deep", "azure:bill:deep", "gcp:bill:partial"]
 ---
 
 # FinOps Tagging and Naming Governance

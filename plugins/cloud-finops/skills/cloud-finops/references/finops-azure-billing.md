@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Procurement"]
 fcp_maturity_entry: "Crawl"
+business_coverage: ["azure:bill:deep", "azure:budget:deep", "azure:contracts:partial"]
 ---
 
 # Azure Billing Data, Allocation and Governance

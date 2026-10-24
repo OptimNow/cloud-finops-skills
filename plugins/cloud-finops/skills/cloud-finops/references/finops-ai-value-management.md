@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Leadership"]
 fcp_personas_collaborating: ["Engineering", "Product", "Finance"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["ai-platforms:budget:deep", "ai-platforms:ai:deep"]
 ---
 
 # FinOps for AI: Managing Value and Practice Operations

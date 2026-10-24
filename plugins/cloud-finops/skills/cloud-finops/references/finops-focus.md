@@ -7,6 +7,7 @@ fcp_phases: ["Inform"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Finance", "Security", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
+business_coverage: ["aws:bill:deep", "azure:bill:deep", "gcp:bill:deep", "oci:bill:partial", "on-prem:bill:partial", "saas:bill:partial", "data-platforms:bill:partial"]
 ---
 
 # FOCUS: multi-cloud cost data normalisation and ingestion

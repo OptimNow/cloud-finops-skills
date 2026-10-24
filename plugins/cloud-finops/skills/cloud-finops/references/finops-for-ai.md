@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering", "Product"]
 fcp_personas_collaborating: ["Finance", "Leadership"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["ai-platforms:ai:deep", "ai-platforms:bill:deep", "ai-platforms:waste:deep"]
 ---
 
 # FinOps for AI

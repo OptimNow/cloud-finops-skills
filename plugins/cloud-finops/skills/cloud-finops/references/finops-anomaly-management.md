@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner"]
 fcp_personas_collaborating: ["Engineering", "Finance", "Security"]
 fcp_maturity_entry: "Crawl"
+business_coverage: ["aws:budget:deep", "azure:budget:deep", "gcp:budget:deep", "ai-platforms:budget:partial"]
 ---
 
 # FinOps Anomaly Management

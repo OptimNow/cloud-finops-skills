@@ -7,6 +7,7 @@ fcp_phases: ["Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["aws:ai:deep", "ai-platforms:ai:deep", "ai-platforms:bill:deep", "ai-platforms:commitments:deep", "ai-platforms:waste:deep"]
 ---
 
 # FinOps on AWS Bedrock

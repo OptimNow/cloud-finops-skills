@@ -7,6 +7,7 @@ fcp_phases: ["Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["data-platforms:data:deep", "data-platforms:bill:deep", "data-platforms:commitments:deep", "data-platforms:waste:deep", "data-platforms:budget:partial", "data-platforms:ai:partial", "data-platforms:contracts:partial", "aws:data:partial", "azure:data:partial"]
 ---
 
 # FinOps on Databricks

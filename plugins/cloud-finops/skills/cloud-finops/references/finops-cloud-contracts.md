@@ -7,6 +7,7 @@ fcp_phases: ["Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Procurement"]
 fcp_personas_collaborating: ["Finance", "Leadership"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["aws:contracts:deep", "azure:contracts:deep", "gcp:contracts:deep", "data-platforms:contracts:partial", "aws:saas:partial", "azure:saas:partial", "gcp:saas:partial"]
 ---
 
 # Cloud Contract Negotiation - Enterprise Agreements on AWS, Azure and Google Cloud

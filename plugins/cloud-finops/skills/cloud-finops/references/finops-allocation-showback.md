@@ -7,6 +7,7 @@ fcp_phases: ["Inform"]
 fcp_personas_primary: ["FinOps Practitioner"]
 fcp_personas_collaborating: ["Engineering", "Finance"]
 fcp_maturity_entry: "Crawl"
+business_coverage: ["aws:bill:deep", "azure:bill:partial", "gcp:bill:partial"]
 ---
 
 # FinOps Allocation and Showback

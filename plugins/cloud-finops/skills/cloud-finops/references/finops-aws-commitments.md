@@ -7,6 +7,7 @@ fcp_phases: ["Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Procurement", "Leadership"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["aws:commitments:deep", "aws:contracts:partial"]
 ---
 
 # AWS Commitment Discounts

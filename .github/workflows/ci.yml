@@ -27,6 +27,12 @@ jobs:
       - name: Waste-playbook coverage matrix (--check)
         run: bash scripts/playbook-coverage.sh --check
 
+      # The README "Providers and business needs" tables come from the
+      # business_coverage frontmatter field. Fails when a declaration is
+      # invalid or the README block is stale.
+      - name: Business-coverage matrix in README (--check)
+        run: bash scripts/business-coverage.sh --check
+
       - name: Coverage heat map SVG (--check)
         run: python scripts/render-coverage-heatmap.py --check
 
