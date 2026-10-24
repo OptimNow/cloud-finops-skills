@@ -539,9 +539,89 @@ both meters separately when modelling Databricks commitment economics.
 
 ### Databricks commitment instruments
 
-- **DBCU (Databricks Commit Units)** - annual prepaid commitment to a $ amount of
-  DBUs. Separate from Azure RIs and Savings Plans; negotiated with Databricks /
-  Microsoft directly. Discount depth depends on commitment size and tier.
+- **Committed use (a Usage Commitment with Databricks, a DBCU plan on Azure)** - a
+  prepaid dollar commitment to DBU usage for one to three years, priced on published
+  bands (below). Separate from Azure RIs and Savings Plans, which cover the VM meter only.
+
+**Published discount bands.** Databricks publishes its committed-use bands in its UK
+G-Cloud 14 pricing document, by total commitment value after discount. The Azure
+Databricks pre-purchase (DBCU) plans in the Azure Retail Prices API carry the same
+values: each plan's price is the lower bound of the band at the same discount, for
+example 12,500 DBCUs (worth $12,500 of pay-as-you-go DBUs) for $12,000 (both read
+24 October 2026).
+
+| 1-year commitment from | Discount | 3-year commitment from | Discount |
+|---|---|---|---|
+| $12,000 | 4% | $35,250 | 6% |
+| $23,500 | 6% | $69,000 | 8% |
+| $46,000 | 8% | $135,000 | 10% |
+| $89,000 | 11% | $261,000 | 13% |
+| $172,000 | 14% | $504,000 | 16% |
+| $287,000 | 18% | $819,000 | 22% |
+| $400,000 | 20% | $1,140,000 | 24% |
+| $577,500 | 23% | $1,642,500 | 27% |
+| $730,000 | 27% | $2,070,000 | 31% |
+| $1,050,000 | 30% | $2,970,000 | 34% |
+| $1,340,000 | 33% | $3,780,000 | 37% |
+
+Values are the commitment over the whole term. A 24-month schedule exists on the
+same pattern: the 12-month percentages at twice the threshold, from 4% at $24,000 to
+33% at $2,680,000. The bands are the published floor; what a large account obtains
+beyond them is negotiated and not public.
+
+**What the paper says** (G-Cloud 14 Usage Commitment Pricing Annex):
+- Each Contract Year is billed as an **Advance Payment**, non-refundable and not a
+  credit for services after the term. Databricks may accelerate the schedule when
+  usage runs ahead of it.
+- A shortfall at the end of the term is billed as a **True-Up Payment**: the total
+  commitment less the commitment fees paid. Unused commitment is paid for and lost
+  unless the Order Form says otherwise.
+- Usage above the commitment is billed monthly in arrears "subject to the Discount",
+  at the contracted rate on this paper. Practitioner sources report list-rate overage
+  on other contracts: read the overage clause in your Order Form before assuming either.
+- The committed-use discount "may not be combined with any other discounts".
+
+**Azure Databricks is a separate contract.** It is a Microsoft first-party service:
+the customer contracts with Microsoft, which sets the price and bills it on the Azure
+subscription. A DBCU plan covers the DBU meter only; VM, storage and network stay on
+the Azure bill. DBCU plans cannot be cancelled, exchanged, split or merged. Databricks'
+Cloud Provider Directory states that Powered Services usage "may not count toward your
+Universal Commitment" with Databricks unless confirmed in writing, so a direct
+commitment on AWS or Google Cloud does not cover an Azure Databricks estate by default.
+Microsoft does not state whether a DBCU purchase decrements a MACC: check it in the
+portal's MACC view before counting on it.
+
+**Support is priced on the commitment.** On AWS and Google Cloud, support is the
+greater of a floor or a share of the annual product commitment: Business $15,000 or
+15%, Enhanced $30,000 or 20%, Production $60,000 or 25%, Mission Critical $120,000 or
+35% (G-Cloud 14 support rate card, filed 17 November 2025). A larger commitment raises
+the support bill with it; model the two together.
+
+**Serverless moves spend between two commitments.** Serverless compute runs in
+Databricks' compute plane and its infrastructure cost sits inside the DBU price, so a
+serverless migration moves spend out of the cloud provider's commitment (EDP, MACC,
+Google Cloud commitment) and into the Databricks one. Size them together: the
+Databricks commitment on DBUs from `system.billing.usage`, the cloud commitment on the
+VM hours the remaining classic DBUs imply.
+
+**Fiscal calendar.** Databricks' fiscal year ends 31 January; quarters end 30 April,
+31 July, 31 October and 31 January (Series J press release, 17 December 2024). Some
+practitioner calendars place its quarter ends in March, June, September and December;
+the official calendar overrides them.
+
+Sources: <https://assets.applytosupply.digitalmarketplace.service.gov.uk/g-cloud-14/documents/720473/231837180032941-pricing-document-2024-04-30-1430.pdf>
+(bands and annex, filed 30 April 2024),
+<https://assets.applytosupply.digitalmarketplace.service.gov.uk/g-cloud-14/documents/720473/415786224708639-pricing-document-2025-11-17-1036.pdf>
+(support),
+<https://prices.azure.com/api/retail/prices> (service Azure Databricks, price type
+Reservation, read 24 October 2026),
+<https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/prepay-databricks-reserved-capacity>
+(updated 17 July 2026), <https://databricks.com/legal/cloud-provider-directory>
+(modified 27 August 2026),
+<https://www.databricks.com/company/newsroom/press-releases/databricks-raising-10b-series-j-investment-62b-valuation>.
+
+**Factors that move the DBU volume a commitment has to cover:**
+
 - **Photon multiplier** - Photon-enabled clusters consume DBUs at roughly 2x the
   base rate but execute 2-3x faster on supported workloads (vectorised SQL,
   certain DataFrame ops). Net cost can go down despite the multiplier; depends on

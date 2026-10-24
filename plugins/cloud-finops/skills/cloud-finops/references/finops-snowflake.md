@@ -48,7 +48,19 @@ These cost drivers do not appear in warehouse credit consumption and are frequen
 
 ### Commitment model vs. IaaS reserved capacity
 
-AWS Savings Plans and Reserved Instances commit to a compute capacity type and apply automatically against usage. Snowflake's equivalent is **pre-purchased credits** - you buy a credit pool at a volume discount. If you over-estimate consumption, unused credits are lost. There is no equivalent to a Compute Savings Plan that flexibly covers all compute workloads. Commitment sizing must be based on realistic historical consumption, not aspirational usage.
+AWS Savings Plans and Reserved Instances commit to a compute capacity type and apply automatically against usage. A Snowflake capacity contract buys a **dollar balance**, not a pool of credits. The Order Form carries a **Platform Credit Discount**, applied to the on-demand list price for the cloud, region and edition in the Service Consumption Table (SCT); each credit is drawn from the balance at that discounted price, and the balance applies to any account in the organisation. An edition or region change therefore changes the draw per credit on the same balance. Size the commitment on realistic historical consumption, not aspirational usage, because the paper is unforgiving in both directions:
+
+- **Rollover is conditional.** Unconsumed capacity rolls over only if the renewal buys an average annualised capacity equal to or greater than the expiring term's, for at least one year; otherwise it "expires and becomes void automatically". A smaller renewal forfeits the balance.
+- **Exhaustion converts to on-demand.** When the capacity is consumed or the term ends, usage converts to on-demand, billed monthly in arrears, and "the Credit Discount above will not apply". The alternatives are an Additional Capacity Order, which shares the processing date of the underlying order, or an early renewal.
+- **AI Credits sit outside the discount.** "The Platform Credit Discount does not apply to AI Credits." They have their own tiers by annualised contract value (ACV), Global AI Credits at $2.00 on demand, then $2.00 (ACV under $1.2M), $1.96 ($1.2M to $5M), $1.94 ($5M to $10M), $1.92 ($10M to $20M), $1.90 ($20M to $40M) and $1.88 ($40M and above); Regional AI Credits run from $2.20 to $2.07 on the same bands. Cortex Inference may not be eligible for the capacity AI Credit price.
+- **Storage tiers need a Qualifying Order.** Capacity storage follows the same seven ACV bands (AWS US East: $23.00 per TB-month on demand and at Tier 1, then $21.47, $19.94, $18.40, $16.86, $15.34 and $13.80 at Tier 7; rows differ by region, and several Google Cloud regions stay at $23.00 on every tier). Only an Order Form expressly designated a "Qualifying Order" gets its tier; any other pays Tier 1.
+- **Rollover does not buy a tier.** Rolled-over capacity and Additional Capacity Orders are excluded from the ACV that sets the AI Credit and storage tiers, so a renewal that leans on rollover can drop a tier on both unit prices.
+- **Non-USD contracts carry currency risk.** A non-USD commitment becomes a USD Total Capacity Balance, adjusted at each billing event (the "FX Adjustment"), so the share consumed moves with the exchange rate.
+- **The route changes the telemetry.** A contract signed through a Snowflake reseller loses the `ORGANIZATION_USAGE` billing views and the price of a credit in currency, and Snowflake's own Marketplace Capacity Drawdown is not available to reseller customers or to contracts made through Google Cloud Marketplace. Confirm the reporting access before choosing the route.
+
+**Sizing checklist.** `ORGANIZATION_USAGE.REMAINING_BALANCE_DAILY` gives the capacity, rollover, free usage, on-demand and Marketplace Capacity Drawdown balances daily (latency up to 72 hours; a negative on-demand balance means the account is already past its capacity). `ORGANIZATION_USAGE.CONTRACT_ITEMS` lists the capacity, additional capacity and free usage lines with their expiration dates. The FOCUS 1.3 view (below) shows the discount per service through `ListCost`, `ContractedCost` and `EffectiveCost`, but its `CommitmentDiscount*` columns are not populated, so balance tracking stays in `REMAINING_BALANCE_DAILY`. Snowflake's fiscal year ends 31 January and its 10-K reports a higher volume of orders in the fourth fiscal quarter (November to January).
+
+Sources: SCT effective 15 October 2026, <https://www.snowflake.com/legal-files/CreditConsumptionTable.pdf> (read 24 October 2026); rollover and on-demand clauses in the Snowflake Reseller Capacity Order Form template published in a G-Cloud 14 terms document, <https://assets.applytosupply.digitalmarketplace.service.gov.uk/g-cloud-14/documents/703311/421990251034123-terms-and-conditions-2024-05-03-1321.pdf> (3 May 2024); Form 10-K for the fiscal year ended 31 January 2026, <https://www.sec.gov/Archives/edgar/data/1640147/000164014726000008/snow-20260131.htm>; <https://docs.snowflake.com/en/sql-reference/organization-usage/remaining_balance_daily>, <https://docs.snowflake.com/en/sql-reference/organization-usage/contract_items> and <https://docs.snowflake.com/en/collaboration/marketplace-capacity-drawdown> (read 24 October 2026).
 
 ### Cost attribution: roles and query logs, not tags
 
@@ -67,7 +79,7 @@ FinOps practitioners coming from AWS instinctively look for tags. On Snowflake, 
 | Cost unit | $ / resource | Snowflake credits |
 | Compute model | Always provisioned | Elastic, billed on activity |
 | Hidden costs | Networking, EBS snapshots | Time Travel, Auto-Clustering, Snowpipe, MV refresh |
-| Commitment mechanism | RIs / Savings Plans | Pre-purchased credit pools |
+| Commitment mechanism | RIs / Savings Plans | Capacity contract: a dollar balance drawn at a discounted credit price |
 | Cost attribution | Tags on resources → CUR | Warehouses + roles + QUERY_HISTORY |
 | Budget governance | AWS Budgets + tag policies | Resource Monitors per warehouse |
 
@@ -78,7 +90,7 @@ FinOps practitioners coming from AWS instinctively look for tags. On Snowflake, 
 3. Which tables have Auto-Clustering enabled, and what is their churn rate?
 4. What is the Time Travel retention period per table or schema?
 5. Is Snowpipe ingesting small files at high frequency?
-6. Are there pre-purchased credits, and what is the burn rate vs. the commitment expiry?
+6. Is there a capacity contract, and what is the burn rate of its balance vs. the term end and the renewal size needed to roll it over?
 7. How is cost attributed today - by warehouse, by role, or not at all?
 
 ---
