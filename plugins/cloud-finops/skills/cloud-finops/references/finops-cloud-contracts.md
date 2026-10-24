@@ -15,10 +15,10 @@ fcp_maturity_entry: "Walk"
 > PPA), the Azure MACC and its Azure Commitment Discount under an EA or MCA-E, and the
 > Google Cloud Minimum Commitment. Covers vocabulary, the clauses of an enterprise
 > agreement, Marketplace drawdown, migration credits, the reseller route, an intake
-> protocol, a fifteen-check offer review grid, timing, and where benchmarks come from.
+> protocol, a 15-check offer review grid, timing, and where benchmarks come from.
 
 The contract layer sits above the metered instruments (Savings Plans, Reservations, CUDs,
-covered in the provider commitment files). This file answers three questions: what the
+covered in the provider commitment files). This file answers 3 questions: what the
 vehicle is, what is negotiable, and what it costs you when the commitment is wrong.
 
 ---
@@ -50,9 +50,9 @@ and credits" (updated 9 October 2026).
 
 ---
 
-## Anatomy of an enterprise agreement: twelve clauses
+## Anatomy of an enterprise agreement: 12 clauses
 
-Every enterprise agreement settles the same twelve questions, whatever the provider.
+Every enterprise agreement settles the same 12 questions, whatever the provider.
 Read the term sheet against this list before reading the discount.
 
 | # | Clause | What to look for |
@@ -116,7 +116,7 @@ to a service-level usage commitment (a second shortfall risk); step-ups of the
 cross-service rate above a spend threshold; and credits written as a share of
 incremental spend with an annual cap and an attestation window (MAP mechanics, below),
 including generative AI credits conditional on a deployed use case (see
-`finops-for-ai.md`). Ask for each by service.
+`finops-for-ai.md`), each a separate ask by service.
 
 **Marketplace.** Marketplace spend counts toward the commitment up to 25% of the annual
 commitment (practitioner consensus); older paper may still carry a 50% formula, and the
@@ -126,7 +126,7 @@ customer benefits" (AWS Marketplace blog, 25 February 2025).
 
 **Entry and term.** Advisory estimates with undisclosed methodology, from a sample of
 2025 to 2026 publications, converge on an entry floor of $500,000 to $1M a year and
-terms of one to five years. AWS states neither.
+terms of 1 to 5 years; AWS publishes neither.
 
 ---
 
@@ -182,11 +182,11 @@ either way, so write Azure meter protection in explicitly.
 **Shortfall.** "If you don't meet the total MACC amount by the MACC end date, a shortfall
 charge is applied to your account for the remaining balance. The charge takes the form
 of an Azure prepayment credit"; a missed milestone triggers the same charge (Microsoft
-Learn, updated 20 March 2026). EA amendments write three cases: the enrollment is still
-active, and the prepayment is usable for the remaining term or twelve months, whichever
+Learn, updated 20 March 2026). EA amendments write 3 cases: the enrollment is still
+active, and the prepayment is usable for the remaining term or 12 months, whichever
 is shorter; the enrollment has expired and been renewed, and the prepayment is usable
-under the new enrollment for twelve months; the enrollment has expired with no renewal,
-and the shortfall invoice is paid in cash. The twelve-month window is practitioner
+under the new enrollment for 12 months; the enrollment has expired with no renewal,
+and the shortfall invoice is paid in cash. The 12-month window is practitioner
 consensus and matches the amendment wording. A customer who leaves Azure pays the
 shortfall in money, not in credit.
 
@@ -230,10 +230,10 @@ credit at any time". Price protection, credit protection and termination limits 
 only if written into the Order Form or Addendum.
 
 **Credits.** Contracts can carry spend-based milestone credits, applied within about 45
-days of the milestone and tracked on the Incentives page (see `finops-gcp.md`). They act
-as a payment method on eligible costs, not as a rate discount. RaMP credits do not count
-toward the Minimum Commitment (below); confirm the same for milestone credits in the
-contract.
+days of the milestone and tracked on the Incentives page (see `finops-gcp.md`). They pay
+eligible costs after the fact and leave the unit rate unchanged. RaMP credits do not
+count toward the Minimum Commitment (below); confirm in the contract whether milestone
+credits do.
 
 **Premium Support is computed on list.** The fee is the greater of $15,000 a month or
 10% of monthly charges up to $150,000, 7% to $500,000, 5% to $1M and 3% above, "based on
@@ -265,8 +265,8 @@ to the CMA, 2024).
 
 ## Migration funding: MAP, Azure Accelerate, RaMP
 
-The rule common to all three: migration credits never retire the commitment. They pay
-for migration; the commitment has to be met by spend.
+The rule common to all three: migration credits never retire the commitment, which is
+met by spend alone.
 
 | | AWS Migration Acceleration Program | Azure Accelerate | Google RaMP |
 |---|---|---|---|
@@ -279,7 +279,7 @@ terms (19 November 2025); Azure blog, 7 July 2025; Google RaMP terms (modified 5
 2026, read 24 October 2026).
 
 **RaMP incentive rates (2026 terms).** Service credits are a share of trailing twelve
-months (TTM) Google Cloud spend each calendar quarter, capped across the three-year RaMP
+months (TTM) Google Cloud spend each calendar quarter, capped across the 3-year RaMP
 Period; Projected Annual Run Rate (PARR) is the estimated annual run rate of the fully
 ramped workload.
 
@@ -297,8 +297,8 @@ Credits are deposited within 45 days of each quarter-end from 30 June 2026; proj
 carry the workload ID tag; the customer must show overall account growth; pre-existing
 spend is ineligible; consulting funds require "an active Minimum Commitment under a
 Google Cloud Addendum". The RaMP user guide sets a PARR floor of $60,000 per workload.
-The highest rates target estates held elsewhere (Oracle, Windows), which is where a
-competitive migration case earns money.
+The highest rates apply to Oracle and Windows estates, the workloads Google pays most to
+displace.
 
 ---
 
@@ -338,8 +338,8 @@ programme brief and partner blog, 15 May 2025).
 
 ## Reseller channel: a qualitative checklist
 
-No reseller publishes its discount on list, credits or exit terms, so the route is a
-checklist, not a percentage. Obtain the rate card under NDA.
+No reseller publishes its discount on list, credits or exit terms, so the decision rests
+on the checklist below and on a rate card obtained under NDA.
 
 - [ ] **Billing ownership.** On Google Cloud the customer's subaccount sits under the
       reseller's billing account, which the reseller can suspend or cancel ("Billing
@@ -375,15 +375,15 @@ the CMA that commitments help attract first-time and secondary-provider customer
 Flex Agreements onboard without one. Negotiate exit terms before signing, when the next dollar of spend
 is still the customer's to place.
 
-**Renewal with growing spend.** A renewal is a new negotiation, not an extension. When
-consumption runs ahead of the commitment, signed renewals show the early-renewal
+**Renewal with growing spend.** Treat the renewal as a new negotiation. When consumption
+runs ahead of the commitment, signed renewals show the early-renewal
 pattern: the remaining term is replaced by a larger, longer commitment at a higher
 rate, before the old one ends, sometimes with two providers renegotiated in the same
 procurement window. On Azure the renewal is when EA customers are re-papered onto
-MCA-E; restate every discount and protection. Practitioner sources concur that the
-discount for the same commitment tends to fall at Azure renewal.
+MCA-E; restate every discount and protection. Practitioner sources concur that Microsoft
+offers a lower discount for the same commitment at renewal.
 
-**Vehicle change (EA to MCA-E).** Add three months to the timeline (see "Timing"),
+**Vehicle change (EA to MCA-E).** Add 3 months to the timeline (see "Timing"),
 inventory every protection the EA carried, and write each one back in.
 
 **Competitive migration.** An alternative counts only when it is documented: scoped
@@ -401,31 +401,33 @@ the rollover and true-up clauses in `finops-snowflake.md` and `finops-databricks
 
 ---
 
-## Intake protocol: nine questions before advising
+## Intake protocol: 9 questions before advising
 
-Ask these in order before giving any advice on a contract. Each answer changes the
-advice; when one is missing, say which output it blocks rather than filling it with an
-assumption. Do not quote a discount target: say what the public record allows (see
+Ask these in order before giving any advice on a contract. The protocol assumes a
+Walk-stage practice, with billing data at effective rates and a commitment portfolio in
+place; at Crawl, the metered instruments come first (see the provider commitment files).
+Each answer changes the advice; when one is missing, say which output it blocks rather
+than filling it with an assumption. Do not quote a discount target: say what the public record allows (see
 "Where benchmarks come from").
 
 | # | Question | What the answer changes |
 |---|---|---|
-| 1 | Which provider, and which situation: first contract, renewal on the same vehicle, vehicle change, competitive migration, considering leaving? | The provider section and situation that apply, the timeline (plus three months for a vehicle change or a documented migration), the levers available |
+| 1 | Which provider, and which situation: first contract, renewal on the same vehicle, vehicle change, competitive migration, considering leaving? | The provider section and situation that apply, the timeline (plus 3 months for a vehicle change or a documented migration), the levers available |
 | 2 | Trailing 12 to 24 months of spend at effective rates, by service, and its trend? | The baseline. A list-price or gross baseline overstates what the commitment can absorb; on AWS the commitment is measured net by default |
 | 3 | Optimisation status: is waste removed, what is the commitment coverage today? | Whether to size on today's spend or on the post-optimisation floor, and whether optimisation must land before signature |
-| 4 | Forecast and confidence in growth, with its source? | The ramp shape and how much of the growth to commit. A provider-built forecast is a starting point, not a neutral one |
+| 4 | Forecast and confidence in growth, with its source? | The ramp shape and how much of the growth to commit. A forecast built by the account team carries the provider's growth targets; treat it as one input among several |
 | 5 | Term appetite and step-down needs (divestiture, acquisition, exit of a business line)? | Term length, step-down and M&A clauses, the share of the estate to leave uncommitted |
 | 6 | Marketplace share of spend and planned software renewals? | The Marketplace cap to ask for, the eligibility checks, the pacing of purchases |
 | 7 | Support plan and its fee basis? | The total cost model; whether to negotiate support as its own line |
-| 8 | Credible alternatives: documented, not named? | Whether a competitive case exists, which migration programme applies, three more months |
+| 8 | Credible alternatives: documented, not named? | Whether a competitive case exists, which migration programme applies, 3 more months |
 | 9 | Your decision calendar against the provider's fiscal calendar? | Sequencing: when approvals must be ready, which quarter-end the signature can meet |
 
 **Outputs, five of them.**
 1. **Negotiation brief**: situation, baseline, forecast, the commitment you can defend,
    and what you will not sign.
-2. **Lever list**: the clauses from the twelve-clause anatomy you will negotiate, in
+2. **Lever list**: the clauses from the 12-clause anatomy you will negotiate, in
    priority order, with the evidence for each.
-3. **Offer review grid**: the fifteen checks below, filled in for the offer on the table.
+3. **Offer review grid**: the 15 checks below, filled in for the offer on the table.
 4. **Scenario table**: commitment, growth, discount, shortfall exposure, for at least a
    low, expected and high case.
 5. **Red flags**: the checks that failed and the clauses that are missing.
@@ -434,17 +436,17 @@ assumption. Do not quote a discount target: say what the public record allows (s
 and eligible net spend `S` over a measurement period, the shortfall is `max(0, C - S)`,
 the list value of the usage is `S / (1 - d)`, and the effective discount against list
 is `1 - max(C, S) x (1 - d) / S`. The commitment beats pay-as-you-go only while net
-spend stays above `(1 - d) x C`. Illustrative values, not a benchmark: at `d = 10%`, a
-commitment of 10 with net spend of 8 pays 10 for usage listed at 8.89, an effective
-discount of minus 12.5%. Where the shortfall becomes a balance or prepayment usable
-later (AWS during the term, Azure on renewal), the loss is deferred, not avoided.
+spend stays above `(1 - d) x C`. An illustrative case at `d = 10%`: a commitment of 10
+with net spend of 8 pays 10 for usage listed at 8.89, an effective discount of minus
+12.5%. Where the shortfall becomes a balance or prepayment usable later (AWS during the
+term, Azure on renewal), the same money is spent later rather than saved.
 
 ---
 
-## Offer review grid: fifteen checks on a term sheet
+## Offer review grid: 15 checks on a term sheet
 
-Apply each check to the paper, not to the sales summary: a check passes only when the
-answer is written in the agreement.
+Apply each check to the agreement text rather than to the sales summary; a check passes
+only when the answer is written there.
 
 - [ ] **Measurement basis.** Gross or net of the negotiated discount, and which charge
       types count.
@@ -475,7 +477,7 @@ answer is written in the agreement.
       and who provides them.
 - [ ] **Renewal mechanics.** Notice dates, auto-renewal, what happens to unconsumed
       commitment or rollover, the renewal price basis.
-- [ ] **What is missing.** Any of the twelve clauses the paper does not address; silence
+- [ ] **What is missing.** Any of the 12 clauses the paper does not address; silence
       defaults to the provider's standard terms.
 
 ---
@@ -515,11 +517,12 @@ answer is written in the agreement.
 Start 6 to 9 months before the end date for a renewal on the same vehicle. Add 3 months
 when the vehicle changes (EA to MCA-E) or when a competitive migration has to be
 documented, because documenting the alternative is what takes time. Advisory
-publications of 2025 to 2026, with undisclosed methodology, converge on three months as
-the floor from first proposal to signature.
+publications of 2025 to 2026, with undisclosed methodology, converge on 3 months as the
+floor from first proposal to signature.
 
-Use fiscal calendars as a sequencing input, not as a source of discount: have approvals
-ready so the signature can meet the provider's quarter or year end if the deal is ready.
+Fiscal calendars decide sequencing; nothing in the public record ties them to discount
+depth. Have approvals ready so the signature can meet the provider's quarter or year end
+if the deal is ready.
 Amazon and Alphabet close their fiscal years on 31 December (10-K filings), Microsoft on
 30 June (investor relations FAQ), Snowflake and Databricks on 31 January (see their
 files). Paperwork deadlines sit days before the quarter end: Microsoft's Volume
