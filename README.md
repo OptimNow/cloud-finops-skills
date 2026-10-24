@@ -11,7 +11,7 @@
 [![Latest release](https://img.shields.io/github/v/release/OptimNow/cloud-finops-skills?label=release&color=2C2C2C)](https://github.com/OptimNow/cloud-finops-skills/releases/latest)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/licence-CC%20BY--SA%204.0-C1C1C1?labelColor=2C2C2C)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-[![Install from the Claude directory](https://img.shields.io/badge/Install%20from%20the%20Claude%20directory-2C2C2C?style=for-the-badge)](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory)
+[![Install from the Claude directory](https://img.shields.io/badge/Install%20from%20the%20Claude%20directory-D97757?style=for-the-badge&logo=claude&logoColor=white)](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory)
 
 Ask your assistant how to reduce a cloud bill, size a commitment, read a term sheet
 or allocate shared AI costs, and it answers from how billing works, with decision
@@ -181,15 +181,6 @@ mistake to avoid. The library files them by provider and by waste category, and 
 one carries a confidence level that says whether a single signal is enough to act.
 
 ![Waste runbook coverage: 43 runbooks across 8 waste categories and 4 scopes](assets/playbook-coverage.svg)
-
-The runbooks are more numerous on AWS than on Azure and GCP. The dashed cells are the
-backlog, ranked by recoverable spend in [docs/ROADMAP.md](docs/ROADMAP.md). A missing
-runbook does not mean the subject is missing: the reference files cover the mechanics
-behind every row, and a question on an Azure or GCP pattern without a runbook is
-answered from them. The full list is in
-[playbooks/README.md](plugins/cloud-finops/skills/cloud-finops/playbooks/README.md).
-This map is generated from the runbook frontmatter and gated in CI like the first one
-([playbook-coverage.md](playbook-coverage.md)).
 
 ---
 
