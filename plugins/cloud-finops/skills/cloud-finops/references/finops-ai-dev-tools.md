@@ -279,7 +279,9 @@ Codex is OpenAI's coding agent, available through ChatGPT and as a CLI tool.
 ### Access paths
 
 **ChatGPT subscription (default):** Codex CLI usage draws from your ChatGPT plan limits
-at no extra per-token charge. ChatGPT Plus at $20/month is the cheapest access path.
+at no extra per-token charge. ChatGPT Plus at $20/month is the cheapest access path. On
+ChatGPT Enterprise the agreement decides whether usage draws workspace credits or bills
+in USD by token; see `finops-sam.md`, "Consumption-billed AI workspaces".
 
 **Fast mode on the subscription path is a consumption multiplier.** Signed in with
 ChatGPT, Codex offers a Fast mode on supported models that draws included plan limits at
@@ -439,6 +441,17 @@ infrastructure spend.
 **Manual spreadsheet**: pull Admin API data periodically, map developer emails to teams,
 build charts. Works for small teams. Does not scale.
 
+**Copilot behind other agents**: Copilot can be the model provider for OpenCode, Claude
+Code, Codex and other clients, which draws Copilot usage outside the IDE. Since
+23 October 2026 the 1-day and 28-day usage metrics reports (enterprise, organisation and
+per-user levels) carry `totals_by_client`: requests, sessions and prompt and output
+tokens per client, broken down by model with `model_selection_mode` (`user_selected`,
+`auto`, `product_selected`). GitHub calls the client field a best-effort grouping,
+`request_count` counts model calls rather than prompts, and the report carries no AI
+Credits (`ai_credits_used` is in per-user reports only, with no split by surface). Use
+it to find overlap with direct API keys, not to reconcile the invoice. Source:
+<https://github.blog/changelog/2026-10-23-usage-metrics-api-adds-usage-from-tools-like-opencode>
+
 ### For BYOK tools (Claude Code, Codex in API key mode)
 
 **API gateway / proxy (LiteLLM)**: this is the option with the most control. Route all
@@ -517,7 +530,8 @@ Not applicable to interactive coding sessions, but useful for batch code review,
 generation, or codebase analysis tasks.
 
 **OpenAI side (Codex in API key mode)** - 3 mechanics change the bill, as of
-2 October 2026. Cache writes cost 1.25x input from GPT-5.6 onwards, and implicit caching
+2 October 2026. Cache writes cost 1.25x input from GPT-5.6 onwards (2.5x for the 12-hour
+lifetime the Responses API added on 20 October 2026), and implicit caching
 (the default) writes the prefix up to the latest eligible message on every request that
 misses the cache. A request above 272K input tokens is repriced in full (2x input, 1.5x
 output), so long agent contexts can double their cost at one boundary. And the speed
@@ -525,6 +539,14 @@ tiers are premiums: Fast at 2x and Ultrafast at 6x (listed for GPT-6 Astra and
 GPT-6.1 Sol on OpenAI's pricing page, read 16 October 2026), chosen per request with
 `service_tier`. Govern them as
 Anthropic Fast mode is governed: allow-list, never default. Source: <https://developers.openai.com/api/docs/pricing>.
+Since 21 October 2026 OpenAI enforces that allow-list natively: Platform settings
+restrict which service tiers (default, flex, priority) each project can use, and
+organisation settings restrict them for every project, which a project cannot
+override. Fast is evaluated as priority, so blocking priority blocks Fast; the
+documentation does not say how Ultrafast is evaluated, so test it before relying on the
+block. A request that omits `service_tier` or sends `auto` returns a 400 error if it
+resolves to a blocked tier, so test pipelines before tightening. Scale Tier sits outside
+the policy. Source: <https://developers.openai.com/api/docs/guides/error-codes>.
 
 **LiteLLM budget caps** - set hard or soft budget limits per team or project at the proxy
 level. Prevents runaway spend from a single developer or workflow.
@@ -615,6 +637,8 @@ becomes a cost problem when:
   Anthropic API usage for the same models
 - Multiple API keys exist across the organisation with no centralised tracking, creating
   shadow AI spend
+- Copilot serves Claude Code or Codex for developers who also hold direct API keys or
+  subscriptions for the same work (`totals_by_client` in the Copilot usage metrics shows it)
 
 ### How to audit
 

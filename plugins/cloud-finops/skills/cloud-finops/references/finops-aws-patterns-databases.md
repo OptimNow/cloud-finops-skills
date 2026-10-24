@@ -295,6 +295,30 @@ flexibility. The decision is rarely purely financial.
 - Have you evaluated Aurora Serverless v2 for workloads with unpredictable traffic
   before committing to provisioned Aurora RIs?
 
+**Capacity Reservations hold capacity; they do not discount it (since 21 October
+2026).** Aurora and RDS DB instances can reserve capacity per Availability Zone, as EC2
+can. A reservation bills at the On-Demand rate while active, whether or not a DB
+instance runs in it, and capacity with no instance shows as unused reservation on the
+bill. Reserved DB Instances and Database Savings Plans discount a DB instance that runs
+in the reservation; the documentation does not extend them to unused reserved capacity,
+so do not assume the EC2 behaviour, where a regional RI also covers an unused ODCR.
+Three mechanics shape the review:
+
+- Immediate reservations carry no commitment and can be cancelled at any time.
+  Reservations scheduled 5 to 120 days ahead carry a 14-day minimum (12 weeks for the X
+  family) and cannot be cancelled once scheduled.
+- Reservations are targeted and stay in one account: a DB instance draws from one only
+  when it names it, and capacity is not shared across accounts. An instance launched
+  without the reservation's identifier runs beside it, and both bill.
+- Multi-AZ RDS needs capacity in at least two Availability Zones; on Aurora the
+  reservation is per DB instance, not per cluster. Aurora Serverless v2 and RDS Custom
+  are out of scope.
+
+List active reservations in the commitment review next to RIs and Savings Plans, and
+give unused reserved capacity an owner. Sources:
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/capacity-reservations.getting-started.html,
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/capacity-reservations.pricing-billing.html
+
 ---
 
 ## Databases Optimization Patterns (31)

@@ -127,8 +127,10 @@ preview behind the access request:
   requests over 200K input tokens - there is no separate long-context tier on top.
 - **Claude API**, including Managed Agents, on all three models; and, for **Opus 5.5
   only**, Claude in Microsoft Foundry on deployments hosted on Azure (not on Foundry
-  deployments hosted on Anthropic). Not available on Amazon Bedrock, Google Cloud or
-  Claude Platform on AWS, so a Bedrock-based estate cannot use it at all.
+  deployments hosted on Anthropic), and Claude Models on Google Cloud (Anthropic managed)
+  since 22 October 2026. Not available on Amazon Bedrock, the Google-managed Google Cloud
+  route (Vertex AI) or Claude Platform on AWS, so a Bedrock-based estate cannot use it at
+  all.
 - **The access request no longer gates Opus 5.5.** Any key in the Start tier or above
   can send `speed: "fast"` and pay 2x, so the allow-list has to live in the gateway or
   client configuration, not in Anthropic's approval step. `usage.speed` in each
@@ -263,8 +265,10 @@ Two exclusions matter for cost modelling:
 
 - **The Batch API discount does not apply** - sessions are stateful and interactive;
   there is no batch mode.
-- **Not available on partner-operated cloud platforms** (Bedrock, Google Cloud).
-  On Claude Platform on AWS, session charges convert to CCUs at the standard rate.
+- **Not available on partner-operated cloud platforms** (Bedrock, and the
+  Google-managed Google Cloud route). Claude Models on Google Cloud (Anthropic managed)
+  carries it since 22 October 2026, billed through Google Cloud Marketplace. On Claude
+  Platform on AWS, session charges convert to CCUs at the standard rate.
 - Session runtime **replaces** the code-execution container-hour billing - you are
   not billed container hours on top of it.
 
@@ -315,8 +319,9 @@ on 7 February 2026.
   retroactive repricing, but the mechanism is a lost cache, not a recharge of
   earlier requests.
 - **Mostly outside cloud provider routes**: Fast mode is unavailable on Amazon Bedrock
-  and Google Vertex AI, and on Microsoft Foundry it exists only for Opus 5.5 on
-  Azure-hosted deployments (since 15 October 2026). Elsewhere it fragments spend away
+  and Google Vertex AI. On Microsoft Foundry it exists only for Opus 5.5 on Azure-hosted
+  deployments (since 15 October 2026), and on Google Cloud only for Opus 5.5 through the
+  Anthropic-managed route (since 22 October 2026). Elsewhere it fragments spend away
   from consolidated cloud agreements toward direct Anthropic invoices.
 
 ### Context window pricing - per-model, not uniform
@@ -539,6 +544,18 @@ Fast mode's exclusion from Bedrock and Vertex (and, on Foundry, from every model
 Opus 5.5 on Azure-hosted deployments) is a deliberate channel choice. If your strategy relies on CSP-consolidated billing and commitment vehicles,
 this feature gap introduces spend fragmentation that governance must account for.
 Managed Agents further fragment spend as they represent a distinct service tier.
+
+On Google Cloud the gap has a second route since 22 October 2026. Claude Models on
+Google Cloud (Anthropic managed) is the Claude API operated by Anthropic and reached
+through a Google Cloud project: Fast mode on Opus 5.5 and Managed Agents run there,
+usage is metered in Claude Consumption Units on the Google Cloud bill with no separate
+Anthropic invoice, and it counts toward a Google Cloud spend commitment as other
+Marketplace purchases do. The Google-managed route (Vertex AI) stays as described
+above. Two things to settle before moving traffic: setup creates a new Anthropic
+organisation per Google Cloud project, separate from any existing one, Claude
+Enterprise included; and an existing discount has to be agreed with the account team
+first, because discounts cannot be applied to past usage. Source:
+<https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/anthropic-managed>
 
 ### Cross-provider applicability
 

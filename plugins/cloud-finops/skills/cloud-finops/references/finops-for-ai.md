@@ -581,7 +581,12 @@ September 2026).
 - Check whether the provider bills cache **writes** before treating caching as free.
   Anthropic always has. OpenAI direct and Azure OpenAI do from the GPT-5.6 family onwards
   (1.25x the input rate, and on OpenAI direct that includes the Batch and Flex tiers, at
-  1.25x their discounted input rate; GPT-5.5 and earlier carry no write charge). Bedrock
+  1.25x their discounted input rate; GPT-5.5 and earlier carry no write charge). On the
+  Responses API, GPT-5.6 and later can also take a 12-hour lifetime
+  (`prompt_cache_options.ttl: "12h"`) at 2.5x input per write, with the same read rate
+  (20 October 2026). One 12-hour write costs two 30-minute writes, so it pays only where
+  the prefix would otherwise be written three or more times in 12 hours, and upgrading
+  live 30-minute coverage bills a new write with no credit. Bedrock
   depends on the model: Claude writes at 1.25x or 2x by TTL, recent OpenAI models and
   Kimi K3 at 1.25x, older OpenAI models at no premium. Vertex AI writes at the standard
   input rate. Read rates vary too: 0.1x on most models, 0.05x on GPT-6.1 Sol and Claude
