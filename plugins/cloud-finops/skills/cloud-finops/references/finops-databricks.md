@@ -62,6 +62,14 @@ on workload type).
   mapping; aggregate `usage_quantity` (DBUs) and `usage_quantity * list_price` (USD).
 - Job-level cost trending: filter by `billing_origin_product = 'JOBS'` and join to
   `system.lakeflow.jobs` for job names.
+- Pipeline-level cost: join `usage_metadata.dlt_pipeline_id` to
+  `system.lakeflow.pipelines` (generally available since 21 October 2026). The table is
+  a slowly changing dimension: take the latest row per `workspace_id` and `pipeline_id`
+  by `change_time`, then drop rows that carry a `delete_time`. Materialized views,
+  online tables, AI Search indexing and Lakeflow Connect ingestion bill under a pipeline
+  ID, so this join is where their cost appears. Sources:
+  https://docs.databricks.com/aws/en/admin/system-tables/billing,
+  https://docs.databricks.com/aws/en/admin/system-tables/jobs
 - Anomaly detection: month-over-month delta per workspace per SKU, flagged at >20%.
 
 **Important nuances:**

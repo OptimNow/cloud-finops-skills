@@ -439,6 +439,17 @@ infrastructure spend.
 **Manual spreadsheet**: pull Admin API data periodically, map developer emails to teams,
 build charts. Works for small teams. Does not scale.
 
+**Copilot behind other agents**: Copilot can be the model provider for OpenCode, Claude
+Code, Codex and other clients, which draws Copilot usage outside the IDE. Since
+23 October 2026 the 1-day and 28-day usage metrics reports (enterprise, organisation and
+per-user levels) carry `totals_by_client`: requests, sessions and prompt and output
+tokens per client, broken down by model with `model_selection_mode` (`user_selected`,
+`auto`, `product_selected`). GitHub calls the client field a best-effort grouping,
+`request_count` counts model calls rather than prompts, and the report carries no AI
+Credits (`ai_credits_used` is in per-user reports only, with no split by surface). Use
+it to find overlap with direct API keys, not to reconcile the invoice. Source:
+<https://github.blog/changelog/2026-10-23-usage-metrics-api-adds-usage-from-tools-like-opencode>
+
 ### For BYOK tools (Claude Code, Codex in API key mode)
 
 **API gateway / proxy (LiteLLM)**: this is the option with the most control. Route all
@@ -615,6 +626,8 @@ becomes a cost problem when:
   Anthropic API usage for the same models
 - Multiple API keys exist across the organisation with no centralised tracking, creating
   shadow AI spend
+- Copilot serves Claude Code or Codex for developers who also hold direct API keys or
+  subscriptions for the same work (`totals_by_client` in the Copilot usage metrics shows it)
 
 ### How to audit
 
