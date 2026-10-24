@@ -540,7 +540,7 @@ both meters separately when modelling Databricks commitment economics.
 ### Databricks commitment instruments
 
 - **Committed use (a Usage Commitment with Databricks, a DBCU plan on Azure)** - a
-  prepaid dollar commitment to DBU usage for one to three years, priced on published
+  prepaid dollar commitment to DBU usage for 1 to 3 years, priced on published
   bands (below). Separate from Azure RIs and Savings Plans, which cover the VM meter only.
 
 **Published discount bands.** Databricks publishes its committed-use bands in its UK
