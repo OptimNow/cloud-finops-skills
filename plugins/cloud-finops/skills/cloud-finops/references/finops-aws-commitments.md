@@ -13,8 +13,8 @@ fcp_maturity_entry: "Walk"
 
 > AWS rate-optimisation instruments and the decisions around them: Savings Plans
 > (Compute, EC2 Instance, SageMaker AI, Database), Reserved Instances, Spot, the
-> commitment decision tree, portfolio liquidity and phased purchasing, and EDP
-> negotiation. Kept separate from `finops-aws.md` so a commitment question does not
+> commitment decision tree, portfolio liquidity and phased purchasing, and how an EDP
+> interacts with them (negotiation is in `finops-cloud-contracts.md`). Kept separate from `finops-aws.md` so a commitment question does not
 > load the AWS pattern catalogue. For AWS billing data and allocation, see
 > `finops-aws-billing.md`; for rightsizing and service-specific optimisation, `finops-aws.md`.
 
@@ -543,109 +543,19 @@ to risk appetite.
 - What percentage of your commitment portfolio expires in any single quarter? If
   more than 30%, the portfolio is insufficiently diversified.
 
-### Enterprise Discount Program (EDP)
+### Private Pricing (EDP) and the commitment instruments
 
-The AWS Enterprise Discount Program (EDP) - also referred to as a Private Pricing
-Agreement (PPA) - is a contractual commitment where an organisation pledges a
-specific dollar amount of spend over a one-to-five-year term. In return, AWS provides
-a percentage discount that applies broadly across more than 200 services. Unlike
-Savings Plans or Reserved Instances that target specific compute or database
-resources, an EDP acts as a portfolio-wide discount covering compute, storage,
-databases, networking, and eligible AWS Marketplace purchases.
+Negotiating an AWS Private Pricing agreement (EDP, PPA) is covered in
+`finops-cloud-contracts.md`. Three interactions matter for the instruments in this file:
 
-**Who it is for:**
-EDP is designed for organisations spending $1 million or more annually on AWS.
-Smaller organisations with a strong growth trajectory may negotiate entry via the
-AWS Private Pricing Term Sheet (PPTS), which lowers the threshold to approximately
-$500,000 in annual spend.
-
-**How the discount is applied:**
-The EDP discount is applied after Reserved Instance and Savings Plan discounts. This
-means the EDP provides additional savings on top of already-discounted compute. When
-combined with aggressive rate optimisation (RIs, Savings Plans, Spot), mature
-organisations can reach an overall effective discount in the 40-70% range off
-On-Demand rates (indicative, not a benchmark).
-
-**Eligibility requirements and hidden costs:**
-- Minimum annual spend of $1 million (negotiable for high-growth accounts)
-- AWS requires a growth commitment - typically 10-20% year-over-year increase
-  over trailing spend. The growth expectation is rarely waived; what is negotiable
-  is its level and how it is measured. It creates risk for organisations with
-  unpredictable workloads
-- The commitment floor only moves upward - you cannot reduce your pledge in
-  subsequent years of the contract
-- Mandatory Enterprise Support (3-10% of monthly usage). For mid-sized
-  organisations, support fees can erode a significant portion of the EDP savings
-  if not factored into the financial model. Since September 2026 the Billing API
-  returns the charge per linked account, prorated by time on the plan, which is
-  what makes it allocatable in showback - see the "Provider support fees" section
-  of `finops-allocation-showback.md`
-
-**Discount tiers and negotiation leverage:**
-Discount rates are determined by annual commitment level and contract duration.
-Longer terms yield deeper discounts. Strategic pricing breaks occur at specific
-annual spend milestones. A modest increase in committed volume near a tier
-boundary can yield a disproportionate jump in discount rate.
-
-**EDP negotiation checklist:**
-- [ ] Conduct a forensic cost audit before negotiation - eliminate waste to lower
-      your baseline commitment (do not commit to inefficiency)
-- [ ] Clarify pre- vs post-discount commitment measurement. If you commit $2M and
-      receive $200K in discounts, negotiate for the full $2M to count toward
-      retiring your commitment, not just the $1.8M net spend
-- [ ] Negotiate Marketplace inclusion terms. Default is 25% of committed spend;
-      negotiate to 30-35% if your stack relies on third-party SaaS from AWS
-      Marketplace
-- [ ] Request quarterly true-ups rather than annual ones for better pacing
-      visibility
-- [ ] Define which services are excluded from the discount - data transfer fees
-      and specialised managed services can represent hidden costs
-- [ ] Confirm that your EDP covers Marketplace SKUs for key vendors -
-      not all Marketplace transactions are EDP-eligible
-- [ ] Factor Enterprise Support cost into the total cost of ownership before
-      signing
-
-**EDP preparation roadmap (OptimNow engagement template, not an AWS document):**
-
-| Stage | Timeline | Key activities |
-|---|---|---|
-| Suitability assessment | Months 1-2 | Review current AWS spend, evaluate growth trajectory (minimum 10% YoY), initial discussions with AWS |
-| Preparation | Months 2-5 | Build 3-5 year cloud usage forecast (include Marketplace SaaS), optimise resources before baseline is set, internal stakeholder alignment |
-| Negotiation | Months 5-11 | Negotiate commitment levels, term lengths, growth expectations; legal and financial review of proposed agreement |
-| Implementation | Month 12 | Sign and activate the EDP, communicate terms internally |
-| Management and optimisation | Months 13-15 | Monitor usage against commitment, layer RIs/Savings Plans, use FinOps tooling for continuous optimisation |
-| Review and adaptation | Month 16+ | Quarterly performance reviews, strategy adjustments, renewal preparation |
-
-**Internal alignment - who must be at the table:**
-- Engineering/business units: confirm AWS is the right platform for the workload
-- Finance: evaluate multi-year commitment impact on P&L and margins
-- Procurement: coordinate negotiation process and define success criteria
-- Legal: review all terms, ensure specific requirements are included
-- CEO/CTO/CFO: must be in complete agreement before signing. Without this
-  alignment, an EDP can create strategic misalignment and financial risk
-
-**Common EDP mistakes:**
-- Committing before optimising. AWS calculates EDP offers based on gross spend,
-  which often includes significant waste. Clean the house first
-- Choosing an overly long term (4-5 years) with aggressive growth targets. As
-  FinOps maturity improves and cost optimisation becomes more effective, meeting
-  high growth commitments becomes harder - the more efficient you become, the
-  harder it is to meet the spend floor
-- Failing to include Marketplace SaaS in the EDP forecast. Marketplace purchases
-  count toward commitment but are often planned by different teams
-- Not considering alternatives: AWS Savings Plans, Reserved Instances, or the
-  PPTS may be more appropriate for organisations with unpredictable usage patterns
-  or in early growth stages
-
-**EDP and rate optimisation layering:**
-An EDP is not a substitute for active resource management. It is a foundation that
-works best when stacked with other instruments:
-- Use the EDP as the portfolio-wide base discount
-- Layer Savings Plans and Reserved Instances on top for steady-state compute
-- Use Spot Instances for fault-tolerant workloads
-- Note: as of January 2024, EDP customers are prohibited from selling discounted
-  RIs on the AWS Marketplace, making internal commitment forecasting and liquidity
-  management more critical
+- On current paper Private Pricing applies after Savings Plans and Reserved Instances,
+  to the already-discounted amount; older paper differed, and the addendum's scope
+  clause decides.
+- Private pricing customers cannot sell discounted Reserved Instances on the RI
+  Marketplace (since January 2024), so staggered expiry is their liquidity route (see
+  "Commitment portfolio liquidity").
+- The commitment is measured net of discounts by default, so every discount, the
+  private discount included, lowers the spend that retires it.
 
 ---
 

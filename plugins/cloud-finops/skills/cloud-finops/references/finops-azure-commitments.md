@@ -14,9 +14,9 @@ fcp_maturity_entry: "Walk"
 > Azure rate-optimisation instruments and the decisions around them: Reservations,
 > Savings Plans, Azure Hybrid Benefit, Spot, the compute and database commitment
 > decision trees, portfolio liquidity under the 1 February 2027 exchange retirement,
-> phased purchasing, and MACC alignment. For Azure billing data, allocation and
-> governance, see `finops-azure-billing.md`; for rightsizing and service optimisation,
-> `finops-azure.md`.
+> phased purchasing, and MACC alignment (MACC negotiation is in
+> `finops-cloud-contracts.md`). For Azure billing data, allocation and governance, see
+> `finops-azure-billing.md`; for rightsizing and service optimisation, `finops-azure.md`.
 
 ---
 
@@ -321,10 +321,10 @@ Savings Plans:
 - Reservation and Savings Plan purchases **count toward** MACC burndown - purchasing
   them does not "double-discount" but does pull commitment forward.
 
-**Critical distinction:** A MACC is a binding obligation, not a forecast. If actual
-consumption falls short of the committed amount by the end of the term, Microsoft
-issues a shortfall invoice. The discount negotiated becomes an additional cost if the
-target is missed.
+**Critical distinction:** A MACC is a binding obligation, not a forecast: a shortfall at
+the end date or at a missed milestone is charged as an Azure prepayment credit. What
+counts toward it, Marketplace eligibility and the shortfall cases are in
+`finops-cloud-contracts.md` ("Azure: MACC and the Azure Commitment Discount").
 
 **The optimisation paradox.** The MACC is typically sized based on current architecture
 and projected growth. When a FinOps team then rightsizes VMs, decommissions idle
@@ -336,19 +336,6 @@ gap is significant, the final quarter becomes a scramble to close it.
 This is the core tension: the MACC and the FinOps programme can quietly stop working
 in the same direction unless burndown tracking is integrated into optimisation
 reporting.
-
-**What counts toward MACC drawdown:**
-- Core Azure services consumed under the enrollment
-- Azure Reservations for compute
-- Azure Marketplace purchases carrying the "Azure benefit eligible" badge, transacted
-  through the Azure portal under a subscription tied to the enrollment
-
-**What does not count:**
-- Marketplace purchases made by credit card directly on the Marketplace website (the
-  purchase path matters even for eligible products)
-- Hybrid licensing applied to on-premises workloads
-- Azure Prepayment credits used to fund Marketplace purchases (billing mechanics
-  separate these from MACC consumption, even though it feels like they should count)
 
 **Reporting pitfall:** Azure Cost Management surfaces both actual cost and amortised
 cost views. They produce different burndown numbers. Actual cost reflects when charges
@@ -374,11 +361,12 @@ Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/t
 
 ### Net discount under a MACC with an Azure Commitment Discount
 
-Many MACC customers also hold an Azure Commitment Discount (ACD) of a few points on
-pay-as-you-go consumption. Reservations typically do not receive the ACD: they
-decrement the MACC, but at reservation list price. Savings plans receive it only when
-a separate ACD line was negotiated for them. Read the customer's MACC: its discount
-table lists which instruments carry which percentage.
+Many MACC customers also hold an Azure Commitment Discount (ACD) on pay-as-you-go
+consumption. The ACD does not apply to reservations or savings plans: they decrement the
+MACC at their own price unless separate discount amendments on savings plan rates and on
+named reservation families were asked for and written in. The ACD's reach is set by the
+amendment's scope clause, and contracts differ: read it, then verify on the price sheet
+(`unitPrice` against `marketPrice` on a reservation or savings plan purchase line).
 
 The rule, with reservation discount `d` and ACD `a` on pay-as-you-go:
 
@@ -388,19 +376,19 @@ break-even utilisation = (1 - d) / (1 - a)
 ```
 
 Below the break-even utilisation the reservation loses money against discounted
-pay-as-you-go. Worked at `a = 8%` with West Europe list discounts (Retail Prices API,
-15 October 2026):
+pay-as-you-go. Worked at an illustrative `a = 10%` with West Europe list discounts
+(Retail Prices API, 15 October 2026):
 
-| Instrument | List discount `d` | Net discount at 8% ACD | Break-even utilisation |
+| Instrument | List discount `d` | Net discount at 10% ACD | Break-even utilisation |
 |---|---|---|---|
-| Blob Hot LRS 100 TiB, 1 year | 15-18% | 8-11% | 89-92% |
-| Blob Hot LRS 100 TiB, 3 years | 31-34% | 25-28% | 72-75% |
-| Premium SSD P30, 1 year | 5% | -3% | never |
-| SQL Database GP Gen5 vCore, 1 year | 35% | 29% | 71% |
-| SQL Database GP Gen5 vCore, 3 years | 55% | 51% | 49% |
-| PostgreSQL Flexible GP Ddsv5 vCore, 1 year | 40% | 35% | 65% |
-| PostgreSQL Flexible GP Ddsv5 vCore, 3 years | 60% | 57% | 43% |
-| Fabric CU, 1 year | 40.5% | 35% (ACD alone); 24% with a 15% Fabric pay-as-you-go discount stacked | 65%; 76% stacked |
+| Blob Hot LRS 100 TiB, 1 year | 15-18% | 6-9% | 91-94% |
+| Blob Hot LRS 100 TiB, 3 years | 31-34% | 23-27% | 73-77% |
+| Premium SSD P30, 1 year | 5% | -6% | never |
+| SQL Database GP Gen5 vCore, 1 year | 35% | 28% | 72% |
+| SQL Database GP Gen5 vCore, 3 years | 55% | 50% | 50% |
+| PostgreSQL Flexible GP Ddsv5 vCore, 1 year | 40% | 33% | 67% |
+| PostgreSQL Flexible GP Ddsv5 vCore, 3 years | 60% | 56% | 44% |
+| Fabric CU, 1 year | 40.5% | 34% (ACD alone); 27% with an illustrative 10% Fabric pay-as-you-go discount stacked | 66%; 73% stacked |
 
 The sequencing consequence: shallow instruments (1-year storage, disk reservations,
 the Savings Plan for Databases on provisioned SQL at 12-20%) drop to the bottom of the
@@ -813,8 +801,9 @@ reservation SKU observed). Not eligible: Standard SSD and HDD, Premium SSD v2, U
 unmanaged disks. The reservation is per disk SKU and region with no size flexibility
 (a P40 reservation does not cover two P30 disks); quantity is the number of disks. It
 applies hourly, and a disk in the "Reserved" state (attached to a deallocated VM)
-still bills and still consumes the reservation. Calibration: 5% is below the ACD most MACC customers hold on pay-as-you-go; under an
-8% ACD the reservation costs about 3% more than discounted pay-as-you-go. The disk
+still bills and still consumes the reservation. Calibration: any ACD above 5% erases the
+5% list discount; under an illustrative 10% ACD the reservation costs about 6% more than
+discounted pay-as-you-go. The disk
 levers that pay are Premium to Standard SSD rightsizing where premium IOPS are not
 needed, deleting unattached disks (`azure-orphan-disks` playbook) and reviewing disks
 attached to long-deallocated VMs. A disk reservation only makes sense on a large,

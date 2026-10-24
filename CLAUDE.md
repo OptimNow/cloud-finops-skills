@@ -126,6 +126,8 @@ cloud-finops-skills/
 │       ├── finops-snowflake.md             <- Snowflake
 │       ├── finops-tagging.md               <- Tagging governance + MCP automation
 │       ├── finops-itam.md                  <- ITAM / BYOL / marketplace
+│       ├── finops-cloud-contracts.md       <- Cloud contract negotiation (EDP / PPA,
+│       │                                     MACC / ACD, Google Minimum Commitment)
 │       ├── finops-sam.md                   <- SaaS asset management
 │       ├── greenops-cloud-carbon.md        <- GreenOps + cloud carbon
 │       ├── finops-anomaly-management.md    <- Anomaly management (standalone Inform-phase)

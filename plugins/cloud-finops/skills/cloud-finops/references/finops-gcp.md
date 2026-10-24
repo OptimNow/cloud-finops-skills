@@ -469,6 +469,12 @@ Sources:
 - https://cloud.google.com/bigquery/docs/reservations-intro
 - https://cloud.google.com/bigquery/pricing#commitments
 
+### Negotiated commitments
+
+A negotiated commitment (a Minimum Commitment under a Google Cloud Addendum, shown in
+billing as the Negotiated savings credit), its Marketplace drawdown cap and the RaMP
+migration credits are covered in `finops-cloud-contracts.md`.
+
 ---
 
 ## Cloud Carbon Footprint

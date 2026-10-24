@@ -39,10 +39,10 @@
 <text x="682" y="384" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">16 primary + 11 secondary</text>
 <rect x="24" y="397" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="408" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Rate Optimization</text>
-<text x="682" y="408" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">8 primary + 8 secondary</text>
+<text x="682" y="408" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">9 primary + 8 secondary</text>
 <rect x="24" y="421" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="432" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Licensing &amp; SaaS</text>
-<text x="682" y="432" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">2 primary + 2 secondary</text>
+<text x="682" y="432" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">2 primary + 3 secondary</text>
 <rect x="24" y="445" width="14" height="14" rx="3" fill="#ace849"/>
 <text x="48" y="456" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#1a1d23">Sustainability</text>
 <text x="682" y="456" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370" text-anchor="end">1 primary</text>

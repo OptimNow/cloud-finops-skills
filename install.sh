@@ -456,7 +456,7 @@ install_cursor() {
 build_cursor_rule() {
   cat <<'EOF'
 ---
-description: Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic). Use for cost questions on AWS, Azure, GCP, Anthropic, open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM), Bedrock, Vertex AI, Azure OpenAI, Databricks, Microsoft Fabric, Snowflake, OCI, AI coding tools, self-hosted vs managed AI inference, agentic FinOps, GenAI capacity planning, AI value management, GreenOps, FinOps Framework, SaaS asset management, ITAM, anomaly management, allocation and showback, chargeback, onboarding workloads, Kubernetes FinOps, waste detection, KPIs and benchmarking, forecasting, FinOps practice operations (operating model, RACI, governance, ITFM), on-premises and hybrid FinOps, FOCUS multi-cloud cost data normalisation.
+description: Expert FinOps guidance for cloud, AI, SaaS, and data-platform spend (multi-provider, model-agnostic). Use for cost questions on AWS, Azure, GCP, Anthropic, open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM), Bedrock, Vertex AI, Azure OpenAI, Databricks, Microsoft Fabric, Snowflake, OCI, AI coding tools, self-hosted vs managed AI inference, agentic FinOps, GenAI capacity planning, AI value management, GreenOps, FinOps Framework, SaaS asset management, ITAM, cloud contract negotiation (EDP / Private Pricing, MACC, Google Cloud commitments), anomaly management, allocation and showback, chargeback, onboarding workloads, Kubernetes FinOps, waste detection, KPIs and benchmarking, forecasting, FinOps practice operations (operating model, RACI, governance, ITFM), on-premises and hybrid FinOps, FOCUS multi-cloud cost data normalisation.
 globs:
   - "**/*"
 alwaysApply: false
@@ -684,16 +684,17 @@ Use these knowledge files for the following query types:
 | Tagging strategy, naming conventions, IaC enforcement | finops-tagging.md |
 | SaaS management, licence optimisation, shadow IT | finops-sam.md |
 | ITAM, BYOL, marketplace governance | finops-itam.md |
+| Cloud contracts: EDP/PPA, MACC/ACD, Google commitment, term sheets | finops-cloud-contracts.md |
 | GreenOps, cloud carbon, sustainability | greenops-cloud-carbon.md |
-| Cost anomaly management, masked anomalies, layered detection, threshold tuning | finops-anomaly-management.md |
+| Cost anomaly management, masked anomalies, threshold tuning | finops-anomaly-management.md |
 | FinOps KPIs, unit economics, benchmarking, executive reporting | finops-kpis-benchmarking.md |
-| Forecasting, accuracy and drift, variance bands, driver-based and AI forecasts | finops-forecasting.md |
+| Forecasting, accuracy and drift, driver-based and AI forecasts | finops-forecasting.md |
 | Allocation methodology and showback, EffectiveCost vs BilledCost, shared services | finops-allocation-showback.md |
 | Chargeback, soft-to-hard maturity, Finance prerequisites (ERP, tax, SOX) | finops-chargeback.md |
-| FinOps operating model, RACI, governance forums, decision rights, ITFM / TBM handoffs | finops-practice-operations.md |
-| Onboarding workloads, intake gate, forecast-then-commit rule, double-bubble cost, M&A and divestiture | finops-onboarding-workloads.md |
+| FinOps operating model, RACI, governance forums, ITFM / TBM handoffs | finops-practice-operations.md |
+| Onboarding workloads, intake gate, double-bubble cost, M&A, divestiture | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, Karpenter | finops-kubernetes.md |
-| On-prem and hybrid: data-centre internal bill, Outposts / Azure Local / Arc / VMware billing, exit fees | finops-on-prem-hybrid.md |
+| On-prem and hybrid: internal bill, Outposts / Azure Local / Arc / VMware, exit fees | finops-on-prem-hybrid.md |
 | FOCUS normalisation, versions and export differences, ingestion pipeline | finops-focus.md |
 | Waste taxonomy (eight categories), two-signal classification, egress waste, WasteLine | finops-waste-detection-playbooks.md |
 EOF
@@ -733,7 +734,7 @@ Use these knowledge files for the following query types:
 | AI cost management, LLM economics, agentic patterns, ROI, Anthropic billing, open-weight vendor hosted APIs (DeepSeek / Qwen / Kimi / GLM), time-based pricing, open-weight licensing, AI coding tools (Cursor / Copilot / Claude Code / Codex / Windsurf), GenAI capacity, AI Investment Council, self-hosted vs managed inference | ai.md |
 | Databricks (DBCU, allocation, Photon), Microsoft Fabric (F-SKUs, CU smoothing), Snowflake (QUERY_ATTRIBUTION_HISTORY, Cortex) | data-platforms.md |
 | OCI (Cost Reports, FOCUS, cost-tracking tags, Universal Credits) | oci.md |
-| FinOps Framework 2026 (4 domains, 22 capabilities), tagging, SaaS management, ITAM, GreenOps, Kubernetes FinOps, waste detection playbooks, FOCUS multi-cloud cost data normalisation and ingestion, on-premises and hybrid FinOps (internal bill, Outposts, Azure Local, VMware, exit fees) | cross-cutting.md |
+| FinOps Framework 2026 (4 domains, 22 capabilities), tagging, SaaS management, ITAM, cloud contract negotiation (EDP, MACC, Google commitments), GreenOps, Kubernetes FinOps, waste detection playbooks, FOCUS multi-cloud cost data normalisation and ingestion, on-premises and hybrid FinOps (internal bill, Outposts, Azure Local, VMware, exit fees) | cross-cutting.md |
 | Anomaly management, allocation and showback, chargeback (incl. Finance / accounting prerequisites), onboarding workloads (migration-time cost hygiene, M&A, divestiture), KPIs and benchmarking, forecasting, FinOps practice operations (operating model, RACI, governance, ITFM), executive reporting | finops-discipline.md |
 EOF
   emit_named_pattern_row 'playbooks.md'
@@ -823,7 +824,7 @@ build_gemini_grouped_knowledge() {
     "$refs/finops-oci.md"
   cat_required "$outdir/cross-cutting.md" \
     "$refs/finops-framework.md" "$refs/finops-tagging.md" "$refs/finops-sam.md" \
-    "$refs/finops-itam.md" "$refs/greenops-cloud-carbon.md" \
+    "$refs/finops-itam.md" "$refs/finops-cloud-contracts.md" "$refs/greenops-cloud-carbon.md" \
     "$refs/finops-kubernetes.md" "$refs/finops-waste-detection-playbooks.md" \
     "$refs/finops-focus.md" "$refs/finops-on-prem-hybrid.md"
   cat_required "$outdir/finops-discipline.md" \
