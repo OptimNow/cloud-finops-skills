@@ -67,6 +67,17 @@ SaaS vendors are introducing per-query pricing specifically for AI agent interac
 - Track cost-per-outcome metrics: what business value did those queries generate?
 - Consider hybrid models: human seats plus agent query allowances
 
+**Consumption-billed AI workspaces (ChatGPT Enterprise)**
+Type: Emerging Cost Model
+
+An AI workspace subscription can carry a usage meter on top of the seat. On ChatGPT Enterprise the agreement sets one of two models: workspace credits, where ChatGPT Work draws from a shared pool of credits, or usage-based billing in USD against OpenAI's Enterprise token rate card. The two do not mix: on a USD-billed workspace, consumed credits are not an extra invoice line. Seat fees are separate from consumption in both. A small subset of Enterprise customers stays on the legacy Codex rate card until OpenAI migrates them to token-based pricing (as of 24 October 2026).
+
+- Read the agreement before modelling: it decides whether the meter is credits or USD tokens
+- Set the controls OpenAI provides: monthly user limits (workspace default, group or individual) and a workspace overage limit. Alerts notify but do not stop spending, and "No limit" is not a zero-spend cap
+- Budget the seat and the consumption as separate lines
+
+Sources: <https://learn.chatgpt.com/docs/enterprise/chatgpt-work-usage-and-cost>, <https://learn.chatgpt.com/docs/pricing>. The Enterprise token rate card (help.openai.com article 20001415) could not be reached for verification on 24 October 2026; read it for what each surface costs.
+
 **Shadow SaaS**
 Type: Governance Gap
 

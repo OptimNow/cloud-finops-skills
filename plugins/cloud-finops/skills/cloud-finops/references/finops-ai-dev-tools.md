@@ -279,7 +279,9 @@ Codex is OpenAI's coding agent, available through ChatGPT and as a CLI tool.
 ### Access paths
 
 **ChatGPT subscription (default):** Codex CLI usage draws from your ChatGPT plan limits
-at no extra per-token charge. ChatGPT Plus at $20/month is the cheapest access path.
+at no extra per-token charge. ChatGPT Plus at $20/month is the cheapest access path. On
+ChatGPT Enterprise the agreement decides whether usage draws workspace credits or bills
+in USD by token; see `finops-sam.md`, "Consumption-billed AI workspaces".
 
 **Fast mode on the subscription path is a consumption multiplier.** Signed in with
 ChatGPT, Codex offers a Fast mode on supported models that draws included plan limits at
@@ -528,7 +530,8 @@ Not applicable to interactive coding sessions, but useful for batch code review,
 generation, or codebase analysis tasks.
 
 **OpenAI side (Codex in API key mode)** - 3 mechanics change the bill, as of
-2 October 2026. Cache writes cost 1.25x input from GPT-5.6 onwards, and implicit caching
+2 October 2026. Cache writes cost 1.25x input from GPT-5.6 onwards (2.5x for the 12-hour
+lifetime the Responses API added on 20 October 2026), and implicit caching
 (the default) writes the prefix up to the latest eligible message on every request that
 misses the cache. A request above 272K input tokens is repriced in full (2x input, 1.5x
 output), so long agent contexts can double their cost at one boundary. And the speed
@@ -536,6 +539,14 @@ tiers are premiums: Fast at 2x and Ultrafast at 6x (listed for GPT-6 Astra and
 GPT-6.1 Sol on OpenAI's pricing page, read 16 October 2026), chosen per request with
 `service_tier`. Govern them as
 Anthropic Fast mode is governed: allow-list, never default. Source: <https://developers.openai.com/api/docs/pricing>.
+Since 21 October 2026 OpenAI enforces that allow-list natively: Platform settings
+restrict which service tiers (default, flex, priority) each project can use, and
+organisation settings restrict them for every project, which a project cannot
+override. Fast is evaluated as priority, so blocking priority blocks Fast; the
+documentation does not say how Ultrafast is evaluated, so test it before relying on the
+block. A request that omits `service_tier` or sends `auto` returns a 400 error if it
+resolves to a blocked tier, so test pipelines before tightening. Scale Tier sits outside
+the policy. Source: <https://developers.openai.com/api/docs/guides/error-codes>.
 
 **LiteLLM budget caps** - set hard or soft budget limits per team or project at the proxy
 level. Prevents runaway spend from a single developer or workflow.
