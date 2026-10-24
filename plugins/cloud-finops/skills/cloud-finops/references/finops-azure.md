@@ -31,6 +31,7 @@ fcp_maturity_entry: "Walk"
 |---|---|
 | Cost Management and FOCUS exports, Retail Prices API, FinOps Toolkit and hubs, billing scopes and allocation, tagging and Azure Policy, budgets, EA-to-MCA, agent access to cost data | `finops-azure-billing.md` |
 | Reservations, Savings Plans, AHB, Spot, commitment decision trees, portfolio liquidity, MACC | `finops-azure-commitments.md` |
+| MACC and ACD negotiation, EA or MCA-E renewal, term sheet review | `finops-cloud-contracts.md` |
 | The enumerated per-service inefficiency catalogue | `finops-azure-patterns.md` |
 | A specific named waste pattern with a runnable detection query | `playbooks/azure-*.md` |
 

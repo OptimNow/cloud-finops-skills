@@ -104,7 +104,9 @@ marketplace SKUs are not mapped to existing contracts.
 **Commitment collision.** Marketplace spend draws down cloud commitments (EDP on AWS, MACC
 on Azure) that FinOps is actively managing. Meanwhile, Procurement may hold separate
 Enterprise Agreements with the same vendor. These competing commitments create risk of
-underutilisation, overcommitment, or duplicated commercial obligations.
+underutilisation, overcommitment, or duplicated commercial obligations. The drawdown
+rules per provider (counting rule, cap, eligibility, seller fees) are in the Marketplace
+table of `finops-cloud-contracts.md`.
 
 **Governance gaps.** Weak policy on who can buy what, through which channel, and under
 which legal entity. Self-service purchasing increases exposure to shadow IT, uncontrolled

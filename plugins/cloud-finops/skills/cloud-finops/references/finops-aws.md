@@ -28,7 +28,8 @@ it does not need:
 | You want | Read |
 |---|---|
 | CUR and Data Exports, Cost Explorer, Cost Anomaly Detection, account structure and Cost Categories, SCPs, Budgets and spend limits, the FinOps Agent, billing hierarchy and invoices, multi-org billing | `finops-aws-billing.md` |
-| Savings Plans, RIs, Spot, commitment decision tree, portfolio liquidity, EDP negotiation | `finops-aws-commitments.md` |
+| Savings Plans, RIs, Spot, commitment decision tree, portfolio liquidity, how an EDP interacts with them | `finops-aws-commitments.md` |
+| Private Pricing (EDP, PPA) negotiation, term sheet review | `finops-cloud-contracts.md` |
 | The per-service inefficiency catalogue (index) | `finops-aws-patterns.md` |
 | A specific named waste pattern with a runnable detection query | `playbooks/aws-*.md` |
 

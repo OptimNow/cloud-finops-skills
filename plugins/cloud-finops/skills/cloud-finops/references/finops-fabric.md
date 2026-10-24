@@ -233,8 +233,8 @@ section said 1-year only and per F-SKU; both statements were outdated by October
   reserved hours are lost. Decide per capacity: reserve only the capacities that run
   more than the break-even share of hours, `(1 - d) / (1 - a)`, with `d` the
   reservation discount and `a` any pay-as-you-go discount the customer holds. That
-  is about 60% of hours at list price, and 70 to 76% under a MACC with an 8% ACD and
-  a 15% Fabric pay-as-you-go discount. A capacity paused nights and weekends runs
+  is about 60% of hours at list price, and 66 to 73% under a MACC with an illustrative
+  10% ACD and a 10% Fabric pay-as-you-go discount. A capacity paused nights and weekends runs
   about 36% of hours, below any break-even, so for it pausing beats reserving.
 - **Smoothing does not change the billed CUs.** A provisioned F64 bills 64 CU every
   running hour whatever its utilisation. Size the reservation on the always-on
