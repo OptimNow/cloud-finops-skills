@@ -17,7 +17,9 @@ Open an issue first for anything larger than a typo or single fact correction, s
 can scope before you write. Pull requests should keep the existing structure of the
 file you are touching, follow the conventions in [`CLAUDE.md`](./CLAUDE.md) (FCP
 frontmatter, no em dashes, British spelling in prose, license footer), and pass the
-FCP coverage check (`./scripts/fcp-coverage.sh --check`).
+coverage checks (`./scripts/fcp-coverage.sh --check` and
+`./scripts/business-coverage.sh --check`; the second one reads the
+`business_coverage` frontmatter field that feeds the README coverage tables).
 
 You keep authorship: every contribution lives in the commit history under your name
 and shows up in `git blame`. Substantive contributors are visible in the repo's
@@ -33,6 +35,37 @@ credit and share-alike. If you want a project under your own name rather than
 contributing here, fork freely; see "Adapting this skill for your organisation" in
 the [README](./README.md#adapting-this-skill-for-your-organisation) for the fork
 playbook. Both paths are first-class.
+
+## Repository structure
+
+```
+cloud-finops-skills/
+├── README.md                    <- Coverage by role and by business need, install table
+├── INSTALLATION.md              <- Per-tool setup, troubleshooting, API loader
+├── PRIVACY.md                   <- What the skill and the hosted connector collect
+├── CONTRIBUTING.md              <- This file
+├── CLAUDE.md / AGENTS.md        <- Project context for AI assistants and contributors
+├── llms.txt                     <- LLM discovery index (cross-agent)
+├── install.sh                   <- Cross-tool installer (12 targets)
+├── docs/                        <- CONCEPTS.md (skill vs connector, the MCP tools),
+│                                   ROADMAP.md and the directory listing guides
+├── scripts/                     <- Coverage generators and the CI guard scripts
+├── assets/                      <- Logos, screenshots, the generated coverage maps
+├── .claude-plugin/              <- marketplace.json, behind `cloud-finops@optimnow`
+├── skills/cloud-finops/         <- Stub pointing to the plugin folder (old path)
+├── mcp_server/                  <- cloud-finops-mcp PyPI package
+└── plugins/cloud-finops/        <- The Claude plugin: only what a user installs
+    ├── .claude-plugin/          <- plugin.json + icon.svg
+    ├── README.md / LICENSE
+    └── skills/cloud-finops/     <- The skill - install this folder
+        ├── SKILL.md             <- Entry point + per-file routing catalogue
+        ├── POWER.md             <- Kiro IDE entry point (same references)
+        ├── references/          <- The reference library, one file per domain
+        └── playbooks/           <- Named-pattern runbooks (~3-8 KB each) + catalogue
+```
+
+The full tree with every reference file is in [`CLAUDE.md`](./CLAUDE.md)
+("Repository structure"), which CI keeps in step with the files on disk.
 
 ## Concrete contribution types we actively want
 

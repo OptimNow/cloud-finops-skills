@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Leadership", "Finance"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["ai-platforms:ai:deep", "on-prem:ai:partial"]
 ---
 
 # AI inference: self-hosted vs managed APIs - a FinOps perspective

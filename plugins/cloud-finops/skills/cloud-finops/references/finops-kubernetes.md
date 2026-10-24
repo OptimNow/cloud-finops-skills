@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Platform Engineering", "SRE", "Finance"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["aws:bill:partial", "azure:bill:partial", "gcp:bill:partial", "aws:waste:partial", "azure:waste:partial", "gcp:waste:partial"]
 ---
 
 # FinOps on Kubernetes

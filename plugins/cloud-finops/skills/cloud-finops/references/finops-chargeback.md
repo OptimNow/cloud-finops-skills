@@ -7,6 +7,7 @@ fcp_phases: ["Operate"]
 fcp_personas_primary: ["FinOps Practitioner"]
 fcp_personas_collaborating: ["Finance", "Leadership", "Tax", "Internal Audit"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["aws:bill:partial", "azure:bill:partial"]
 ---
 
 # FinOps Chargeback

@@ -56,13 +56,21 @@ cloud-finops-skills/
 │                             release, dependabot-automerge
 ├── assets/                <- Installation-guide screenshots (embedded in
 │                             INSTALLATION.md), the GitHub social preview, the
-│                             directory listing icon (icon.png), and
+│                             directory listing icon (icon.png), the OptimNow
+│                             logo pair for the README header (optimnow-logo.png
+│                             on light, optimnow-logo-dark.png on dark), and
 │                             the generated playbook-coverage.svg and
 │                             fcp-coverage.svg heat maps (embedded in
-│                             README.md; both CI-gated)
+│                             README.md; both CI-gated; brand palette, one
+│                             green accent each, sized to read at phone width)
 ├── skills/cloud-finops/   <- One README stub pointing at the new location, so the
 │                             old links do not 404. Outside the plugin folder
 ├── docs/
+│   ├── CONCEPTS.md        <- What a skill and an MCP server are, skill vs
+│   │                         connector behaviour, plugin and connector kept
+│   │                         apart, the six MCP tools, live prices (moved out
+│   │                         of README.md in Oct 2026 so the README leads with
+│   │                         coverage)
 │   ├── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
 │   │                         (split out of CLAUDE.md, Aug 2026)
 │   ├── mcp-apps-lessons.md <- Chronological forensic of the MCP Apps widget
@@ -156,7 +164,13 @@ cloud-finops-skills/
 ├── scripts/               <- `fcp-coverage.sh` and `playbook-coverage.sh`
 │                             (parse frontmatter, emit the two coverage
 │                             matrices; their --check modes diff the
-│                             committed files in CI), the heat-map renderers
+│                             committed files in CI), `business-coverage.sh`
+│                             (reads the `business_coverage` frontmatter
+│                             field and rewrites the "Providers and business
+│                             needs" tables between the HTML markers in
+│                             README.md; --check mode for CI, its workflow
+│                             step proposed in the Oct 2026 README PR and
+│                             pending maintainer review), the heat-map renderers
 │                             `render-coverage-heatmap.py` and
 │                             `render-fcp-heatmap.py` (emit the README SVGs,
 │                             --check gated in CI), `build-llms-full.sh`
@@ -617,8 +631,10 @@ and generalise to any repo shipping both surfaces:
    a client file into an account-phrased probe and answered from there, and
    twice made a failed call look grounded. Fresh chats are not clean-room.
 
-The user-facing version of the behavioural expectations lives in the README
-("Skill + installer, or MCP?" and its "What to expect in practice" note).
+The user-facing version of the behavioural expectations lives in
+`docs/CONCEPTS.md` ("Skill + installer, or MCP?" and its "What to expect in
+practice" note; moved there from the README in October 2026), with a two-line
+summary in the README "How it works" section.
 
 ---
 
@@ -668,12 +684,18 @@ Follow these six steps whenever you add a new domain:
    - Add a row to the "Domain routing" table (same format as SKILL.md)
    - Add relevant keywords to the `keywords` list in the YAML frontmatter
 
-4. **Update README.md only if the domain changes a family**
-   - The README no longer lists individual reference files: "What this skill
-     covers" is a table of domain families, and "Directory structure" shows
-     folders only (the per-file catalogue is SKILL.md's routing table). Touch
-     the README only when the new file adds a domain family or a keyword worth
-     naming in its family's row - not for every added reference.
+4. **Declare the file's business coverage and regenerate the README matrix**
+   - The README no longer lists individual reference files or domain families.
+     Its "Providers and business needs" tables are generated from the
+     `business_coverage` frontmatter field (see "Reference-file frontmatter"
+     below): declare the provider x need cells the new file serves and how
+     deeply, then run `./scripts/business-coverage.sh`, which rewrites the
+     block between the HTML markers in README.md. Its `--check` mode fails
+     when the block is stale. A practice-level file that serves no provider x
+     need cell declares nothing.
+   - Touch the README prose only when the new file changes what the "What it
+     covers" or "What it does not do" sections say (a new provider column, a
+     gap closed). The per-file catalogue stays SKILL.md's routing table.
 
 5. **Register the file in the three places that enumerate references.**
    The first two are CI-gated - skipping either fails the `CI` workflow, so they
@@ -750,8 +772,21 @@ fcp_phases: ["{Inform}" or "{Optimize}" or "{Operate}", ...]   # one or more
 fcp_personas_primary: ["{persona}", ...]             # FinOps Practitioner / Engineering / Finance / Product / Procurement / Leadership / SRE / Platform Engineering / Sustainability / Security / ITAM / etc.
 fcp_personas_collaborating: ["{persona}", ...]       # optional
 fcp_maturity_entry: "Crawl" | "Walk" | "Run"         # the gate below which the file is premature
+business_coverage: ["{provider}:{need}:{depth}", ...]  # optional - the README matrix cells this file serves (see below)
 ---
 ```
+
+`business_coverage` (October 2026) feeds the README "Providers and business needs"
+tables through `scripts/business-coverage.sh`. Each token is
+`<provider>:<need>:<depth>` with provider in `aws azure gcp oci on-prem
+ai-platforms data-platforms saas`, need in `bill budget commitments contracts
+waste ai data saas carbon`, depth `deep` (a dedicated reference or section with
+decision rules, worked examples or detection queries) or `partial` (covered inside
+a broader file, or mechanics only). A cell takes the deepest declaration across
+files; a cell nobody declares renders as not covered. Depth is a declared
+judgement, reviewed in the PR that grows the file, not a measurement. Inline list
+form only, like `fcp_capabilities_secondary`. Practice-level files (framework,
+methodology, KPIs, practice operations, onboarding) declare nothing.
 
 `fcp_phases` is deliberately independent of `fcp_domain`: a file whose primary
 domain is Understand Usage & Cost (e.g. finops-kubernetes) legitimately carries
@@ -929,7 +964,8 @@ from how the directory works:
   skill and put the same content into context twice. (From September 2026 to
   2026-09-30 a root `.mcp.json` did bundle the connector; it was removed for the
   submission.) Gated by `scripts/check-plugin-skill-only.sh`; the user-facing
-  statement is the README "Plugin and connector" section.
+  statement is the "Plugin and connector" section of `docs/CONCEPTS.md`, summarised
+  in the README "How it works" section.
 - **Every merge to `main` is a directory version.** The directory scans each commit
   on the tracked branch and publishes it under the listing's auto-publish setting.
   Nothing changes in how content PRs are made, but a commit that breaks the plugin
@@ -974,9 +1010,11 @@ from how the directory works:
 - [ ] New reference file follows the `finops-{domain}.md` naming convention
 - [ ] YAML FCP frontmatter included on the new file (see "Reference-file frontmatter")
 - [ ] Routing table updated in both SKILL.md and POWER.md
-- [ ] README "What this skill covers" family table updated only if the PR adds
-      a new domain family or a keyword worth naming (the README no longer
-      lists individual files)
+- [ ] `business_coverage` declared on the new or grown reference, and the README
+      "Providers and business needs" block regenerated with
+      `./scripts/business-coverage.sh` (its `--check` fails on a stale block or an
+      unknown provider, need or depth token; the README no longer lists individual
+      files or domain families)
 - [ ] CLAUDE.md "Repository structure" directory listing updated (CI-gated by
       `scripts/check-docs-drift.sh` - a reference missing from the tree, or a
       tree entry with no file behind it, fails the `CI` workflow. The same
@@ -1093,13 +1131,13 @@ from how the directory works:
       verified against that repo. See "Cross-repo dependencies" above and
       [`DEPENDENCIES.md`](DEPENDENCIES.md). Nothing in CI catches this class of drift
 - [ ] **MCP tool surface changed? Move all three copies together.** Renaming a tool,
-      changing a parameter, or adding one touches `README.md` (the canonical
-      description of what the six tools do), `mcp_server/README.md` (the PyPI page,
-      which must stay self-contained), and the `instructions` string in
-      `mcp_server/src/cloud_finops_mcp/server.py` (the contract the agent reads at
-      runtime). INSTALLATION.md deliberately no longer describes the tools - it links
-      to the README and documents the wiring - so it is not a fourth copy. Nothing in
-      CI catches this either
+      changing a parameter, or adding one touches `docs/CONCEPTS.md` (the canonical
+      description of what the six tools do, moved there from README.md in October
+      2026), `mcp_server/README.md` (the PyPI page, which must stay self-contained),
+      and the `instructions` string in `mcp_server/src/cloud_finops_mcp/server.py`
+      (the contract the agent reads at runtime). INSTALLATION.md and the README
+      deliberately do not describe the tools - they link to CONCEPTS.md - so neither
+      is a fourth copy. Nothing in CI catches this either
 - [ ] No em dashes in any public content
 - [ ] No sensitive or internal files included
 - [ ] Content is practical and based on how billing actually works, not on documentation summaries

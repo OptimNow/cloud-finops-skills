@@ -71,7 +71,7 @@ claude mcp add --transport http cloud-finops https://mcp.optimnow.io/mcp
 
 The two are kept apart on purpose: they serve the same library, and a plugin that
 also declared the server would load the tool definitions in every session next to
-the skill (see "Plugin and connector" in the README).
+the skill (see "Plugin and connector" in [docs/CONCEPTS.md](./docs/CONCEPTS.md)).
 
 ### Claude Code (user-level)
 
@@ -352,7 +352,7 @@ uvx cloud-finops-mcp
 ```
 
 **What the six tools do** is documented once, in the
-[README's MCP server section](./README.md#mcp-server-cross-tool-search-style-retrieval):
+[MCP server section of docs/CONCEPTS.md](./docs/CONCEPTS.md#the-mcp-server-six-tools-over-two-surfaces):
 three over references, three over playbooks, each with the question it answers and when to
 reach for a playbook rather than a reference. This page covers the wiring instead.
 

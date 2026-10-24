@@ -7,6 +7,7 @@ fcp_phases: ["Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Procurement", "Finance"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["ai-platforms:ai:deep", "ai-platforms:saas:partial"]
 ---
 
 # FinOps for open-weight model vendors (DeepSeek, Qwen, Kimi, GLM)

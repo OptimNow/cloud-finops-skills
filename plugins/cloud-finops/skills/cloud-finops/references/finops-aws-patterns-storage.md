@@ -7,6 +7,7 @@ fcp_phases: ["Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["SRE", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
+business_coverage: ["aws:waste:deep"]
 ---
 
 # AWS Optimization Patterns: Storage

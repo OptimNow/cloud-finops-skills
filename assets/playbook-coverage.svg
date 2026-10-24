@@ -1,82 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="582" height="428" viewBox="0 0 582 428" role="img" aria-label="Waste playbook coverage: 43 playbooks across 8 categories and 4 providers">
-<rect width="582" height="428" rx="10" fill="#ffffff" stroke="#c9cdd4"/>
-<text x="16" y="28" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23">Named waste-pattern runbook coverage (43 playbooks)</text>
-<text x="232" y="42" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370" text-anchor="middle">aws</text>
-<text x="328" y="42" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370" text-anchor="middle">azure</text>
-<text x="424" y="42" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370" text-anchor="middle">gcp</text>
-<text x="520" y="42" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#5b6370" text-anchor="middle">cross-cloud</text>
-<text x="176" y="72" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#1a1d23" text-anchor="end">orphaned</text>
-<rect x="187" y="51" width="90" height="34" rx="6" fill="#cdec8a"/>
-<text x="232" y="72" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">4</text>
-<rect x="283" y="51" width="90" height="34" rx="6" fill="#cdec8a"/>
-<text x="328" y="72" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">4</text>
-<rect x="379" y="51" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="424" y="72" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">2</text>
-<rect x="475" y="51" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="520" y="72" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">1</text>
-<text x="176" y="112" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#1a1d23" text-anchor="end">idle</text>
-<rect x="187" y="91" width="90" height="34" rx="6" fill="#ace849"/>
-<text x="232" y="112" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">5</text>
-<rect x="283" y="91" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="328" y="112" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">2</text>
-<rect x="379" y="91" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="424" y="112" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">1</text>
-<rect x="475" y="91" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="520" y="112" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<text x="176" y="152" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#1a1d23" text-anchor="end">overprovisioned</text>
-<rect x="187" y="131" width="90" height="34" rx="6" fill="#8bc32f"/>
-<text x="232" y="152" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">7</text>
-<rect x="283" y="131" width="90" height="34" rx="6" fill="#cdec8a"/>
-<text x="328" y="152" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">3</text>
-<rect x="379" y="131" width="90" height="34" rx="6" fill="#cdec8a"/>
-<text x="424" y="152" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">3</text>
-<rect x="475" y="131" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="520" y="152" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<text x="176" y="192" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#1a1d23" text-anchor="end">commitment-mismatch</text>
-<rect x="187" y="171" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="232" y="192" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">1</text>
-<rect x="283" y="171" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="328" y="192" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">1</text>
-<rect x="379" y="171" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="424" y="192" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">1</text>
-<rect x="475" y="171" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="520" y="192" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<text x="176" y="232" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#1a1d23" text-anchor="end">schedule-blindness</text>
-<rect x="187" y="211" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="232" y="232" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="283" y="211" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="328" y="232" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="379" y="211" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="424" y="232" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="475" y="211" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="520" y="232" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">1</text>
-<text x="176" y="272" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#1a1d23" text-anchor="end">modernization</text>
-<rect x="187" y="251" width="90" height="34" rx="6" fill="#cdec8a"/>
-<text x="232" y="272" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">3</text>
-<rect x="283" y="251" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="328" y="272" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="379" y="251" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="424" y="272" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="475" y="251" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="520" y="272" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<text x="176" y="312" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#1a1d23" text-anchor="end">ai-ml-inefficiency</text>
-<rect x="187" y="291" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="232" y="312" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="283" y="291" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="328" y="312" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="379" y="291" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="424" y="312" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="475" y="291" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="520" y="312" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">2</text>
-<text x="176" y="352" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#1a1d23" text-anchor="end">egress</text>
-<rect x="187" y="331" width="90" height="34" rx="6" fill="#e2f4b8"/>
-<text x="232" y="352" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1a1d23" text-anchor="middle">2</text>
-<rect x="283" y="331" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="328" y="352" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="379" y="331" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="424" y="352" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<rect x="475" y="331" width="90" height="34" rx="6" fill="#ffffff" stroke="#c9cdd4" stroke-dasharray="4 3"/>
-<text x="520" y="352" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#c9cdd4" text-anchor="middle">-</text>
-<text x="16" y="388" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370">Runbook coverage only - the reference library covers these themes even where no runbook exists. A dashed cell is a known gap</text>
-<text x="16" y="403" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#5b6370">with its backlog public in docs/ROADMAP.md. Generated by scripts/render-coverage-heatmap.py from the playbook frontmatter (CI-gated).</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="434" height="450" viewBox="0 0 434 450" role="img" aria-label="Waste runbook coverage: 43 runbooks across 8 waste categories and 4 scopes">
+<rect width="434" height="450" rx="10" fill="#F4F4F4" stroke="#C1C1C1"/>
+<text x="16" y="30" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#2C2C2C">Waste runbook coverage by provider</text>
+<rect x="273" y="17" width="97" height="20" rx="10" fill="#ACE849"/>
+<text x="322" y="31" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#2C2C2C" text-anchor="middle">43 runbooks</text>
+<text x="196" y="48" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#2C2C2C" text-anchor="middle">aws</text>
+<text x="260" y="48" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#2C2C2C" text-anchor="middle">azure</text>
+<text x="324" y="48" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#2C2C2C" text-anchor="middle">gcp</text>
+<text x="388" y="48" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#2C2C2C" text-anchor="middle">cross-cloud</text>
+<text x="156" y="78" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#2C2C2C" text-anchor="end">orphaned</text>
+<rect x="167" y="57" width="58" height="34" rx="6" fill="#C1C1C1"/>
+<text x="196" y="78" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">4</text>
+<rect x="231" y="57" width="58" height="34" rx="6" fill="#C1C1C1"/>
+<text x="260" y="78" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">4</text>
+<rect x="295" y="57" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="324" y="78" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">2</text>
+<rect x="359" y="57" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="388" y="78" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">1</text>
+<text x="156" y="118" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#2C2C2C" text-anchor="end">idle</text>
+<rect x="167" y="97" width="58" height="34" rx="6" fill="#B0B0B0"/>
+<text x="196" y="118" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">5</text>
+<rect x="231" y="97" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="260" y="118" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">2</text>
+<rect x="295" y="97" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="324" y="118" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">1</text>
+<rect x="359" y="97" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="388" y="118" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<text x="156" y="158" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#2C2C2C" text-anchor="end">overprovisioned</text>
+<rect x="167" y="137" width="58" height="34" rx="6" fill="#A0A0A0"/>
+<text x="196" y="158" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">7</text>
+<rect x="231" y="137" width="58" height="34" rx="6" fill="#C1C1C1"/>
+<text x="260" y="158" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">3</text>
+<rect x="295" y="137" width="58" height="34" rx="6" fill="#C1C1C1"/>
+<text x="324" y="158" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">3</text>
+<rect x="359" y="137" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="388" y="158" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<text x="156" y="198" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#2C2C2C" text-anchor="end">commitment-mismatch</text>
+<rect x="167" y="177" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="196" y="198" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">1</text>
+<rect x="231" y="177" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="260" y="198" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">1</text>
+<rect x="295" y="177" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="324" y="198" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">1</text>
+<rect x="359" y="177" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="388" y="198" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<text x="156" y="238" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#2C2C2C" text-anchor="end">schedule-blindness</text>
+<rect x="167" y="217" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="196" y="238" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="231" y="217" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="260" y="238" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="295" y="217" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="324" y="238" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="359" y="217" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="388" y="238" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">1</text>
+<text x="156" y="278" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#2C2C2C" text-anchor="end">modernization</text>
+<rect x="167" y="257" width="58" height="34" rx="6" fill="#C1C1C1"/>
+<text x="196" y="278" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">3</text>
+<rect x="231" y="257" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="260" y="278" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="295" y="257" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="324" y="278" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="359" y="257" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="388" y="278" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<text x="156" y="318" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#2C2C2C" text-anchor="end">ai-ml-inefficiency</text>
+<rect x="167" y="297" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="196" y="318" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="231" y="297" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="260" y="318" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="295" y="297" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="324" y="318" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="359" y="297" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="388" y="318" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">2</text>
+<text x="156" y="358" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#2C2C2C" text-anchor="end">egress</text>
+<rect x="167" y="337" width="58" height="34" rx="6" fill="#D3D3D3"/>
+<text x="196" y="358" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2C2C2C" text-anchor="middle">2</text>
+<rect x="231" y="337" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="260" y="358" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="295" y="337" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="324" y="358" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<rect x="359" y="337" width="58" height="34" rx="6" fill="#FFFFFF" stroke="#C1C1C1" stroke-dasharray="4 3"/>
+<text x="388" y="358" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#C1C1C1" text-anchor="middle">-</text>
+<text x="16" y="394" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" fill="#2C2C2C">Runbook coverage only: the references cover these themes even where</text>
+<text x="16" y="409" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" fill="#2C2C2C">no runbook exists. Dashed = known gap, backlog in docs/ROADMAP.md.</text>
+<text x="16" y="424" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" fill="#2C2C2C">Generated from playbook-coverage.md by scripts/render-coverage-heatmap.py.</text>
 </svg>

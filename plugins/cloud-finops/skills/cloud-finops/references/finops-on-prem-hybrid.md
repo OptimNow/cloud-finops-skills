@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Platform Engineering", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Procurement", "ITAM", "Leadership"]
 fcp_maturity_entry: "Crawl"
+business_coverage: ["on-prem:bill:deep", "on-prem:budget:partial", "on-prem:commitments:partial", "on-prem:waste:partial", "on-prem:saas:partial"]
 ---
 
 # FinOps for On-Premises and Hybrid Estates

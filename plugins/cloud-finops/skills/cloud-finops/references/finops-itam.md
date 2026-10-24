@@ -7,6 +7,7 @@ fcp_phases: ["Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Procurement"]
 fcp_personas_collaborating: ["Engineering", "Finance", "Leadership"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["saas:saas:deep", "saas:contracts:partial", "aws:saas:partial", "azure:saas:partial", "gcp:saas:partial", "on-prem:saas:partial"]
 ---
 
 # FinOps and ITAM - Collaborating Across the Technology Estate

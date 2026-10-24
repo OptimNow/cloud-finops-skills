@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Sustainability", "Leadership", "Finance"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["aws:carbon:deep", "azure:carbon:partial", "gcp:carbon:partial"]
 ---
 
 # GreenOps & Cloud Carbon Optimisation

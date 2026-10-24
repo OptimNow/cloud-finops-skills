@@ -7,6 +7,7 @@ fcp_phases: ["Inform", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Product", "Leadership", "Procurement"]
 fcp_maturity_entry: "Crawl"
+business_coverage: ["aws:budget:deep", "azure:budget:deep", "gcp:budget:partial", "ai-platforms:budget:deep"]
 ---
 
 # FinOps Forecasting

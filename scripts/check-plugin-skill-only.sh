@@ -9,9 +9,9 @@
 # and added by the user if they want the retrieval tools. The two serve the
 # same library, so a plugin that also declared the server would load the six
 # tool definitions into every session next to the skill and pay for the same
-# content twice in context. README.md "Plugin and connector" is the
-# user-facing statement; CLAUDE.md "Claude directory listing" is the
-# maintainer rule.
+# content twice in context. docs/CONCEPTS.md "Plugin and connector" is the
+# user-facing statement (summarised in the README "How it works" section);
+# CLAUDE.md "Claude directory listing" is the maintainer rule.
 #
 # Two ways a plugin declares an MCP server, both refused here:
 #   1. a `.mcp.json` file anywhere under the plugin folder, plugins/cloud-finops/
@@ -66,8 +66,8 @@ is listed in the Claude directory on its own and users add it separately.
 Bundling both loads the MCP tool definitions in every session beside the
 skill and duplicates the same library in context. Remove .mcp.json and the
 mcpServers key; point people at the "MCP hosted" row of the README install
-table instead. See README.md "Plugin and connector" and CLAUDE.md "Claude
-directory listing".
+table instead. See docs/CONCEPTS.md "Plugin and connector" and CLAUDE.md
+"Claude directory listing".
 MSG
   exit 1
 fi

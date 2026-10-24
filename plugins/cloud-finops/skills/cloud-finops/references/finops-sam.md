@@ -7,6 +7,7 @@ fcp_phases: ["Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Procurement"]
 fcp_personas_collaborating: ["Engineering", "Finance", "Leadership"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["saas:saas:deep", "saas:waste:deep", "saas:contracts:partial", "saas:bill:partial", "saas:budget:partial", "saas:commitments:partial"]
 ---
 
 # FinOps for SaaS Asset Management (SAM)

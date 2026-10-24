@@ -7,6 +7,7 @@ fcp_phases: ["Optimize"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Procurement", "Finance"]
 fcp_maturity_entry: "Walk"
+business_coverage: ["saas:ai:deep", "saas:saas:deep", "saas:waste:deep", "saas:bill:partial", "saas:budget:partial", "saas:commitments:partial"]
 ---
 
 # FinOps for AI Coding Tools

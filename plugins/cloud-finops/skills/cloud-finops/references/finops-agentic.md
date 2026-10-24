@@ -7,6 +7,7 @@ fcp_phases: ["Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance", "Leadership", "Security"]
 fcp_maturity_entry: "Run"
+business_coverage: ["ai-platforms:ai:deep"]
 ---
 
 # FinOps for Agentic Systems
