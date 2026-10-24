@@ -168,9 +168,8 @@ cloud-finops-skills/
 │                             (reads the `business_coverage` frontmatter
 │                             field and rewrites the "Providers and business
 │                             needs" tables between the HTML markers in
-│                             README.md; --check mode for CI, its workflow
-│                             step proposed in the Oct 2026 README PR and
-│                             pending maintainer review), the heat-map renderers
+│                             README.md; --check gated in CI since Oct
+│                             2026), the heat-map renderers
 │                             `render-coverage-heatmap.py` and
 │                             `render-fcp-heatmap.py` (emit the README SVGs,
 │                             --check gated in CI), `build-llms-full.sh`
@@ -203,7 +202,7 @@ cloud-finops-skills/
 │                             "percent", dash residue or "the single most";
 │                             allowlist in check-style-allow.txt) and
 │                             check-marketplace-version
-│                             - all eighteen run by the `CI` workflow, and
+│                             - all nineteen run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow
