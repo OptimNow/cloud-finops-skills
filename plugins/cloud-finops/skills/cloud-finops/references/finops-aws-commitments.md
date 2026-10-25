@@ -55,6 +55,19 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 
 2. **Compute Savings Plans are shallower** (up to 66%) but cover EC2, Fargate, and
    Lambda. The flexibility premium costs ~6% discount depth vs EC2 Instance SPs.
+   The "up to 72%" and "up to 66%" figures are 3-year All Upfront ceilings; with no
+   upfront payment the gap is wider. Measured on the 2026-10-25 OptimToken catalogue
+   (Linux, US East, no upfront), the median per-row gap between the Compute SP and the
+   Standard RI is 9.4 points at 1 year (median discounts 27.4% and 37.0%) and 6.5
+   points at 3 years (50.0% and 56.7%), so the premium shrinks with the term. The gap
+   is the median of the row differences, not the difference of the two medians.
+   **The Standard RI discount is not one number across families.** On the same
+   catalogue the 6th and 7th generation families (m6i, m7i, c6i, r6i, m6a, c6a, r6a,
+   m7g, c7g, r7g) take 33.6% to 34.1% off at 1 year, where the 5th generation and
+   Graviton2 families (t3, m5, c5, r5, t3a, m5a, c5a, t4g, m6g, c6g, r6g) take 36.4%
+   to 37.4%; the Compute SP is flat, 26.4% to 28.3%, across all of them. A migration
+   between the two groups is therefore costed off the row, not the median. Current
+   values: <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances>.
    Compute SPs **do not cover SageMaker** - SageMaker AI workloads need their own
    SageMaker AI Savings Plan, which is a separate purchase.
 
@@ -141,6 +154,12 @@ START: What compute service runs the workload?
 │       - Capacity scarcity is the primary risk, not just cost
 │       - Standard RIs with capacity reservation may be necessary
 │       - EC2 Instance SPs work if capacity is available on-demand
+│       - The Compute SP discounts a GPU shape less than CPU families:
+│         g5.xlarge 21.3% off at 1 year against 27.5% on the CPU families,
+│         while the Standard RI gives it the CPU rate (37.0%); p3.2xlarge
+│         has no Compute SP rate in AWS's price file (measured on the
+│         2026-10-25 OptimToken catalogue, no upfront; current values:
+│         optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances)
 │       - Spot is viable for ML training with checkpointing
 │       - For SageMaker-based ML: see SageMaker section below
 │
@@ -511,6 +530,12 @@ to risk appetite.
   <https://focus.finops.org/docs/use-cases/v1-4/determine-effective-savings-rate-by-service/>
   (both read 15 October 2026).
 - **Break-even period:** should be <9 months for 1-year terms, <15 months for 3-year.
+- **Break-even utilisation:** read off the rate card, a commitment at discount d pays
+  once the committed resource runs more than (1 - d) of the term's hours. On
+  m5.2xlarge, measured on the 2026-10-25 OptimToken catalogue (no upfront), that is
+  73% for the 1-year Compute SP, 63% for the 1-year Standard RI, 51% and 43% at 3
+  years, so a 60-hour development week (36% of 168 hours) is below every instrument.
+  Current values: <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances>.
 - **Commitment waste:** hours where committed capacity had no matching usage.
 
 **Pre-purchase checklist:**
