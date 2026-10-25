@@ -125,6 +125,13 @@ Billing **mechanics** are durable and are what these references are for. Price
    as a dated snapshot, never as a current price. On tier 2 the compute catalogue is
    also a subset with no region dimension, so a region filter silently does not apply
    and an empty result can mean degraded data rather than no match - say which.
+6. **A figure quoted from an OptimToken guide has a live copy.** Some references quote
+   a guide figure with the day it was read ("measured on the 2026-10-25 OptimToken
+   catalogue") and name the guide's slug. When the cloud-finops MCP is connected,
+   `get_live_figures(<slug>)` is the live source for that figure: quote the current
+   value with the `snapshotDate` it returns, and say whether it is a median or a range.
+   Without the MCP, the reference gives the guide's `figures.json` link. If the call
+   fails, the dated figure in the reference stands, quoted with its date.
 
 ---
 

@@ -62,7 +62,7 @@ For auto-updating installs, prefer the plugin marketplace path:
 (Run those at the Claude Code prompt, not in a shell.)
 
 The plugin is the skill only: it declares no MCP server, so installing it registers
-nothing under `/mcp`. If you also want the six retrieval tools, add the hosted
+nothing under `/mcp`. If you also want the seven MCP tools, add the hosted
 connector separately:
 
 ```bash
@@ -351,10 +351,11 @@ pip install cloud-finops-mcp
 uvx cloud-finops-mcp
 ```
 
-**What the six tools do** is documented once, in the
-[MCP server section of docs/CONCEPTS.md](./docs/CONCEPTS.md#the-mcp-server-six-tools-over-two-surfaces):
-three over references, three over playbooks, each with the question it answers and when to
-reach for a playbook rather than a reference. This page covers the wiring instead.
+**What the seven tools do** is documented once, in the
+[MCP server section of docs/CONCEPTS.md](./docs/CONCEPTS.md#the-mcp-server-seven-tools):
+three over references, three over playbooks and `get_live_figures` for the current
+figures of an OptimToken guide, each with the question it answers and when to reach for
+a playbook rather than a reference. This page covers the wiring instead.
 
 **Configure your client** by adding the appropriate snippet to its MCP config file:
 

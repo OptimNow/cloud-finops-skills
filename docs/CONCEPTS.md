@@ -91,7 +91,7 @@ skill and put the same library into context twice. Use the plugin when you want 
 doctrine loaded up front, the connector when you want on-demand retrieval or the
 views, and both only when you want both.
 
-## The MCP server: six tools over two surfaces
+## The MCP server: seven tools
 
 Hosted (nothing to install) or from PyPI; both paths are in the README install table.
 Also listed on the
@@ -99,8 +99,9 @@ Also listed on the
 `io.github.OptimNow/cloud-finops`, and on
 [PyPI](https://pypi.org/project/cloud-finops-mcp/).
 
-Six read-only tools across 2 surfaces. The split is deliberate: the 2 content types
-have different shapes, and different questions attached to them.
+Seven read-only tools: six across 2 surfaces of bundled content, and one that fetches
+live figures. The split between the 2 surfaces is deliberate: the 2 content types have
+different shapes, and different questions attached to them.
 
 **References**: the long-form provider and discipline files. Reach for these for
 billing mechanics, commitment strategy, allocation methodology, or any reasoning that
@@ -136,6 +137,19 @@ every file carries YAML frontmatter mapping it to a FinOps Framework capability,
 persona and maturity gate, and a client that only fetches files cannot filter on any
 of it.
 
+**Live figures**: one tool, and the only one that leaves the bundled content. Reach for
+it when a reference quotes a figure from an OptimToken guide with its date and the
+answer needs the current value.
+
+| Tool | What it answers |
+|---|---|
+| `get_live_figures(guide)` | "Is the Compute Savings Plan premium still about 9 points?" Fetches the guide's `figures.json` (rebuilt daily) and returns it unchanged, with the `snapshotDate` to quote the figures by. Guides today: `savings-plans-vs-reserved-instances`, `arm-against-x86`, `batch-api-economics` |
+
+It makes one HTTPS request to `optimtoken.optimnow.io`, carrying the guide slug and
+nothing from the conversation, and caches the answer for six hours. When the call
+fails, the dated figure in the reference stands, quoted with its date. Privacy detail
+in [PRIVACY.md](../PRIVACY.md).
+
 On hosts that support MCP Apps (SEP-1865), the tool results render as interactive
 widgets: a playbook explorer with facet filters and a coverage matrix, a playbook
 viewer with copyable detection queries and a checkable fix list, and a reference
@@ -154,6 +168,9 @@ session, and otherwise to point you at a live source such as
 token rates and compute instance rates, each figure carrying its own as-of date. Its
 MCP connector is optional and documented in its own repository; see
 [INSTALLATION.md](../INSTALLATION.md#companion-connector-optimnow-ai-pricing-hub-optional).
+The one exception is narrow: the dated figures some references quote from an OptimToken
+guide can be refreshed through `get_live_figures` (above), which passes the guide's
+current figures through without holding any of them here.
 
 ---
 

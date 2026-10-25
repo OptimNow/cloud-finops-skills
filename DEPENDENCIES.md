@@ -43,6 +43,7 @@ flowchart TD
     SKILL -..->|"routes to, documents"| HUBMCP
     SKILL -..->|"routes to, documents"| ROIMCP
     SKILL -..->|"routes to"| SPARKLE
+    SPARKLE -->|"guide figures.json (runtime,<br/>get_live_figures)"| SKILL
 
     SPARKLE <-.->|"deep-link handoff (UI)"| ROI
 
@@ -103,6 +104,7 @@ The riskiest repo in the family: everything downstream reads it.
 | An API **response shape** (`/api/llm-models`, `/api/pricing`) - renamed field, changed nesting, changed `meta` block | `ai-pricing-hub-mcp`, `ai-roi-calculator-mcp` | Both parse these responses at runtime. Nothing fails at build time, so the first symptom is a tool silently falling back to stale data |
 | An API **URL or route** | Both MCP repos, plus `ai-roi-calculator` | Hard break |
 | Cache TTLs, timeouts, payload size | `ai-pricing-hub-mcp` | Its client timeout is tuned against these response times |
+| A guide's **`figures.json`** (the envelope keys `guide`, `url`, `snapshotDate`, `figures`, a figure key, a slug) or the "Figures as JSON" line format in `llms.txt` | `cloud-finops-skills` -> `mcp_server/src/cloud_finops_mcp/live_figures.py`, its fixtures, and the references that quote guide figures | `get_live_figures` fetches the file at request time and the references quote its keys. A missing `guide` or `figures` key turns every call into an error that falls back to the dated figure; a renamed figure key makes the quoted path in a reference wrong |
 | Prices or catalogue contents only | Nothing | This is the normal case and propagates by design |
 
 ### `ai-roi-calculator`
@@ -133,7 +135,8 @@ The riskiest repo in the family: everything downstream reads it.
 ### `cloud-finops-skills` (this repo)
 
 The safest repo to change: **nothing downstream depends on it.** The dependencies run
-inward.
+inward. Since 2026-10-25 one of them is a runtime fetch: `get_live_figures` reads
+OptimToken guide `figures.json` files (see the OptimToken table above).
 
 | If you change | Also review | Why |
 |---|---|---|
@@ -150,17 +153,21 @@ Worth carrying in your head when reviewing anything here.
 1. **Runtime coupling is invisible to CI.** Only the ROI calculator to ROI MCP edge is
    enforced by a build. Every other cross-repo edge is a runtime fetch or a piece of
    documentation, so a breaking change ships green and surfaces as a degraded answer.
-2. **This repo's dependencies are documentation, and documentation drifts silently.**
-   Tool names, parameters, endpoint URLs and provenance field names are quoted in
-   `SKILL.md`, `POWER.md`, `INSTALLATION.md` and `README.md`. Nothing checks them. When
-   an MCP repo changes its surface, this repo does not find out.
+2. **This repo's dependencies are mostly documentation, and documentation drifts
+   silently.** Tool names, parameters, endpoint URLs and provenance field names are
+   quoted in `SKILL.md`, `POWER.md`, `INSTALLATION.md` and `README.md`. Nothing checks
+   them. When an MCP repo changes its surface, this repo does not find out. The one code
+   dependency, `get_live_figures` on OptimToken's guide `figures.json`, degrades to an
+   error and the dated figure in the reference when the file changes shape; its tests
+   run on saved copies, so they do not see the change either.
 3. **Duplicated computation is the recurring failure mode in this family.** OptimToken
    drifted between its website and its MCP; the ROI calculator drifted between its web
    app and its MCP far enough to return a 7-point different ROI for the same preset. The
    generated-and-CI-checked sync exists because of the second one. Before adding a
    capability to a second repo, check whether it can route to the first instead. The
    reasoning behind the standing decision not to put pricing tools inside
-   `cloud-finops-mcp` is in [`docs/ROADMAP.md`](docs/ROADMAP.md).
+   `cloud-finops-mcp`, and its 2026-10-25 amendment for `get_live_figures` (a
+   pass-through, not a computation), is in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ---
 

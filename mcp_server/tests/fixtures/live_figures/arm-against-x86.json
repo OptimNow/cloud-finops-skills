@@ -1,0 +1,151 @@
+{
+  "guide": "arm-against-x86",
+  "title": "ARM against x86: what Graviton, Ampere and Axion save",
+  "url": "https://optimtoken.optimnow.io/guides/arm-against-x86",
+  "page": "https://optimtoken.optimnow.io/guides/arm-against-x86",
+  "dataSource": "compute",
+  "snapshotDate": "2026-10-25",
+  "dateModified": "2026-10-25",
+  "note": "Figures recomputed from the OptimToken catalogue at each build, the same ones the page prints. A figure quoted elsewhere is as of the day it was read; this file carries the current one.",
+  "figures": {
+    "unit": "ARM discount as a fraction of the same-size x86 on-demand rate; Linux, US East",
+    "pairs": 77,
+    "armSizes": 33,
+    "providers": [
+      "AWS",
+      "Azure",
+      "GCP",
+      "Alibaba"
+    ],
+    "againstIntel": {
+      "pairs": 53,
+      "median": 0.1923
+    },
+    "againstAmd": {
+      "pairs": 24,
+      "median": 0.1047
+    },
+    "amdShareOfIntel": 0.5442,
+    "byProvider": [
+      {
+        "provider": "AWS",
+        "intel": {
+          "pairs": 33,
+          "median": 0.1923
+        },
+        "amd": {
+          "pairs": 17,
+          "median": 0.1064
+        }
+      },
+      {
+        "provider": "Azure",
+        "intel": {
+          "pairs": 5,
+          "median": 0.1979
+        },
+        "amd": {
+          "pairs": 3,
+          "median": 0.1047
+        }
+      },
+      {
+        "provider": "GCP",
+        "intel": {
+          "pairs": 10,
+          "median": 0.1734
+        },
+        "amd": {
+          "pairs": 4,
+          "median": 0.013
+        }
+      },
+      {
+        "provider": "Alibaba",
+        "intel": {
+          "pairs": 5,
+          "median": 0.1584
+        },
+        "amd": null
+      }
+    ],
+    "generations": [
+      {
+        "label": "Graviton2 (AWS)",
+        "pairs": 19,
+        "median": 0.2,
+        "min": 0.1923,
+        "max": 0.2361
+      },
+      {
+        "label": "Graviton3 (AWS)",
+        "pairs": 14,
+        "median": 0.15,
+        "min": 0.1471,
+        "max": 0.1905
+      },
+      {
+        "label": "Ampere Altra (Azure)",
+        "pairs": 5,
+        "median": 0.1979,
+        "min": 0.1979,
+        "max": 0.1984
+      },
+      {
+        "label": "Ampere Altra (GCP)",
+        "pairs": 5,
+        "median": 0.207,
+        "min": 0.207,
+        "max": 0.2625
+      },
+      {
+        "label": "Axion (GCP)",
+        "pairs": 5,
+        "median": 0.0752,
+        "min": 0.0752,
+        "max": 0.1398
+      },
+      {
+        "label": "Yitian 710 (Alibaba)",
+        "pairs": 5,
+        "median": 0.1584,
+        "min": 0.1529,
+        "max": 0.2
+      }
+    ],
+    "generationSteps": [
+      {
+        "from": "Graviton2 (AWS)",
+        "to": "Graviton3 (AWS)",
+        "fromMedian": 0.2,
+        "toMedian": 0.15
+      },
+      {
+        "from": "Ampere Altra (GCP)",
+        "to": "Axion (GCP)",
+        "fromMedian": 0.207,
+        "toMedian": 0.0752
+      }
+    ],
+    "inversions": [
+      {
+        "provider": "GCP",
+        "arm": "c4a-standard-2",
+        "x86": "n2d-standard-2",
+        "against": "AMD",
+        "armRate": 0.0898,
+        "x86Rate": 0.0845,
+        "gap": -0.0627
+      },
+      {
+        "provider": "GCP",
+        "arm": "c4a-standard-4",
+        "x86": "n2d-standard-4",
+        "against": "AMD",
+        "armRate": 0.1796,
+        "x86Rate": 0.169,
+        "gap": -0.0627
+      }
+    ]
+  }
+}

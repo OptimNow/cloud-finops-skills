@@ -13,7 +13,9 @@ prompt, the agent calls tools to discover, filter, and fetch only what it needs.
 
 ## What the server exposes
 
-Six tools, all read-only, split across two surfaces.
+Seven tools, all read-only: three over references, three over playbooks, and
+`get_live_figures`, the one tool that leaves the bundled content (see "Live figures"
+below).
 
 **References** - long-form provider and discipline files. They vary by more than
 tenfold, from ~160 lines (roughly 2K tokens) to ~1,000 lines (roughly 15K tokens), so
@@ -102,13 +104,62 @@ and exact (no substring matching).
 - A **reference** answers anything broader: billing mechanics, commitment strategy,
   allocation methodology, persona-specific framings, or cross-pattern reasoning.
 
-Neither surface serves current prices. References carry billing *mechanics* -
-multipliers, commitment term structure, the shape of a break-even calculation - and
-any absolute figure inside them is illustrative and dated inline. For a current
-price, the server tells the model to use a live pricing tool if one is connected in
-the session, and that figures inside a reference are illustrative and dated. It names
-no pricing tool itself; the skill's own "Price figures" rule (in `SKILL.md`) is
-where the OptimNow AI Pricing Hub is suggested.
+The server stores no prices. References carry billing *mechanics* - multipliers,
+commitment term structure, the shape of a break-even calculation - and any absolute
+figure inside them is illustrative and dated inline. What it can fetch live is narrower
+than a price lookup: the current figures of a named OptimToken guide, through
+`get_live_figures` below, passed through as the guide publishes them (a guide's worked
+example can carry a dated price, such as an on-demand hourly rate). For any other
+current price, the server tells the model to use a live pricing tool if one is
+connected in the session. It names no pricing tool itself; the skill's own "Price
+figures" rule (in `SKILL.md`) is where the OptimNow AI Pricing Hub is suggested.
+
+### Live figures
+
+Some references quote a figure from an [OptimToken](https://optimtoken.optimnow.io)
+guide with the day it was read ("measured on the 2026-10-25 OptimToken catalogue").
+The quoted figure goes stale; the guide's own `figures.json`, rebuilt with the page
+every night, carries the current one.
+
+| Tool | Purpose |
+|---|---|
+| `get_live_figures(guide)` | The current value of a figure a reference quotes with a date. Fetches `https://optimtoken.optimnow.io/guides/<guide>/figures.json` and returns it unchanged. |
+
+Guides with figures today: `savings-plans-vs-reserved-instances`, `arm-against-x86`,
+`batch-api-economics`. The authoritative list is the "Figures as JSON" lines of
+<https://optimtoken.optimnow.io/llms.txt>; more guides will appear there.
+
+```python
+get_live_figures("savings-plans-vs-reserved-instances")
+# {"document": {"guide": "savings-plans-vs-reserved-instances",
+#               "title": "...", "url": "https://optimtoken.optimnow.io/guides/...",
+#               "page": "...", "dataSource": "compute",
+#               "snapshotDate": "2026-10-25", "dateModified": "2026-10-25",
+#               "note": "...", "figures": {...}},
+#  "fetched_at": "2026-10-25T09:50:48Z", "source": "live",
+#  "note": "Figures from the OptimToken catalogue of 2026-10-25, ..."}
+```
+
+- **The document is returned as received**, nested under `document` so none of its
+  keys is shadowed. Figures are not recomputed or rounded; discounts are fractions
+  (`0.2743` is 27.4%), and each key names a median, a range or a count.
+  `snapshotDate` is the catalogue the figures were computed from and is the date to
+  quote them by.
+- **Cache:** six hours per guide in process memory (the file changes once a day),
+  the guide list likewise. A cached answer says `"source": "cached"` with
+  `cache_age_seconds`; `fetched_at` stays the time of the original fetch. Failures
+  are not cached.
+- **A miss** (HTTP 404) returns `{"error", "available_guides", "suggestions"}`, the
+  list read from llms.txt and the suggestions by string distance, like the other
+  tools' misses. Any other failure (timeout, HTTP error, invalid JSON, an envelope
+  without `guide` or `figures`) returns `{"error", "fallback"}`: the dated figure in
+  the reference stands, quoted with its date. A slug outside `^[a-z0-9-]{1,80}$` is
+  rejected before any request. The tool never raises.
+- **The request:** one HTTPS GET to `optimtoken.optimnow.io` (two on a miss, the
+  second for llms.txt), 5-second timeout, 128 KiB body cap, redirects followed only on
+  that host, User-Agent `cloud-finops-mcp/<version>
+  (+https://github.com/OptimNow/cloud-finops-skills)`. Standard library only, no
+  new dependency. It carries the slug and nothing from the conversation.
 
 ## Install
 
@@ -223,7 +274,7 @@ The server speaks MCP over stdio. Point any compatible client at `cloud-finops-m
 ## Streamable HTTP (hosted deployments)
 
 stdio is the default and is what every local client above spawns. For a hosted
-deployment, the same six tools are served over streamable HTTP:
+deployment, the same seven tools are served over streamable HTTP:
 
 ```bash
 cloud-finops-mcp --transport http
@@ -289,6 +340,12 @@ Agent prompt: *"Walk me through the zombie NAT gateway pattern."*
 Calls `get_playbook(name="aws-zombie-nat-gateway")` and gets back the ~90-line
 runbook (problem, symptoms, detection query, fix, anti-pattern, see-also).
 
+Agent prompt: *"Is the Compute Savings Plan premium still about 9 points?"*
+
+Calls `get_live_figures(guide="savings-plans-vs-reserved-instances")` and reads
+`figures.clouds.AWS.flexibilityPremium.oneYear.median` from the current file, quoted
+with its `snapshotDate`.
+
 ## When to use this vs the installer
 
 | If you... | Use |
@@ -310,6 +367,9 @@ pip install -e ".[dev]"
 pytest
 ```
 
+The suite runs offline: the `get_live_figures` tests replace the HTTP fetch with
+saved copies under `tests/fixtures/live_figures/`.
+
 ## Versioning
 
 The PyPI package version tracks the skill release. The trigger is a
@@ -330,8 +390,12 @@ See the release-train rule in the repo's CLAUDE.md.
 ## Data handling
 
 The server holds no account, credential or user data and cannot see your cloud
-estate: the tools read the bundled markdown files and keep no copy of the request.
-The hosted connector writes one application-log line per request without the
+estate: six of the seven tools read the bundled markdown files and keep no copy of
+the request. The seventh, `get_live_figures`, is the one tool that makes an outbound
+request: one HTTPS GET to `optimtoken.optimnow.io`, an OptimNow site, carrying the
+guide slug and the User-Agent above and nothing from the conversation (a second GET,
+for the public llms.txt, when the slug is not found). OptimToken keeps its standard
+web access log (Vercel). The hosted connector writes one application-log line per request without the
 arguments and, for a lookup that matched nothing, the arguments that missed, which
 can include a phrase the model copied from your question. The hosting platform keeps
 the standard HTTP access log. What is logged, where it lives and for how long is in

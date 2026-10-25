@@ -60,7 +60,7 @@ that release. Either way, confirm the served content itself:
 | Check | How | Expected |
 |---|---|---|
 | Listing totals | `list_references()` and `list_playbooks()` | `total` equals the number of `.md` files under `references/` and `playbooks/` (README excluded) at the tag you deployed |
-| Tool surface | `tools/list` | Six tools, each with a `title` and `readOnlyHint: true`; descriptions identical to `server.py` at that tag |
+| Tool surface | `tools/list` | Seven tools, each with a `title` and `readOnlyHint: true`; `openWorldHint: true` on `get_live_figures` only; descriptions identical to `server.py` at that tag |
 | Bodies | `get_reference(name=...)` on a file changed in the last release | `content` equals the file at that tag |
 
 The hosted server is redeployed per release, not per merge (INSTALLATION.md), so
@@ -68,7 +68,7 @@ content merged to `main` after the last tag is expected to be absent until the n
 release and `fly deploy`. It is not a defect. If the served content is older than the
 last tag, run `fly deploy` from the tagged commit first.
 
-Then exercise each of the six tools once through MCP Inspector
+Then exercise each of the seven tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
 asks you to confirm you did.
 
@@ -161,7 +161,7 @@ new version.
 | Question | Answer |
 |---|---|
 | Reads or stores personal data | No. Static skill files; the connector has no accounts, no database and no per-user state |
-| Sends data to services other than its declared connectors | No. The plugin declares no connector and calls no endpoint. The skill directs the model to a public pricing site (optimtoken.optimnow.io) for current prices; that is a link the model may open in the conversation, not a call the plugin makes |
+| Sends data to services other than its declared connectors | No. The plugin declares no connector and calls no endpoint. The skill directs the model to a public pricing site (optimtoken.optimnow.io) for current prices; that is a link the model may open in the conversation, not a call the plugin makes. It also names the separate connector's `get_live_figures` tool for a dated guide figure, for sessions where the user has added that connector. The plugin neither declares nor calls it, so this holds whether or not the connector is listed yet; once it is, policy 3.F also lets a plugin connect to a listed connector |
 | Retention | None by the plugin. The hosted server keeps a coverage log of zero-result facet queries (no conversation text); the hosting platform keeps the standard web access log. See PRIVACY.md |
 | Intended for people under 18 | No |
 
@@ -246,8 +246,10 @@ different URLs".
 
 ### 2.2 Tools
 
-Synced from the server. Expect six tools, all in the read-only group, each with a
-title. If any is flagged for a missing title or annotation, the deployment is stale:
+Synced from the server. Expect seven tools, all in the read-only group, each with a
+title. `get_live_figures` is the one declared open-world (it fetches an OptimToken
+guide's `figures.json`); if the portal asks about external requests, the answer is
+that tool, one HTTPS GET to `optimtoken.optimnow.io` with the guide slug only. If any is flagged for a missing title or annotation, the deployment is stale:
 see section 0.
 
 ### 2.3 Listing
@@ -272,7 +274,7 @@ edited by Anthropic afterwards):
 > commitments, how to allocate and charge back, how to manage AI and SaaS spend, and
 > how to detect and fix named waste patterns.
 >
-> Six read-only tools over two content types. References are long-form guides per
+> Seven read-only tools. Six cover two content types. References are long-form guides per
 > provider and discipline (AWS, Azure, GCP, OCI, Bedrock, Azure OpenAI, Vertex AI,
 > Databricks, Snowflake, Microsoft Fabric, Kubernetes, tagging, anomaly management,
 > KPIs, allocation, chargeback, GreenOps, AI coding tools, agentic FinOps), each
@@ -280,13 +282,17 @@ edited by Anthropic afterwards):
 > Claude can filter by facet instead of scanning. Playbooks are short runbooks, one
 > waste pattern each (idle NAT gateway, expiring reservation with no decision,
 > snapshot sprawl, oversized GPU, gp2 to gp3, and more), with symptoms, a detection
-> query you run in your own account, the fix and the anti-pattern. On hosts that
-> render MCP Apps, results appear as an interactive explorer and viewer.
+> query you run in your own account, the fix and the anti-pattern. The seventh tool,
+> get_live_figures, returns the current figures of an OptimToken guide (OptimNow's
+> price comparison site), such as the gap between a Savings Plan and a reserved
+> instance, for the figures a reference quotes with a date. On hosts that render MCP
+> Apps, results appear as an interactive explorer and viewer.
 >
 > The server holds no account, no credential and no user data; it cannot see your
-> cloud environment and hands over the detection query instead. Price figures are
-> not served here: the tools carry mechanics and ratios, and any figure in a
-> reference is illustrative and dated inline. Content is updated weekly from primary
+> cloud environment and hands over the detection query instead. The library holds
+> mechanics and ratios, and any figure in a reference is illustrative and dated inline;
+> get_live_figures is the one tool that makes a network request, to OptimNow's own
+> optimtoken.optimnow.io, carrying only the guide name. Content is updated weekly from primary
 > provider sources and published under CC BY-SA 4.0. Built by OptimNow, a FinOps
 > consultancy, from enterprise delivery experience.
 
@@ -308,7 +314,10 @@ configure.
 
 ### 2.7 Data handling
 
-The underlying API is OptimNow's own (the server is the product; it proxies nothing).
+The underlying API is OptimNow's own: six tools read the bundled library, and
+`get_live_figures` reads a public file on `optimtoken.optimnow.io`, which OptimNow also
+owns and operates (policy 3.F requires the developer to own or control every endpoint
+the server connects to). Nothing is proxied for a third party.
 No personal health data, no sponsored content.
 
 ### 2.8 Test & launch
@@ -320,8 +329,11 @@ Text to paste:
 > `list_references()`, `find_references(phase="Optimize", persona="Engineering")`,
 > `get_reference(name="finops-aws-commitments", section="commitment decision")`,
 > `list_playbooks()`, `find_playbooks(service="AWS NAT Gateway")`,
-> `get_playbook(name="aws-nat-gateway-endpoint-substitution")`. Each returns JSON; a miss
-> returns `error` plus `suggestions` or `available_sections`, never a bare 500.
+> `get_playbook(name="aws-nat-gateway-endpoint-substitution")`,
+> `get_live_figures(guide="savings-plans-vs-reserved-instances")`. Each returns JSON; a
+> miss returns `error` plus `suggestions`, `available_sections` or `available_guides`,
+> never a bare 500. A prompt that exercises the last one in a chat: "Is the Compute
+> Savings Plan still about 9 points shallower than a Standard RI on AWS?"
 
 Facet values are exact, not fuzzy: `service="nat gateway"` returns zero results, which
 is what a reviewer would then see. This sequence was run against the live server on
@@ -392,10 +404,31 @@ who add both see one set of tools.
   Pricing Hub by URL; a reviewer can read a first-party link as promotion, so since
   2026-09-30 the connector's model-facing text names no OptimNow product and no
   `optimnow.io` URL (the widgets lost their footer link at the same time; a test in
-  `mcp_server/tests/test_conformance.py` pins both). The instruction that remains is
-  the data-quality rule alone: use a live pricing tool if one is connected, never quote
-  an undated figure. The skill keeps its pricing-hub routing; the plugin is reviewed
-  under different rules.
+  `mcp_server/tests/test_conformance.py` pins the URL rule). The instruction that
+  remains is the data-quality rule alone: use a live pricing tool if one is connected,
+  never quote an undated figure. The skill keeps its pricing-hub routing; the plugin is
+  reviewed under different rules.
+
+  Since 2026-10-25 one exception is deliberate: `get_live_figures` names OptimToken in
+  its title and description, and the `instructions` string names it once, because the
+  tool fetches OptimToken guides and policy 2.B requires a description to "precisely
+  match actual functionality". Naming the source a tool reads is a description, not a
+  promotion: the text carries no URL, no recommendation to visit the site and no
+  comparison with other services, and it describes when the tool applies (a figure a
+  reference already quotes with a date). The URL rule above still holds and is still
+  tested.
+- **Content fetched from a remote file (`get_live_figures`).** Policy 2.F bars
+  directing Claude "to dynamically pull behavioral instructions from external
+  sources", and 3.F requires the developer to own or control "any external resources
+  it retrieves". The tool fetches one fixed path shape on `optimtoken.optimnow.io`,
+  which OptimNow owns, follows redirects only on that host, and returns the file as
+  data: figures, a title, dates and a one-line `note` on what the figures are. Keep it
+  that way on the OptimToken side: a `figures.json` carries data, never text addressed
+  to the model as an instruction, because this tool passes it through unchanged. Its
+  `openWorldHint: true` declares the external request, and PRIVACY.md describes it.
+- **Response size (policy 5.B, token frugality).** The three figure files are 3 to 9 KB
+  (about 1,000 to 2,500 tokens). The tool rejects a body over 128 KiB with an error
+  instead of passing it on, so a malformed or oversized file cannot flood the context.
 - **Plugin folder.** Until 2026-10-01 the plugin folder was the repository root, on
   the reasoning that moving it would break the marketplace path and every install.
   The first portal validation showed the real cost: 13 holds from developer tooling,
@@ -406,6 +439,13 @@ who add both see one set of tools.
 
 ## 4. Keeping the listing current
 
+- **A material change to a listed connector is notified to Anthropic** (policy 3.H:
+  "material changes to their Software's functionality, tool or capability
+  descriptions, data practices, or connected endpoints"; such changes "may be subject
+  to re-review"). Adding a tool, rewording a description, changing what a tool sends
+  or connecting a new endpoint all qualify. `get_live_figures` (2026-10-25) was all
+  four at once: if the connector is listed when it deploys, report it from the
+  listing's page in the portal before or at the `fly deploy` that ships it.
 - Merging to `main` is the release: the directory scans the commit and publishes
   under the auto-publish setting. Nothing to do in the portal.
 - No file in `plugins/cloud-finops/` may exceed 256 KiB and the folder stays under

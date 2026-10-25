@@ -1,0 +1,9 @@
+# OptimToken by OptimNow
+
+> Compare LLM pricing and cloud compute pricing with business metrics, technical filters, and live provider data.
+Guides:
+- [ARM against x86: what Graviton, Ampere and Axion save](https://optimtoken.optimnow.io/guides/arm-against-x86): The ARM discount clouds advertise is a discount against Intel. This guide measures it at matched vCPU and memory, against Intel and against AMD. Figures as JSON: https://optimtoken.optimnow.io/guides/arm-against-x86/figures.json
+- [Batch API economics: when the -50% applies](https://optimtoken.optimnow.io/guides/batch-api-economics): Batch APIs cut LLM token prices roughly in half, but only for async workloads and only where a batch rate is published. Worked examples, current prices. Figures as JSON: https://optimtoken.optimnow.io/guides/batch-api-economics/figures.json
+- [Vision, audio, agents: what each capability adds to the bill](https://optimtoken.optimnow.io/guides/capability-premium): What image input, audio and tool use add to an LLM bill, measured within each model maker's line-up and across the catalogue, and the shortlist each leaves.
+- [Context windows: what a million tokens costs to fill](https://optimtoken.optimnow.io/guides/context-window-economics): A million-token context window is a spec-sheet capability and an invoice line. What one full prompt costs across the catalogue, and what re-reading it costs.
+- [Savings plans against reserved instances: what the flexibility costs](https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances): AWS and Azure each sell a flexible commitment and a locked one. What each takes off on-demand, the gap between the two and the utilisation where each pays off. Figures as JSON: https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json

@@ -68,7 +68,7 @@ cloud-finops-skills/
 ├── docs/
 │   ├── CONCEPTS.md        <- What a skill and an MCP server are, skill vs
 │   │                         connector behaviour, plugin and connector kept
-│   │                         apart, the six MCP tools, live prices (moved out
+│   │                         apart, the seven MCP tools, live prices (moved out
 │   │                         of README.md in Oct 2026 so the README leads with
 │   │                         coverage)
 │   ├── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
@@ -155,8 +155,12 @@ cloud-finops-skills/
 │                                Anti-pattern/See also format) +
 │                                README.md index. RAG-friendly chunks routed from
 │                                SKILL.md / POWER.md "named waste pattern" rows
-├── mcp_server/            <- `cloud-finops-mcp` PyPI package (six MCP tools,
-│                             faceted retrieval over references + playbooks;
+├── mcp_server/            <- `cloud-finops-mcp` PyPI package (seven MCP tools:
+│                             faceted retrieval over references + playbooks,
+│                             and get_live_figures, the one open-world tool,
+│                             which passes through an OptimToken guide's
+│                             figures.json (live_figures.py, offline fixtures
+│                             in tests/fixtures/live_figures/);
 │                             stdio + streamable-HTTP transports; MCP Apps
 │                             resources: playbook-viewer, playbook-explorer,
 │                             reference-browser - shared JS/CSS in ui/_* is
@@ -925,6 +929,13 @@ any of them. When an upstream repo changes its surface, this repo does not find 
 the text simply becomes wrong, and the first symptom is an agent following an
 instruction that no longer matches reality.
 
+One inward dependency is code since 2026-10-25: `get_live_figures`
+(`mcp_server/src/cloud_finops_mcp/live_figures.py`) fetches an OptimToken guide's
+`figures.json` at request time and reads the "Figures as JSON" lines of OptimToken's
+`llms.txt`. It checks only that the envelope carries `guide` and `figures`, so a
+reshaped file degrades to an error and the dated figure in the reference, not to a
+crash; the tests run against saved copies and do not notice a change upstream.
+
 So the check is one-directional. Before merging, if the PR touches any of these:
 
 | If the PR touches | Verify against | Where it lives here |
@@ -933,6 +944,7 @@ So the check is one-directional. Before merging, if the PR touches any of these:
 | The `provenance` contract (tier semantics, `upstreamTimestamp` / `eloAsOf`, the stale notice) | `ai-pricing-hub-mcp` | "Price figures" rule 5, in SKILL.md, POWER.md and the INSTALLATION.md response contract |
 | An MCP tool name or parameter of the ROI calculator | `ai-roi-calculator-mcp` | INSTALLATION.md companion section |
 | A value method, an input's meaning, or a documented trap | `ai-roi-calculator` METHODOLOGY.md | `references/finops-ai-value-management.md` |
+| The OptimToken guide `figures.json` envelope (`guide`, `url`, `snapshotDate`, `figures`), a guide slug, or the llms.txt "Figures as JSON" line format | OptimToken (`cloud-sparkle-compare`, see DEPENDENCIES.md) | `mcp_server/src/cloud_finops_mcp/live_figures.py`, `mcp_server/tests/fixtures/live_figures/`, the guide figures quoted in `finops-aws-commitments.md`, `finops-azure-commitments.md`, `finops-gcp.md`, SKILL.md / POWER.md "Price figures" rule 6 |
 | Any `mcp.optimnow.io`, `*.fly.dev`, `*.alpic.live` or `optimtoken.optimnow.io` URL | the owning repo | README.md, INSTALLATION.md, mcp_server/README.md, server.json, llms.txt, PRIVACY.md, fly.toml, docs/ |
 
 Two standing rules that follow from the map:
@@ -959,7 +971,7 @@ from how the directory works:
   server: no `.mcp.json` anywhere in the tree, no `mcpServers` key in
   `plugin.json`. The hosted connector is submitted as its own directory listing
   and users add it separately. The two serve the same library, and a plugin that also declared
-  the server would load the six tool definitions in every session next to the
+  the server would load the seven tool definitions in every session next to the
   skill and put the same content into context twice. (From September 2026 to
   2026-09-30 a root `.mcp.json` did bundle the connector; it was removed for the
   submission.) Gated by `scripts/check-plugin-skill-only.sh`; the user-facing
@@ -1131,7 +1143,7 @@ from how the directory works:
       [`DEPENDENCIES.md`](DEPENDENCIES.md). Nothing in CI catches this class of drift
 - [ ] **MCP tool surface changed? Move all three copies together.** Renaming a tool,
       changing a parameter, or adding one touches `docs/CONCEPTS.md` (the canonical
-      description of what the six tools do, moved there from README.md in October
+      description of what the seven tools do, moved there from README.md in October
       2026), `mcp_server/README.md` (the PyPI page, which must stay self-contained),
       and the `instructions` string in `mcp_server/src/cloud_finops_mcp/server.py`
       (the contract the agent reads at runtime). INSTALLATION.md and the README
