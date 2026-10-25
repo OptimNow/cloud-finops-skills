@@ -14,6 +14,7 @@ are pinned here rather than left to the PR checklist.
 
 from __future__ import annotations
 
+import inspect
 import logging
 import re
 
@@ -43,13 +44,15 @@ def _advertised_in(fn, facet: str) -> set[str]:
     rather than a duplicate list held in code. Single backticks are used for
     file and field references and are deliberately not picked up here.
     """
-    doc = fn.__doc__ or ""
-    # Google-style Args: entries sit at 8 spaces, their continuations at 12,
-    # and the following section ("Returns:", prose) dedents to 4 or less. Stop
-    # at the next entry or at that dedent, so trailing prose in the last entry
-    # is not read as part of its vocabulary.
+    # cleandoc first: Python 3.13 strips a docstring's common indentation at
+    # compile time and 3.12 does not, so the raw __doc__ differs by version.
+    # Normalised, Google-style Args: entries sit at 4 spaces, their
+    # continuations at 8, and the following section ("Returns:", prose) starts
+    # at column 0. Stop at the next entry or at that dedent, so trailing prose
+    # in the last entry is not read as part of its vocabulary.
+    doc = inspect.cleandoc(fn.__doc__ or "")
     m = re.search(
-        rf"^ {{8}}{facet}: (.+?)(?=^ {{8}}\w+:|^ {{0,4}}\S|\Z)", doc, re.S | re.M
+        rf"^ {{4}}{facet}: (.+?)(?=^ {{4}}\w+:|^\S|\Z)", doc, re.S | re.M
     )
     assert m, f"{fn.__module__}.{fn.__name__} documents no {facet!r} facet"
     # server.py quotes its values (``"aws"``), tools.py does not (``aws``).
