@@ -54,21 +54,37 @@ GROUP BY 1
 ORDER BY processing_cost DESC;
 ```
 
-Step 2 - for each VPC behind a high-cost NAT, check whether gateway
-endpoints already exist:
+Step 2 - for each VPC behind a high-cost NAT, check whether an S3 gateway
+endpoint exists **and** is attached to every route table that sends its
+default route to a NAT. An endpoint that exists but is not associated
+with those route tables does nothing for their traffic, and a VPC with
+only a DynamoDB endpoint still sends S3 traffic through the NAT. Checking
+for "any gateway endpoint" misses both cases.
 
 ```bash
-# Empty output = no gateway endpoints in the VPC = candidate confirmed.
+# Gateway endpoints in the VPC and the route tables each one is attached to.
 aws ec2 describe-vpc-endpoints \
   --filters "Name=vpc-id,Values=vpc-XXXXXXXX" "Name=vpc-endpoint-type,Values=Gateway" \
-  --query "VpcEndpoints[].{service:ServiceName,state:State}" --output table
+  --query "VpcEndpoints[].{service:ServiceName,state:State,routeTables:join(',',RouteTableIds)}" \
+  --output table
+
+# Route tables whose 0.0.0.0/0 route points at a NAT gateway.
+aws ec2 describe-route-tables \
+  --filters "Name=vpc-id,Values=vpc-XXXXXXXX" \
+  --query "RouteTables[?Routes[?NatGatewayId && DestinationCidrBlock=='0.0.0.0/0']].RouteTableId" \
+  --output text
 ```
+
+Candidate confirmed when no `com.amazonaws.<region>.s3` endpoint is
+listed, or when a NAT route table from the second command is missing from
+the S3 endpoint's `routeTables`.
 
 Optional precision step - sizing exactly what share of NAT traffic is
 S3/DynamoDB-destined requires **VPC Flow Logs delivered to S3 and queried
 via Athena** (matching `dstaddr` against the regional S3 prefix list). If
-flow logs are not enabled, skip it: the fix below is safe without the
-sizing, and the next month's CUR shows the realised delta.
+flow logs are not enabled, skip it: the fix below cannot raise the bill,
+so it needs no sizing to pay off, and the next month's CUR shows the
+realised delta.
 
 ## Fix
 
@@ -78,13 +94,23 @@ sizing, and the next month's CUR shows the realised delta.
    NAT. AWS inserts prefix-list routes automatically; more-specific
    prefix-list routes win over the NAT default route, so traffic shifts
    without touching the 0.0.0.0/0 entry.
-2. Verify S3 bucket policies and IAM conditions: policies that pin
+2. Schedule the change: creating the endpoint or associating a route
+   table switches the route and **disconnects open TCP connections** to
+   S3 from the affected subnets, and those connections are not resumed.
+   AWS recommends making the change when no critical task is running, or
+   confirming first that the software reconnects to S3 on its own
+   ([AWS PrivateLink: gateway endpoints for Amazon S3](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html)).
+   The change costs nothing; a long-running transfer or batch job cut
+   mid-flight can.
+3. Verify S3 bucket policies and IAM conditions: policies that pin
    `aws:SourceIp` to the NAT's public IP will start failing, because
    endpoint traffic arrives with a private source. Replace them with
-   `aws:SourceVpce` / `aws:SourceVpc` conditions.
-3. Re-run the Step 1 query after one full month: NatGateway-Bytes on the
+   `aws:SourceVpce` / `aws:SourceVpc` conditions, or with
+   `aws:VpcSourceIp` where the policy has to filter on a private address
+   range.
+4. Re-run the Step 1 query after one full month: NatGateway-Bytes on the
    affected gateways should drop by the S3/DynamoDB share.
-4. If the remaining NAT traffic is now near zero, the gateway itself may
+5. If the remaining NAT traffic is now near zero, the gateway itself may
    have become a zombie - hand over to `aws-zombie-nat-gateway`.
 
 ## Anti-pattern
@@ -94,6 +120,13 @@ sizing, and the next month's CUR shows the realised delta.
   bulk S3 traffic they reintroduce the very fee the gateway endpoint
   removes. Interface endpoints for S3 exist for on-premises and
   cross-VPC access - cases a gateway endpoint cannot serve.
+- Enabling plain **private DNS** on an S3 interface endpoint that sits
+  next to a gateway endpoint. Requests from the VPC then resolve to the
+  interface endpoint too, and in-VPC traffic moves from the free gateway
+  endpoint to the paid one. Choose "private DNS only for inbound Resolver
+  endpoint": on-premises requests use the interface endpoint, VPC
+  requests keep using the gateway endpoint
+  ([AWS PrivateLink: gateway endpoints for Amazon S3, "Private DNS"](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html#private-dns-s3)).
 - Expecting the endpoint to serve traffic from peered VPCs, VPN, or
   Direct Connect. Gateway endpoints only serve traffic originating in
   their own VPC; hybrid paths need an interface endpoint or a different
