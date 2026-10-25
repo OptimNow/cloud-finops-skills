@@ -63,6 +63,13 @@ to be layered, not chosen in isolation.
    a specific VM family and region. If you change instance family or region mid-term, the
    Reservation does not follow. A Savings Plan is spend-based and applies wherever it
    finds eligible usage - but the discount is ~7% shallower than a Reservation.
+   Measured on the 2026-10-25 OptimToken catalogue (Linux, eastus, no upfront), the
+   median per-row gap is 8.7 points at 1 year (median discounts 32.0% and 41.0%) and
+   7.9 at 3 years (53.4% and 60.5%). The reservation discount splits by family: 41.0%
+   to 41.1% at 1 year on Esv5, Easv5, Dpsv5 and Epsv5, 38.3% on Dsv5 and Dasv5, while
+   the savings plan runs 31.3% to 32.7% across all of them. Current values:
+   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> (page) and
+   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> (data).
 
 4. **Reservations keep a capped refund and trade-in; savings plans keep nothing.**
    From 1 February 2027 reservation exchange retires for services a savings plan also
@@ -92,7 +99,13 @@ to be layered, not chosen in isolation.
    final exchange), or trade it in for a savings plan, rather than letting the reservation
    run out on a series that cannot be re-reserved. Source:
    https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/lifecycle/retirements-and-capacity-restrictions
-   (read 2 October 2026).
+   (read 2 October 2026). On the 2026-10-25 OptimToken catalogue, Azure's retail price
+   API returns no reservation in eastus for B1s, B2s, F2s_v2 and F4s_v2, series this
+   page names, so on those sizes the savings plan is the only commitment left. NC6s_v3
+   has no reservation either, and the savings plan takes 26.7% off it at 1 year against
+   32.2% on the CPU families. Current values:
+   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> (page) and
+   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> (data).
 
 **Reservation and Savings Plan liquidity mechanics (verified against Microsoft Learn, July 2026; exchange and trade-in rows re-checked 2 October 2026):**
 
@@ -246,7 +259,8 @@ hard new locks; size within the family stays flexible through ISF.
 
 - **The default has a price, so size it.** A savings plan discounts roughly 7 points less
   than a reservation on compute (up to 65% vs up to 72%), and more on databases (up to 35%
-  vs the reservation rate). That gap is the premium for the flexibility exchange used to
+  vs the reservation rate); on compute with no upfront, the median gap measured on the
+  2026-10-25 OptimToken catalogue is 8.7 points at 1 year (point 3). That gap is the premium for the flexibility exchange used to
   provide for free. On a large, stable baseline it can reach six figures a year.
   Reserve the certain floor; do not surrender its depth out of caution.
 - **At Crawl and Walk maturity, the fallback is often more PAYG buffer, not a bigger

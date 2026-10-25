@@ -229,6 +229,12 @@ GCP CUDs come in two distinct flavours that are easy to conflate:
 | **Resource-based CUD** | Specific vCPU + memory in a region | Up to 57% (3yr) | Low - locked to machine series and region | 1yr or 3yr |
 | **Spend-based / Flexible CUD** | $/hr spend on Compute Engine | **Up to 28% (1yr) or 46% (3yr)** | High - any machine series in any region | 1yr or 3yr |
 
+The live row-by-row commitment comparison
+(<https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> for the page,
+<https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> for the data)
+covers AWS and Azure only: its GCP committed-use figures are typed estimates, not read
+from Google's price list, so check CUD rates on Google's own pricing pages.
+
 **Divestiture risk.** Resource-based CUDs move with their project to a new billing
 account and stop applying in the old one; spend-based CUDs stay with the billing
 account unless Cloud Billing Support moves them. See "Commitments in a separation" in
