@@ -43,7 +43,11 @@ LLMS_TXT_URL = "https://" + HOST + "/llms.txt"
 USER_AGENT = f"cloud-finops-mcp/{__version__} (+https://github.com/OptimNow/cloud-finops-skills)"
 
 TIMEOUT_SECONDS = 5
-MAX_BODY_BYTES = 1024 * 1024
+# The directory policy asks a tool's token use to stay commensurate with the task
+# (Software Directory Policy 5.B). The three files are 3 to 9 KB today; 128 KiB
+# (about 32,000 tokens, twice the largest reference) bounds a pathological file
+# without ever truncating a real one, and the cap returns an error, not a cut file.
+MAX_BODY_BYTES = 128 * 1024
 # The file is rebuilt once a day (refresh at 12:30 UTC, then a deploy), so six
 # hours keeps a hosted instance to a handful of requests per guide per day
 # while never serving a figure more than one rebuild behind.
@@ -204,7 +208,7 @@ def get_live_figures(guide: str) -> dict[str, Any]:
 
     On a 404, returns ``{"error", "available_guides", "suggestions"}`` read from
     llms.txt. On any other failure (invalid slug, timeout, non-200, a body over
-    1 MiB, invalid JSON, an envelope without ``guide`` or ``figures``) returns
+    128 KiB, invalid JSON, an envelope without ``guide`` or ``figures``) returns
     ``{"error", "fallback"}``. An invalid slug is rejected before any request.
     Never raises.
     """

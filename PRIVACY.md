@@ -31,7 +31,9 @@ nothing from the conversation. When the slug is not found it sends a second GET,
 the public `llms.txt` list of guides. Answers are cached in memory for six hours, so
 repeated calls send nothing. OptimToken is hosted on Vercel, which keeps its standard
 web access log of these requests (IP address, timestamp, path, status code,
-User-Agent).
+User-Agent). With the local package the IP address is your machine's; with the hosted
+connector it is the connector server's. Retention of that log follows Vercel's
+platform default, and OptimNow does not export, sell or share it.
 
 **Hosted connector: the tool calls your AI client sends.** Each call carries the tool
 name and its arguments: a reference or playbook name, an optional section phrase,

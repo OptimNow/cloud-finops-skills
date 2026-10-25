@@ -156,7 +156,7 @@ get_live_figures("savings-plans-vs-reserved-instances")
   the reference stands, quoted with its date. A slug outside `^[a-z0-9-]{1,80}$` is
   rejected before any request. The tool never raises.
 - **The request:** one HTTPS GET to `optimtoken.optimnow.io` (two on a miss, the
-  second for llms.txt), 5-second timeout, 1 MiB body cap, redirects followed only on
+  second for llms.txt), 5-second timeout, 128 KiB body cap, redirects followed only on
   that host, User-Agent `cloud-finops-mcp/<version>
   (+https://github.com/OptimNow/cloud-finops-skills)`. Standard library only, no
   new dependency. It carries the slug and nothing from the conversation.

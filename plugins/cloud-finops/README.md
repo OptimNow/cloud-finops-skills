@@ -30,7 +30,10 @@ files as context and answers from them. It cannot see your cloud account; for a
 question about your own resources it hands you the detection query to run yourself.
 The skill names one public website for current prices, the OptimNow AI Pricing Hub;
 whether the model opens it is decided in your session, and the plugin itself makes
-no request.
+no request. Where a reference quotes a dated figure from one of that site's guides, the
+skill also names the `get_live_figures` tool of the separate MCP connector below, for
+sessions where you have added that connector; without it, the skill gives the guide's
+link.
 
 The hosted MCP connector that serves the same library is a separate listing, added
 on its own, so that the content is not loaded twice in one session.

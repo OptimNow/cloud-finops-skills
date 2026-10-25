@@ -153,7 +153,7 @@ def test_404_with_unreadable_guide_list_still_answers(monkeypatch: pytest.Monkey
         (200, b"{" + b" " * live_figures.MAX_BODY_BYTES + b"}"),
     ],
     ids=["timeout", "dns-failure", "oserror", "http-500", "html", "bad-utf8",
-         "no-figures", "json-list", "over-1mib"],
+         "no-figures", "json-list", "over-cap"],
 )
 def test_failures_return_the_error_shape(
     monkeypatch: pytest.MonkeyPatch, response: object
