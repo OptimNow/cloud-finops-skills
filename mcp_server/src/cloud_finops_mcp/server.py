@@ -1,7 +1,8 @@
 """MCP server wiring.
 
-Registers the six tools with FastMCP - three over references (list / get /
-find) and three over playbooks (list / get / find) - and exposes two ways to
+Registers the seven tools with FastMCP - three over references (list / get /
+find), three over playbooks (list / get / find) and ``get_live_figures``, which
+fetches the current figures of an OptimToken guide - and exposes two ways to
 serve them: stdio (the default, what every local MCP client spawns) and
 streamable HTTP (for a hosted deployment). The actual tool logic lives in
 :mod:`cloud_finops_mcp.tools` so it can be unit-tested without an MCP client.
@@ -9,6 +10,7 @@ streamable HTTP (for a hosted deployment). The actual tool logic lives in
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import logging
 from pathlib import Path
@@ -19,21 +21,32 @@ from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import ToolAnnotations
 
 from . import __version__
+from . import live_figures as _live_figures
 from . import metadata as _metadata
 from . import tools as _tools
 
 logger = logging.getLogger(__name__)
 
-# Every tool is a read-only lookup over a bundled content set: nothing is
-# mutated, the same call always returns the same result for a given bundle,
-# and no external world is touched. Declared explicitly because connector
-# directories treat missing annotations as a rejection criterion, not a
-# default.
+# Six of the seven tools are read-only lookups over a bundled content set:
+# nothing is mutated, the same call always returns the same result for a given
+# bundle, and no external world is touched. Declared explicitly because
+# connector directories treat missing annotations as a rejection criterion,
+# not a default.
+#
+# get_live_figures is the exception and the server's only open-world tool: it
+# makes one HTTPS request to the OptimToken site, so it carries _LIVE_FIGURES
+# below (openWorldHint=True), not _READ_ONLY. It still mutates nothing.
 _READ_ONLY = ToolAnnotations(
     readOnlyHint=True,
     destructiveHint=False,
     idempotentHint=True,
     openWorldHint=False,
+)
+_LIVE_FIGURES = ToolAnnotations(
+    readOnlyHint=True,
+    destructiveHint=False,
+    idempotentHint=True,
+    openWorldHint=True,
 )
 
 # Streamable HTTP defaults. Bind all interfaces because the only reason to run
@@ -193,6 +206,9 @@ mcp = FastMCP(
         "References carry billing mechanics, not current prices: any figure "
         "inside is illustrative and dated inline; a live pricing tool, if "
         "one is connected in the session, is the source for a current price. "
+        "Where a reference quotes a figure from an OptimToken guide with its "
+        "date, get_live_figures(guide=) returns that guide's current figures "
+        "with the snapshotDate to quote them by. "
         "Advisory questions - how much to commit, how to size, how to "
         "allocate or charge back - are served by a matching reference "
         "(finops-aws-commitments for Savings Plan sizing, finops-chargeback "
@@ -553,6 +569,40 @@ def find_playbooks(
         waste_category=waste_category,
         confidence=confidence,
     )
+
+
+@mcp.tool(title="Current figures from an OptimToken guide", annotations=_LIVE_FIGURES)
+async def get_live_figures(guide: str) -> dict[str, Any]:
+    """Get the current value of a figure a reference quotes with a date.
+
+    Use this when a reference quotes a figure from an OptimToken guide
+    ("measured on the 2026-10-25 OptimToken catalogue") and the answer needs
+    the current value: the Compute Savings Plan or reservation discount, the
+    gap between a flexible and a locked commitment, the ARM discount against
+    Intel and AMD, the share of LLM models with a batch rate. It fetches the
+    guide's figures file, rebuilt daily, and returns it as published.
+
+    Args:
+        guide: The guide slug, lowercase letters, digits and hyphens. Guides
+            with figures today: ``"savings-plans-vs-reserved-instances"``,
+            ``"arm-against-x86"``, ``"batch-api-economics"``.
+
+    Returns ``{"document": {...}, "fetched_at": ..., "source": "live" |
+    "cached", "note": ...}``, plus ``cache_age_seconds`` when cached (six-hour
+    cache). ``document`` is the file unchanged: ``guide``, ``title``,
+    ``url``, ``dataSource``, ``snapshotDate`` (the catalogue the figures come
+    from), ``dateModified`` and ``figures``, where discounts are fractions
+    (0.2743 is 27.4%) and each key names a median, a range or a count.
+
+    An unknown slug returns ``{"error", "available_guides", "suggestions"}``.
+    Any other failure (timeout, HTTP error, invalid JSON) returns
+    ``{"error", "fallback"}``: the dated figure in the reference then stands,
+    quoted with its date.
+    """
+    # The fetch blocks for up to the 5-second timeout. FastMCP calls a sync
+    # tool on the event loop, so on the hosted server a slow OptimToken would
+    # stall every other request; a worker thread keeps the loop free.
+    return await asyncio.to_thread(_live_figures.get_live_figures, guide)
 
 
 def _warm_indexes() -> None:

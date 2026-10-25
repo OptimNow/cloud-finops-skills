@@ -233,7 +233,9 @@ The live row-by-row commitment comparison
 (<https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> for the page,
 <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> for the data)
 covers AWS and Azure only: its GCP committed-use figures are typed estimates, not read
-from Google's price list, so check CUD rates on Google's own pricing pages.
+from Google's price list, so check CUD rates on Google's own pricing pages. On the
+cloud-finops MCP, `get_live_figures("savings-plans-vs-reserved-instances")` returns the same file, whose
+`leftOut` field records the exclusion.
 
 **Divestiture risk.** Resource-based CUDs move with their project to a new billing
 account and stop applying in the old one; spend-based CUDs stay with the billing

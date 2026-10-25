@@ -305,8 +305,8 @@ each is appropriate. Full policy in [PRIVACY.md](./PRIVACY.md).
   export SQL, CLI commands) that you run in your own cloud account; nothing in this
   repository reads a cloud account.
 - **The hosted MCP connector, if you add it, sends tool calls to `mcp.optimnow.io`.**
-  When the model calls one of the 6 tools, the tool arguments (a reference or runbook
-  name, a section phrase, facet filters) travel over HTTPS to that server and the
+  When the model calls one of the 7 tools, the tool arguments (a reference or runbook
+  name, a section phrase, facet filters, a guide slug) travel over HTTPS to that server and the
   matching content comes back. The server requires no account and no authentication,
   holds no database and no per-user state, and serves the same public files as this
   repository. Its application log writes one line per request (method, path, status
@@ -318,6 +318,11 @@ each is appropriate. Full policy in [PRIVACY.md](./PRIVACY.md).
   from it.
 - **Price lookups route to a live tool, not to this repo.** Whether the model opens
   OptimToken is its decision in the conversation.
+- **One tool makes an outbound request.** `get_live_figures` sends one HTTPS GET to
+  `optimtoken.optimnow.io` (an OptimNow site) for a guide's `figures.json`, carrying the
+  guide slug and a `cloud-finops-mcp` User-Agent, nothing from the conversation. On the
+  hosted connector the request leaves the server; with the PyPI package it leaves your
+  machine. No other tool touches the network.
 - **Nothing else.** No telemetry, no analytics beacon, no update check, no package
   launcher, no credential read from your environment.
 

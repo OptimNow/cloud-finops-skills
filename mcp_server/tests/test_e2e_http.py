@@ -118,6 +118,7 @@ async def test_http_lists_tools(http_server_url: str) -> None:
                 "list_playbooks",
                 "get_playbook",
                 "find_playbooks",
+                "get_live_figures",
             }.issubset(tool_names)
 
 

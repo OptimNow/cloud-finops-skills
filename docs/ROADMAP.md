@@ -260,6 +260,27 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   between them. Revisit only if that composition proves to be real friction for users -
   not because one endpoint feels tidier than two.
 
+  **Amended 2026-10-25: `get_live_figures` is allowed, as a pass-through.** The tool
+  fetches an OptimToken guide's `figures.json` and returns it as published. It was
+  admitted because it does not cross the line this decision draws:
+
+  - *No duplicated computation.* OptimToken computes the figures; the tool neither
+    recomputes, rounds nor derives anything from them, so there is no second
+    implementation to drift. That was the decision's main cost, and it is absent.
+  - *The fault stays contained.* The tool never raises: a timeout, an HTTP error or a
+    reshaped file returns an error dict that sends the model back to the dated figure
+    in the reference, and the six retrieval tools make no network call. An OptimToken
+    outage therefore degrades one tool's answer, not knowledge retrieval.
+  - *It serves the references, not prices.* Its purpose is the current value of a
+    figure a reference already quotes with a date, so it belongs next to the
+    reference, in this server. A price lookup (`get_llm_price`, `get_compute_price`,
+    anything taking a model or an instance type) is still the pricing hub's and
+    still declined here.
+
+  Revisit if the tool starts transforming the document, if a second open-world tool
+  is proposed, or if OptimToken failures show up in this server's answers beyond that
+  one tool.
+
 ## Routing record (probe cycles 4 to 7)
 
 Probe cycles 4 to 7 (August 2026) measured how the same library grounds answers

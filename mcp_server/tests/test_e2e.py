@@ -48,6 +48,7 @@ async def test_e2e_lists_tools(server_params: StdioServerParameters) -> None:
                 "list_playbooks",
                 "get_playbook",
                 "find_playbooks",
+                "get_live_figures",
             }.issubset(tool_names)
 
 

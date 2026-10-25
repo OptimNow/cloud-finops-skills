@@ -266,22 +266,45 @@ def test_facet_values_are_lowercase_and_consistent() -> None:
 # --- directory conformance: tool annotations (F10) ---------------------------
 
 
+# The one tool that leaves the bundled content set: get_live_figures makes an
+# HTTPS request to the OptimToken site. Named here so a second open-world tool
+# cannot appear without this test being edited on purpose.
+OPEN_WORLD_TOOLS = {"get_live_figures"}
+CLOSED_WORLD_TOOLS = {
+    "list_references",
+    "get_reference",
+    "find_references",
+    "list_playbooks",
+    "get_playbook",
+    "find_playbooks",
+}
+
+
 async def test_every_tool_declares_title_and_read_only_annotations() -> None:
     """Every tool must carry a title and explicit read-only annotations.
 
     Connector directories (Anthropic's included) treat a missing title or
     readOnlyHint/destructiveHint as a rejection criterion, not a default.
-    Everything this server does is a read-only lookup over a bundled set,
-    so the hints are uniform.
+    Every tool is read-only and idempotent. Six are lookups over the bundled
+    set (openWorldHint=False); get_live_figures alone reaches an external
+    site (openWorldHint=True).
     """
     tools_list = await server.mcp.list_tools()
-    assert tools_list, "server exposes no tools"
+    assert {t.name for t in tools_list} == OPEN_WORLD_TOOLS | CLOSED_WORLD_TOOLS, (
+        "the tool set changed: classify the new tool in OPEN_WORLD_TOOLS or "
+        "CLOSED_WORLD_TOOLS"
+    )
     for tool in tools_list:
         assert tool.title, f"{tool.name} declares no title"
         ann = tool.annotations
         assert ann is not None, f"{tool.name} declares no annotations"
         assert ann.readOnlyHint is True, f"{tool.name} is not marked read-only"
         assert ann.destructiveHint is False, f"{tool.name} lacks destructiveHint=False"
+        assert ann.idempotentHint is True, f"{tool.name} lacks idempotentHint=True"
+        expected = tool.name in OPEN_WORLD_TOOLS
+        assert ann.openWorldHint is expected, (
+            f"{tool.name} declares openWorldHint={ann.openWorldHint}, expected {expected}"
+        )
 
 
 # Case-sensitive markers of behavioural orders to the model. The directory
@@ -324,8 +347,8 @@ async def test_every_tool_description_says_when_to_use_it() -> None:
     """A description that only says WHAT a tool does reads as interchangeable.
 
     The directory review expects each description to steer the model on WHEN
-    to pick this tool over its siblings; 'Use this' is the convention all six
-    docstrings follow.
+    to pick this tool over its siblings; 'Use this' is the convention every
+    tool docstring follows.
     """
     tools_list = await server.mcp.list_tools()
     for tool in tools_list:

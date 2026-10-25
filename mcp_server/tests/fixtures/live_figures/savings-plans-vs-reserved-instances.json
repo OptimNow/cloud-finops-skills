@@ -1,0 +1,324 @@
+{
+  "guide": "savings-plans-vs-reserved-instances",
+  "title": "Savings plans against reserved instances: what the flexibility costs",
+  "url": "https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances",
+  "page": "https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances",
+  "dataSource": "compute",
+  "snapshotDate": "2026-10-25",
+  "dateModified": "2026-10-25",
+  "note": "Figures recomputed from the OptimToken catalogue at each build, the same ones the page prints. A figure quoted elsewhere is as of the day it was read; this file carries the current one.",
+  "figures": {
+    "unit": "discount as a fraction of the on-demand hourly rate; Linux, US East, no upfront",
+    "clouds": {
+      "AWS": {
+        "rows": 51,
+        "instruments": {
+          "savingsPlan1yr": {
+            "name": "Compute Savings Plan, 1 year",
+            "rows": 50,
+            "median": 0.2743,
+            "min": 0.2125,
+            "max": 0.2885
+          },
+          "reserved1yr": {
+            "name": "Standard Reserved Instance, 1 year",
+            "rows": 51,
+            "median": 0.3698,
+            "min": 0.336,
+            "max": 0.383
+          },
+          "savingsPlan3yr": {
+            "name": "Compute Savings Plan, 3 years",
+            "rows": 50,
+            "median": 0.5,
+            "min": 0.46,
+            "max": 0.5195
+          },
+          "reserved3yr": {
+            "name": "Standard Reserved Instance, 3 years",
+            "rows": 51,
+            "median": 0.5673,
+            "min": 0.5445,
+            "max": 0.5908
+          }
+        },
+        "flexibilityPremium": {
+          "oneYear": {
+            "rows": 50,
+            "median": 0.0941,
+            "min": 0.0579,
+            "max": 0.1575
+          },
+          "threeYears": {
+            "rows": 50,
+            "median": 0.0652,
+            "min": 0.0418,
+            "max": 0.108
+          }
+        },
+        "thirdYearAdds": {
+          "plan": 0.2266,
+          "reserved": 0.1984
+        },
+        "reservedSplit": {
+          "gap": 0.0226,
+          "higher": {
+            "families": [
+              "c5",
+              "c5a",
+              "c6g",
+              "m5",
+              "m5a",
+              "m6g",
+              "r5",
+              "r6g",
+              "t3",
+              "t3a",
+              "t4g"
+            ],
+            "min": 0.3636,
+            "max": 0.3735
+          },
+          "lower": {
+            "families": [
+              "c6a",
+              "c6i",
+              "c7g",
+              "m6a",
+              "m6i",
+              "m7g",
+              "m7i",
+              "r6a",
+              "r6i",
+              "r7g"
+            ],
+            "min": 0.3362,
+            "max": 0.341
+          }
+        },
+        "planSpread": {
+          "min": 0.2636,
+          "max": 0.2828
+        },
+        "noReservation": [],
+        "noSavingsPlan": [],
+        "accelerated": [
+          {
+            "instanceType": "p3.2xlarge",
+            "onDemandHourly": 3.06,
+            "savingsPlan1yr": null,
+            "reserved1yr": 0.3699,
+            "cpuSavingsPlan1yr": 0.2748
+          },
+          {
+            "instanceType": "g5.xlarge",
+            "onDemandHourly": 1.006,
+            "savingsPlan1yr": 0.2125,
+            "reserved1yr": 0.37,
+            "cpuSavingsPlan1yr": 0.2748
+          }
+        ]
+      },
+      "Azure": {
+        "rows": 18,
+        "instruments": {
+          "savingsPlan1yr": {
+            "name": "savings plan for compute, 1 year",
+            "rows": 18,
+            "median": 0.3198,
+            "min": 0.267,
+            "max": 0.3269
+          },
+          "reserved1yr": {
+            "name": "reservation, 1 year",
+            "rows": 13,
+            "median": 0.4097,
+            "min": 0.3826,
+            "max": 0.4114
+          },
+          "savingsPlan3yr": {
+            "name": "savings plan for compute, 3 years",
+            "rows": 18,
+            "median": 0.5344,
+            "min": 0.4679,
+            "max": 0.5621
+          },
+          "reserved3yr": {
+            "name": "reservation, 3 years",
+            "rows": 13,
+            "median": 0.6052,
+            "min": 0.6047,
+            "max": 0.6208
+          }
+        },
+        "flexibilityPremium": {
+          "oneYear": {
+            "rows": 13,
+            "median": 0.0865,
+            "min": 0.0651,
+            "max": 0.0974
+          },
+          "threeYears": {
+            "rows": 13,
+            "median": 0.0786,
+            "min": 0.0628,
+            "max": 0.095
+          }
+        },
+        "thirdYearAdds": {
+          "plan": 0.2189,
+          "reserved": 0.2104
+        },
+        "reservedSplit": {
+          "gap": 0.0267,
+          "higher": {
+            "families": [
+              "Dpsv5",
+              "Easv5",
+              "Epsv5",
+              "Esv5"
+            ],
+            "min": 0.4097,
+            "max": 0.4111
+          },
+          "lower": {
+            "families": [
+              "Dasv5",
+              "Dsv5"
+            ],
+            "min": 0.3826,
+            "max": 0.3831
+          }
+        },
+        "planSpread": {
+          "min": 0.313,
+          "max": 0.3269
+        },
+        "noReservation": [
+          "B1s",
+          "B2s",
+          "F2s_v2",
+          "F4s_v2"
+        ],
+        "noSavingsPlan": [],
+        "accelerated": [
+          {
+            "instanceType": "NC6s_v3",
+            "onDemandHourly": 3.06,
+            "savingsPlan1yr": 0.267,
+            "reserved1yr": null,
+            "cpuSavingsPlan1yr": 0.3221
+          }
+        ]
+      }
+    },
+    "orderedPlanLockPlanLock": true,
+    "matchedShape": {
+      "a": {
+        "instanceType": "m5.2xlarge",
+        "provider": "AWS",
+        "vCPUs": 8,
+        "memoryGB": 32,
+        "onDemandHourly": 0.384,
+        "savingsPlan1yr": {
+          "hourly": 0.282,
+          "discount": 0.2656
+        },
+        "reserved1yr": {
+          "hourly": 0.242,
+          "discount": 0.3698
+        },
+        "savingsPlan3yr": {
+          "hourly": 0.195,
+          "discount": 0.4922
+        },
+        "reserved3yr": {
+          "hourly": 0.166,
+          "discount": 0.5677
+        }
+      },
+      "b": {
+        "instanceType": "D8s_v5",
+        "provider": "Azure",
+        "vCPUs": 8,
+        "memoryGB": 32,
+        "onDemandHourly": 0.384,
+        "savingsPlan1yr": {
+          "hourly": 0.2633,
+          "discount": 0.3143
+        },
+        "reserved1yr": {
+          "hourly": 0.2369,
+          "discount": 0.3831
+        },
+        "savingsPlan3yr": {
+          "hourly": 0.1767,
+          "discount": 0.5398
+        },
+        "reserved3yr": {
+          "hourly": 0.1517,
+          "discount": 0.6049
+        }
+      },
+      "fleet": 10,
+      "hoursAYear": 8760
+    },
+    "breakEven": {
+      "instanceType": "m5.2xlarge",
+      "provider": "AWS",
+      "officeHoursAWeek": 60,
+      "officeUtilisation": 0.3562,
+      "onDemandAYearOnOfficeHours": 1198.08,
+      "instruments": [
+        {
+          "key": "savingsPlan1yr",
+          "name": "Compute Savings Plan, 1 year",
+          "discount": 0.2656,
+          "breakEvenUtilisation": 0.7344,
+          "breakEvenHoursAWeek": 123.375,
+          "committedAYear": 2470.32,
+          "officeRatio": 2.0619
+        },
+        {
+          "key": "reserved1yr",
+          "name": "Standard Reserved Instance, 1 year",
+          "discount": 0.3698,
+          "breakEvenUtilisation": 0.6302,
+          "breakEvenHoursAWeek": 105.875,
+          "committedAYear": 2119.92,
+          "officeRatio": 1.7694
+        },
+        {
+          "key": "savingsPlan3yr",
+          "name": "Compute Savings Plan, 3 years",
+          "discount": 0.4922,
+          "breakEvenUtilisation": 0.5078,
+          "breakEvenHoursAWeek": 85.3125,
+          "committedAYear": 1708.2,
+          "officeRatio": 1.4258
+        },
+        {
+          "key": "reserved3yr",
+          "name": "Standard Reserved Instance, 3 years",
+          "discount": 0.5677,
+          "breakEvenUtilisation": 0.4323,
+          "breakEvenHoursAWeek": 72.625,
+          "committedAYear": 1454.16,
+          "officeRatio": 1.2137
+        }
+      ]
+    },
+    "leftOut": [
+      {
+        "provider": "GCP",
+        "rows": 22,
+        "reason": "commitment figures are typed estimates, not read from the provider's list"
+      },
+      {
+        "provider": "Alibaba",
+        "rows": 13,
+        "reason": "commitment figures are typed estimates, not read from the provider's list"
+      }
+    ]
+  }
+}

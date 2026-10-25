@@ -1,0 +1,124 @@
+{
+  "guide": "batch-api-economics",
+  "title": "Batch API economics: when the -50% applies",
+  "url": "https://optimtoken.optimnow.io/guides/batch-api-economics",
+  "page": "https://optimtoken.optimnow.io/guides/batch-api-economics",
+  "dataSource": "llm",
+  "snapshotDate": "2026-10-24",
+  "dateModified": "2026-10-24",
+  "note": "Figures recomputed from the OptimToken catalogue at each build, the same ones the page prints. A figure quoted elsewhere is as of the day it was read; this file carries the current one.",
+  "figures": {
+    "unit": "batch discount as a fraction of list price on a 30/70 input-output blend; cost in dollars per request",
+    "models": 318,
+    "publishingBatch": 70,
+    "rated": 70,
+    "medianBatchDiscount": 0.5,
+    "bands": {
+      "Exactly 50% off": 66,
+      "More than 50% off": 2,
+      "Partial discount": 2,
+      "No discount": 0,
+      "Batch priced above list": 0
+    },
+    "exceptions": [
+      {
+        "model": "gpt-oss-120b",
+        "provider": "OpenAI",
+        "discount": 0.7762
+      },
+      {
+        "model": "GLM 5.3 Flash",
+        "provider": "Zhipu",
+        "discount": 0.643
+      },
+      {
+        "model": "Qwen3.7 Plus",
+        "provider": "Alibaba",
+        "discount": 0.2812
+      },
+      {
+        "model": "Grok 4.3",
+        "provider": "xAI",
+        "discount": 0.2
+      }
+    ],
+    "coverageByMaker": [
+      {
+        "maker": "OpenAI",
+        "models": 54,
+        "withBatch": 37
+      },
+      {
+        "maker": "Alibaba",
+        "models": 42,
+        "withBatch": 1
+      },
+      {
+        "maker": "Google",
+        "models": 25,
+        "withBatch": 9
+      },
+      {
+        "maker": "Mistral",
+        "models": 20,
+        "withBatch": 6
+      },
+      {
+        "maker": "Meta",
+        "models": 16,
+        "withBatch": 0
+      },
+      {
+        "maker": "Zhipu",
+        "models": 16,
+        "withBatch": 1
+      },
+      {
+        "maker": "Anthropic",
+        "models": 15,
+        "withBatch": 15
+      },
+      {
+        "maker": "DeepSeek",
+        "models": 14,
+        "withBatch": 0
+      },
+      {
+        "maker": "MiniMax",
+        "models": 9,
+        "withBatch": 0
+      },
+      {
+        "maker": "Moonshot",
+        "models": 8,
+        "withBatch": 0
+      }
+    ],
+    "workedExample": {
+      "profile": "invoiceProcessing",
+      "inputTokens": 1500,
+      "outputTokens": 600,
+      "requestsAMonth": 100000,
+      "models": [
+        {
+          "model": "Claude Sonnet 5",
+          "provider": "Anthropic",
+          "listPerRequest": 0.009,
+          "batchPerRequest": 0.0045
+        },
+        {
+          "model": "GPT-5.5",
+          "provider": "OpenAI",
+          "listPerRequest": 0.0255,
+          "batchPerRequest": 0.0127
+        },
+        {
+          "model": "DeepSeek V4 Flash 0731",
+          "provider": "DeepSeek",
+          "listPerRequest": 0.0001,
+          "batchPerRequest": null
+        }
+      ]
+    }
+  }
+}

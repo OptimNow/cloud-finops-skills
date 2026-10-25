@@ -63,6 +63,7 @@ EXPECTED_TOOLS = {
     "list_playbooks",
     "get_playbook",
     "find_playbooks",
+    "get_live_figures",
 }
 
 
@@ -229,7 +230,7 @@ def phase3_content(cmd: str) -> None:
     """Assert the wheel actually carries its content bundle.
 
     Phases 1 and 2 pass identically on a wheel whose data/ directory is empty:
-    the server starts, speaks MCP, and lists all six tools. Only calling a tool
+    the server starts, speaks MCP, and lists all seven tools. Only calling a tool
     and counting the results distinguishes a working package from a hollow one.
     """
     print("[phase 3] calling list_references / list_playbooks to verify the data bundle")

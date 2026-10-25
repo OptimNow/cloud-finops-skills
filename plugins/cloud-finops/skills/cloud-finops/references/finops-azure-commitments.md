@@ -69,7 +69,8 @@ to be layered, not chosen in isolation.
    to 41.1% at 1 year on Esv5, Easv5, Dpsv5 and Epsv5, 38.3% on Dsv5 and Dasv5, while
    the savings plan runs 31.3% to 32.7% across all of them. Current values:
    <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> (page) and
-   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> (data).
+   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> (data);
+   with the cloud-finops MCP, `get_live_figures("savings-plans-vs-reserved-instances")`.
 
 4. **Reservations keep a capped refund and trade-in; savings plans keep nothing.**
    From 1 February 2027 reservation exchange retires for services a savings plan also
@@ -103,9 +104,7 @@ to be layered, not chosen in isolation.
    API returns no reservation in eastus for B1s, B2s, F2s_v2 and F4s_v2, series this
    page names, so on those sizes the savings plan is the only commitment left. NC6s_v3
    has no reservation either, and the savings plan takes 26.7% off it at 1 year against
-   32.2% on the CPU families. Current values:
-   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> (page) and
-   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> (data).
+   32.2% on the CPU families. Current values: same sources as point 3.
 
 **Reservation and Savings Plan liquidity mechanics (verified against Microsoft Learn, July 2026; exchange and trade-in rows re-checked 2 October 2026):**
 

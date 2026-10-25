@@ -60,7 +60,7 @@ that release. Either way, confirm the served content itself:
 | Check | How | Expected |
 |---|---|---|
 | Listing totals | `list_references()` and `list_playbooks()` | `total` equals the number of `.md` files under `references/` and `playbooks/` (README excluded) at the tag you deployed |
-| Tool surface | `tools/list` | Six tools, each with a `title` and `readOnlyHint: true`; descriptions identical to `server.py` at that tag |
+| Tool surface | `tools/list` | Seven tools, each with a `title` and `readOnlyHint: true`; `openWorldHint: true` on `get_live_figures` only; descriptions identical to `server.py` at that tag |
 | Bodies | `get_reference(name=...)` on a file changed in the last release | `content` equals the file at that tag |
 
 The hosted server is redeployed per release, not per merge (INSTALLATION.md), so
@@ -68,7 +68,7 @@ content merged to `main` after the last tag is expected to be absent until the n
 release and `fly deploy`. It is not a defect. If the served content is older than the
 last tag, run `fly deploy` from the tagged commit first.
 
-Then exercise each of the six tools once through MCP Inspector
+Then exercise each of the seven tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
 asks you to confirm you did.
 
@@ -246,8 +246,10 @@ different URLs".
 
 ### 2.2 Tools
 
-Synced from the server. Expect six tools, all in the read-only group, each with a
-title. If any is flagged for a missing title or annotation, the deployment is stale:
+Synced from the server. Expect seven tools, all in the read-only group, each with a
+title. `get_live_figures` is the one declared open-world (it fetches an OptimToken
+guide's `figures.json`); if the portal asks about external requests, the answer is
+that tool, one HTTPS GET to `optimtoken.optimnow.io` with the guide slug only. If any is flagged for a missing title or annotation, the deployment is stale:
 see section 0.
 
 ### 2.3 Listing
