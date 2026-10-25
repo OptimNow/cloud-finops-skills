@@ -67,7 +67,7 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
    Graviton2 families (t3, m5, c5, r5, t3a, m5a, c5a, t4g, m6g, c6g, r6g) take 36.4%
    to 37.4%; the Compute SP is flat, 26.4% to 28.3%, across all of them. A migration
    between the two groups is therefore costed off the row, not the median. Current
-   values: <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances>.
+   values: <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json>.
    Compute SPs **do not cover SageMaker** - SageMaker AI workloads need their own
    SageMaker AI Savings Plan, which is a separate purchase.
 
@@ -159,7 +159,7 @@ START: What compute service runs the workload?
 │         while the Standard RI gives it the CPU rate (37.0%); p3.2xlarge
 │         has no Compute SP rate in AWS's price file (measured on the
 │         2026-10-25 OptimToken catalogue, no upfront; current values:
-│         optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances)
+│         https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json)
 │       - Spot is viable for ML training with checkpointing
 │       - For SageMaker-based ML: see SageMaker section below
 │
@@ -535,7 +535,7 @@ to risk appetite.
   m5.2xlarge, measured on the 2026-10-25 OptimToken catalogue (no upfront), that is
   73% for the 1-year Compute SP, 63% for the 1-year Standard RI, 51% and 43% at 3
   years, so a 60-hour development week (36% of 168 hours) is below every instrument.
-  Current values: <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances>.
+  Current values: <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json>.
 - **Commitment waste:** hours where committed capacity had no matching usage.
 
 **Pre-purchase checklist:**

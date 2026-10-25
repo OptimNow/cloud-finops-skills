@@ -68,7 +68,7 @@ to be layered, not chosen in isolation.
    7.9 at 3 years (53.4% and 60.5%). The reservation discount splits by family: 41.0%
    to 41.1% at 1 year on Esv5, Easv5, Dpsv5 and Epsv5, 38.3% on Dsv5 and Dasv5, while
    the savings plan runs 31.3% to 32.7% across all of them. Current values:
-   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances>.
+   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json>.
 
 4. **Reservations keep a capped refund and trade-in; savings plans keep nothing.**
    From 1 February 2027 reservation exchange retires for services a savings plan also
@@ -103,7 +103,7 @@ to be layered, not chosen in isolation.
    page names, so on those sizes the savings plan is the only commitment left. NC6s_v3
    has no reservation either, and the savings plan takes 26.7% off it at 1 year against
    32.2% on the CPU families. Current values:
-   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances>.
+   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json>.
 
 **Reservation and Savings Plan liquidity mechanics (verified against Microsoft Learn, July 2026; exchange and trade-in rows re-checked 2 October 2026):**
 
