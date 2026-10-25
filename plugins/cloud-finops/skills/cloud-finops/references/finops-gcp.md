@@ -230,7 +230,8 @@ GCP CUDs come in two distinct flavours that are easy to conflate:
 | **Spend-based / Flexible CUD** | $/hr spend on Compute Engine | **Up to 28% (1yr) or 46% (3yr)** | High - any machine series in any region | 1yr or 3yr |
 
 The live row-by-row commitment comparison
-(<https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json>)
+(<https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> for the page,
+<https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> for the data)
 covers AWS and Azure only: its GCP committed-use figures are typed estimates, not read
 from Google's price list, so check CUD rates on Google's own pricing pages.
 
