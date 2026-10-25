@@ -35,7 +35,7 @@ skill also names the `get_live_figures` tool of the separate MCP connector below
 sessions where you have added that connector; without it, the skill gives the guide's
 link.
 
-The hosted MCP connector that serves the same library is a separate listing, added
+The hosted MCP connector that serves the same library is a separate product, added
 on its own, so that the content is not loaded twice in one session.
 
 ## Updates

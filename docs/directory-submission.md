@@ -161,7 +161,7 @@ new version.
 | Question | Answer |
 |---|---|
 | Reads or stores personal data | No. Static skill files; the connector has no accounts, no database and no per-user state |
-| Sends data to services other than its declared connectors | No. The plugin declares no connector and calls no endpoint. The skill directs the model to a public pricing site (optimtoken.optimnow.io) for current prices; that is a link the model may open in the conversation, not a call the plugin makes. It also names the separate connector's `get_live_figures` tool for a dated guide figure, for sessions where the user has added that connector (policy 3.F lets a plugin use a connector listed in the directory) |
+| Sends data to services other than its declared connectors | No. The plugin declares no connector and calls no endpoint. The skill directs the model to a public pricing site (optimtoken.optimnow.io) for current prices; that is a link the model may open in the conversation, not a call the plugin makes. It also names the separate connector's `get_live_figures` tool for a dated guide figure, for sessions where the user has added that connector. The plugin neither declares nor calls it, so this holds whether or not the connector is listed yet; once it is, policy 3.F also lets a plugin connect to a listed connector |
 | Retention | None by the plugin. The hosted server keeps a coverage log of zero-result facet queries (no conversation text); the hosting platform keeps the standard web access log. See PRIVACY.md |
 | Intended for people under 18 | No |
 
