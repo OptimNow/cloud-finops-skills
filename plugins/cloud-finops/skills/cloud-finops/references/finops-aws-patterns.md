@@ -26,7 +26,7 @@ business_coverage: ["aws:waste:deep"]
 |---|---|---|
 | `finops-aws-patterns-compute.md` | EC2, Lambda, EKS, ECS / Fargate, EMR, Athena, AppStream, WorkSpaces | 42 |
 | `finops-aws-patterns-storage.md` | S3, EBS, EFS, snapshots, AWS Backup | 28 |
-| `finops-aws-patterns-databases.md` | RDS, Aurora, DynamoDB, ElastiCache, MemoryDB, OpenSearch, DMS; RDS cost strategy; database commitment decision tree (incl. Redshift) | 31 |
+| `finops-aws-patterns-databases.md` | RDS, Aurora, DynamoDB, ElastiCache, MemoryDB, OpenSearch, DMS; RDS cost strategy; database commitment decision tree (incl. Redshift) | 33 |
 | `finops-aws-patterns-networking.md` | NAT gateways, VPC endpoints, load balancers, cross-AZ transfer, CloudFront, Elastic IPs | 15 |
 | `finops-aws-patterns-other.md` | CloudWatch Logs, AWS Config, CloudTrail, EventBridge, OpenSearch, EDP, Marketplace | 13 |
 

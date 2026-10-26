@@ -325,7 +325,7 @@ In Databricks, on-demand instances provide reliable performance but come at a pr
 
 ---
 
-## Storage Optimization Patterns (1)
+## Storage Optimization Patterns (2)
 
 **Missing Delta Optimization Features For High Volume Tables**
 Service: Delta Lake | Type: Suboptimal Data Layout
@@ -335,6 +335,29 @@ In many Databricks environments, large Delta tables are created without enabling
 - Apply partitioning when writing Delta tables, using columns commonly filtered in queries
 - Enable Z-Ordering on appropriate columns to improve data skipping efficiency
 - Use `OPTIMIZE` and `VACUUM` to reduce file fragmentation and improve query performance
+
+**Retained Delta Files Hidden From The Table Size**
+Service: Delta Lake | Type: Untracked Storage
+
+The cloud storage account bills every file a Delta table keeps, but `sizeInBytes` and
+`DESCRIBE EXTENDED` show only the files the current version references. Retained
+versions and files waiting for `VACUUM` do not appear there.
+
+- Measure the split: `ANALYZE TABLE <table> COMPUTE STORAGE METRICS` (Databricks Runtime
+  18.0 and above, Unity Catalog managed and external tables) returns total, active,
+  vacuumable and time-travel bytes. The result is not stored, so run it on a schedule
+  and write it to a table to see which tables carry retained data
+- A retention job that deletes old rows does not shrink storage at once. With deletion
+  vectors enabled, `DELETE` marks rows without rewriting files; `REORG TABLE ... APPLY
+  (PURGE)` rewrites them, and the superseded files leave storage only when `VACUUM` runs
+  past the retention threshold, 7 days by default for data files (log files are kept
+  30 days)
+- A threshold below 7 days needs the `retentionDurationCheck` safety check disabled, is
+  safe only if no operation on the table runs longer than the threshold, and removes
+  time travel beyond it
+
+Sources: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-aux-analyze-compute-storage-metrics,
+https://docs.databricks.com/aws/en/delta/vacuum
 
 Predictive optimization runs `OPTIMIZE`, `VACUUM` and `ANALYZE` automatically on Unity
 Catalog managed tables (not external tables), enabled at account, catalog, schema or

@@ -507,7 +507,7 @@ https://aws.amazon.com/blogs/aws-cloud-financial-management/automation-and-trust
 Several AWS services charge an Extended Support surcharge for domains, clusters, or
 instances left on end-of-standard-support versions. This is the "outdated resource
 incurring extended support charges" pattern - see `finops-aws-patterns-compute.md` (EKS)
-and `finops-aws-patterns-databases.md` (OpenSearch).
+and `finops-aws-patterns-databases.md` (OpenSearch, ElastiCache).
 
 Make version audits a recurring FinOps action item:
 - Audit Amazon OpenSearch Service domains for legacy Elasticsearch (1.5-7.8) and
@@ -517,6 +517,9 @@ Make version audits a recurring FinOps action item:
   surcharge rises to equal 100% of instance pricing (a 2x effective compute cost for
   domains still on old versions). Newer versions (ES 6.8/7.9/7.10, OpenSearch 1.3,
   2.11-2.19) have their own Standard/Extended Support windows ranging 1-3 years.
+- Audit ElastiCache caches on Redis OSS 4 and 5 (paid Extended Support since
+  1 February 2026) and 6 (from 1 February 2027). Reserved nodes do not discount the
+  charge; see `finops-aws-patterns-databases.md`.
 - AWS revises these support windows periodically - always check the current support
   dates before budgeting rather than relying on a cached table.
 
