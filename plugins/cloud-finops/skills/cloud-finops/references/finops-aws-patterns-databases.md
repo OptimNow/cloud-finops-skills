@@ -322,7 +322,7 @@ https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/capacity-reservations.pri
 
 ---
 
-## Databases Optimization Patterns (31)
+## Databases Optimization Patterns (33)
 
 **Inefficient Use Of On Demand Capacity In Dynamodb**
 Service: AWS DynamoDB | Type: Inefficient Configuration
@@ -350,7 +350,6 @@ When an OpenSearch or Elasticsearch domain remains on a version past its standar
 - Identify OpenSearch/Elasticsearch domains running versions past their standard support window (legacy ES 1.5-7.8, OpenSearch 1.0-1.2 and 2.3-2.9)
 - Prioritise upgrades ahead of the November 2026 surcharge doubling to 100% of instance price, and note the November 2027 cutoff for continued Extended Support coverage
 - Test upgrade compatibility in lower environments before applying in production, and decommission unused domains to eliminate unnecessary charges
-<<REPLACE>>
 
 **Outdated Opensearch Version Triggering Extended Support Charges**
 Service: AWS OpenSearch | Type: Inefficient Configuration
@@ -360,6 +359,17 @@ Domains running outdated OpenSearch versions - particularly OpenSearch 1.x - beg
 - Upgrade OpenSearch domains to a supported version
 - Test upgrade compatibility in lower environments before applying in production
 - Decommission inactive domains to eliminate unnecessary support and compute charges
+
+**Outdated ElastiCache Redis OSS Version Incurring Extended Support Charges**
+Service: Amazon ElastiCache | Type: Inefficient Configuration
+
+ElastiCache for Redis OSS 4 and 5 left standard support on 31 January 2026. Caches still on them were enrolled in paid Extended Support automatically, with charges from 1 February 2026; Redis OSS 6 follows on 1 February 2027. The charge is a percentage of the on-demand node price (80% in year 1 in AWS's own example), and reserved nodes do not discount it, so a fully reserved cache fleet still pays it at on-demand terms. There is no opt-out at creation as RDS has: the charge stops only when the cache is upgraded to a version in standard support or deleted, and a cache created or restored on an old version after the cut-off is enrolled too. Extended Support ends on 31 January 2029 for versions 4 and 5, when remaining caches are upgraded to Valkey automatically.
+
+- Inventory caches by engine version and upgrade to Valkey or a supported Redis OSS version before the next cut-off
+- Check snapshot-restore paths and templates that pin an old engine version
+- Read the current schedule and the later-year premiums on the ElastiCache pricing page before budgeting
+
+Sources: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/extended-support.html, https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/extended-support-charges.html
 
 **Suboptimal Engine Selection In Memorydb**
 Service: AWS MemoryDB | Type: Inefficient Configuration
