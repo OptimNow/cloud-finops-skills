@@ -39,9 +39,9 @@ effective rate the CUD competes against.
 -- BigQuery over the standard billing export. Prerequisite: detailed
 -- billing export enabled into `billing_dataset.gcp_billing_export_v1_*`.
 -- Compares commitment fees against the CUD credits they generate, per
--- region, last 30 days. Credits appear as separate line items on usage
--- rows (credits.type = 'COMMITTED_USAGE_DISCOUNT'), not as discounts on
--- the commitment fee line itself.
+-- region, last 30 days. Credits are entries in the repeated credits field
+-- of the usage rows (credits.type = 'COMMITTED_USAGE_DISCOUNT'), not
+-- separate rows and not discounts on the commitment fee line itself.
 WITH fees AS (
   SELECT location.region AS region,
          SUM(cost) AS commitment_fee

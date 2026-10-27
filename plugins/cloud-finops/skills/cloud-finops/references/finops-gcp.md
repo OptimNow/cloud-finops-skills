@@ -122,11 +122,20 @@ GCP exposes three distinct exports to BigQuery, and they are not interchangeable
 - **Detailed export schema differs from standard.** Queries built against `gcp_billing_export_v1_*` (standard)
   do not run unchanged against `gcp_billing_export_resource_v1_*` (detailed); both schemas
   evolve over time.
-- **Credits appear as separate line items**, not as discounts on the parent line. CUD
-  application, SUD application, and promotional credits each get their own rows -
-  filter or aggregate carefully.
+- **Credits are not separate rows.** Each usage row carries a repeated `credits` field
+  (`id`, `full_name`, `type`, `name`, `amount`), and Google's example queries treat the
+  amounts as negative and add them to cost: net cost is
+  `SUM(cost) + SUM(IFNULL((SELECT SUM(c.amount) FROM UNNEST(credits) c), 0))`. A query
+  that reads only `cost` reports cost before CUDs, SUDs and promotions, and one that
+  subtracts credits flips their sign. The credit types are `COMMITTED_USAGE_DISCOUNT`,
+  `COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE`, `SUSTAINED_USAGE_DISCOUNT`, `FREE_TIER`,
+  `PROMOTION`, `DISCOUNT`, `RESELLER_MARGIN`, `SUBSCRIPTION_BENEFIT` and
+  `FEE_UTILIZATION_OFFSET`. To reproduce a console view, the Billing Reports "Generate
+  query" feature writes the equivalent BigQuery SQL.
 
-Source: https://cloud.google.com/billing/docs/how-to/export-data-bigquery
+Sources: https://cloud.google.com/billing/docs/how-to/export-data-bigquery,
+https://docs.cloud.google.com/billing/docs/how-to/export-data-bigquery-tables/standard-usage,
+https://docs.cloud.google.com/billing/docs/how-to/bq-examples
 
 ### Incentives page - tracking conditional contract credits
 
