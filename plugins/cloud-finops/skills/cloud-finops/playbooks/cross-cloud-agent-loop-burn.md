@@ -88,6 +88,16 @@ AzureMetrics
 legitimate steady traffic: identical prompt hashes across requests, zero-diff
 outputs, and `max_retries` / `max_iterations` exhaustion in agent-framework logs.
 
+**Trace-side diagnosis** - where the agent emits OpenTelemetry GenAI spans (names in
+`finops-agentic.md`, "Hidden k is the audit target"), the span mix points to the cause:
+
+| Symptom in the trace | Likely cause | First action |
+|---|---|---|
+| `execute_tool` errors rising while input tokens climb step after step | A broken tool driving a retry loop | Set a per-session spend cap and a retry limit, then fix the tool |
+| Many `invoke_agent` and `chat` spans, few `execute_tool` spans | The agents spend their tokens coordinating with each other | Merge roles into fewer agents |
+| Input share of cost rising at each step | The agent re-reads its full history every step | Apply prompt caching to the history first, then summarisation checkpoints |
+| Tools succeed but the quality gate fails | The model is too weak for the step | Route the validation and final steps to a stronger model; judge the change on cost per completed task |
+
 ## Fix
 
 1. **Cap the loop at the framework.** Set `max_iterations` / `max_retries` and a
@@ -138,6 +148,7 @@ against these):
 - AWS Bedrock application inference profiles - https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html
 - Anthropic Usage & Cost Admin API - https://docs.claude.com/en/api/usage-cost-api
 - Azure OpenAI monitoring data reference - https://learn.microsoft.com/en-us/azure/foundry/openai/monitor-openai-reference
+- OpenTelemetry GenAI semantic conventions (span and attribute names, "development" stability, checked 27 October 2026) - https://github.com/open-telemetry/semantic-conventions-genai
 
 ---
 
