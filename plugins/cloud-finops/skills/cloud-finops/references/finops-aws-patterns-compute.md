@@ -36,6 +36,30 @@ Amazon EMR clusters often run on large, multi-node EC2 fleets, making them costl
 - Review and shut down idle clusters that are no longer actively running jobs
 - Educate data engineering teams on the cost implications of leaving clusters running
 
+**EMR billing basis by deployment mode.** The EMR charge sits on top of the compute
+underneath, and what it meters depends on the mode:
+
+- **EMR on EC2:** the EMR price is added to the price of each EC2 instance in the cluster,
+  billed per second with a one-minute minimum, so an idle cluster pays both.
+- **EMR on EKS:** the EMR charge is added to the EKS costs (EC2 nodes or Fargate) and
+  metered on the vCPU and memory of the EMR driver and executor pods, from the start of
+  the EMR image download until the pod terminates, rounded up to the second. AWS's own
+  example charges the job's pods, not the node capacity. AWS pages differ on whether that
+  means requested or consumed resources (the pricing page says "requested", the
+  development guide "consumption"), so check the bill against executor requests before
+  assuming oversized requests cost nothing extra. The charge applies to any pod running
+  an image derived from the EMR runtime, whatever registry holds the image and however
+  the job is submitted (StartJobRun, the Spark operator or spark-submit).
+- **EMR Serverless:** billed on the vCPU, memory and storage the workers consume, from
+  when a worker is ready until it stops, per second with a one-minute minimum, with no
+  node cost underneath.
+
+The cheaper mode for a workload depends on price ratios that move: the EMR on EKS charge
+fell 30% on 23 October 2026, so recompute any earlier EC2 versus EKS comparison with
+current pricing. Sources: <https://aws.amazon.com/emr/pricing/>,
+<https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/spark-operator.html>,
+<https://aws.amazon.com/about-aws/whats-new/2026/10/emr-eks-reduces-emr-charge-30-percent/>
+
 **Inactive Aws Workspace**
 Service: AWS WorkSpaces | Type: Inactive Resource
 
