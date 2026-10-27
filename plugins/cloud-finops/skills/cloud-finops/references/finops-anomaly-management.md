@@ -67,6 +67,14 @@ For multi-account organisations, configure monitors in the management (payer) ac
 so they cover the full consolidated bill. Per-account monitors miss anomalies that
 span accounts (e.g. a workload that moved subscriptions).
 
+**Two documented blind spots.** Cost Anomaly Detection does not monitor AWS Marketplace
+charges, except third-party foundation models on Amazon Bedrock; for other Marketplace
+spend, use an AWS Budgets cost budget filtered on the Billing entity dimension. And a
+newly subscribed service needs 10 days of usage history before anomalies can be detected
+for it, so the first-time-spend signal in "New-region and new-service detection" below
+is what covers a new service's first days. Source:
+<https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html>
+
 ### Azure Cost Management anomaly detection
 
 Built into Azure Cost Management. Available at subscription and resource-group scopes.
@@ -201,6 +209,9 @@ This catches:
   cryptomining incident).
 - Developers spinning up services finance has no contract with.
 - Migration drift where workloads end up in regions outside the approved list.
+
+On AWS this signal also fills a gap in the native tool, which needs 10 days of history
+before it can flag anomalies on a newly subscribed service.
 
 Implementation: a daily query against the billing export comparing the unique set of
 (service, region) pairs in the trailing 7 days against the prior 90 days. New pairs

@@ -191,7 +191,12 @@ documentation; verify in your own account): some models carry an empty `provider
 value, so a filter on Model provider silently drops them, and grouping by model inside
 a SERVICE filter on "Amazon Bedrock" returned a subset of models where grouping without
 the SERVICE filter returned all of them. Build model-level reports by grouping on the
-attribute without a service filter, and check for the empty-provider bucket.
+attribute without a service filter, and check for the empty-provider bucket. AWS
+documents that third-party foundation models on Bedrock appear in Cost Explorer and on
+the bill under the AWS Marketplace billing entity, which may explain the second
+observation: check the Billing entity dimension before trusting a service-filtered total
+([Cost Anomaly Detection page](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html),
+read 27 October 2026).
 
 **What this does and does not close.** Model-level dollars and token-type dollars are
 now native. Per-request cost, cost per conversation or per feature call, and anything

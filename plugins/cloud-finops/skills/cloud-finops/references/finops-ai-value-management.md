@@ -445,6 +445,9 @@ capabilities routinely weigh more with executives than cost avoidance, which is 
 why they need the strictest counterfactual: without one, the ROI story collapses into an
 FTE estimate nobody will sign.
 
+When an agent's unit cost is compared with a human's, the agent side includes the human
+review and exception handling that remain, not only the model and tool spend.
+
 ### Realisation rate is not a quality metric
 
 Realisation rate answers "did the model produce usable output at all?" - it captures

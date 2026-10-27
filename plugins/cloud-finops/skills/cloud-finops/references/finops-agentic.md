@@ -87,7 +87,16 @@ response, not in a budget.
   anatomy of a "30x over estimate" agent pilot.
 - **Hidden k is the audit target.** Reasoning tokens, retries, and context replay
   rarely appear in request logs. Per-task tracing across providers (see the cost
-  anatomy section below) is what makes k and a observable at all.
+  anatomy section below) is what makes k and a observable at all. The standard names
+  for it are the OpenTelemetry GenAI semantic conventions: agent operations
+  `create_agent`, `invoke_agent`, `invoke_workflow` and `execute_tool` (plus `chat` for
+  model calls), and usage attributes `gen_ai.usage.input_tokens`, `output_tokens`,
+  `cache_read.input_tokens`, `cache_write.input_tokens` and `reasoning.output_tokens`.
+  Unlike the Anthropic API field, the OpenTelemetry `input_tokens` should already include
+  cached tokens, so do not add the cache attributes on top. All of them are at
+  "development" stability and now live in
+  [open-telemetry/semantic-conventions-genai](https://github.com/open-telemetry/semantic-conventions-genai)
+  (checked 27 October 2026): cite the names, not the tooling around them.
 - **Jevons caveat.** Class improvements get reinvested: cheaper per-task cost
   typically raises run frequency, so total spend falls less than unit cost does.
   Budget for the rebound, not just the efficiency gain.
