@@ -43,7 +43,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 | Performance tier | Standard vs Fast mode - 2x price multiplier, and only on the models that offer it |
 | Context length | **Per-model**: the current generation prices flat across a 1M-token window with no long-context premium. Older models applied premium rates above 200K input tokens. Verify per model rather than assuming either behaviour. |
 | Data residency | US-only inference adds a 1.1x multiplier |
-| Prompt caching | Writes are priced (1.25x or 2x), reads are discounted (0.1x; 0.05x on Opus 5.5; 0.025x on Fable 5.1) |
+| Prompt caching | Writes are priced (1.25x or 2x), reads are discounted (0.1x; 0.05x on Opus 5.5 and Sonnet 5.5; 0.025x on Fable 5.1 and Mythos 5.1) |
 | Tool usage | Web search and code execution have separate meters |
 | Batch processing | 50% discount via Batch API (Fast mode excluded) |
 | Service tier | Standard, Priority, or Batch - affects capacity and pricing |
@@ -69,7 +69,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 | Claude Opus 4.8 | $5 | $25 | 1M | Previous Opus |
 | Claude Opus 4.7 | $5 | $25 | 1M | |
 | Claude Opus 4.6 | $5 | $25 | 1M | |
-| Claude Sonnet 5.5 | $2 | $10 | 1M | Launched 28 September 2026 at the Sonnet 5 rate. Carries breaking API changes from Sonnet 5 (thinking-mode and forced-tool-use behaviour), so the upgrade is an engineering change at constant unit cost |
+| Claude Sonnet 5.5 | $2 | $10 | 1M | Launched 28 September 2026 at the Sonnet 5 rate. Carries breaking API changes from Sonnet 5 (thinking-mode and forced-tool-use behaviour), so the upgrade is an engineering change at constant unit cost. Cache reads at 0.05x |
 | Claude Sonnet 5 | $2 | $10 | 1M | Launched at an introductory rate; Anthropic made it the standard price in August 2026 and cancelled the scheduled 1 September increase |
 | Claude Sonnet 4.6 | $3 | $15 | 1M | |
 | Claude Sonnet 4.5 | $3 | $15 | 200K | Deprecated 30 September 2026; retirement on the Claude API scheduled for 30 November 2026. Plan the migration to Sonnet 5 or 5.5 (0.67x the rate) before then |
@@ -80,8 +80,9 @@ five generations (4.5 through 5), and Opus 5.5 is the first break in that line: 
 the rate with cache reads at half the standard multiplier, so moving a cache-heavy
 agentic workload from Opus 5 to Opus 5.5 is a rate cut as well as a capability change.
 Second, the cache-read multiplier is no longer one number across the catalogue (0.1x
-standard, 0.05x Opus 5.5, 0.025x Fable 5.1): the caching break-even below has to be
-computed per model, and a routing layer that mixes models is mixing cache economics.
+standard, 0.05x Opus 5.5 and Sonnet 5.5, 0.025x Fable 5.1 and Mythos 5.1): the caching
+break-even below has to be computed per model, and a routing layer that mixes models is
+mixing cache economics.
 Third, Fable sits at 2x Opus-5 pricing (2.5x Opus 5.5), which makes "use the most
 capable model" a materially different decision from "use the newest Opus": route to
 Fable on evidence, not by default.
@@ -166,9 +167,17 @@ a workload-classification exercise rather than a procurement one.
   parameter is set
 - **5-minute cache writes**: 1.25x on base input price
 - **1-hour cache writes**: 2x on base input price
-- **Cache reads**: 0.1x on base input price (90% discount) as the standard. Two
-  models read cheaper: Opus 5.5 at 0.05x (95% discount) and Fable 5.1 at 0.025x
-  (97.5% discount). Each moves the cache break-even for its tier
+- **Cache reads**: 0.1x on base input price (90% discount) as the standard. Four
+  models read cheaper: Opus 5.5 and Sonnet 5.5 at 0.05x (95% discount), Fable 5.1 and
+  Mythos 5.1 at 0.025x (97.5% discount). Each moves the cache break-even for its tier
+  ([Anthropic prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching), read 27 October 2026)
+- **Automatic caching**: a top-level `cache_control` on the request puts the breakpoint
+  on the last cacheable block and moves it forward as the conversation grows, so no
+  markers need maintaining. Not available on the legacy Bedrock integration (Opus 4.6
+  and earlier), which returns a 400 error: use explicit breakpoints there
+- **Isolation scope**: caches are isolated by workspace on the Claude API, Claude
+  Platform on AWS and Microsoft Foundry, and only by organization on Bedrock and Claude
+  models on Google Cloud (Google managed). Different organizations never share a cache
 - **Modifiers stack** - Fast mode plus US-only inference compounds
 
 **Cache break-even depends on the TTL, and the 1-hour TTL is not a free upgrade.**
@@ -182,6 +191,12 @@ agentic session, where reads dominate: at 0.05x a 100K-token cached prefix re-re
 on every turn costs half what it does at 0.1x. Verify the multiplier for the model
 in use on the pricing page before quoting a session cost (list, Anthropic pricing
 page, 1 October 2026).
+
+**Total input is the sum of three usage fields.** `input_tokens` counts only the tokens
+after the last cache breakpoint, so total input = `cache_read_input_tokens` +
+`cache_creation_input_tokens` + `input_tokens`. A dashboard or unit-cost model that reads
+`input_tokens` alone undercounts a cached workload and cannot price it, because each of
+the three fields carries a different multiplier (prompt caching docs, 27 October 2026).
 
 ### Refusals and fallback billing
 

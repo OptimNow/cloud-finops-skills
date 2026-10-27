@@ -591,15 +591,36 @@ September 2026).
   depends on the model: Claude writes at 1.25x or 2x by TTL, recent OpenAI models and
   Kimi K3 at 1.25x, older OpenAI models at no premium. Vertex AI writes at the standard
   input rate. Read rates vary too: 0.1x on most models, 0.05x on GPT-6.1 Sol and Claude
-  Opus 5.5, 0.025x on Claude Fable 5.1 and Mythos 5.1 (as of 2 October 2026). On OpenAI
-  GPT-5.6 and later, implicit mode (the default) places a breakpoint at the latest
+  Opus 5.5 and Sonnet 5.5, 0.025x on Claude Fable 5.1 and Mythos 5.1 (as of 2 October
+  2026; Claude rates re-checked on the Anthropic prompt caching page, 27 October 2026).
+  On OpenAI GPT-5.6 and later, implicit mode (the default) places a breakpoint at the latest
   eligible message and writes it whenever that prefix is not already cached, so
   one-shot workloads should use explicit-only mode with no breakpoints. Where writes
   carry a premium, a prefix that is never re-read costs more
   than not caching - see the provider files for break-even and cache-mode controls
+- Break-even, any provider: with w the write multiplier and r the read multiplier (both
+  against the uncached input rate), caching pays when reads per write > (w - 1) / (1 - r).
+  For k reads the cached cost is w + k x r against 1 + k uncached. At r = 0.1 that gives
+  0.28 for a 1.25x write (the first read pays), 1.11 for a 2x write (two reads needed),
+  and 0 where writes carry no premium (caching cannot lose)
+- Estimate the saving on the whole bill before quoting it to Finance: reduction ≈ input
+  share of spend x cache-read share of input tokens x (1 - r), minus write premiums. With
+  illustrative shares of 60% and 70% at r = 0.1, that is 60% x 70% x 0.9 = 38% at most,
+  not the 90% the read discount suggests. Take both shares from the estate's usage data
 - Cache embedding results for repeated documents in RAG systems
 - Cache responses for deterministic or near-deterministic queries
 - Cache at the application layer before hitting the model API
+- Keep provider prefix caching and application-layer response or semantic caching apart.
+  Prefix caching hits only on an exact prefix match and the model still generates a fresh
+  answer, so it carries no staleness risk. Staleness and correctness risks (an outdated
+  answer, or a stored answer matched to a question that only looks similar) belong to
+  response caching, which needs its own TTL and invalidation rules
+- Check cache isolation scope before a prefix is shared across tenants or business units.
+  Gu et al., "Auditing Prompt Caching in Language Model APIs", ICML 2025
+  (<https://arxiv.org/abs/2502.07776>), detected cache sharing across users at 7 of the 17
+  API providers audited: a cache hit returns faster, so response timing can reveal that
+  someone else sent the same prefix. On Anthropic the scope is workspace or organization
+  depending on the platform (`finops-anthropic.md`, "Modifiers")
 - Routing and caching interact: provider prompt caches are local to the provider and
   often to the serving path, so a request routed to a different model or vendor misses
   the cache it would otherwise have hit. Measure the two levers together, not separately

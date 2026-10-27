@@ -520,11 +520,11 @@ between a mini and a frontier model on the OpenAI side is wider still. Choose
 the model that matches the task complexity, default to the more efficient one, and escalate
 only when needed. Pull the current rates before quantifying the saving.
 
-**Prompt caching** (Anthropic) - cache reads cost 0.1x the base input price (0.025x on
-Fable 5.1). Cache writes
-cost 1.25x (5-minute TTL) or 2x (1-hour TTL). For repetitive workflows with stable system
-prompts, caching provides significant savings. See `finops-anthropic.md` for the full
-mechanics.
+**Prompt caching** (Anthropic) - cache reads cost 0.1x the base input price (0.05x on
+Opus 5.5 and Sonnet 5.5, 0.025x on Fable 5.1 and Mythos 5.1, as of 27 October 2026).
+Cache writes cost 1.25x (5-minute TTL) or 2x (1-hour TTL). For repetitive workflows with
+stable system prompts, caching provides significant savings. See `finops-anthropic.md`
+for the full mechanics.
 
 **Batch API** (Anthropic) - 50% discount on all token costs for asynchronous workloads.
 Not applicable to interactive coding sessions, but useful for batch code review, test
