@@ -96,8 +96,9 @@ credits excluded from the commitment.
 Pricing applies after Savings Plans and Reserved Instances, to the already-discounted
 amount (practitioner consensus); older paper differed, and the addendum's scope clause
 decides. Private pricing customers cannot sell discounted Reserved Instances on the RI
-Marketplace (EC2 documentation; AWS notice of January 2024 quoted by several
-practitioners), which removes one liquidity route (see `finops-aws-commitments.md`).
+Marketplace without AWS's prior approval (AWS Service Terms 5.6.1, which bars resale of
+RIs bought "through a discount program"; practitioners date enforcement to January
+2024), which removes one liquidity route (see `finops-aws-commitments.md`).
 
 **Enterprise Support arithmetic.** The official fee is the greater of $5,000 a month or
 10% of monthly charges up to $150,000, 7% from $150,000 to $500,000, 5% from $500,000 to

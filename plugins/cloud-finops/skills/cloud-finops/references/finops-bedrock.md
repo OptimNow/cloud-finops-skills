@@ -260,9 +260,9 @@ gap for inference costs routed through that endpoint.
 
 **How it shows up in CUR 2.0:**
 
-- A caller-identity column containing the ARN of the caller (IAM user, role, or
-  assumed-role session) - verify the exact column name in your export, as AWS
-  documentation describes the mechanism without naming the column
+- A caller-identity column, `line_item_iam_principal`, holding the ARN of the caller
+  (IAM user, role, or assumed-role session). The CUR 2.0 line-item dictionary marks it
+  as supported for Amazon Bedrock only
 - Tags applied to the IAM principal appear with an `iamPrincipal/` prefix  -
   e.g. `iamPrincipal/team`, `iamPrincipal/cost-centre`, `iamPrincipal/environment`
 - In Cost Explorer, these tags become available as a grouping and filter dimension
@@ -297,8 +297,12 @@ caller-identity value - only resource tags carry the attribution (unconfirmed in
 documentation; validate in your own CUR before relying on it). IAM Principal Cost Allocation therefore does
 not eliminate the tagging requirement: teams still need tag discipline for guardrails
 and similar non-principal line items. Note that a CUR 2.0 export created **before**
-enabling IAM principal attribution must be **recreated** - existing exports do not
-retroactively include identity data.
+enabling IAM principal attribution must be **recreated**, per the Bedrock guide - existing
+exports do not retroactively include identity data. (The Data Exports edit page lists
+"additional export content" as editable without naming caller identity; follow the
+Bedrock guide.) Sources:
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-iam-principal-tracking.html>,
+<https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/iam-principal-cost-allocation.html>
 
 **When to use it vs. account separation:**
 
@@ -385,9 +389,27 @@ Key metrics to monitor for cost and performance:
 |---|---|
 | `InputTokenCount` | Track input token volume by model |
 | `OutputTokenCount` | Track output token volume by model |
+| `CacheReadInputTokenCount` / `CacheWriteInputTokenCount` | Cache effectiveness; reads bill at a reduced rate and do not count toward TPM, writes do |
 | `InvocationLatency` | End-to-end latency baseline |
-| `InvocationsThrottled` | Signals capacity exhaustion (on-demand or provisioned) |
-| `ProvisionedModelThroughputUtilization` | Utilization of provisioned capacity (target >80%) |
+| `TimeToFirstToken` | Streaming latency (ConverseStream and InvokeModelWithResponseStream only) |
+| `InvocationThrottles` | Requests the service throttled; requests rejected for exceeding a quota count as `InvocationClientErrors` instead |
+| `EstimatedTPMQuotaUsage` | Approximate quota consumption; AWS warns it does not reflect the reservation that drives throttling |
+
+The `ModelId + ContextWindow` dimension is published only for requests billed at a model's
+long-context rate, a subset of the `ModelId` series, so it isolates long-context spend.
+AWS's metric list carries no provisioned-throughput utilisation metric; check
+`aws cloudwatch list-metrics --namespace AWS/Bedrock` before building an alarm on one.
+
+**Quota is not billing.** On bedrock-runtime each request reserves its input tokens plus
+`max_tokens` against the TPM and TPD quotas when it starts, then settles at input + cache
+write + output x the model's burndown rate; cache reads are not counted. The burndown
+rate is 1x unless the model card says otherwise (5x to 15x for recent Anthropic and
+OpenAI models, as of 28 October 2026). Billing is on actual tokens only, so an oversized
+`max_tokens` throttles early without raising the bill: size it from the
+`OutputTokenCount` distribution before requesting more quota or buying Provisioned
+Throughput. Sources:
+<https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/quotas-token-burndown.html>
 
 ### Bedrock model invocation logging - the missing FinOps data source
 

@@ -106,13 +106,14 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
    so the liquidity trade-off is mid-term exchange flexibility vs secondary market
    resale.
 
-5. **Standard RI marketplace liquidity is limited for EDP customers.** As of January
-   2024, EDP customers cannot sell discounted RIs on the AWS Marketplace. This
-   removes the secondary market resale option for EDP organisations, making
-   Standard RIs a less liquid instrument. Non-EDP organisations retain the ability
-   to sell unused Standard RIs to recover value from over-commitment. For EDP
-   customers, phased purchasing with staggered expiry dates becomes the primary
-   liquidity strategy (see "Commitment portfolio liquidity" below).
+5. **Standard RI resale is narrow, and closed under discount programmes.** The AWS
+   Service Terms (5.6.1) bar reselling an RI purchased "through a discount program
+   (Reserved Instance Volume Discounts or otherwise)" without AWS's prior approval,
+   which covers RIs bought under an EDP or Private Pricing Agreement; practitioners date
+   enforcement for EDP customers to January 2024, which no AWS page states. Without a
+   discount, resale is still capped (see "Commitment portfolio liquidity" below), so
+   phased purchasing with staggered expiry dates is the primary liquidity strategy for
+   most estates.
 
 6. **Spot is not a commitment** - it is a market mechanism. It belongs in the compute
    cost strategy but should not be compared directly against commitment instruments.
@@ -347,9 +348,19 @@ AWS commitment instruments offer three forms of liquidity:
 
 | Liquidity mechanism | How it works | Available on |
 |---|---|---|
-| **Secondary market resale** | Sell unused Standard RIs on the RI Marketplace to recover value | Standard RIs only (not available to EDP customers since Jan 2024) |
+| **Secondary market resale** | Sell unused Standard RIs on the RI Marketplace to recover value | Standard RIs only, within a lifetime cap; not for RIs bought under a discount programme without AWS's approval |
 | **Mid-term exchange** | Exchange a Convertible RI for a different configuration (family, OS, tenancy) without losing the commitment value | Convertible RIs only |
 | **Staggered expiry** | Purchase commitments in phased blocks so that only a fraction of the portfolio expires in any given quarter | All instruments (SPs, RIs) |
+
+**Resale is a small exit, not a mechanism to size a portfolio against.** An AWS account
+can sell at most $50,000 of Reserved Instances and 5,000 RIs over its lifetime, and the
+limits cannot be raised. AWS keeps a 12% service fee on the upfront price. Only EC2
+Standard RIs with at least a month left, active for 30 days and with the upfront payment
+received, qualify; RIs bought with a volume discount cannot be listed; the seller's bank
+must have a US address; and buyers are matched to the lowest upfront price first, so
+neither the sale nor its price is guaranteed. Sources:
+<https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html>,
+<https://aws.amazon.com/service-terms/> (5.6), read 28 October 2026.
 
 The first two are instrument-specific. The third - staggered expiry through phased
 purchasing - is a portfolio management discipline that works with any instrument and
@@ -583,8 +594,9 @@ Negotiating an AWS Private Pricing agreement (EDP, PPA) is covered in
 - On current paper Private Pricing applies after Savings Plans and Reserved Instances,
   to the already-discounted amount; older paper differed, and the addendum's scope
   clause decides.
-- Private pricing customers cannot sell discounted Reserved Instances on the RI
-  Marketplace (since January 2024), so staggered expiry is their liquidity route (see
+- Reserved Instances bought under a discount programme cannot be resold on the RI
+  Marketplace without AWS's prior approval (Service Terms 5.6.1), so staggered expiry
+  is the liquidity route for private pricing customers (see
   "Commitment portfolio liquidity").
 - The commitment is measured net of discounts by default, so every discount, the
   private discount included, lowers the spend that retires it.

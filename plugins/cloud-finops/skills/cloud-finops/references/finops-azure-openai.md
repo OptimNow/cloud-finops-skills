@@ -264,8 +264,14 @@ application-level instrumentation.
 
 ### Tagging strategy for Azure OpenAI
 
-Azure OpenAI resources support standard Azure resource tags. Apply tags at the
-resource level (not deployment level) for Cost Management attribution.
+Azure OpenAI resources support standard Azure resource tags, applied at the resource
+level. Cost analysis can then go below the resource: it splits a Foundry resource's cost
+across model deployments (Costs by resource, with deployment tags as a filter), and, in
+preview, attributes usage to Foundry projects through a project tag applied
+automatically to Models sold by Azure, Azure OpenAI included. Project attribution does
+not yet cover models sold through Azure Marketplace, and Claude supports resource-level
+tags only. Source: <https://learn.microsoft.com/en-us/azure/foundry/concepts/manage-costs>
+(updated 22 October 2026).
 
 **Recommended allocation approach:**
 
@@ -285,8 +291,10 @@ to the account level.
 
 This creates a structural visibility gap:
 
-- If multiple applications share one Azure OpenAI account, native billing cannot
-  attribute costs by application - even if model deployments are separated
+- If multiple applications share one deployment, native billing cannot attribute
+  costs by application. Separate deployments (or Foundry projects, in preview) can now
+  be split in Cost analysis, but per-application or per-feature cost on a shared
+  deployment still needs application instrumentation
 - Native Cost Management shows what was spent, but not which application or
   workflow drove the spend
 - Without deployment-level or application-level attribution, optimisation and
