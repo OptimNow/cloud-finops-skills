@@ -262,11 +262,12 @@ See `finops-tagging.md` for the full tagging strategy. AWS-specific notes:
   data transfer charges) - account tags (below, "OU synchronisation") now cover them
   at account level; use Cost Categories for anything finer
 - Enable "Tag policies" in AWS Organizations to enforce tag key capitalisation consistency
-- **IAM Principal Cost Allocation (2026):** tags applied to IAM users and roles can be
-  propagated to CUR 2.0 and Cost Explorer with an `iamPrincipal/` prefix, enabling
-  caller-based attribution when resource-level tags are not sufficient. Primary use case
-  today is Amazon Bedrock - see `finops-bedrock.md` for setup, CUR size implications,
-  and when to use it vs. account separation
+- **IAM Principal Cost Allocation (2026):** tags applied to IAM users and roles, and
+  session tags passed at role assumption, are propagated to CUR 2.0 and Cost Explorer
+  with an `iamPrincipal/` prefix, enabling caller-based attribution when resource-level
+  tags are not sufficient. Supported for Amazon Bedrock only - see `finops-bedrock.md`
+  for setup, CUR size implications, gateways and shared roles, and when to use it vs.
+  account separation
 
 ### Cost Categories
 

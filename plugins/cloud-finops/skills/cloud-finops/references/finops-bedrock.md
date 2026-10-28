@@ -238,7 +238,7 @@ Source: https://aws.amazon.com/about-aws/whats-new/2026/08/aws-cost-anomaly-dete
 AWS Bedrock supports resource tagging on provisioned throughput resources. For on-demand
 API calls, attribution historically required account separation or application-level
 instrumentation. As of 2026, **IAM Principal Cost Allocation** adds a native attribution
-path by recording the caller's IAM principal ARN on every billed line item.
+path by recording the caller's IAM principal ARN on Bedrock inference line items.
 
 **Recommended allocation approach:**
 
@@ -253,7 +253,9 @@ path by recording the caller's IAM principal ARN on every billed line item.
 #### IAM Principal Cost Allocation
 
 When enabled, AWS records the calling IAM principal ARN for each Bedrock API call and
-propagates tags applied to that principal into the Cost and Usage Report and Cost Explorer.
+propagates tags applied to that principal, and session tags passed when a role is assumed,
+into the Cost and Usage Report and Cost Explorer. The caller identity is captured even
+without tags; tags add dimensions such as team or cost centre.
 As of August 2026, this coverage extends to the **bedrock-mantle** endpoint in addition
 to the original **bedrock-runtime** support, closing a per-application/team attribution
 gap for inference costs routed through that endpoint.
@@ -263,15 +265,22 @@ gap for inference costs routed through that endpoint.
 - A caller-identity column, `line_item_iam_principal`, holding the ARN of the caller
   (IAM user, role, or assumed-role session). The CUR 2.0 line-item dictionary marks it
   as supported for Amazon Bedrock only
-- Tags applied to the IAM principal appear with an `iamPrincipal/` prefix  -
-  e.g. `iamPrincipal/team`, `iamPrincipal/cost-centre`, `iamPrincipal/environment`
+- Tags applied to the IAM principal, and session tags passed at role assumption or
+  federation, both appear in the CUR 2.0 tags column with an `iamPrincipal/` prefix -
+  e.g. `iamPrincipal/team`, `iamPrincipal/cost-centre`. When a session tag and a
+  principal tag share a key, the session tag wins for that session
+- For an assumed role the ARN carries the session name
+  (`arn:aws:sts::<account>:assumed-role/<role>/<session-name>`)
 - In Cost Explorer, these tags become available as a grouping and filter dimension
 
-**Activation (three steps, ~48h end-to-end):**
+**Activation (three steps, up to 48 hours end-to-end):**
 
-1. Apply tags to IAM users and roles in the IAM console
-2. Activate those tag keys in Billing > Cost Allocation Tags (up to 24h propagation)
-3. Enable "Include caller identity (IAM principal) allocation data" in CUR 2.0 Data Exports
+1. Apply tags to IAM users and roles, or pass them as session tags (optional: identity is
+   captured without them)
+2. Activate those tag keys in Billing > Cost Allocation Tags, from the management account
+   (up to 24 hours for keys to appear, then up to 24 hours to activate)
+3. Create a new CUR 2.0 export with "Include caller identity (IAM principal) allocation
+   data" selected (an export that predates the feature must be recreated, see below)
 
 As of August 2026, this activation covers inference calls on both the **bedrock-runtime**
 and **bedrock-mantle** endpoints - no additional setup step is needed to pick up
@@ -279,11 +288,11 @@ bedrock-mantle traffic once caller-identity allocation is enabled.
 
 **Structural consequences to plan for:**
 
-- **CUR size grows significantly.** Row count multiplies roughly by the number of distinct
-  calling principals per model per day. Budget for larger S3 storage, longer Athena scans,
-  and higher Athena query cost in proportion to the extra rows
-- Tags only become visible after the principal has made at least one API call - new roles
-  will not appear in cost allocation UI until used
+- **CUR size grows significantly.** AWS states that row count increases "by a factor of
+  the number of calling identities accessing each model". Budget for larger S3 storage,
+  longer Athena scans, and higher Athena query cost in proportion to the extra rows
+- Tags only become visible after the principal, assumed-role sessions included, has made
+  at least one API call - new roles will not appear in cost allocation UI until used
 - Follow standard tag hygiene: avoid high-cardinality values (session IDs, timestamps,
   GUIDs) as they inflate CUR without analytical value
 - The feature gives visibility, not chargeback automation - downstream showback or
@@ -300,9 +309,30 @@ and similar non-principal line items. Note that a CUR 2.0 export created **befor
 enabling IAM principal attribution must be **recreated**, per the Bedrock guide - existing
 exports do not retroactively include identity data. (The Data Exports edit page lists
 "additional export content" as editable without naming caller identity; follow the
-Bedrock guide.) Sources:
+Bedrock guide.) Cost allocation tags are not retroactive either: only costs incurred
+after activation carry them.
+
+**Gateways and shared roles.** A proxy (LiteLLM or a custom gateway) or a single
+application role concentrates all cost on one principal, so `line_item_iam_principal`
+shows the gateway, not the user. Three ways to recover the user:
+
+- **Session tags per user.** The gateway assumes its Bedrock role once per user with
+  `sts:AssumeRole` and `Tags` (the trust policy must allow `sts:TagSession`), and caches
+  the credentials for the session lifetime: assuming the role on every request can hit
+  AWS STS request rate quotas. Federated users (IAM Identity Center, Okta, Entra) get the
+  same result when the identity provider passes attributes as session tags; Identity
+  Center sends its attributes for access control as session tags.
+- **Gateway logs.** The gateway's own request log, keyed by user and model, priced
+  against the CUR at the model and usage-type grain.
+- **Model invocation logging.** Logs carry the caller's `identity.arn`, not session tags,
+  so a per-user `RoleSessionName` is what makes users distinct there.
+
+Sources (read 28 October 2026):
 <https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-iam-principal-tracking.html>,
-<https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/iam-principal-cost-allocation.html>
+<https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/iam-principal-cost-allocation.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-understanding-cur-data.html>,
+<https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html>,
+<https://docs.aws.amazon.com/singlesignon/latest/userguide/attributesforaccesscontrol.html>
 
 **When to use it vs. account separation:**
 
@@ -311,6 +341,7 @@ Bedrock guide.) Sources:
 | Multiple teams share one account and need per-team Bedrock attribution | IAM Principal Cost Allocation |
 | Teams need independent budgets, IAM boundaries, and quota ceilings | Separate accounts |
 | Per-user chargeback inside a team (e.g. internal AI sandbox) | IAM Principal Cost Allocation on user tags |
+| Users reach Bedrock through a gateway or one shared role | Session tags per user at role assumption, or gateway logs (see "Gateways and shared roles") |
 | Per-feature attribution inside a single application | Still needs SDK/proxy wrapper - IAM principal is too coarse |
 
 **Feature-level attribution (still relevant):** IAM principals identify *who* called the
@@ -356,15 +387,17 @@ Cost Explorer alongside `line_item_iam_principal`.
 
 Sources: https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html, https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-understanding-cur-data.html
 
-#### Bedrock Projects (organisational primitive, not a billing primitive)
+#### Bedrock Projects (organisational and cost-attribution primitive)
 
 Bedrock **Projects** group agents, knowledge bases, prompt flows, and other resources
 under a named container with shared IAM and resource policies. Since this section was
 first written, Projects have grown into a **billing attribution primitive** as well:
 tags assigned to a Bedrock Project are now listed as a first-class cost-attribution
 method in CUR, and AWS recommends Projects for application-level attribution on the
-newer Bedrock APIs. Cost attribution therefore flows through four channels: IAM
-principals, resource tags, Application Inference Profiles, and Project tags.
+newer Bedrock APIs. AWS lists four tag sources for Bedrock in CUR: IAM principal tags,
+session tags passed during role assumption or federation, Project tags and Application
+Inference Profile tags. Alongside them sit the caller ARN itself and resource tags on
+provisioned throughput.
 
 Useful FinOps angle: when a team adopts Projects, standardise the project name as a
 tag value across IAM roles and Application Inference Profiles under that project, so
@@ -416,7 +449,8 @@ Throughput. Sources:
 By default, Bedrock emits only high-level aggregates to CloudWatch (token counts and
 latency per model). **Model invocation logging** is off by default, enabled per account
 and per region, and pushes full request-level records - prompts, completions, input and
-output token counts, and caller identity - to S3 and/or CloudWatch Logs.
+output token counts, and caller identity (the `identity.arn`; session tags are not
+logged) - to S3 and/or CloudWatch Logs.
 
 Without it, several optimisation decisions are guesswork. With it, the logs answer:
 
