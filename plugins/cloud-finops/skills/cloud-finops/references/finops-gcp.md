@@ -737,7 +737,8 @@ Highly compressible datasets, such as those with repeated string fields, nested 
 
 - Switch eligible datasets to physical storage billing when compression advantages are material
 - There is no performance impact between the two billing models.
-- Changing the billing model takes 24 hours before it's reflected in the GCP billing SKUs.
+- Changing the billing model takes 24 hours before it's reflected in the GCP billing SKUs, and the model cannot be changed again for 14 days.
+- Under physical billing, time-travel and fail-safe bytes are charged separately at the active storage rate; under logical billing they are included. The physical per-GiB rate is also higher than the logical one (read both for the dataset's region on the pricing page), so switch only when the compression ratio clears that gap after the dataset's time-travel and fail-safe bytes are added (`INFORMATION_SCHEMA.TABLE_STORAGE` carries both). On high-churn tables, shorten the time-travel window first. Source: <https://docs.cloud.google.com/bigquery/docs/datasets-intro>
 
 **Excessive Data Scanned Due To Unpartitioned Tables In Bigquery**
 Service: GCP BigQuery | Type: Suboptimal Configuration

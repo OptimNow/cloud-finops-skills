@@ -583,8 +583,9 @@ never called. At scale the arithmetic compounds: 1,000 developers x 10 enabled s
 sessions/day is a material daily line item for capability nobody used that day.
 
 **Interaction with prompt caching.** The context prefix is cached, so within the cache window
-the marginal cost is small (cache reads are 0.1x base input; see `finops-anthropic.md` for
-the full mechanics). Two things break that: (1) the cache TTL - about 5 minutes on API-key
+the marginal cost is small (cache reads are 0.1x base input on most models, 0.05x on Opus 5.5
+and Sonnet 5.5, 0.025x on Fable 5.1 and Mythos 5.1; see `finops-anthropic.md` for the full
+mechanics). Two things break that: (1) the cache TTL - about 5 minutes on API-key
 or usage-credit billing, 1 hour on subscription sessions, configurable via `promptCacheTtl`
 since v2.1.243 - an idle gap longer than the window forces the whole prefix to be
 reprocessed at full price on the next turn (in

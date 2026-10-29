@@ -119,6 +119,14 @@ attribute (<https://focus.finops.org/docs/specification/v1-4/attributes/dataset-
   Phase 1), but they can still change before ratification, and because they are
   recommended rather than required, a pipeline must cope with a 1.5 export that omits
   them.
+- **A first cut of AI spend exists before 1.5.** `ServiceCategory` (mandatory since 1.0)
+  has an `AI and Machine Learning` value, and `ServiceSubcategory` (recommended since 1.1)
+  splits it into AI Platforms, Bots, Generative AI, Machine Learning, Natural Language
+  Processing and Other. It misses AI work billed under other categories, such as
+  self-hosted inference on GPU instances under Compute, and each provider maps its own
+  SKUs, so check the mapping before reporting it as total AI spend. Source: FOCUS spec,
+  `servicecategory.md` (v1.0) and `servicesubcategory.md` (v1.1, v1.2),
+  <https://github.com/FinOps-Open-Cost-and-Usage-Spec/FOCUS_Spec>
 
 ---
 
