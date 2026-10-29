@@ -397,6 +397,7 @@ This inefficiency occurs when a table remains in the default Standard storage cl
 - Identify tables currently set to the Standard storage class
 - Review read access patterns over the past 30+ days to confirm low usage
 - Determine whether the table is used for active workloads or primarily exists for reference, compliance, or long-term retention
+- Standard-IA lowers storage cost and raises read and write cost; AWS states it reduces total table cost when storage exceeds 50% of the table's throughput cost under Standard. The class applies to the table and all its secondary indexes, and a table accepts no more than two class updates in a trailing 30-day period, so automation that moves tables both ways needs a holding period, not a daily toggle. Source: <https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html>
 
 **Suboptimal Storage Configuration For Aurora Cluster**
 Service: AWS Aurora | Type: Misconfiguration

@@ -488,6 +488,15 @@ and the answer changes who owns the billing relationship.
 with Microsoft, or through a partner?" If partner, chargeback questions route through
 the partner's tooling first. If direct, the standard Cost Management surfaces apply.
 
+**What a partner customer sees in Cost Management.** Customer-tenant users see costs
+only after the partner's admin agent enables the cost visibility policy, which is off
+by default. Costs then show at pay-as-you-go retail rates, without the partner's
+discounts or credits, and reservation usage shows zero for both actual and amortised
+cost. A showback built in the customer tenant is therefore a retail-rate view;
+reconciling to what the company pays needs the partner's invoice data. Changing partner
+does not move cost history to the new billing account, so export it before a transfer.
+Source: <https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/get-started-partners>
+
 ### What changes under MCA
 
 | Dimension | EA | MCA |
