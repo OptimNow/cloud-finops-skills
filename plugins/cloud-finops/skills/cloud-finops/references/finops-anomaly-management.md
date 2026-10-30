@@ -90,20 +90,45 @@ Less granular than AWS Cost Anomaly Detection but adequate for most use cases.
 - For workloads on FOCUS-conformant exports, run a custom anomaly query (see "Layered
   detection" below) on the FOCUS dataset to catch what the native tool misses.
 
-### GCP budget anomaly alerts
+### GCP Cost Anomaly Detection
 
-GCP relies primarily on Budgets with threshold alerts and forecasted-spend alerts. The
-native anomaly detection is less mature than AWS or Azure. For meaningful anomaly
-management on GCP, build on the BigQuery billing export (detailed export, not standard).
+Cloud Billing has native anomaly detection, generally available since 30 October 2025.
+Google states that it is free and that anomaly alerts are on by default for every customer
+on all projects, sent to Billing Administrators. The mechanics that shape how to use it:
+
+- **Thresholds.** A cost-impact amount and a deviation percentage are set automatically from
+  usage patterns and updated daily. Billing Account Administrators can override both.
+- **Cost basis.** Usage is valued at the billing account's on-demand rates. Totals include
+  spend-based CUD discounts but exclude resource-based and legacy spend-based CUD credits,
+  sustained use discounts and promotional credits, so an anomaly amount will not match the
+  net cost in the BigQuery export.
+- **Root cause.** The Anomalies dashboard lists the top contributing services, regions and
+  SKUs. When spend is spread evenly, no top contributor appears.
+- **Notifications.** Email to Billing admins, Essential Contacts or project owners, per
+  anomaly or as a daily summary, and Pub/Sub. Notifications cannot be limited to a subset
+  of projects.
+- **Latency.** Standard anomalies arrive through next-day channels. Early anomalies for AI
+  workloads (Gemini API, Vertex AI; preview since 24 July 2026) arrive 20 to 40 minutes
+  after usage. They run on estimated costs that are not final and do not appear in cost
+  reports, and their thresholds are system-defined: user-configured thresholds do not apply.
+
+Sources: <https://docs.cloud.google.com/billing/docs/how-to/manage-anomalies> (last updated
+26 October 2026), <https://docs.cloud.google.com/billing/docs/release-notes> (30 October 2025
+and 24 July 2026 entries) and Google's GA announcement of 4 November 2025 for the free and
+on-by-default statements
+(<https://cloud.google.com/blog/topics/cost-management/announcing-ga-of-cost-anomaly-detection>),
+read 30 October 2026.
 
 **Configuration recommendations:**
+- Check who receives the default alerts, and route them via Pub/Sub to Slack or PagerDuty.
+  Email-only alerts get filtered.
 - Configure Budgets at the billing-account level with **forecasted-spend alerts** at
   50%, 90%, and 100% thresholds. Forecasted alerts catch trajectory changes earlier
   than actual-spend alerts.
-- Build a custom anomaly detection job on the BigQuery billing export. A daily query
-  comparing the trailing 7 days against the prior 30-day baseline catches most cost
-  spikes within a day.
-- Route alerts via Pub/Sub to Slack or PagerDuty. Email-only alerts get filtered.
+- Where you need anomalies on net cost or by label, team or other allocation dimension,
+  which the native tool does not group by, build a custom job on the BigQuery billing
+  export (detailed export, not standard). A daily query comparing the trailing 7 days
+  against the prior 30-day baseline catches most cost spikes within a day.
 - For FOCUS-aligned multi-cloud detection, query the GCP FOCUS export the same way
   you query AWS / Azure FOCUS data.
 
@@ -319,14 +344,15 @@ itself the first time it catches a real security incident.
 ### Crawl
 
 - Native cloud anomaly detection enabled in production accounts (AWS Cost Anomaly
-  Detection, Azure anomaly detection, GCP forecasted-spend alerts)
+  Detection, Azure anomaly detection, GCP Cost Anomaly Detection)
 - Absolute-dollar threshold floors set at the level of "would surprise the CFO if
   missed"
 - Alerts routed to FinOps practitioner via email or Slack
 - Monthly review of alert history with manual threshold tuning
 
-**Quick win:** Enable AWS Cost Anomaly Detection or its Azure / GCP equivalent across
-all production accounts. The configuration takes under an hour per account. In
+**Quick win:** Enable AWS Cost Anomaly Detection or its Azure equivalent across all
+production accounts, and on GCP, where it is on by default, confirm the alerts reach
+someone who acts on them. The configuration takes under an hour per account. In
 OptimNow's experience the first real alert pays for the next year of FinOps practice
 operations.
 

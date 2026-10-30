@@ -301,8 +301,23 @@ order matters because AWS applies discounts in a specific sequence.
 **Discount application order (AWS-defined):**
 1. Spot pricing (market rate, applied first)
 2. Reserved Instances (capacity + rate, applied to matching On-Demand usage)
-3. Savings Plans (spend-based, applied to remaining eligible On-Demand usage)
+3. Savings Plans (spend-based, applied to remaining eligible On-Demand usage; EC2 Instance
+   Savings Plans before Compute Savings Plans, because Compute Savings Plans apply more broadly)
 4. EDP (portfolio discount, applied last to remaining spend)
+
+**Within the Savings Plans layer the order is fixed, not random.** In a consolidated billing
+family, a plan covers its owner account's usage first and reaches other accounts only when
+discount sharing is on. AWS then ranks the eligible usage by savings percentage (the Savings
+Plans rate against the On-Demand rate) and applies the commitment to the highest first; on a
+tie, the usage with the lowest Savings Plans rate goes first. Coverage continues until the
+hour's commitment is spent, and the rest is billed On-Demand. Two consequences for showback:
+the owning account is served before anyone else, and deep-discount usage absorbs the
+commitment before shallow-discount usage. A team's covered share can therefore move when
+another team's usage mix changes, with no change in its own usage. Explain that movement from
+this rule rather than treating it as a data error, and allocate on the amortised view (see
+`finops-allocation-showback.md`). Source:
+<https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-applying.html>, read
+30 October 2026.
 
 **Recommended layering approach:**
 

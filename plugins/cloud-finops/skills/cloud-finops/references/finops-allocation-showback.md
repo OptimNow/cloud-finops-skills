@@ -93,7 +93,10 @@ the account has a negotiated discount, use the `net_` columns where they exist
 (`line_item_net_unblended_cost`, `reservation_net_effective_cost`,
 `savings_plan_net_savings_plan_effective_cost`). The
 unused-commitment rows sit with the account that bought the commitment, often the payer,
-so they need their own allocation rule. A FOCUS export's `EffectiveCost` does this
+so they need their own allocation rule. Which accounts receive a Savings Plan's discount
+follows a fixed AWS order (owner account first, then the highest savings percentage), so a
+team's covered share can move when another team's usage changes; see "Discount application
+order" in `finops-aws-commitments.md`. A FOCUS export's `EffectiveCost` does this
 derivation for you. Sources: CUR 2.0 [line item](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-line-item.html),
 [reservation](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-reservation.html)
 and [Savings Plan](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-savings-plan.html)
