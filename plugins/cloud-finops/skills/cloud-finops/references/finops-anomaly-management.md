@@ -77,14 +77,33 @@ is what covers a new service's first days. Source:
 
 ### Azure Cost Management anomaly detection
 
-Built into Azure Cost Management. Available at subscription and resource-group scopes.
-Less granular than AWS Cost Anomaly Detection but adequate for most use cases.
+Built into Azure Cost Management, at no charge, and scoped to the **subscription only**:
+there is no billing-account, billing-profile or management-group anomaly detection. The
+mechanics that shape how to use it:
+
+- **Onboarding per subscription.** A subscription is onboarded when someone opens a Cost
+  Analysis smart view with that subscription selected; the anomaly status appears within
+  24 hours. A subscription nobody has opened is not monitored.
+- **Model and latency.** Each day's total usage is compared with a forecast trained on the
+  previous 60 days, and the run happens 36 hours after the end of the day (UTC). An anomaly
+  on day one is therefore reported on day three at the earliest.
+- **No tuning.** Whether a day is anomalous is set by a predetermined confidence interval;
+  there is no sensitivity or threshold setting.
+- **Alert rules.** Created at subscription scope only, at most five per subscription. The
+  alert is an email, sent once at detection, listing the top resource-group changes against
+  the previous 60 days. Rules carry an expiry date, and the email is sent only while the
+  rule's creator still holds Reader access, so a rule tied to a departed user goes silent.
+- **Not available** in Azure Government or the sovereign clouds.
+
+Source: <https://learn.microsoft.com/en-us/azure/cost-management-billing/understand/analyze-unexpected-charges>
+(updated 25 March 2026), read 30 October 2026.
 
 **Configuration recommendations:**
-- Enable at billing-account or billing-profile scope for full visibility. Subscription-only
-  scope misses anomalies in subscriptions you have not explicitly configured.
-- Combine with **scheduled exports** to Storage and downstream alerting (Power BI,
-  Logic Apps, or FinOps Hubs). The native UI does not do automatic distribution.
+- Onboard and create an anomaly alert rule on every production subscription. At scale, create
+  the rules with a service principal through the Scheduled Actions API (kind `InsightAlert`),
+  so they survive staff changes, and track rule expiry dates.
+- Send the alerts to a monitored shared mailbox and parse them into Teams, Slack or the ITSM
+  tool (Logic Apps or Power Automate): the native alert is email only.
 - Use **budget alerts** as a complement, not a substitute. Budget alerts trigger on a
   spend threshold; anomaly alerts trigger on a deviation from baseline. Both are needed.
 - For workloads on FOCUS-conformant exports, run a custom anomaly query (see "Layered
