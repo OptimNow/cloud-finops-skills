@@ -238,6 +238,15 @@ GCP CUDs come in two distinct flavours that are easy to conflate:
 | **Resource-based CUD** | Specific vCPU + memory in a region | Up to 57% (3yr) | Low - locked to machine series and region | 1yr or 3yr |
 | **Spend-based / Flexible CUD** | $/hr spend on Compute Engine | **Up to 28% (1yr) or 46% (3yr)** | High - any machine series in any region | 1yr or 3yr |
 
+**Block storage commitments** (GA 22 October 2026) are a resource-based category for
+Hyperdisk Balanced and Hyperdisk Throughput **Exapool** capacity only: Persistent Disk,
+Hyperdisk Storage Pools and standalone Hyperdisk are not eligible. They are bought for 1
+or 3 years per project and region through the account team only (no console, gcloud or
+REST, rates on request, no CUD recommendations), start the day after purchase, bill for
+the full term whether or not the Exapool capacity is provisioned, and cannot be cancelled.
+Source: <https://docs.cloud.google.com/compute/docs/instances/signing-up-committed-use-discounts>
+(updated 26 October 2026).
+
 The live row-by-row commitment comparison
 (<https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> for the page,
 <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> for the data)

@@ -56,11 +56,14 @@ For per-application attribution (which agent is burning), invoke through an
 **application inference profile** and read its cost-allocation tags in Cost
 Explorer / CUR - good for after-the-fact ownership, too coarse for live alerts.
 
-**Anthropic API** - the Usage & Cost Admin API usage endpoint
-`/v1/organizations/usage_report/messages` supports 1-minute buckets
-(`bucket_width=1m`; data appears within ~5 minutes). Group by `api_key_id` or
-`model` to isolate the identity holding a flat line. The cost endpoint
-`/v1/organizations/cost_report` is daily-only and cannot see the pattern.
+**Anthropic API** - the legacy Usage and Cost API usage endpoint
+`/v1/organizations/usage_report/messages` (still supported) is the live signal: it
+supports 1-minute buckets (`bucket_width=1m`) and its data typically appears within 5
+minutes. Group by `api_key_id` or `model` to isolate the identity holding a flat line.
+Its cost endpoint `/v1/organizations/cost_report` is daily-only and cannot see the
+pattern. The Usage and Cost Analytics API (beta since 29 October 2026) groups cost by
+`actor` but refreshes in 4 to 24 hours, so it attributes a burn after the fact rather
+than catching one in progress.
 Requires an Admin API key (the key type whose prefix is `sk-ant-admin`); replace the placeholder below
 with yours:
 
@@ -146,7 +149,8 @@ against these):
 
 - AWS Bedrock runtime CloudWatch metrics - https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html
 - AWS Bedrock application inference profiles - https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html
-- Anthropic Usage & Cost Admin API - https://docs.claude.com/en/api/usage-cost-api
+- Anthropic Usage and Cost API (legacy) - https://platform.claude.com/docs/en/manage-claude/usage-cost-api
+- Anthropic Usage and Cost Analytics API - https://platform.claude.com/docs/en/manage-claude/usage-cost-analytics-api
 - Azure OpenAI monitoring data reference - https://learn.microsoft.com/en-us/azure/foundry/openai/monitor-openai-reference
 - OpenTelemetry GenAI semantic conventions (span and attribute names, "development" stability, checked 27 October 2026) - https://github.com/open-telemetry/semantic-conventions-genai
 

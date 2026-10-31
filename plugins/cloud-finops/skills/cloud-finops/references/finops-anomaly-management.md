@@ -291,9 +291,11 @@ usage telemetry, not billing data.** The usage surfaces to watch:
   usage-telemetry-based detection above, not a replacement: it narrows the reliance on
   CloudWatch-only detection for this gap, but its cost side remains too latent for the
   minute-scale burn scenarios that follow.
-- **Anthropic** - the Usage & Cost Admin API usage endpoint
-  (`/v1/organizations/usage_report/messages`) supports 1-minute buckets with data
-  appearing within ~5 minutes; the cost endpoint is daily-only.
+- **Anthropic** - the legacy Usage and Cost API usage endpoint
+  (`/v1/organizations/usage_report/messages`, still supported) supports 1-minute buckets
+  with data typically within 5 minutes; its cost endpoint is daily-only. The Usage and
+  Cost Analytics API (beta since 29 October 2026) refreshes in 4 to 24 hours, too late
+  for minute-scale detection.
 - **Azure OpenAI** - Azure Monitor metrics (`ProcessedPromptTokens`, `GeneratedTokens`,
   `TokenTransaction`) at 1-minute grain, split by `ModelDeploymentName`.
 

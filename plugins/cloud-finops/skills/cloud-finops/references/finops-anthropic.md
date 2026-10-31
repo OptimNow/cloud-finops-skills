@@ -112,22 +112,37 @@ pricing. It is **not a general tier** - the scope is narrow enough that it is ea
 over-plan for. Since 15 October 2026, Opus 5.5 fast mode is out of research preview: it
 needs no beta header and no access request, and has a default fast-mode rate limit in
 the Start, Build and Scale usage tiers. Opus 5 and Opus 4.8 fast mode remain in research
-preview behind the access request:
+preview and need the `fast-mode-2026-02-01` beta header; Opus 5 access goes through the
+account manager or the waitlist. Opus 4.8 fast mode was deprecated on 30 October 2026 and
+is removed on 30 November 2026:
 
 | Model | Standard | Fast mode | Premium |
 |---|---|---|---|
 | Claude Opus 5.5 | $4 / $20 | $8 / $40 | 2x |
 | Claude Opus 5 | $5 / $25 | $10 / $50 | 2x |
-| Claude Opus 4.8 | $5 / $25 | $10 / $50 | 2x |
+| Claude Opus 4.8 (deprecated, removed 30 November 2026) | $5 / $25 | $10 / $50 | 2x |
+
+Rates per million input / output tokens, illustrative, from the Claude pricing page read
+31 October 2026; Anthropic states the premium as "a multiplier on standard rates", and 2x
+is the ratio of the published rates.
 
 - **No Sonnet or Haiku Fast tier exists.** Fast mode is Opus-tier only.
 - **Opus 4.7 Fast mode has been removed** - requesting it returns an error. On
   **Opus 4.6** the failure mode is quieter: requests with `speed: "fast"` run at
   standard speed and bill at standard rates, so a misconfigured client pays
   nothing extra but silently loses the latency it thinks it bought.
+- **Opus 4.8 Fast mode is deprecated** (30 October 2026) and removed on 30 November
+  2026. After removal, `speed: "fast"` on `claude-opus-4-8` returns an error and does not
+  fall back to standard Opus 4.8, so a client still pinned to it fails outright. The
+  migration path is Opus 5.5, whose fast mode costs less per token because the same 2x
+  sits on a lower standard rate. Sources:
+  <https://platform.claude.com/docs/en/release-notes/overview> (30 October 2026),
+  <https://platform.claude.com/docs/en/build-with-claude/fast-mode>, Claude Code
+  CHANGELOG 2.1.316.
 - Fast mode pricing applies **across the full context window**, including
   requests over 200K input tokens - there is no separate long-context tier on top.
-- **Claude API**, including Managed Agents, on all three models; and, for **Opus 5.5
+- **Claude API**, including Managed Agents, on all three models (Opus 4.8 until 30
+  November 2026); and, for **Opus 5.5
   only**, Claude in Microsoft Foundry on deployments hosted on Azure (not on Foundry
   deployments hosted on Anthropic), and Claude Models on Google Cloud (Anthropic managed)
   since 22 October 2026. Not available on Amazon Bedrock, the Google-managed Google Cloud
@@ -572,6 +587,19 @@ organisation per Google Cloud project, separate from any existing one, Claude
 Enterprise included; and an existing discount has to be agreed with the account team
 first, because discounts cannot be applied to past usage. Source:
 <https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/anthropic-managed>
+
+Microsoft Foundry now uses the same unit. New Claude deployments bill in CCU on one Azure
+Marketplace meter that replaces the per-model token meters: usage is priced at Anthropic's
+per-model rates in effect at call time, any private-offer discount is applied at that step,
+and the dollar amount converts to CCU at a fixed price published on the Marketplace offer,
+metered hourly and invoiced monthly in arrears with no prepaid CCU. CCU spend decrements a
+MACC as other Marketplace consumption does; CCU billed on another cloud does not. Foundry's
+cost estimates exclude private-offer discounts, and deployments created before CCU became
+generally available stay on per-model billing until redeployed, so an estate shows two
+shapes for a while. Allocation is in `finops-azure-openai.md` ("Tagging strategy for Azure
+OpenAI"). Source:
+<https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/claude-models-billing>
+(updated 27 October 2026).
 
 ### Cross-provider applicability
 
