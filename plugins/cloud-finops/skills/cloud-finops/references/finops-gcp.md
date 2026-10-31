@@ -235,7 +235,7 @@ GCP CUDs come in two distinct flavours that are easy to conflate:
 
 | CUD type | Commits to | Discount depth | Flexibility | Term |
 |---|---|---|---|---|
-| **Resource-based CUD** | Specific vCPU + memory in a region | Up to 57% (3yr) | Low - locked to machine series and region | 1yr or 3yr |
+| **Resource-based CUD** | Specific vCPU + memory in a region | Up to 55% (3yr); up to 70% for memory-optimised series | Low - locked to machine series and region | 1yr or 3yr |
 | **Spend-based / Flexible CUD** | $/hr spend on Compute Engine | **Up to 28% (1yr) or 46% (3yr)** | High - any machine series in any region | 1yr or 3yr |
 
 **Block storage commitments** (GA 22 October 2026) are a resource-based category for
@@ -244,8 +244,10 @@ Hyperdisk Storage Pools and standalone Hyperdisk are not eligible. They are boug
 or 3 years per project and region through the account team only (no console, gcloud or
 REST, rates on request, no CUD recommendations), start the day after purchase, bill for
 the full term whether or not the Exapool capacity is provisioned, and cannot be cancelled.
-Source: <https://docs.cloud.google.com/compute/docs/instances/signing-up-committed-use-discounts>
-(updated 26 October 2026).
+Sources: <https://docs.cloud.google.com/compute/docs/instances/signing-up-committed-use-discounts>
+and, for the resource-based discount ceilings in the table,
+<https://docs.cloud.google.com/compute/docs/instances/committed-use-discounts-overview>
+(both updated 26 October 2026).
 
 The live row-by-row commitment comparison
 (<https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> for the page,
@@ -285,8 +287,9 @@ FSP. Mechanics and the eligibility boundary are in `finops-vertexai.md`.
 The **architectural drift trap** (already in the patterns section below) is the
 GCP commitment failure OptimNow sees most often: organisations buy resource-based
 CUDs early, then migrate workloads to GKE Autopilot or Cloud Run, leaving the CUDs
-underused. Spend-based CUDs avoid this category of failure at the cost of ~11
-percentage points of discount depth on 3-year terms (46% vs 57%).
+underused. Spend-based CUDs avoid this category of failure at the cost of about 9
+percentage points of discount depth on 3-year terms for most machine series (46% vs 55%;
+the gap is wider on memory-optimised series, where resource-based CUDs reach 70%).
 
 **Layering recommendation (analogous to AWS / Azure layering):**
 
