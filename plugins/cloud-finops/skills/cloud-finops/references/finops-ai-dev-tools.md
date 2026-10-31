@@ -394,10 +394,33 @@ card. Opus 4.8 stays for individual subscribers on annual plans.
 Sources: https://docs.github.com/en/copilot/how-tos/manage-and-track-spending/prepare-for-your-move-to-usage-based-billing,
 [GitHub changelog, 15 October 2026](https://github.blog/changelog/2026-10-15-upcoming-deprecation-of-selected-github-copilot-models-in-mid-november).
 
-Enterprise total cost of ownership is $60/seat/month when including the required GitHub
-Enterprise Cloud subscription - a detail that often surprises procurement. Note GitHub
-flags the $21 GHEC rate as "for the first 12 months", so model the post-year-1 renewal
-above $60.
+On Copilot Enterprise seats, total cost of ownership is $60/seat/month when including the
+required GitHub Enterprise Cloud subscription - a detail that often surprises procurement.
+Note GitHub flags the $21 GHEC rate as "for the first 12 months", so model the post-year-1
+renewal above $60.
+
+**October 2026 changes.** *Copilot access* (from 28 October 2026 through account teams,
+self-serve later) removes the Copilot seat charge for users with a GHEC licence; users
+without one take Copilot Standalone at a per-user charge. Neither includes monthly AI
+credits, so all usage is metered against the enterprise budget from the first request:
+compare today's seats plus overage with the full usage volume priced without an allowance.
+The model covers the whole enterprise, cannot be mixed with Business or Enterprise seats,
+still assigns seats, and a voluntary transition takes effect on the first day of a month.
+With no budget left, completions and next edit suggestions keep working; Chat, code review
+and Copilot in the cloud need budget. *Copilot Fusion* (GA) bills each model it uses at
+that model's standard rate, with no Fusion charge, and its High and Max levels can call
+several models per task; paid plans get 30% off model costs under Fusion through
+30 November 2026, so re-baseline in December. Cloud agent sessions run in a cloud sandbox
+by default, billed from November 2026 against the included Actions entitlement, now one
+dollar-based pool shared with CI runners in which each product keeps its own rate: heavy
+agent use can first show up as Actions overage. The billing AI usage report splits AI
+credits by user and model (31 days at most per report).
+Sources: https://docs.github.com/en/copilot/get-started/whats-changing-with-github-enterprise-and-copilot,
+https://docs.github.com/en/copilot/concepts/models/copilot-fusion,
+https://docs.github.com/en/billing/concepts/product-billing/github-actions,
+https://docs.github.com/en/billing/reference/billing-reports,
+[GitHub changelog, 28 October 2026](https://github.blog/changelog/2026-10-28-work-from-anywhere-with-a-new-connected-copilot-cloud-experience/),
+read 31 October 2026.
 
 ### Windsurf (now "Devin Desktop")
 

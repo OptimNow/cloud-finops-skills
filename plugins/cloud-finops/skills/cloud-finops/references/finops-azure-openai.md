@@ -269,9 +269,15 @@ level. Cost analysis can then go below the resource: it splits a Foundry resourc
 across model deployments (Costs by resource, with deployment tags as a filter), and, in
 preview, attributes usage to Foundry projects through a project tag applied
 automatically to Models sold by Azure, Azure OpenAI included. Project attribution does
-not yet cover models sold through Azure Marketplace, and Claude supports resource-level
-tags only. Source: <https://learn.microsoft.com/en-us/azure/foundry/concepts/manage-costs>
-(updated 22 October 2026).
+not yet cover models sold through Azure Marketplace, Claude included. Since October 2026,
+CCU-billed Claude charges sit on the Foundry resource (`Microsoft.CognitiveServices/accounts`)
+rather than under SaaS, carry that resource's tags and break down by model and usage type
+(input, output, cache), so review exports and chargeback rules keyed on `ResourceId`; older
+per-model Claude deployments keep their old shape until redeployed (billing mechanics in
+`finops-anthropic.md`, "Provider strategy"). Sources:
+<https://learn.microsoft.com/en-us/azure/foundry/concepts/manage-costs> (updated 22 October
+2026), <https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/claude-models-billing>
+(updated 27 October 2026).
 
 **Recommended allocation approach:**
 

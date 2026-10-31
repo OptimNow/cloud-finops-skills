@@ -93,7 +93,7 @@ claim.
 | **1.1** | 7 November 2024 | `ServiceSubcategory`, `CommitmentDiscountQuantity` and `CommitmentDiscountUnit`, `CapacityReservationId` and `CapacityReservationStatus`, `SkuMeter`, `SkuPriceDetails`, and a `ProviderVersion` metadata property so a dataset states which spec version it targets. |
 | **1.2** | 29 May 2025 | `InvoiceId` promoted from `x_InvoiceId`, `PricingCurrency` promoted from `x_PricingCurrency`, multi-currency and virtual-currency columns, unit-cost metrics, and a schema wide enough to carry SaaS and PaaS billing next to cloud. The version AWS and Azure target today and the first with a real reconciliation key. |
 | **1.3** | 5 December 2025 | A separate Contract Commitment dataset, split cost allocation columns, Service Provider and Host Provider columns (the Provider and Publisher columns are deprecated and scheduled for removal from 1.4), and **recency metadata**: providers timestamp a dataset and flag whether a period is final or still subject to revision. |
-| **1.4** | 4 June 2026 | Two datasets for reconciliation (**Invoice Detail**, recording charges as they appear on the issued invoice, and **Billing Period**, with issuer-set period boundaries and status), an Invoice Reconciliation feature that joins Invoice Detail to cost and usage on `InvoiceId`, a rounding-variance tolerance for high-precision cost data against two-decimal invoice totals, three named **correction-handling** styles (Replacement, Delta, Ledger) that a generator must document, and a Dataset Completeness attribute requiring native columns to be carried as `x_` columns rather than silently dropped. In all, the release adds 2 datasets, 47 columns and 6 attributes, and the Contract Commitment dataset grows from 13 to 30 columns. |
+| **1.4** | 4 June 2026 | Two datasets for reconciliation (**Invoice Detail**, recording charges as they appear on the issued invoice, and **Billing Period**, with issuer-set period boundaries and status), an Invoice Reconciliation feature that joins Invoice Detail to cost and usage on `InvoiceId`, a rounding-variance tolerance for high-precision cost data against two-decimal invoice totals, three named **correction-handling** styles (Replacement, Delta, Ledger) that a generator must document, and a Dataset Completeness attribute requiring native columns to be carried as `x_` columns rather than silently dropped. In all, the release adds 2 datasets, 47 column definitions across datasets (32 column names new to the specification; the rest, such as `BilledCost` and `InvoiceId`, recur in the new datasets) and 6 attributes (retiring 3), removes the deprecated `ProviderName` and `PublisherName`, and grows Contract Commitment from 13 to 30 columns. It also **redefines `BilledCost` and `EffectiveCost` under the same names**: `BilledCost` is the amount as invoiced by `InvoiceIssuerName`, 0 for fully covered charges and for entities not responsible for invoicing, and must match an issued invoice per `InvoiceId` and `InvoiceIssuerName` within the rounding-variance tolerance (1.3 zeroed it only for third-party-paid charges such as marketplace and required an exact match); `EffectiveCost` is 0 for a covering purchase even when the covered charges sit in another dataset instance or `ServiceProviderName`, and 0 for entities that do not originate the data. `InvoiceId` moved from Recommended to Conditional. |
 
 | **1.5** | Not ratified; approval and ratification scheduled for 3 December 2026 | In development, per the working group's scope page (October 2026): a **SKU Price** dataset carrying a provider's prices separately from consumption, linked to cost rows through the SKU Price ID; four model-identity properties in `SkuPriceDetails` (`ModelDeveloper`, `ModelFamily`, `ModelId`, `ModelVersion`); and two token properties, `TokenCacheAction` (Uncached, Read, Write, Other) and `TokenDirection` (Input, Output). All six properties are recommended, not required, so a conformant 1.5 dataset may omit them. A Recommendation dataset was moved to a later release. |
 
@@ -101,7 +101,9 @@ Sources: FOCUS 1.3 announcement
 (<https://www.finops.org/insights/introducing-focus-1-3/>), FOCUS 1.5 release scope
 (<https://focus.finops.org/?p=19885>, read 19 October 2026; the page states it is not a
 commitment by the working group), FOCUS 1.4 announcement
-(<https://www.finops.org/insights/introducing-focus-1-4/>), Dataset Completeness
+(<https://www.finops.org/insights/introducing-focus-1-4/>), FOCUS 1.4 changelog and the
+1.3 and 1.4 BilledCost and EffectiveCost pages
+(<https://focus.finops.org/docs/specification/v1-4/changelog/>, read 31 October 2026), Dataset Completeness
 attribute (<https://focus.finops.org/docs/specification/v1-4/attributes/dataset-completeness>).
 
 **Two rules that follow from the ladder:**
@@ -207,6 +209,13 @@ Decide the clamp explicitly and write it down:
   of a cent and a controller who no longer trusts the table.
 
 ### Column-set drift under one version label
+
+**Across the 1.3/1.4 boundary the cost columns themselves change meaning.** Stamp
+`FocusVersion` on every row at ingest and do not sum or trend `BilledCost` or
+`EffectiveCost` across generators on either side of 1.4 without checking how each one
+treats covered charges and non-invoicing entities (see the 1.4 row of the version ladder):
+a merged multi-provider or reseller dataset can double count under 1.3 rules and not
+under 1.4.
 
 The clearest 2026 example is Azure's **1.0** dataset:
 

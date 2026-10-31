@@ -313,13 +313,19 @@ and per-request attribution.
 
 - **Team boundary.** One Anthropic workspace or one OpenAI project per team or product,
   and one API key per service inside it. Keep production out of Anthropic's Default
-  Workspace: it cannot take spend limits, and its usage reports with a `null`
-  `workspace_id`, so it lands in the unallocated bucket.
-- **Billing data.** Anthropic's Usage and Cost Admin API needs an Admin key (workspace
-  keys do not work). Its usage report filters and groups by API key, workspace, model
-  and service tier; its cost report groups by workspace or description only, daily, so
-  a per-key cost split is computed from the usage report. Priority Tier cost is not in
-  the cost endpoint and has to be reconciled from the invoice. OpenAI's Costs API
+  Workspace: it cannot take spend limits, and the legacy Usage and Cost API reports it
+  with a `null` `workspace_id`, so it lands in the unallocated bucket there (the
+  Analytics API below gives it its real ID).
+- **Billing data.** Anthropic's Usage and Cost Analytics API (beta since 29 October 2026,
+  Admin key or `org:admin` credential) splits both usage and cost by up to five dimensions,
+  API key and `actor` (user, service account or federated cloud identity) included, in
+  1-minute, hourly or daily buckets, so per-key and per-identity cost no longer has to be
+  computed from usage. Allocate on `amount` (after discounts, before credits), not
+  `list_amount`. Priority Tier requests show zero token cost there; the commitment fee is
+  billed separately and reconciled from the invoice. Data refreshes within 4 to 24 hours
+  and can be revised until about 7 days after month end, so close a month after that.
+  The older Usage and Cost API (daily cost report by workspace or description only)
+  remains supported as legacy. OpenAI's Costs API
   groups by `project_id`, `user_id`, `line_item`, `api_key_id` and `api_source` in daily
   buckets; its Usage API adds `model`, `batch` and `service_tier`.
 - **Charge the effective rate, not the list price.** Two teams on the same model can
@@ -331,7 +337,8 @@ and per-request attribution.
   or SDK wrapper (feature, customer, environment, trace ID), as in Phase 1 above.
 
 Sources: [Anthropic workspaces](https://platform.claude.com/docs/en/manage-claude/workspaces),
-[Anthropic Usage and Cost API](https://platform.claude.com/docs/en/manage-claude/usage-cost-api),
+[Anthropic Usage and Cost API](https://platform.claude.com/docs/en/manage-claude/usage-cost-api) (legacy),
+[Anthropic Usage and Cost Analytics API](https://platform.claude.com/docs/en/manage-claude/usage-cost-analytics-api) (read 31 October 2026),
 [OpenAI API reference, usage and costs](https://platform.openai.com/docs/api-reference/usage)
 (read 16 October 2026); lead: [Finout blog, 13 October 2026](https://www.finout.io/blog/how-to-allocate-anthropic-openai-and-gpu-spend-to-teams)
 (vendor blog).
