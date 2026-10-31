@@ -294,8 +294,8 @@ short form.
 
 ### JackyST0/awesome-agent-skills
 
-Status 2026-10-23: submitted as PR #131 (see the log below). The list requires 64
-stars; the repository had 55 on 2026-09-26 and reached 64 on 2026-10-22.
+Status 2026-10-26: approved and merged by JackyST0 (PR #131, see the log below); the
+entry is live under DevOps in both READMEs. The list requires 64 stars; the repository had 55 on 2026-09-26 and reached 64 on 2026-10-22.
 
 Rules: edit both `README.md` (bullet list) and `README_ZH.md` (table with a platform
 column); the URL must be identical in both and the category the same, or the list's
@@ -314,6 +314,34 @@ after d1v, and validated locally with their script before submission:
 The platform column lists only the tools INSTALLATION.md documents; `All` would also
 claim OpenCode and OpenClaw.
 
+### mcpservers.org (website directory)
+
+Status 2026-10-27: approved by email the day after the free form was submitted
+(2026-10-26); listing at `https://mcpservers.org/servers/optimnow/cloud-finops-skills`.
+Form: `https://mcpservers.org/submit`, free plan (review announced within two weeks;
+a $39 premium plan buys a 24-hour review, a badge and a dofollow link, not needed).
+
+| Field | Answer |
+|---|---|
+| Server Name | `Cloud FinOps by OptimNow` |
+| Category | `Cloud Service` |
+| Short Description | Read-only MCP server that serves a Cloud FinOps reference library to AI agents: billing mechanics, commitments, allocation and chargeback for AWS, Azure, GCP and AI providers, plus waste-pattern runbooks with detection queries. |
+| Repository | `https://github.com/OptimNow/cloud-finops-skills` |
+| Official MCP Registry Name | `io.github.OptimNow/cloud-finops` |
+| Remote connections | ticked (`https://mcp.optimnow.io/mcp`) |
+
+The site is run by the wong2/awesome-mcp-servers maintainers, but the free listing is
+the website only: that GitHub README takes no PRs, and placement in it is sold through
+their sponsorship programme. The approval email offers a "Listed on mcpservers.org"
+badge; not added (the README badge row is already long, and Glama would come first).
+
+### mcprush.com (listed without a submission)
+
+The site listed the project unprompted as "Cloud FinOps Skill & MCP" (security grade A,
+"no sign-in"); claimed by Jean on 2026-10-24 so the listing can be corrected. Its
+badge was deliberately not added: the card variant shows the monthly PyPI download
+count, and the site had no public track record to check on that date.
+
 ---
 
 ## Ruled out on 2026-09-20, not re-checked
@@ -325,6 +353,25 @@ ccplugins/awesome-claude-code-plugins, composio-community/awesome-claude-plugins
 since August 2025); quemsah/awesome-claude-plugins (auto-generated ranking);
 libukai/awesome-agent-skills (maintainer-only merges); kirodotdev-labs/awesome-kiro
 (external PRs closed).
+
+## Ruled out on 2026-10-23 to 2026-10-31
+
+- rohitg00/awesome-devops-mcp-servers: the right topic (Cloud Providers > Other Cloud
+  Platforms already holds a Spot.io cost server), but unmaintained in practice. The
+  maintainer merges in batches and the last one was on 2026-05-12; 112 PRs were open
+  on 2026-10-29. Dropped on 2026-10-31.
+- wmariuss/awesome-devops: active (merges on 2026-10-22), but requires 100 stars for
+  an open-source entry, has no cost section, and scopes itself to tools that build,
+  ship, run or secure software. Revisit at 100 stars.
+- kdeldycke/awesome-billing: every external PR since August 2026 closed unmerged.
+- cloudfinops/awesome-finops, TechNative-B-V/awesome-finops,
+  Funkmyster/awesome-cloud-cost-control: no commits since 2021 to 2024.
+- derisk-ai/awesome-devops-mcp-servers: two commits, April 2025.
+- appcypher/awesome-mcp-servers: archived on 2026-08-01.
+- PulseMCP: not accepting submissions; says it will ingest the official MCP Registry
+  when it reopens.
+- mcp.so: 3,809 open submission issues with no visible triage; the other route is a
+  paid ($39) submission. Not used.
 
 ---
 
@@ -349,4 +396,6 @@ Record the actual dates and PR URLs below as they happen.
 | 3 | 2026-10-17 | https://github.com/TensorBlock/awesome-mcp-servers/issues/4024 | Bot-generated docs PR #4025 merged by a maintainer on 2026-10-18 (docs/knowledge-management--memory.md); issue closed as completed |
 | 4 | 2026-10-17 | https://github.com/punkpeye/awesome-remote-mcp-servers/pull/2103 | Validator labels endpoint-ok, has-connector. 2026-10-18: maintainer flagged a merge conflict (main had added coldHat at the same spot); main merged into the branch, entry kept before coldHat. Merged by punkpeye on 2026-10-23 |
 | hesreallyhim | 2026-10-23 | https://github.com/hesreallyhim/awesome-claude-code/issues/3219 | Form validation bot: all checks passed (label validation-passed). Awaiting maintainer review |
-| JackyST0 | 2026-10-23 | https://github.com/JackyST0/awesome-agent-skills/pull/131 | Entry added to DevOps in README.md and README_ZH.md. Awaiting maintainer review |
+| JackyST0 | 2026-10-23 | https://github.com/JackyST0/awesome-agent-skills/pull/131 | Approved and merged by JackyST0 on 2026-10-26 ("The entry is verified and meets the inclusion requirements"). Entry live under DevOps in README.md and README_ZH.md |
+| mcpservers.org | 2026-10-26 | https://mcpservers.org/servers/optimnow/cloud-finops-skills | Free form approved by email on 2026-10-27; website listing only |
+| mcprush.com | 2026-10-24 | (listed by the site, no submission) | Claimed by Jean on 2026-10-24; badge not added |
