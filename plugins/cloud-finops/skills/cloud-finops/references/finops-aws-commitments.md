@@ -568,6 +568,19 @@ to risk appetite.
   Current values: <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> (page) and
   <https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json> (data);
   with the cloud-finops MCP, `get_live_figures("savings-plans-vs-reserved-instances")`.
+- **Coverage on cyclical usage:** the break-even rule above, applied block by block.
+  "Each hour's commitment can only be used within that hour and cannot be carried
+  over", and "Any remaining usage is charged at the On-Demand rates" (AWS Savings
+  Plans); RIs are "billed for every clock-hour". Derived arithmetic: a marginal block
+  pays when usage reaches it in more than (1 - d) of the term's hours, so the
+  cost-optimal line is the d-th percentile of hourly usage. Illustrative: usage at its
+  weekday level for all 120 weekday hours of 168 (71.4%) makes covering that level pay
+  at any d above 28.6% (on the m5.2xlarge figures above, every instrument but the
+  1-year Compute SP). The keel is the lowest-risk line, not the cheapest: choose on
+  lock-in appetite (see "Phased purchasing"), and size on hourly data, never daily
+  averages. Sources: <https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-applying.html>,
+  <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts-reserved-instances-application.html>,
+  read 2 November 2026.
 - **Commitment waste:** hours where committed capacity had no matching usage.
 
 **Pre-purchase checklist:**

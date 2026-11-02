@@ -38,7 +38,7 @@ to be layered, not chosen in isolation.
 | Azure Hybrid Benefit (AHB) | Up to 40% (Windows), 55% (SQL) | Highest - no commitment, no lock-in | Licensing overlay | None | VMs, SQL Database, SQL MI, Red Hat/SUSE Linux |
 | Spot Virtual Machines | Up to 90% | Variable - can be evicted with 30s notice | None (market-priced) | None | VMs, VMSS, AKS node pools |
 
-**Note on one-year Reserved VM Instances:** As of 1 July 2026, Azure is retiring one-year Reserved VM Instances for select older VM series. This affects new purchases and renewals for these specific series. Three-year reservations remain available for all VM series. When planning reservation strategies, verify current eligibility for one-year terms on your target VM series. Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/manage-legacy-vm-reservations-after-july-1-2026
+**Note on legacy Reserved VM Instances:** from 1 July 2026 the affected v1 to v3 series lose some or all reservation terms, and Microsoft's two Learn pages disagree on which; see point 6.
 
 **Critical distinctions:**
 
@@ -82,10 +82,15 @@ to be layered, not chosen in isolation.
    notice and no SLA. It belongs in the compute cost strategy but should not be compared
    directly against commitment instruments.
 
-6. **Legacy VM series can no longer be reserved at all.** As of the Learn retirement page
-   (updated 25 September 2026), new and renewed one-year **and** three-year Reserved VM
-   Instances are unavailable for the affected A, B, D, E, F and L variants of the v1 to
-   v3 series. Existing reservations run to term and cannot be renewed; when they expire,
+6. **Legacy VM series can no longer be reserved at all.** Microsoft's two Learn pages
+   disagree. The transition guide (dated 1 May 2026) ends one-year RIs from 1 July 2026
+   for Av2, Amv2, Bv1, D, Ds, Dv2, Dsv2, F, Fs, Fsv2, G, Gs, Ls and Lsv2, and both terms
+   for Dv3, Dsv3, Ev3 and Esv3:
+   https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/manage-legacy-vm-reservations-after-july-1-2026.
+   The later retirement page (dated 25 September 2026) makes new or renewed one-year and
+   three-year RIs unavailable for all affected A, B, D, E, F and L variants of v1 to v3.
+   Plan on the later page and confirm the term in the purchase blade before buying.
+   Existing reservations run to term and cannot be renewed; when they expire,
    coverage falls to pay-as-you-go unless a Compute Savings Plan absorbs it. The series also retire outright: Dv3, Dsv3, Ev3 and
    Esv3 (32 sizes) cannot be created, resized into, run or purchased after 15 November
    2029 (this retirement does not apply to Azure Government, 21Vianet or sovereign cloud
@@ -143,17 +148,16 @@ START: What Azure compute service runs the workload?
 │   │           ├── NO → Right-size first. Do not commit to waste.
 │   │           │
 │   │           └── YES → Will it stay on the same VM family + region?
-│   │               ├── YES → Is the VM series eligible for 1yr reservations?
-│   │               │         (Check: older series may only support 3yr after
-│   │               │         1 July 2026)
+│   │               ├── YES → Is the VM series still reservable?
+│   │               │         (affected v1 to v3 series are not; point 6)
 │   │               │         ├── YES → Azure Reservation (up to 72%)
 │   │               │         │         Deepest discount. From 1 Feb 2027 covered
 │   │               │         │         services can't be exchanged, so reserve only
 │   │               │         │         at high conviction on family, region, and term.
 │   │               │         │         Size stays flexible within the family via ISF.
 │   │               │         │
-│   │               │         └── NO → Consider 3yr reservation or migration to
-│   │               │                  newer VM series that supports 1yr terms
+│   │               │         └── NO → Savings Plan, or migrate to a newer
+│   │               │                  series and reserve there
 │   │               │
 │   │               └── NO / UNSURE → Savings Plan for Compute (up to 65%)
 │   │                     Covers any VM family and region. ~7% shallower
@@ -445,7 +449,7 @@ reasonably well - if a SKU+region had at least 5 instances every day for 90 days
 can size the RI confidently.
 
 **SP sizing** is where daily granularity hurts. A Savings Plan commits to a $/hour
-amount. The right commitment is roughly the **5th percentile of hourly compute spend** -
+amount. The lowest-risk commitment is roughly the **5th percentile of hourly compute spend** -
 the floor below which spend rarely drops. With daily data you cannot see the
 hour-by-hour floor; you only see the daily average.
 
@@ -599,14 +603,13 @@ https://learn.microsoft.com/en-us/rest/api/consumption/reservation-recommendatio
 Once the always-on floor per SKU family and region is known (the join above), map it:
 
 - High baseline + low variability + AHB-eligible Windows -> 3-year RI with AHB
-- High baseline + low variability + Linux or non-AHB -> 1-year RI if the VM series
-  supports it (verify post-July 2026 eligibility), otherwise 3-year RI if conviction
-  is high
+- High baseline + low variability + Linux or non-AHB -> 1-year RI, or 3-year if
+  conviction is high (affected v1 to v3 series take neither, point 6)
 - Variable workload, stable $ floor -> 1-year Savings Plan sized below the floor (70-80%
   of it is a working estimate, not a published benchmark)
 - Bursty / unpredictable -> PAYG with Spot for the spike layer
-- Older VM series approaching retirement -> migrate to a newer generation, or commit
-  via 3-year reservation if the workload must stay on the legacy series
+- Older VM series approaching retirement -> migrate to a newer generation, or cover
+  it with a Savings Plan if the workload must stay on the legacy series
 
 Then validate against Advisor (above), buy in phased blocks ("Phased purchasing"
 below), and re-evaluate quarterly against actuals rather than against Advisor's rolling

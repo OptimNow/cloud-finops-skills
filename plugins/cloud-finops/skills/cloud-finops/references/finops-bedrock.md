@@ -65,6 +65,18 @@ Sources: [model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model
 [request parameters](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-pegasus-1-5.html),
 [Bedrock pricing](https://aws.amazon.com/bedrock/pricing/) (all read 16 October 2026).
 
+**Guardrails bill per text unit, per safeguard, on prompt and response.** A text unit is
+up to 1,000 characters, and each enabled safeguard charges separately: content filters,
+denied topics, sensitive-information filters and contextual grounding per text unit,
+image filters per image, Automated Reasoning per text unit per policy. Word filters and
+regex filters are free. AWS's example counts a 200-character query as 1 unit and a
+1,500-character response as 2, for each safeguard. Grounding counts source, query and
+response together. A blocked prompt is charged for the evaluation but not for inference.
+The AWS Price List carries separate `Guardrail-*UnitsConsumed` usage types; confirm the
+string in your CUR. Sources: [Bedrock pricing](https://aws.amazon.com/bedrock/pricing/),
+[How Guardrails works](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-how.html),
+AWS Price List for AmazonBedrock, us-east-1 (version 20261030160456), all read 2 November 2026.
+
 ---
 
 ## Model pricing reference
@@ -314,7 +326,7 @@ after activation carry them.
 
 **Gateways and shared roles.** A proxy (LiteLLM or a custom gateway) or a single
 application role concentrates all cost on one principal, so `line_item_iam_principal`
-shows the gateway, not the user. Three ways to recover the user:
+shows the gateway, not the user. Four ways to recover the user:
 
 - **Session tags per user.** The gateway assumes its Bedrock role once per user with
   `sts:AssumeRole` and `Tags` (the trust policy must allow `sts:TagSession`), and caches
@@ -326,13 +338,35 @@ shows the gateway, not the user. Three ways to recover the user:
   against the CUR at the model and usage-type grain.
 - **Model invocation logging.** Logs carry the caller's `identity.arn`, not session tags,
   so a per-user `RoleSessionName` is what makes users distinct there.
+- **Request metadata per call.** The gateway stamps tenant, user, feature or agent on
+  each request: `requestMetadata` on Converse and ConverseStream, the
+  `X-Amzn-Bedrock-Request-Metadata` header on InvokeModel and its streaming variant, up
+  to 16 entries of 256 characters. Values land in the invocation log's `requestMetadata`
+  field, only where logging is on in that Region, and never in Cost Explorer or CUR:
+  price log token counts and reconcile to CUR at the model and usage-type grain. Bedrock
+  does not enforce it, it is not available on bedrock-mantle or the Responses API, and
+  it should carry no personal data.
+
+**Enforce the gateway path.** An SCP denying `bedrock:InvokeModel` and
+`bedrock:InvokeModelWithResponseStream` to every principal except the gateway role
+closes bedrock-runtime, including Converse, the OpenAI-compatible APIs on it and Bedrock
+API keys, which act as their IAM principal. Add `bedrock-mantle:CreateInference` (a
+separate action) and `bedrock:CreateModelInvocationJob` for batch. Agent and batch
+service roles call InvokeModel themselves, so exempt them deliberately. SCPs never bind
+the management account or service-linked roles.
 
 Sources (read 28 October 2026):
 <https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-iam-principal-tracking.html>,
 <https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/iam-principal-cost-allocation.html>,
 <https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-understanding-cur-data.html>,
 <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html>,
-<https://docs.aws.amazon.com/singlesignon/latest/userguide/attributesforaccesscontrol.html>
+<https://docs.aws.amazon.com/singlesignon/latest/userguide/attributesforaccesscontrol.html>;
+request metadata and gateway enforcement (read 2 November 2026):
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-request-metadata.html>,
+<https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_Converse.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/security_iam_id-based-policy-examples.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/endpoints.html>,
+<https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html>
 
 **When to use it vs. account separation:**
 
@@ -341,8 +375,8 @@ Sources (read 28 October 2026):
 | Multiple teams share one account and need per-team Bedrock attribution | IAM Principal Cost Allocation |
 | Teams need independent budgets, IAM boundaries, and quota ceilings | Separate accounts |
 | Per-user chargeback inside a team (e.g. internal AI sandbox) | IAM Principal Cost Allocation on user tags |
-| Users reach Bedrock through a gateway or one shared role | Session tags per user at role assumption, or gateway logs (see "Gateways and shared roles") |
-| Per-feature attribution inside a single application | Still needs SDK/proxy wrapper - IAM principal is too coarse |
+| Users reach Bedrock through a gateway or one shared role | Session tags per user at role assumption, request metadata per call, or gateway logs (see "Gateways and shared roles") |
+| Per-feature attribution inside a single application | `requestMetadata` on each call (invocation logs only), or an SDK/proxy wrapper - IAM principal is too coarse |
 
 **Feature-level attribution (still relevant):** IAM principals identify *who* called the
 API, not *which feature*. For per-feature unit economics inside one application, keep
@@ -450,7 +484,10 @@ By default, Bedrock emits only high-level aggregates to CloudWatch (token counts
 latency per model). **Model invocation logging** is off by default, enabled per account
 and per region, and pushes full request-level records - prompts, completions, input and
 output token counts, and caller identity (the `identity.arn`; session tags are not
-logged) - to S3 and/or CloudWatch Logs.
+logged) - to S3 and/or CloudWatch Logs. It covers bedrock-runtime calls only: AWS states
+that the same APIs on bedrock-mantle are not currently captured
+(<https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html>, read
+2 November 2026).
 
 Without it, several optimisation decisions are guesswork. With it, the logs answer:
 
