@@ -123,6 +123,24 @@ until they are met):
    changing the **account default access tier** to Cool moves every
    untiered blob at once. It bills a tier-change charge across the account,
    so run the arithmetic against the saving first.
+6. Where access patterns are unknown and the account is Standard
+   general-purpose v2 with zone-redundant storage (ZRS, GZRS or RA-GZRS),
+   **smart tier** replaces the access study. Set the account default access
+   tier to `Smart`: every block blob without an explicit tier moves from
+   Hot to Cool after 30 days without access, to Cold 60 days later, and
+   back to Hot on the next Get Blob or Put Blob. Capacity bills at the
+   underlying tier's rate, every access operation at Hot rates, plus a
+   monthly monitoring charge per 10,000 objects over 128 KiB; objects under
+   128 KiB never leave Hot. Transitions inside smart tier, early deletion
+   and retrieval are not charged, so the three gates above do not apply.
+   Limits: no Archive; LRS and GRS accounts are excluded; blobs with an
+   explicit tier stay where they are, and once moved out a blob cannot
+   return to smart tier; lifecycle rules still delete smart-tier blobs but
+   no longer tier them; Get Blob Properties, Metadata and Tags do not count
+   as an access; moving a blob out of smart tier bills a Cool write per
+   object. Source:
+   [Optimize Azure Blob Storage costs with smart tier](https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-smart),
+   read 3 November 2026.
 
 ## Anti-pattern
 
