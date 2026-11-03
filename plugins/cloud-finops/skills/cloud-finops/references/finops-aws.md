@@ -59,6 +59,24 @@ Rightsizing is the highest-ROI optimisation for most AWS environments at Crawl/W
 - Rightsizing stateful databases without testing failover behaviour
 - Missing network-intensive workloads that appear CPU-idle but are IO-bound
 
+**Compute Optimizer idle recommendations: read an empty list against the
+exclusions.** Idle findings cover EC2 instances and Auto Scaling groups,
+EBS, ECS on Fargate, Aurora and RDS, NAT Gateway, DynamoDB, ElastiCache,
+MemoryDB, DocumentDB, WorkSpaces and SageMaker endpoints, refreshed daily
+on a 14-day default lookback (EBS attachment and NAT Gateway use 32 days,
+WorkSpaces 63). Several resources are never flagged, however idle:
+DynamoDB on-demand tables (provisioned only), ElastiCache engines other
+than Redis and Valkey, DocumentDB elastic clusters, Auto Stop and Standby
+WorkSpaces, RDS read replicas and Aurora Global Database secondaries.
+Estimated savings are priced at On-Demand unless the savings estimation
+mode preference is on (or Cost Optimization Hub supplies the discount
+data), so on usage already covered by a Savings Plan or RI the figure is
+overstated; AWS (Rick Ochs, FinOps X 2026) said that above 95% Savings
+Plans coverage most rightsizing and idle savings disappear once discounts
+are counted, an AWS figure not independently verified. Source:
+[Viewing idle resource recommendations](https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-idle-recommendations.html),
+read 3 November 2026.
+
 ### Container rightsizing (ECS / EKS)
 
 Container rightsizing requires different tooling than EC2 rightsizing.
