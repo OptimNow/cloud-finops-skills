@@ -16,8 +16,9 @@ business_coverage: ["ai-platforms:budget:deep", "ai-platforms:ai:deep"]
 > Covers the specific challenges AI brings to practice operations, best practices for
 > cost and value management, and the AI Investment Council model for governance.
 >
-> Distilled from: "Managing AI Value using FinOps Practice Operations"
-> (FinOps Foundation AI Working Group paper, contributors include Jean Latierre et al.)
+> Distilled from: ["Managing AI Value Using FinOps Practice Operations"](https://www.finops.org/wg/managing-ai-value-finops-practice-operations/)
+> (FinOps Foundation AI Working Group paper, February 2026, CC BY 4.0; contributors
+> include Jean Latiere et al.)
 
 ---
 
@@ -539,7 +540,8 @@ routes to, so the cost side carries its own as-of date.
 
 ---
 
-> Sources: FinOps Foundation AI Working Group paper, State of FinOps 2026, Google Cloud
+> Sources: FinOps Foundation AI Working Group paper
+> ([Managing AI Value Using FinOps Practice Operations](https://www.finops.org/wg/managing-ai-value-finops-practice-operations/), CC BY 4.0, adapted), State of FinOps 2026, Google Cloud
 > and Shopify practitioner insights on AI scaling governance; Tokenomics Foundation
 > definition v0.5.2 and the Tokenomics Brief episode "Why Tokens Aren't the AI Bill"
 > (September 2026) for the TCA framing, labour split and ledger destinations.
