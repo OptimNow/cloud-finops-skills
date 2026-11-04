@@ -105,7 +105,7 @@ attaches metadata before requests execute. Options by complexity:
 |---|---|---|---|
 | Native provider feature | AWS Bedrock inference profiles | Low | Limited |
 | Open-source middleware | OpenLLMetry, Langfuse, Helicone | Medium | High |
-| API gateway | Kong, NGINX with custom plugins | Medium-High | High |
+| API gateway | Kong, NGINX with custom plugins, Azure API Management token policies (`finops-azure-openai.md`) | Medium-High | High |
 | Custom application middleware | Direct SDK instrumentation | Low-Medium | Full control |
 
 **Real-time cost ingestion** - token counts must be captured as model responses are
