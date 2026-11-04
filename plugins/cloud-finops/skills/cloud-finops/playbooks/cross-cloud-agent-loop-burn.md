@@ -53,7 +53,9 @@ aws cloudwatch get-metric-statistics \
 ```
 
 For per-application attribution (which agent is burning), invoke through an
-**application inference profile** and read its cost-allocation tags in Cost
+**application inference profile** (InvokeModel or Converse on bedrock-runtime; an
+agent on the Responses, Chat Completions or Messages API on bedrock-mantle uses a
+tagged Project or Workspace instead) and read its cost-allocation tags in Cost
 Explorer / CUR - good for after-the-fact ownership, too coarse for live alerts.
 
 **Anthropic API** - the legacy Usage and Cost API usage endpoint
