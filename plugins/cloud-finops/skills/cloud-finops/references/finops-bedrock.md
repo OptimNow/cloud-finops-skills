@@ -258,6 +258,7 @@ path by recording the caller's IAM principal ARN on Bedrock inference line items
 |---|---|
 | Team / product attribution | Separate AWS accounts per team, or IAM Principal Cost Allocation with team/cost-centre tags on IAM roles |
 | Environment separation | Separate accounts (prod/dev/staging) |
+| Application / workload dollars | Application Inference Profiles on bedrock-runtime; Projects or Workspaces on bedrock-mantle (the API decides, see "Endpoint first, mechanism second") |
 | Workload-level unit economics | Application-level instrumentation + CloudWatch metrics |
 | Per-user / per-role attribution on shared account | IAM Principal Cost Allocation (see below) |
 | Provisioned capacity attribution | Tags on provisioned throughput resources |
@@ -410,32 +411,90 @@ Cost Explorer alongside `line_item_iam_principal`.
 3. Activate the relevant tag keys in Billing > Cost Allocation Tags.
 4. Verify tags appear in CUR 2.0 and Cost Explorer (24-48h propagation).
 
-**When to choose IAM Principal vs Application Inference Profiles:**
+**Limits to plan for:**
+
+- **One profile per model.** Each profile references a single model, so the count is
+  models x teams x tag sets, and a new model version needs new profiles. AWS's
+  mitigations: tag at team or cost-centre level rather than per user, take per-user
+  attribution from IAM principals, and use Projects where the workload runs on
+  bedrock-mantle (one project spans many models).
+- **InvokeModel and Converse are the safe surface.** The profile page states that a
+  Responses or Chat Completions request naming an application inference profile is
+  rejected with a 400 error, on either endpoint. AWS's attribution overview and Projects
+  pages still list Chat Completions as supported on bedrock-runtime. The pages disagree
+  (read 4 November 2026), so test before building Chat Completions attribution on a
+  profile. IAM principal attribution covers Responses and Chat Completions on both
+  endpoints either way. System, geographic and global inference profiles work with all
+  of these APIs: the restriction applies to application profiles only.
+
+**When to choose IAM Principal vs Application Inference Profiles vs Projects:**
 
 | Scenario | Preferred approach |
 |---|---|
 | Per-user chargeback or shared-account team attribution | IAM Principal Cost Allocation |
-| Per-application or per-feature unit economics | Application Inference Profiles |
+| Per-application or per-feature unit economics (InvokeModel, Converse) | Application Inference Profiles |
+| Per-application dollars on Responses or Chat Completions (bedrock-mantle) | Projects |
+| Per-application dollars on the Anthropic Messages API (bedrock-mantle) | Workspaces |
+| Many models per application, one cost bucket | Projects, if the workload already runs on bedrock-mantle |
 | Cross-region inference cost attribution | Application Inference Profiles (only path) |
 | Maximum granularity | Both - they compose (principal X via app Y) |
 
-Sources: https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html, https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-understanding-cur-data.html
+Sources: https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html, https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-understanding-cur-data.html,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-management.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-faq.html> (read 4 November 2026)
 
-#### Bedrock Projects (organisational and cost-attribution primitive)
+#### Bedrock Projects and Workspaces (bedrock-mantle attribution)
 
-Bedrock **Projects** group agents, knowledge bases, prompt flows, and other resources
-under a named container with shared IAM and resource policies. Since this section was
-first written, Projects have grown into a **billing attribution primitive** as well:
-tags assigned to a Bedrock Project are now listed as a first-class cost-attribution
-method in CUR, and AWS recommends Projects for application-level attribution on the
-newer Bedrock APIs. AWS lists four tag sources for Bedrock in CUR: IAM principal tags,
-session tags passed during role assumption or federation, Project tags and Application
-Inference Profile tags. Alongside them sit the caller ARN itself and resource tags on
-provisioned throughput.
+A Bedrock **Project** is a workload boundary for the OpenAI-compatible APIs (Responses,
+Chat Completions) on the **bedrock-mantle** endpoint. It is created and tagged through
+the Projects API, and a request joins it through the `OpenAI-Project` header or the
+`project` parameter of the OpenAI client. A **Workspace** is the same resource seen
+from the Anthropic-compatible Messages API on bedrock-mantle: created through the
+Projects API, selected with the `anthropic-workspace-id` header, carrying the project's
+tags. It is not an Anthropic Console workspace (`finops-for-ai.md`, "Team boundary"):
+that one lives in Anthropic's organisation and is reported by Anthropic's usage and
+cost APIs, while a Bedrock Workspace is an AWS resource whose tags reach the AWS bill.
 
-Useful FinOps angle: when a team adopts Projects, standardise the project name as a
-tag value across IAM roles and Application Inference Profiles under that project, so
-the project tag in CUR and the principal/profile tags reconcile cleanly.
+What matters for cost:
+
+- **One project spans many models.** The model is a per-request parameter, so projects
+  do not multiply with models the way Application Inference Profiles do. The limit is
+  1,000 projects per account.
+- **Project tags are ordinary cost allocation tags.** They reach Cost Explorer and CUR
+  (classic and 2.0) up to 24 hours after activation, carry only costs incurred after
+  activation, and share the per-usage-type-per-day grain of every native method. AWS
+  lists four tag sources for Bedrock in CUR: IAM principal tags, session tags passed
+  during role assumption or federation, Project tags (Workspaces included) and
+  Application Inference Profile tags. Alongside them sit the caller ARN itself and
+  resource tags on provisioned throughput.
+- **A request with no project ID lands in the account's default project**, which AWS
+  documents as untaggable, so that traffic stays unallocated unless IAM principal
+  attribution is on.
+- **bedrock-runtime has only the default project**, which AWS describes as "never the
+  billing anchor": runtime usage is attributed to the inference target. Use Application
+  Inference Profiles there.
+- **No per-prompt view on mantle.** Request metadata and model invocation logging both
+  cover bedrock-runtime only, and AWS states that per-prompt cost detail "is not
+  currently available" for mantle workloads. Per-prompt or per-feature cost on mantle
+  comes from a gateway or application telemetry, priced from its token counts and
+  reconciled to CUR at the model and usage-type grain.
+
+**Endpoint first, mechanism second.** Choose the endpoint on functional grounds; the
+attribution mechanism follows from it. AWS recommends bedrock-runtime for new
+applications, and moving a workload to bedrock-mantle to get model-spanning Projects
+gives up request metadata and invocation logging, the only native per-prompt view.
+
+Useful FinOps angle: standardise the project name as a tag value across IAM roles,
+Projects and Application Inference Profiles for the same application, so the project
+tag in CUR and the principal and profile tags reconcile cleanly.
+
+Sources (read 4 November 2026):
+<https://docs.aws.amazon.com/bedrock/latest/userguide/projects.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/workspaces.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-projects.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-faq.html>; the
+attribution-by-API framing also appears in AWS's CFM Technical Implementation Playbook
+[Tokenomics](https://catalog.workshops.aws/awscff/en-US/playbooks/aiml/3-tokenomics).
 
 ### SageMaker training job allocation
 
