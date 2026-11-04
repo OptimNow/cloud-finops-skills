@@ -131,6 +131,15 @@ become difficult to reverse.
 3. Provide alternatives - when blocking expensive patterns, suggest cost-effective options
 4. Measure prevention rate (below), not only the costs avoided
 
+**Choose the price basis engineers see.** Price pull-request estimates at on-demand
+rates with negotiated discounts applied (enterprise discount or private pricing, so the
+number earns trust), not at reservation-covered effective rates. A covered rate can make
+an over-sized instance look cheaper than the right size, because a size-specific
+reservation is already paid for, and the next renewal then buys the larger size again.
+Rightsize on usage and leave rate to the commitment process; a blended view is a
+deliberate choice, not a default. This is the view of Hassan Khajeh-Hosseini
+(Infracost, FinOps X 2026), an opinion drawn from one vendor's customer base.
+
 **Prevention rate and the enforcement ladder.** Prevention rate is the number of
 new cost issues fixed before merge divided by the number of new cost issues
 introduced in the period, counted per pull request against a written policy set

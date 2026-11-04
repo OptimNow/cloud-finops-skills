@@ -298,6 +298,13 @@ usage telemetry, not billing data.** The usage surfaces to watch:
   for minute-scale detection.
 - **Azure OpenAI** - Azure Monitor metrics (`ProcessedPromptTokens`, `GeneratedTokens`,
   `TokenTransaction`) at 1-minute grain, split by `ModelDeploymentName`.
+  `FoundryModelEstimatedCost` (preview) adds an estimated USD figure per minute, so a
+  threshold can be set in currency rather than tokens; it is an estimate, not a billed
+  charge, and is not exportable through diagnostic settings
+  ([metrics reference](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-cognitiveservices-accounts-metrics)).
+  Cost Management itself typically lands 8 to 24 hours after usage on EA and MCA, and up
+  to 72 hours on pay-as-you-go
+  ([Understand Cost Management data](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/understand-cost-mgt-data)).
 
 **Volume or mix.** When AI spend jumps, check whether token volume moved with it before
 treating the jump as an anomaly: spend rising faster than tokens means the blended rate

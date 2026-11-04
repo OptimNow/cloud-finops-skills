@@ -40,6 +40,7 @@ are handled through Azure.
 | Cached input tokens | Input tokens served from prompt cache (discounted rate) |
 | Model choice | Each model has its own per-token rate |
 | Capacity model | Standard (PAYG) vs Provisioned Throughput Units (PTUs) |
+| Batch deployment | Global Batch and Data Zone Batch: 50% below Global Standard for a 24-hour target turnaround, on a separate enqueued-token quota that leaves online quota untouched; a job past 24 hours keeps running until cancelled, and a cancelled job returns, and bills, the work already completed ([batch guide](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/batch), read 4 November 2026) |
 | Fine-tuning | Training token charges + hosting charges for fine-tuned deployments |
 | Image / audio | Billed in units (images per resolution, audio per second) - separate from tokens |
 
@@ -229,6 +230,20 @@ exhaustion (429) but also on long-context requests (400) and server errors (500/
 No HTTP 429 errors are returned to callers unless both provisioned and PAYG capacity
 are exhausted.
 
+**Native spillover or a gateway circuit breaker.** Native spillover needs a standard
+deployment of the same model and version in the same Foundry resource, and it decides
+request by request: every request tries the provisioned deployment first. A gateway
+alternative (an API Management backend pool with priority groups and a circuit breaker
+on the provisioned backend) can fail over across resources, regions or providers, but it
+fails over per trip, not per request: once the breaker trips, every request goes to the
+pay-as-you-go backend for the trip duration, and for the `Retry-After` period when the
+rule accepts it (Microsoft notes an Azure OpenAI `Retry-After` can be as long as a day),
+while the provisioned hours already paid for go unused. Size the trip duration against
+that cost, and prefer native spillover where its prerequisites fit. Sources:
+[spillover traffic management](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management),
+[API Management backends](https://learn.microsoft.com/en-us/azure/api-management/backends),
+read 4 November 2026.
+
 ### Spillover cost implications
 
 - Spillover requests are billed at standard PAYG rates - the variable component of your bill
@@ -327,15 +342,55 @@ account level and allocated to deployments. Unallocated PTUs - reserved but not 
 to any active deployment - generate cost with no associated output. Monitor PTU allocation
 actively; this waste is invisible unless you build a dedicated utilisation view.
 
+### Azure API Management as the AI gateway
+
+When several applications share Azure OpenAI or Foundry deployments, Azure API
+Management can sit in front of them and supply the per-consumer attribution and limits
+that billing lacks. Three mechanics shape the cost design:
+
+- **Attribute per user from the log, not the metric.** `llm-emit-token-metric` sends
+  token counts to Application Insights with up to five custom dimensions, but API
+  Management tracks at most 100 unique values per dimension and 1,000 active time series
+  per metric namespace, and silently discards data past either limit. A per-user or
+  per-tenant dimension therefore loses data once the population passes 100. Keep metrics
+  for API- or team-level views, and do per-user chargeback from the gateway's language
+  model log (`ApiManagementGatewayLlmLog` in Log Analytics), which records prompt,
+  completion and total tokens and the model for each request. Logging the prompts and
+  completions themselves is a separate opt-in that adds ingestion volume and puts
+  sensitive text in the workspace; token counts alone are enough for chargeback.
+- **A token quota is a volume cap, not a budget.** `llm-token-limit` returns 429 above a
+  per-minute rate and 403 above a quota set per hour, day, week, month or year, keyed by
+  any expression (subscription, JWT claim, IP address). It counts prompt plus completion
+  tokens only, so it does not weigh output against input, cached input or model price. It
+  counts per gateway and does not aggregate across regional or workspace gateways, so
+  traffic spread over N gateways can consume up to N times the configured quota, and
+  concurrent requests can overshoot before responses arrive.
+- **Streamed responses need usage reporting switched on.** Some OpenAI models return no
+  token counts on streamed responses unless the request sets `include_usage` to true,
+  and an interrupted stream leaves the count missing or wrong in both the metric and the
+  log.
+
+The token policies cover the OpenAI Chat Completions and Responses APIs, the Anthropic
+Messages API (v2 tiers only) and the Vertex AI API. Sources:
+[llm-emit-token-metric](https://learn.microsoft.com/en-us/azure/api-management/llm-emit-token-metric-policy),
+[llm-token-limit](https://learn.microsoft.com/en-us/azure/api-management/llm-token-limit-policy)
+and [logging for language model APIs](https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-llm-logs),
+read 4 November 2026.
+
 ### Azure Monitor metrics for Azure OpenAI
 
 | Metric | Use |
 |---|---|
-| `TokenTransaction` | Input/output token volume by model and deployment |
-| `ProvisionedUtilizationRate` | PTU utilisation (target >80%) |
-| `AzureOpenAIRequests` | Request volume |
-| `SuccessfulRequests` | Baseline for error rate calculation |
-| `RateLimitErrors` | Signals capacity exhaustion in PAYG or PTU |
+| `TokenTransaction` | Input plus output token volume by model and deployment |
+| `AzureOpenAIProvisionedManagedUtilizationV2` | PTU utilisation (a working target is above 80%); at 100% the deployment returns 429 |
+| `AzureOpenAIRequests` | Request volume; split by `StatusCode` for error and throttling (429) rates, and by `IsSpillover` for the share served by spillover |
+| `FoundryModelEstimatedCost` (preview) | Estimated USD cost per minute by deployment and `ProjectId`; an estimate, not a billed charge, and not exportable through diagnostic settings |
+
+The generic Cognitive Services metrics (`SuccessfulCalls`, `TotalErrors`,
+`BlockedCalls`, `Latency`) are marked "Do not use for Azure OpenAI service" on the
+metrics reference; build error rates from `AzureOpenAIRequests` instead. Source:
+[Supported metrics - Microsoft.CognitiveServices/accounts](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-cognitiveservices-accounts-metrics),
+read 4 November 2026.
 
 ---
 
