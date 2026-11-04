@@ -395,12 +395,18 @@ This skill incorporates content derived from the following sources:
 
 - **[FinOps Foundation](https://www.finops.org/)**: framework definitions, capability
   descriptions and maturity model structure are based on the FinOps Framework.
-- **[Point Five](https://www.pointfive.co)**: cloud optimisation recommendations
-  informed several provider-specific best practices and quick-win patterns.
 - **[Tokenomics Foundation](https://www.tokeneconomics.com/)**: the token complexity
   classes in the agentic FinOps reference are adapted from *Big-T Notation* by
   Dan Neff (Adobe), published by the Tokenomics Foundation under
-  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The AI cost and value
+  references also draw on the Foundation's five-layer tokenomics stack paper, its
+  proposed definition of the total cost of AI, and the drafts of its consumption and value
+  working groups, each cited where it is used.
+
+Every other source is credited inline, in the file that uses it. Billing mechanics
+cite the provider's own documentation with the date it was read; figures and
+opinions from practitioner talks (FinOps X 2026 and others) are attributed to the
+speaker and organisation where they appear.
 
 All referenced content has been adapted with additional context from OptimNow's
 consulting delivery experience. Any errors or opinionated interpretations are our own.
