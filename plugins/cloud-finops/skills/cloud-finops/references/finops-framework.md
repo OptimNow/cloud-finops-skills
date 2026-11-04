@@ -348,7 +348,7 @@ for cost management tools.
 
 ## FinOps organisational placement
 
-The State of FinOps 2026 survey (6th edition, 1,192 respondents representing $83+ billion
+The [State of FinOps 2026](https://www.finops.org/insights/the-state-of-finops-2026/) survey (6th edition, 1,192 respondents representing $83+ billion
 in cloud spend, published February 2026) provides current data on how FinOps practices
 are structured and positioned within organisations.
 
@@ -370,7 +370,7 @@ beginning to include labour costs.
 
 **Mission change:** These trends prompted the FinOps Foundation to update its mission
 from "Advancing the People who manage the Value of Cloud" to "Advancing the People who
-manage the Value of Technology."
+manage the Value of Technology" ([announcement](https://www.finops.org/insights/mission-update/)).
 
 How to choose a team model, write the responsibility matrix and set up the governance
 forums and their cadence is in `finops-practice-operations.md`.
@@ -460,7 +460,8 @@ and accountability mechanisms.
 
 ---
 
-> Sources: FinOps Foundation (finops.org/framework, 2024 version; State of FinOps 2026);
+> Sources: FinOps Foundation (finops.org/framework, 2024 version; [State of FinOps 2026](https://www.finops.org/insights/the-state-of-finops-2026/);
+> [mission update](https://www.finops.org/insights/mission-update/));
 > FinOps Weekly podcast on common implementation mistakes; FinOps Weekly blog on shift-left practices.
 
 > *Cloud FinOps Skill by [OptimNow](https://optimnow.io) - licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*

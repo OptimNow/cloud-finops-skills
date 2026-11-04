@@ -52,7 +52,8 @@ negotiation leverage.
 
 ## ITAM components relevant to FinOps
 
-ITAM traditionally operates as three interdependent components:
+ITAM traditionally operates as three interdependent components (FinOps Foundation,
+[FinOps & ITAM: Collaborating to Optimize Cost, Risk, and Value](https://www.finops.org/wg/finops-itam-optimize-cost-risk-value/), CC BY 4.0, adapted):
 
 **Software Asset Management (SAM)** oversees software licensing, renewals, and audit
 readiness. This is where the overlap with FinOps is strongest - see `finops-sam.md` for
@@ -92,6 +93,8 @@ them from one discipline alone creates financial or compliance blind spots.
 
 Cloud marketplace purchasing (AWS Marketplace, Azure Marketplace, GCP Marketplace) is
 growing rapidly and creates new problems that require both FinOps and ITAM co-ordination.
+This section adapts the FinOps Foundation paper
+[FinOps & ITAM Practical Scenarios: Planning & Procurement](https://www.finops.org/wg/finops-itam-practical-scenarios-planning-procurement/) (CC BY 4.0).
 
 ### The problem
 
@@ -335,7 +338,9 @@ not with an automated governance platform.
 
 ---
 
-> Sources: FinOps Foundation (FinOps for SaaS scope and ITAM-FinOps collaboration framing),
+> Sources: FinOps Foundation ([FinOps & ITAM: Collaborating to Optimize Cost, Risk, and
+> Value](https://www.finops.org/wg/finops-itam-optimize-cost-risk-value/) and [FinOps & ITAM Practical Scenarios: Planning &
+> Procurement](https://www.finops.org/wg/finops-itam-practical-scenarios-planning-procurement/), both CC BY 4.0, adapted; FinOps for SaaS scope),
 > State of FinOps 2026 (6th edition, February 2026), Gartner MQ for Cloud Financial
 > Management Tools (July 2024), vendor entitlement management documentation (Microsoft,
 > Oracle, SAP), Flexera 2025 State of Cloud Report.
