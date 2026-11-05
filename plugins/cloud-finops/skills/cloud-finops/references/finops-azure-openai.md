@@ -358,6 +358,10 @@ that billing lacks. Three mechanics shape the cost design:
   completion and total tokens and the model for each request. Logging the prompts and
   completions themselves is a separate opt-in that adds ingestion volume and puts
   sensitive text in the workspace; token counts alone are enough for chargeback.
+  Messages over 32 KB are split across several rows that share a `CorrelationId`
+  and carry a `SequenceNumber`, so aggregate per `CorrelationId` (for example the
+  maximum of `TotalTokens`) before summing, or a long exchange can be counted more
+  than once.
 - **A token quota is a volume cap, not a budget.** `llm-token-limit` returns 429 above a
   per-minute rate and 403 above a quota set per hour, day, week, month or year, keyed by
   any expression (subscription, JWT claim, IP address). It counts prompt plus completion
@@ -370,12 +374,33 @@ that billing lacks. Three mechanics shape the cost design:
   and an interrupted stream leaves the count missing or wrong in both the metric and the
   log.
 
+Two other gateway policies add charges of their own:
+
+- **Semantic caching is not free.** `llm-semantic-cache-lookup` needs an Azure
+  Managed Redis instance with the RediSearch module (enabled only when the cache is
+  created) and an embeddings deployment: every lookup embeds the incoming prompt, so
+  it bills an embeddings call on misses as well as hits, on top of the Redis
+  instance. Partition entries with `vary-by` (user or subscription), or one
+  consumer can receive another's cached answer; Microsoft warns that a
+  `score-threshold` above 0.2 may lead to cache mismatches.
+- **Content safety bills a second resource.** `llm-content-safety` sends prompts to
+  a separate Azure AI Content Safety resource in 10,000-character windows and, when
+  responses are checked, in 1,000-character windows by default. Content Safety bills
+  per text record of up to 1,000 characters, so a full prompt window counts as ten
+  records, and any `window-overlap-size` sends the overlapping characters twice.
+
 The token policies cover the OpenAI Chat Completions and Responses APIs, the Anthropic
 Messages API (v2 tiers only) and the Vertex AI API. Sources:
 [llm-emit-token-metric](https://learn.microsoft.com/en-us/azure/api-management/llm-emit-token-metric-policy),
-[llm-token-limit](https://learn.microsoft.com/en-us/azure/api-management/llm-token-limit-policy)
-and [logging for language model APIs](https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-llm-logs),
-read 4 November 2026.
+[llm-token-limit](https://learn.microsoft.com/en-us/azure/api-management/llm-token-limit-policy),
+[logging for language model APIs](https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-llm-logs),
+read 4 November 2026;
+[llm-semantic-cache-lookup](https://learn.microsoft.com/en-us/azure/api-management/llm-semantic-cache-lookup-policy),
+[enable semantic caching](https://learn.microsoft.com/en-us/azure/api-management/azure-openai-enable-semantic-caching),
+[llm-content-safety](https://learn.microsoft.com/en-us/azure/api-management/llm-content-safety-policy),
+[Content Safety pricing](https://azure.microsoft.com/en-us/pricing/details/cognitive-services/content-safety/)
+and the [ApiManagementGatewayLlmLog table](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/apimanagementgatewayllmlog),
+read 5 November 2026.
 
 ### Azure Monitor metrics for Azure OpenAI
 
