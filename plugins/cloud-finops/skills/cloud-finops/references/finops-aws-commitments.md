@@ -127,9 +127,9 @@ START: What compute service runs the workload?
 │   │
 │   ├── Is the workload fault-tolerant and interruptible?
 │   │   ├── YES → Use Spot Instances (up to 90% discount)
-│   │   │         - Diversify across 6+ instance types and 3+ AZs
+│   │   │         - Diversify across 10+ instance types and all AZs
 │   │   │         - Implement interruption handling (2-min warning)
-│   │   │         - Use ASG mixed instances policy for On-Demand fallback
+│   │   │         - Fixed On-Demand base in the ASG, not On-Demand failover
 │   │   │         - Good for: batch, ML training, CI/CD, stateless web tiers
 │   │   │
 │   │   └── NO → Is the workload stable and predictable (90+ days)?
@@ -280,18 +280,39 @@ For fault-tolerant, interruptible workloads, Spot offers up to 90% discount over
 - Single-instance workloads with no failover
 
 **Spot best practices:**
-- Use Spot Instance pools across 6+ instance types and 3+ AZs to reduce interruption risk
+- Be flexible across at least 10 instance types per workload and configure every
+  Availability Zone: a Spot capacity pool is one instance type in one AZ, so a narrow
+  request concentrates interruptions
 - Implement interruption handling (2-minute warning via EC2 metadata or EventBridge)
-- Use EC2 Auto Scaling mixed instances policy for automatic On-Demand fallback
-- Set maximum price at On-Demand rate (never bid above OD - you lose the cost advantage)
+- Use an EC2 Auto Scaling mixed instances policy with the `price-capacity-optimized`
+  allocation strategy, and set `OnDemandBaseCapacity` for the floor that must never be
+  interrupted. Do not design On-Demand failover as the interruption strategy: AWS
+  strongly discourages it, because it can drive further Spot interruptions and On-Demand
+  capacity for the same instance type and AZ may be short too
+- Do not set a maximum price. Without one you pay the current Spot price; AWS does not
+  recommend the parameter, because a maximum price makes interruptions more frequent
 - For containers: use Karpenter (EKS) or Fargate Spot (ECS) for managed Spot lifecycle
 - Monitor Spot interruption frequency by instance type - some types are more stable
+
+Sources, read 6 November 2026:
+<https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html> (10 instance
+types, all AZs, the On-Demand failover warning, `price-capacity-optimized`) and
+<https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_SpotMarketOptions.html>
+(maximum price).
 
 **Spot savings estimation:**
 Spot discounts vary by instance type, region, and AZ. The Spot Placement Score API
 indicates how likely a Spot request will be fulfilled. Use the EC2 Spot Advisor for
 historical interruption rates. Typical realised savings are 60-80% (not the theoretical
 90% maximum).
+
+**Measured interruptions for estates already on Spot:** since 5 January 2026, EC2
+Capacity Manager reports Spot Total Count, Spot Total Interruptions and Spot Interruption
+Rate by Region, Availability Zone and account, at no extra cost. Capacity Manager must be
+enabled first, per account or organisation-wide from the management account. Source:
+<https://aws.amazon.com/about-aws/whats-new/2026/01/ec2-capacity-manager-spot-interruption-metrics/>,
+read 5 November 2026. To find Spot candidates and check availability before a move, see
+`playbooks/aws-spot-candidate.md`.
 
 ### Compute commitment layering strategy
 
