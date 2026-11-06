@@ -42,6 +42,7 @@ set with its facets.
 | [aws-s3-noncurrent-version-sprawl](aws-s3-noncurrent-version-sprawl.md) | S3 Noncurrent Version Sprawl | orphaned | likely |
 | [aws-sagemaker-notebook-always-on](aws-sagemaker-notebook-always-on.md) | SageMaker Always-On Notebook Instance | idle | obvious |
 | [aws-snapshot-sprawl](aws-snapshot-sprawl.md) | Snapshot Sprawl | orphaned | likely |
+| [aws-spot-candidate](aws-spot-candidate.md) | Spot Candidate | commitment-mismatch | possible |
 | [aws-zombie-nat-gateway](aws-zombie-nat-gateway.md) | Zombie NAT Gateway | idle | obvious |
 
 ### Azure
@@ -80,10 +81,13 @@ set with its facets.
 | [cross-cloud-schedule-blindness](cross-cloud-schedule-blindness.md) | Schedule Blindness (non-production 24/7) | schedule-blindness | obvious |
 | [cross-cloud-untagged-spend-drift](cross-cloud-untagged-spend-drift.md) | Untagged Spend Drift | orphaned | likely |
 
-The `commitment-mismatch` category is served by one playbook per provider
-(`aws-expiring-commitment-no-decision`, `azure-unused-reservation`,
+The `commitment-mismatch` category is served by one commitment playbook per
+provider (`aws-expiring-commitment-no-decision`, `azure-unused-reservation`,
 `gcp-cud-mismatch`); the deeper sizing and portfolio reasoning behind each
-stays in the commitments reference files, which those playbooks link.
+stays in the commitments reference files, which those playbooks link. AWS adds
+`aws-spot-candidate`: Spot is not a commitment, but it is filed here because
+its detection is the same coverage-gap query (On-Demand spend with no
+commitment behind it) and Spot is the first layer of the rate strategy.
 
 Object-storage lifecycle is served by the same split on every provider: a
 garbage-collection playbook at `likely` (retained versions, soft-deleted
