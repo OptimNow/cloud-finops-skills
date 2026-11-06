@@ -84,13 +84,13 @@ def _section_miss(ref: Reference, section: str, body: str) -> dict[str, Any]:
     if not labels:
         detail = (
             f"Reference '{ref.name}' has no H2 or H3 sections to select from. "
-            "Call get_reference without 'section' to read it whole."
+            "get_reference without 'section' returns it whole."
         )
     else:
         detail = (
-            f"No section of '{ref.name}' matches {section!r}. Retry with one of "
-            "the headings in 'available_sections', or call get_reference "
-            "without 'section' for the full body."
+            f"No section of '{ref.name}' matches {section!r}. 'available_sections' "
+            "lists every heading in the file; get_reference without 'section' "
+            "returns the full body."
         )
     _log_zero_result("get_reference", {"name": ref.name, "section": section})
     result: dict[str, Any] = {
@@ -164,8 +164,8 @@ def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
         "section_level": best.level,
         "partial": True,
         "note": (
-            f"Section extract of '{ref.name}', not the full reference. Call "
-            "get_reference without 'section' for the whole body."
+            f"Section extract of '{ref.name}', not the full reference. "
+            "get_reference without 'section' returns the whole body."
         ),
         "content": chunk,
         "lines": chunk.count("\n"),
@@ -294,7 +294,7 @@ def _empty_result_help(
     else:
         detail = (
             "Every filter value is valid on its own, but no single item carries "
-            "all of them together. Try relaxing one filter."
+            "all of them together; relaxing one filter widens the match."
         )
     return {
         "hint": detail,

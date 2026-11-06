@@ -34,20 +34,26 @@ logger = logging.getLogger(__name__)
 # not a default.
 #
 # get_live_figures is the exception and the server's only open-world tool: it
-# makes one HTTPS request to the OptimToken site, so it carries _LIVE_FIGURES
-# below (openWorldHint=True), not _READ_ONLY. It still mutates nothing.
-_READ_ONLY = ToolAnnotations(
-    readOnlyHint=True,
-    destructiveHint=False,
-    idempotentHint=True,
-    openWorldHint=False,
-)
-_LIVE_FIGURES = ToolAnnotations(
-    readOnlyHint=True,
-    destructiveHint=False,
-    idempotentHint=True,
-    openWorldHint=True,
-)
+# makes one HTTPS request to the OptimToken site, so it is registered with
+# open_world=True (openWorldHint=True). It still mutates nothing.
+#
+# The human-readable title goes in two places: the tool's top-level `title`
+# (MCP 2025-06-18) and `annotations.title`. The Anthropic directory review
+# reads the second (its check reported all_have_title=false on 2026-11-06,
+# while every tool already had the first), and hosts that predate the
+# top-level field read only the annotation. _tool() sets both from one string
+# so they cannot drift apart.
+
+
+def _annotations(title: str, *, open_world: bool = False) -> ToolAnnotations:
+    """Read-only, idempotent, non-destructive annotations carrying the title."""
+    return ToolAnnotations(
+        title=title,
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=open_world,
+    )
 
 # Streamable HTTP defaults. Bind all interfaces because the only reason to run
 # this transport is to be reachable from outside the process. The port is a
@@ -174,28 +180,27 @@ mcp = FastMCP(
         "capability=, phase=, persona=, maturity=, persona_primary_only=) to "
         "narrow by FinOps Capability/Phase facets, get_reference(name=, "
         "section=) to fetch one body. "
-        "Every listing entry carries approx_tokens. Read it before fetching: "
-        "references run from about 2,000 to about 15,000 tokens. Above roughly "
-        "10,000, call get_reference(name=, section=\"<heading phrase>\") and "
-        "take the section you need - section matches H2 and H3 headings "
-        "case-insensitively and partially, and a miss returns the file's "
-        "available_sections rather than the whole body. The Azure pattern "
-        "catalogue (finops-azure-patterns) is an enumerated list and should "
-        "almost always be read by section; the AWS catalogue is one file per "
-        "service family (finops-aws-patterns-compute, -storage, -databases, "
-        "-networking, -other). "
+        "Every listing entry carries approx_tokens: references run from about "
+        "2,000 to about 15,000 tokens. get_reference(name=, section=\"<heading "
+        "phrase>\") returns one section instead of the whole file - section "
+        "matches H2 and H3 headings case-insensitively and partially, and a "
+        "miss returns the file's available_sections rather than the whole "
+        "body. The Azure pattern catalogue (finops-azure-patterns) is an "
+        "enumerated list, usually needed one section at a time; the AWS "
+        "catalogue is one file per service family (finops-aws-patterns-compute, "
+        "-storage, -databases, -networking, -other). "
         "PLAYBOOKS: list_playbooks() to discover, find_playbooks(scope=, "
         "service=, waste_category=, confidence=) to narrow by pattern facets, "
         "get_playbook(name=) to fetch one body. "
-        "Use a playbook for 'how do I detect/fix this specific pattern' "
-        "(zombie NAT, snapshot sprawl, idle ELB, etc.). Use a reference for "
-        "billing mechanics, commitment strategy, allocation methodology, "
-        "or any cross-pattern reasoning. "
-        "The server cannot see the user's cloud account. For questions "
-        "about the user's own resources ('which of my RIs are about to "
-        "expire', 'which of our VMs run for nothing'), the matching "
-        "playbook carries a detection query written to be run in that "
-        "account, so the answer does not depend on a data export. "
+        "A playbook serves 'how do I detect/fix this specific pattern' "
+        "(zombie NAT, snapshot sprawl, idle ELB, etc.); a reference serves "
+        "billing mechanics, commitment strategy, allocation methodology "
+        "and cross-pattern reasoning. "
+        "This connector has no access to the user's cloud accounts. For "
+        "questions about the user's own resources ('which of my RIs are "
+        "about to expire', 'which of our VMs run for nothing'), the "
+        "matching playbook includes a detection query the user can run in "
+        "their own account. "
         "For a specific waste or cost-fix question ('my NAT gateway "
         "processes 10TB to S3', 'should I delete these old snapshots'), "
         "find_playbooks returns the named runbook with its tested "
@@ -226,9 +231,17 @@ mcp = FastMCP(
 mcp._mcp_server.version = __version__
 
 
-@mcp.tool(
-    title="Browse the FinOps knowledge library",
-    annotations=_READ_ONLY,
+def _tool(title: str, *, open_world: bool = False, **kwargs: Any):
+    """Register a tool with its title set both top-level and in its annotations."""
+    return mcp.tool(
+        title=title,
+        annotations=_annotations(title, open_world=open_world),
+        **kwargs,
+    )
+
+
+@_tool(
+    "Browse the FinOps knowledge library",
     meta=_ui_tool_meta(REFERENCE_BROWSER_URI),
 )
 def list_references() -> dict[str, Any]:
@@ -236,10 +249,9 @@ def list_references() -> dict[str, Any]:
     strategy, allocation and chargeback, AI cost management, and per-provider
     cost handbooks (AWS, Azure, GCP, OCI, Databricks, Snowflake, ...).
 
-    Use this to discover what the library covers before deciding what to
-    fetch. When the question already names a FinOps domain, phase, persona
-    or maturity, call ``find_references`` instead of scanning this full
-    list.
+    Use this to discover what the library covers. When the question already
+    names a FinOps domain, phase, persona or maturity, ``find_references``
+    returns only the matching references.
 
     Returns a dict shaped ``{"references": [...], "total": N}`` where each
     entry includes ``name``, ``title``, a one-line ``description``, the
@@ -247,14 +259,14 @@ def list_references() -> dict[str, Any]:
     ``fcp_phases``, ``fcp_personas_primary``, ``fcp_maturity_entry``) and
     ``approx_tokens``.
 
-    Read ``approx_tokens`` before fetching: the library runs from about 2,000
-    to about 15,000 tokens per file. Above roughly 10,000, prefer
-    ``get_reference(name, section=...)`` and pull the part you need.
+    ``approx_tokens`` gives each file's size before it is fetched: the library
+    runs from about 2,000 to about 15,000 tokens per file, and
+    ``get_reference(name, section=...)`` returns one section of a large one.
     """
     return _tools.list_references()
 
 
-@mcp.tool(title="Read one FinOps guide", annotations=_READ_ONLY)
+@_tool("Read one FinOps guide")
 def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
     """Fetch the guidance on one FinOps topic - the billing mechanics,
     decision rules and worked examples behind a defensible answer - either
@@ -266,12 +278,12 @@ def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
     design, allocation methodology) are served by the reference's decision
     rules and worked examples, which a summary does not carry.
 
-    Pass ``section`` when the question is narrower than the file. The
-    ``approx_tokens`` hint in the listing tells you when this matters: the
-    largest references run to about 15,000 tokens and the Azure pattern catalogue
-    is an enumerated list, so a question about storage lifecycle wants one
-    section of ``finops-azure-patterns``, not all of it. Omit ``section`` for the whole
-    file when you need the cross-cutting reasoning.
+    ``section`` is useful when the question is narrower than the file. The
+    ``approx_tokens`` hint in the listing shows when this matters: the
+    largest references run to about 15,000 tokens and the Azure pattern
+    catalogue is an enumerated list, so a question about storage lifecycle is
+    served by one section of ``finops-azure-patterns``. Without ``section``
+    the whole file comes back, with its cross-cutting reasoning.
 
     Args:
         name: Reference name as returned by ``list_references`` (e.g.
@@ -300,9 +312,8 @@ def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
     return _tools.get_reference(name, section=section)
 
 
-@mcp.tool(
-    title="Find the right FinOps guide",
-    annotations=_READ_ONLY,
+@_tool(
+    "Find the right FinOps guide",
     meta=_ui_tool_meta(REFERENCE_BROWSER_URI),
 )
 def find_references(
@@ -341,7 +352,7 @@ def find_references(
             ``fcp_personas_collaborating``).
         maturity: Entry maturity level (``"Crawl"``, ``"Walk"``, ``"Run"``).
         persona_primary_only: when True, ``persona`` matches only the primary
-            list. Use it when the default match barely narrows the set -
+            list. Useful when the default match barely narrows the set -
             broad personas like Engineering collaborate on nearly every file,
             so filtering on collaboration is descriptive, not discriminating.
             ``persona="Engineering", persona_primary_only=True`` is the
@@ -362,9 +373,8 @@ def find_references(
     )
 
 
-@mcp.tool(
-    title="Browse the cloud waste runbooks",
-    annotations=_READ_ONLY,
+@_tool(
+    "Browse the cloud waste runbooks",
     meta=_ui_tool_meta(PLAYBOOK_EXPLORER_URI),
 )
 def list_playbooks() -> dict[str, Any]:
@@ -374,7 +384,7 @@ def list_playbooks() -> dict[str, Any]:
 
     Use this to discover which waste patterns have a runbook. When the
     question already names a provider, waste category, or confidence tier,
-    call ``find_playbooks`` instead.
+    ``find_playbooks`` returns only the matching runbooks.
 
     Each playbook is a small (~90-170 line) runbook scoped to one waste
     pattern (e.g. ``aws-zombie-nat-gateway``, ``azure-orphan-disks``). Returns
@@ -387,9 +397,8 @@ def list_playbooks() -> dict[str, Any]:
     return _tools.list_playbooks()
 
 
-@mcp.tool(
-    title="Read one waste runbook",
-    annotations=_READ_ONLY,
+@_tool(
+    "Read one waste runbook",
     meta=_ui_tool_meta(PLAYBOOK_VIEWER_URI),
 )
 def get_playbook(name: str) -> dict[str, Any]:
@@ -399,10 +408,10 @@ def get_playbook(name: str) -> dict[str, Any]:
 
     Use this when the user asks how to detect, confirm, or fix one specific
     named waste pattern (zombie NAT gateway, snapshot sprawl, idle SageMaker
-    endpoint, ...). It also serves questions about the user's own resources
-    ("which of my X..."): the runbook's detection query is written to be run
-    in the user's account, so the answer does not depend on access to that
-    account.
+    endpoint, ...), including questions about the user's own resources
+    ("which of my X..."). Each runbook includes a detection query the user
+    can run in their own cloud account; this connector has no access to the
+    user's accounts.
 
     Args:
         name: Playbook slug as returned by ``list_playbooks`` (e.g.
@@ -513,9 +522,8 @@ def reference_browser_ui_apps_sdk() -> str:
     return _REFERENCE_BROWSER_HTML
 
 
-@mcp.tool(
-    title="Find a waste runbook",
-    annotations=_READ_ONLY,
+@_tool(
+    "Find a waste runbook",
     meta=_ui_tool_meta(PLAYBOOK_EXPLORER_URI),
 )
 def find_playbooks(
@@ -524,11 +532,11 @@ def find_playbooks(
     waste_category: str | None = None,
     confidence: str | None = None,
 ) -> dict[str, Any]:
-    """Finds the runbook for a specific cloud waste pattern, filtered by
-    provider, service, waste category or detection confidence. Useful
-    before answering a specific waste or cost-fix question: each runbook
-    includes a tested detection query the user can run in their own
-    account, so it also serves questions about the user's own resources.
+    """Finds runbooks for a suspected cloud-waste pattern, filterable by
+    provider, service, waste category or detection confidence. Useful when
+    the user asks how to detect or fix a specific waste pattern; each
+    runbook includes a detection query the user can run in their own
+    account. This connector has no access to the user's accounts.
 
     Use this for questions like "which VMs are running for nothing",
     "why is our NAT bill so high", "my NAT gateway processes 10TB to S3",
@@ -571,7 +579,7 @@ def find_playbooks(
     )
 
 
-@mcp.tool(title="Current figures from an OptimToken guide", annotations=_LIVE_FIGURES)
+@_tool("Current figures from an OptimToken guide", open_world=True)
 async def get_live_figures(guide: str) -> dict[str, Any]:
     """Get the current value of a figure a reference quotes with a date.
 

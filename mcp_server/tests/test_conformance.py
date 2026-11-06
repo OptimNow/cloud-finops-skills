@@ -20,7 +20,7 @@ import re
 
 import pytest
 
-from cloud_finops_mcp import metadata, server, tools
+from cloud_finops_mcp import live_figures, metadata, server, tools
 
 # Advertised in the find_playbooks docstring but carried by no playbook today.
 # The taxonomy defines the category and the tool offers it as a filter, so a
@@ -298,6 +298,13 @@ async def test_every_tool_declares_title_and_read_only_annotations() -> None:
         assert tool.title, f"{tool.name} declares no title"
         ann = tool.annotations
         assert ann is not None, f"{tool.name} declares no annotations"
+        # The directory review reads annotations.title, not the top-level
+        # field: on 2026-11-06 it reported all_have_title=false while every
+        # tool already carried a top-level title.
+        assert ann.title == tool.title, (
+            f"{tool.name} annotations.title {ann.title!r} differs from its "
+            f"title {tool.title!r}"
+        )
         assert ann.readOnlyHint is True, f"{tool.name} is not marked read-only"
         assert ann.destructiveHint is False, f"{tool.name} lacks destructiveHint=False"
         assert ann.idempotentHint is True, f"{tool.name} lacks idempotentHint=True"
@@ -311,7 +318,12 @@ async def test_every_tool_declares_title_and_read_only_annotations() -> None:
 # review criteria reject descriptions that tell Claude how to behave beyond
 # the tool's function; these are the forms the August 2026 routing work used
 # (PRs #171, #176, #184, #187) and the 2026-09-30 rewrite removed.
-FORBIDDEN_MARKERS = ("ALWAYS", "NEVER", "MUST", "do NOT", "IS the answer")
+FORBIDDEN_MARKERS = ("ALWAYS", "NEVER", "MUST", "FIRST", "do NOT", "IS the answer")
+# Lower-cased phrases the 2026-11-06 directory review quoted from an older
+# version ("outranks a correct generic answer", "override instinct") or asked
+# to remove because they script the reply ("lack account access", "data
+# export"). Checked case-insensitively.
+FORBIDDEN_PHRASES = ("outranks", "instinct", "lack account access", "data export")
 
 
 async def test_model_facing_text_is_descriptive_not_directive() -> None:
@@ -341,6 +353,28 @@ async def test_model_facing_text_is_descriptive_not_directive() -> None:
         assert "override" not in lowered, f"{where} uses 'override' wording"
         for marker in FORBIDDEN_MARKERS:
             assert marker not in text, f"{where} contains the directive {marker!r}"
+        for phrase in FORBIDDEN_PHRASES:
+            assert phrase not in lowered, f"{where} contains {phrase!r}"
+
+
+def test_live_figures_payload_text_is_descriptive_not_directive() -> None:
+    """The fixed text get_live_figures returns states facts, not reply orders.
+
+    The directory review applies the same rule to response payloads as to
+    descriptions ("Response payloads carry data") and rejects relocating a
+    directive into a tool output. FALLBACK and the note used to tell the model
+    what to say ("say which day it is from", "give that snapshotDate with it").
+    """
+    texts = {
+        "FALLBACK": live_figures.FALLBACK,
+        "note": live_figures._note({"snapshotDate": "2026-10-25"}),
+    }
+    for where, text in texts.items():
+        lowered = text.lower()
+        for marker in FORBIDDEN_MARKERS:
+            assert marker not in text, f"{where} contains the directive {marker!r}"
+        for phrase in ("say which", "when quoting", "use the dated"):
+            assert phrase not in lowered, f"{where} scripts the reply: {phrase!r}"
 
 
 async def test_every_tool_description_says_when_to_use_it() -> None:

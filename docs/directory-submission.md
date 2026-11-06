@@ -60,7 +60,7 @@ that release. Either way, confirm the served content itself:
 | Check | How | Expected |
 |---|---|---|
 | Listing totals | `list_references()` and `list_playbooks()` | `total` equals the number of `.md` files under `references/` and `playbooks/` (README excluded) at the tag you deployed |
-| Tool surface | `tools/list` | Seven tools, each with a `title` and `readOnlyHint: true`; `openWorldHint: true` on `get_live_figures` only; descriptions identical to `server.py` at that tag |
+| Tool surface | `tools/list` | Seven tools, each with a `title` and the same string in `annotations.title`, and `readOnlyHint: true`; `openWorldHint: true` on `get_live_figures` only; descriptions identical to `server.py` at that tag |
 | Bodies | `get_reference(name=...)` on a file changed in the last release | `content` equals the file at that tag |
 
 The hosted server is redeployed per release, not per merge (INSTALLATION.md), so
@@ -247,7 +247,8 @@ different URLs".
 ### 2.2 Tools
 
 Synced from the server. Expect seven tools, all in the read-only group, each with a
-title. `get_live_figures` is the one declared open-world (it fetches an OptimToken
+title in `annotations.title` (the field the review checks; the top-level `title`
+alone reported `all_have_title=false` on 2026-11-06). `get_live_figures` is the one declared open-world (it fetches an OptimToken
 guide's `figures.json`); if the portal asks about external requests, the answer is
 that tool, one HTTPS GET to `optimtoken.optimnow.io` with the guide slug only. If any is flagged for a missing title or annotation, the deployment is stale:
 see section 0.
@@ -302,6 +303,13 @@ Primary use cases: answering FinOps questions with billing-grounded guidance;
 finding the runbook for a suspected waste pattern; routing an advisory question
 (commitment sizing, chargeback design) to the reference that serves it. Prerequisites:
 none. Reads data only.
+
+In the portal's `primary_use_cases` field, each entry is one line of plain text: the
+use case, a colon, then one example prompt. Type it rather than pasting from a
+formatted page: the 2026-11-06 review found a stray "waste pattern" label and a tab
+character before the example prompt of the first entry ("Find and fix a specific
+cloud waste pattern: waste pattern<TAB>Our NAT gateway bill keeps growing..."), which
+a copy from a two-column layout produces.
 
 ### 2.5 Company
 
@@ -398,6 +406,21 @@ who add both see one set of tools.
   routing on symptom phrasings; the manual five-prompt check in section 2.8 measures
   it after each deploy, and the README already tells users to ask for the library by
   name when an answer arrives without a tool call.
+- **The 2026-11-06 review quoted the pre-2026-09-30 wording.** It asked again for the
+  removal of "ALWAYS", "FIRST anyway", "outranks a correct generic answer", "override
+  instinct" and the reply-scripting lines, and counted six tools, while the live
+  server (1.48.0) had served the neutral wording since 1.37.0 and seven tools since
+  `get_live_figures`. The likely cause is a tool list stored in the portal from an
+  earlier sync. Two consequences: re-sync the tool list from the live server before
+  resubmitting, and say in the reply which release removed the wording. The same
+  review asked that response payloads carry data and no directive either, so the
+  fixed texts the tools return (`get_reference` notes on a section miss, the
+  zero-match `hint`, the `get_live_figures` `note` and `fallback`) were rewritten as
+  statements of fact, and the server `instructions` now state that the connector has
+  no access to the user's accounts. `test_conformance.py` pins the reviewer's phrases
+  ("outranks", "instinct", "lack account access", "data export", "FIRST") and the
+  payload texts. The same review found the titles missing from `annotations.title`
+  (they were set top-level only); `server.py` now sets both from one string.
 - **Routing to OptimToken.** The criteria reject descriptions that "promote products
   and services", and the data-handling step asks for "Sponsored or promoted content:
   No". The server `instructions` used to route current prices to the OptimNow AI
