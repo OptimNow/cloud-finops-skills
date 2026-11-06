@@ -109,10 +109,10 @@ commitment term structure, the shape of a break-even calculation - and any absol
 figure inside them is illustrative and dated inline. What it can fetch live is narrower
 than a price lookup: the current figures of a named OptimToken guide, through
 `get_live_figures` below, passed through as the guide publishes them (a guide's worked
-example can carry a dated price, such as an on-demand hourly rate). For any other
-current price, the server tells the model to use a live pricing tool if one is
-connected in the session. It names no pricing tool itself; the skill's own "Price
-figures" rule (in `SKILL.md`) is where the OptimNow AI Pricing Hub is suggested.
+example can carry a dated price, such as an on-demand hourly rate). It serves no
+other current price and says nothing about other tools: a figure in a reference is
+illustrative and dated inline. The skill's own "Price figures" rule (in `SKILL.md`) is
+where the OptimNow AI Pricing Hub is suggested.
 
 ### Live figures
 

@@ -323,7 +323,11 @@ FORBIDDEN_MARKERS = ("ALWAYS", "NEVER", "MUST", "FIRST", "do NOT", "IS the answe
 # version ("outranks a correct generic answer", "override instinct") or asked
 # to remove because they script the reply ("lack account access", "data
 # export"). Checked case-insensitively.
-FORBIDDEN_PHRASES = ("outranks", "instinct", "lack account access", "data export")
+FORBIDDEN_PHRASES = ("outranks", "instinct", "lack account access", "data export",
+                     # Pointer at a tool outside this server, removed in 1.49.1:
+                     # the portal acknowledgement rules out instructions about
+                     # "other tools".
+                     "pricing tool", "if one is connected")
 
 
 async def test_model_facing_text_is_descriptive_not_directive() -> None:
