@@ -92,6 +92,11 @@ failover; no strict latency or availability SLA.
   account (since 5 January 2026). Enable it first, per account or
   organisation-wide from the management account; `aws ec2
   get-capacity-manager-attributes` shows the status read-only.
+- Unified Operations support plan only: `get-capacity-manager-supportability-scores
+  --market-type spot` scores each type and AZ pair; after the move,
+  `SpotCapacityRequestFulfillmentRate` shows what was delivered (interrupted
+  instances still count)
+  ([Capacity Manager](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-manager.html)).
 - `describe-spot-price-history` (90 days) estimates the saving only. The price
   moves slowly on long-term supply and demand; capacity moves in real time.
 
