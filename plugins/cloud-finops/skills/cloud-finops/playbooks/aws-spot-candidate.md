@@ -71,7 +71,7 @@ failover; no strict latency or availability SLA.
   ([Spot best practices](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html)),
   with attribute-based selection or `ec2-instance-selector` (from
   [GitHub](https://github.com/aws/amazon-ec2-instance-selector)).
-- Score that list per AZ:
+- Score that list per AZ (illustrative list; use your own):
 
   ```bash
   aws ec2 get-spot-placement-scores --region eu-central-1 \
