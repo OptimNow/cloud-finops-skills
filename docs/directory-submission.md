@@ -304,12 +304,20 @@ finding the runbook for a suspected waste pattern; routing an advisory question
 (commitment sizing, chargeback design) to the reference that serves it. Prerequisites:
 none. Reads data only.
 
-In the portal's `primary_use_cases` field, each entry is one line of plain text: the
-use case, a colon, then one example prompt. Type it rather than pasting from a
-formatted page: the 2026-11-06 review found a stray "waste pattern" label and a tab
-character before the example prompt of the first entry ("Find and fix a specific
-cloud waste pattern: waste pattern<TAB>Our NAT gateway bill keeps growing..."), which
-a copy from a two-column layout produces.
+The portal's **Use cases** block (`primary_use_cases` on the reviewer's side) has two
+columns per row, **Use case** and **Example prompt**, and the reviewer reads each row
+as the two joined. It is shown to reviewers only, not on the public listing. Corrected
+on 2026-11-06 to:
+
+| Use case | Example prompt |
+|---|---|
+| Find and fix a specific cloud waste pattern | Our NAT gateway bill keeps growing. How do I find out what is driving it and fix it? |
+| Answer a FinOps question with billing-grounded guidance | How do I detect cold data sitting in S3 Standard and move it to a cheaper tier? |
+| Route an advisory question to the guidance that serves it | How much should we commit in Savings Plans for our EC2 fleet? |
+
+Paste as plain text and check the end of each field: the 2026-11-06 review found a
+stray "waste pattern" label and a tab in the first row ("Find and fix a specific cloud
+waste pattern: waste pattern<TAB>Our NAT gateway bill keeps growing...").
 
 ### 2.5 Company
 
