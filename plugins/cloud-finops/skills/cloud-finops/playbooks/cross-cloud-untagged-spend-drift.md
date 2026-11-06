@@ -38,15 +38,17 @@ that destroys the financial visibility downstream.
 **AWS** - find resources with missing mandatory tags:
 
 ```sql
--- Athena over CUR 2.0: spend with missing 'cost-centre' tag, last 30 days
+-- Athena over CUR 2.0: spend with missing 'cost-centre' tag, last 30 days.
+-- resource_tags is a map: confirm the key name with
+-- SELECT DISTINCT key FROM cur2 CROSS JOIN UNNEST(map_keys(resource_tags)) AS t(key)
 SELECT
   product_servicecode             AS service,
   line_item_resource_id           AS resource_id,
   SUM(line_item_unblended_cost)   AS cost_30d
 FROM cur2
 WHERE line_item_usage_start_date >= current_date - interval '30' day
-  AND (resource_tags_user_cost_centre IS NULL
-       OR resource_tags_user_cost_centre = '')
+  AND (element_at(resource_tags, 'user_cost_centre') IS NULL
+       OR element_at(resource_tags, 'user_cost_centre') = '')
   AND line_item_unblended_cost > 0
 GROUP BY 1, 2
 ORDER BY cost_30d DESC

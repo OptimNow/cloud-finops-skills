@@ -49,8 +49,9 @@ spend at stake:
 **AWS** - CUR over 30 days, instance-hours by environment tag:
 
 ```sql
+-- CUR 2.0: element_at returns NULL when the tag is absent on a row
 SELECT
-  resource_tags_user_environment AS env,
+  element_at(resource_tags, 'user_environment') AS env,
   SUM(line_item_usage_amount) AS instance_hours,
   SUM(line_item_unblended_cost) AS cost_30d
 FROM cur2

@@ -33,7 +33,7 @@ tolerance is a human judgement and Spot capacity must exist for the shape.
 ```sql
 -- Athena over CUR 2.0: uncovered On-Demand EC2 hours, last full month
 SELECT product_region_code, product_instance_type,
-       resource_tags['user_environment'] AS environment,
+       element_at(resource_tags, 'user_environment') AS environment,
        SUM(line_item_usage_amount)       AS instance_hours,
        SUM(line_item_unblended_cost)     AS uncovered_od_cost
 FROM cur2
