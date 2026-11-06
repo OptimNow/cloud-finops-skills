@@ -96,26 +96,37 @@ https://aws.amazon.com/blogs/aws-cloud-financial-management/automating-filtered-
 Sources: https://aws.amazon.com/about-aws/whats-new/2025/11/aws-data-exports-focus-1-2-available/
 and https://aws.amazon.com/about-aws/whats-new/2026/03/aws-data-exports-cross-account-delivery-cost/
 
-**Common CUR analysis queries (Athena):**
+**Common CUR 2.0 analysis queries (Athena):** in CUR 2.0, resource tags sit in one
+map column, `resource_tags`, and a key appears on a row only when that line item carries
+the tag ([CUR 2.0 resource tags column](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-resource-tags.html)).
+Read a tag with `element_at(resource_tags, 'user_<key>')`, which returns NULL when the key
+is absent; `resource_tags['user_<key>']` fails on such rows, because Athena engine
+version 3 takes its map functions from Trino
+([Trino map functions](https://trino.io/docs/current/functions/map.html)). The legacy
+CUR form, one `resource_tags_user_<key>` column per tag, does not exist in CUR 2.0.
+
 ```sql
 -- Top 10 services by cost, current month
 SELECT line_item_product_code,
        ROUND(SUM(line_item_unblended_cost), 2) AS total_cost
-FROM cur_table
-WHERE month = MONTH(CURRENT_DATE) AND year = YEAR(CURRENT_DATE)
+FROM cur2
+WHERE line_item_usage_start_date >= date_trunc('month', current_date)
 GROUP BY line_item_product_code
 ORDER BY total_cost DESC
 LIMIT 10;
 
--- Untagged resources by cost
+-- Untagged resources by cost (line_item_resource_id needs INCLUDE_RESOURCES)
 SELECT line_item_resource_id,
        line_item_product_code,
        ROUND(SUM(line_item_unblended_cost), 2) AS cost
-FROM cur_table
-WHERE resource_tags_user_environment IS NULL
+FROM cur2
+WHERE element_at(resource_tags, 'user_environment') IS NULL
   AND line_item_line_item_type = 'Usage'
 GROUP BY 1, 2
 ORDER BY cost DESC;
+
+-- Tag keys activated in the export, to confirm the exact key names
+SELECT DISTINCT key FROM cur2 CROSS JOIN UNNEST(map_keys(resource_tags)) AS t(key);
 ```
 
 ### AWS Cost Explorer
