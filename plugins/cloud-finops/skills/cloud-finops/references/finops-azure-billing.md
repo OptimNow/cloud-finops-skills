@@ -250,10 +250,20 @@ Source: [Organize your invoice based on your needs](https://learn.microsoft.com/
 
 ### Azure-specific tagging considerations
 
-**Key difference from AWS:** Azure supports tag inheritance policies through Azure
-Policy. Resources can inherit tags from their resource group or subscription
-automatically. This simplifies governance for teams that organise resources by
-resource group.
+**Two different things are called tag inheritance.** The Cost Management setting
+(EA billing account, MCA billing profile or subscription scope) copies
+subscription and resource group tags, and on MCA billing profile and invoice
+section tags, onto child resources' usage records only: the resources themselves
+stay untagged, so Azure Policy, Resource Graph and anything outside cost data
+cannot see them. It rewrites the current month within 8 to 24 hours of being
+switched on, using the tags as they stand that day; earlier months keep their old
+records, and purchases or resources that emit no usage get nothing. Where a
+resource carries the same tag key, the resource's value wins unless the setting is
+changed to prefer the inherited one. Azure Policy's `modify` effect, by contrast,
+writes the tag onto the resource. Use the setting for allocation from day one, and
+Policy where the tag must exist on the resource. Source:
+[Group and allocate costs using tag inheritance](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/enable-tag-inheritance),
+read 6 November 2026.
 
 **Tag enforcement policies (Azure Policy):**
 - `deny` effect: Block resource creation without mandatory tags
@@ -449,6 +459,19 @@ FinOps-only alerts create a bottleneck; engineering-only alerts lack financial
 context.
 
 Use Action Groups for automated responses (Logic Apps, Azure Functions, webhooks).
+
+**What a budget measures.** Budgets reset monthly, quarterly or annually (billing
+month, quarter or year on pay-as-you-go and Visual Studio subscriptions) and are
+evaluated about once every 24 hours against data that itself lands 8 to 24 hours
+after usage, so an alert can trail the spend by more than a day. They track actual
+cost, not amortised cost, and include reservation and other purchases: a
+reservation bought up front can trip a monthly budget on its own, so filter on
+Publisher Type Azure and Charge Type Usage when the budget is meant for
+consumption only. Action groups attach only at subscription and resource group
+scope; budgets at management group or billing scopes notify by email alone. A
+budget never stops resources. Source:
+[Create and manage budgets](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets),
+read 6 November 2026.
 
 ### Environment definitions
 

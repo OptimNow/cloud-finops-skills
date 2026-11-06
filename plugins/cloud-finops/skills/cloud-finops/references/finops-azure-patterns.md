@@ -415,7 +415,7 @@ In Azure, it's common for public IP addresses to be created as part of virtual m
 - If an unassigned IP is intended for future use, consider converting it to Basic (if compatible)
 - Incorporate IP resource cleanup into deprovisioning workflows
 
-### Other Optimization Patterns (6)
+### Other Optimization Patterns (7)
 
 **Transactable vs Non-Transactable Confusion In Azure Marketplace**
 Service: Azure Marketplace | Type: Commitment Misalignment
@@ -444,6 +444,15 @@ Teams often overuse Microsoft-hosted agents by running redundant or low-value jo
 - Audit and simplify pipelines to remove redundant or unnecessary stages
 - Use conditional logic to limit execution of non-critical pipelines
 - Prioritise agent capacity for pipelines supporting core or production workloads
+
+**Polling Triggers Billed When Nothing Runs In Azure Logic Apps**
+Service: Azure Logic Apps | Type: Inefficient Configuration
+
+On the Consumption plan every trigger check is a billed execution, whether the trigger fires or is skipped, and each retry is billed as one more execution, so a polling trigger on a short interval costs money on empty polls. On Standard, built-in operations are free but you pay for the hosting plan whether or not it runs, plus each managed connector call and the storage account's transactions. Source: [Logic Apps metering and billing](https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-pricing), read 6 November 2026.
+
+- Replace polling triggers with push triggers (Event Grid, webhooks) where the source supports them, or lengthen the polling interval
+- Cap retry policies on actions that call flaky endpoints
+- Move steady, high-volume workflows to Standard, where built-in operations are free; keep low or bursty ones on Consumption
 
 **Overly Frequent Querying In Azure Monitor Alerts**
 Service: Azure Monitor | Type: Inefficient Configuration
