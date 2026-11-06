@@ -435,10 +435,14 @@ who add both see one set of tools.
   Pricing Hub by URL; a reviewer can read a first-party link as promotion, so since
   2026-09-30 the connector's model-facing text names no OptimNow product and no
   `optimnow.io` URL (the widgets lost their footer link at the same time; a test in
-  `mcp_server/tests/test_conformance.py` pins the URL rule). The instruction that
-  remains is the data-quality rule alone: use a live pricing tool if one is connected,
-  never quote an undated figure. The skill keeps its pricing-hub routing; the plugin is
-  reviewed under different rules.
+  `mcp_server/tests/test_conformance.py` pins the URL rule). Until 1.49.1 the
+  instructions kept one data-quality sentence, "a live pricing tool, if one is
+  connected in the session, is the source for a current price". It was removed on
+  2026-11-06 because the portal's policy acknowledgement reads "Tool descriptions
+  contain no instructions about model behavior, other tools, or external instruction
+  sources", and the sentence pointed at a tool outside this server. The instructions
+  now say only that a figure in a reference is illustrative and dated inline. The skill
+  keeps its pricing-hub routing; the plugin is reviewed under different rules.
 
   Since 2026-10-25 one exception is deliberate: `get_live_figures` names OptimToken in
   its title and description, and the `instructions` string names it once, because the
