@@ -72,6 +72,20 @@ Then exercise each of the seven tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
 asks you to confirm you did.
 
+**Verified 2026-11-06, after the 1.49.1 release and `fly deploy`.** Both hosts answer
+`initialize` with `serverInfo.version` 1.49.1 and list seven tools, each with
+`annotations.title` equal to its `title`; the `instructions` no longer mention a
+pricing tool; all seven tools return content with the section 2.8 arguments;
+`list_references` total 47 and `list_playbooks` total 44, equal to tag `v1.49.1`.
+PyPI and the MCP Registry list 1.49.1 as latest. The connector listing was then
+resubmitted (see section 2.2 for the capture procedure): Server URL moved from
+`https://cloud-finops-mcp.fly.dev/mcp` to `https://mcp.optimnow.io/mcp`, the
+reviewers' tool capture refreshed on 1.49.1 with seven tools, the Privacy policy field
+moved from `https://www.optimnow.io/privacypolicy` to `PRIVACY.md`, "Has an MCP App"
+left unchecked (the widgets do not render in claude.ai, see
+`docs/mcp-apps-lessons.md`), and the Additional notes field lists the changes since the
+2026-11-06 review.
+
 **Verified 2026-10-13.** `initialize` at `https://mcp.optimnow.io/mcp` answers
 `serverInfo.version` 1.41.1 with the six tools; `list_references` total 36 and
 `list_playbooks` total 41, equal to tag `v1.41.1`. The plugin listing is validated. The
@@ -242,7 +256,8 @@ Same portal, **Submit new**, then **MCP connector**.
 
 Paste `https://mcp.optimnow.io/mcp` (the `/mcp` path, no trailing slash;
 the widget sandbox domain is derived from it). Single URL, not "users connect to
-different URLs".
+different URLs". The listing carried the former `https://cloud-finops-mcp.fly.dev/mcp`
+until 2026-11-06; changing the Server URL drops the stored tool capture (section 2.2).
 
 ### 2.2 Tools
 
@@ -252,6 +267,30 @@ alone reported `all_have_title=false` on 2026-11-06). `get_live_figures` is the 
 guide's `figures.json`); if the portal asks about external requests, the answer is
 that tool, one HTTPS GET to `optimtoken.optimnow.io` with the guide slug only. If any is flagged for a missing title or annotation, the deployment is stale:
 see section 0.
+
+**The reviewers' tool capture is a stored copy, not a live read.** The page says
+"Reviewers see your server's tools as captured on <date>". On 2026-11-06 it still read
+30 September 2026, so the review quoted wording removed that day and counted six tools.
+How the capture behaves, as observed on 2026-11-06:
+
+- **"Update the copy reviewers see"** reads the server through a connector in your own
+  claude.ai account whose URL is exactly the listing's **saved** Server URL. Without
+  one it fails with "We couldn't find a connector of yours at this listing's
+  address". Add it under Settings, Connectors, as a custom connector with no
+  authentication. A connector added while the portal page is open is seen only after
+  the page is reloaded.
+- **"Sync from server"** replaces the Tool names list with the live list; it is active
+  only once a capture has been read.
+- **Saving is submitting.** The page has no separate save: "Update submission" sends
+  every edit to review, and edits left unsaved are lost when the page closes. Make all
+  edits in one pass, then submit once.
+- **Changing the Server URL drops the capture**, because the capture was read from the
+  old address, and a new one can be read only once the new URL is saved. So the order
+  is: make every edit including the new URL, "Update submission", then at once "Update
+  the copy reviewers see" through a connector at the new URL, then check that Tool
+  names still lists seven tools.
+- The capture is taken from whatever the server serves, so release and `fly deploy`
+  first, verify with section 0, then refresh it.
 
 ### 2.3 Listing
 
@@ -306,14 +345,15 @@ none. Reads data only.
 
 The portal's **Use cases** block (`primary_use_cases` on the reviewer's side) has two
 columns per row, **Use case** and **Example prompt**, and the reviewer reads each row
-as the two joined. It is shown to reviewers only, not on the public listing. Corrected
-on 2026-11-06 to:
+as the two joined. It is shown to reviewers only, not on the public listing. As
+submitted on 2026-11-06 (the portal holds the full prompts; rows 1 and 3 are cut here
+where the field cut them on screen):
 
 | Use case | Example prompt |
 |---|---|
-| Find and fix a specific cloud waste pattern | Our NAT gateway bill keeps growing. How do I find out what is driving it and fix it? |
-| Answer a FinOps question with billing-grounded guidance | How do I detect cold data sitting in S3 Standard and move it to a cheaper tier? |
-| Route an advisory question to the guidance that serves it | How much should we commit in Savings Plans for our EC2 fleet? |
+| Find and fix a specific cloud waste pattern | Our NAT gateway bill keeps growing and most of the traffic go... |
+| Size cloud commitments | How should we size a Compute Savings Plan when our EC2 usage is spiky? |
+| Design cost allocation and chargeback | How do we allocate the cost of a shared AKS cluster to product teams and ch... |
 
 Paste as plain text and check the end of each field: the 2026-11-06 review found a
 stray "waste pattern" label and a tab in the first row ("Find and fix a specific cloud
