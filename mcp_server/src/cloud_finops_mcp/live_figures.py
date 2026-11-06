@@ -63,7 +63,7 @@ _GUIDE_LINE_RE = re.compile(
     re.M,
 )
 
-FALLBACK = "Use the dated figure in the reference and say which day it is from."
+FALLBACK = "The dated figure in the reference still stands, as of the day it states."
 
 _LLMS_KEY = "llms.txt"
 
@@ -148,11 +148,11 @@ def _note(document: dict[str, Any]) -> str:
     snapshot = document.get("snapshotDate") or "the snapshotDate above"
     return (
         f"Figures from the OptimToken catalogue of {snapshot}, passed through as "
-        "published. When quoting one, give that snapshotDate with it and link the "
-        "document's url. Each figure is a median, a min-max range or a count, as "
-        "its key names it; say which. figures.unit says what the numbers measure "
-        "(discounts are fractions: 0.2743 is 27.4%). A dated figure inside a "
-        "reference is the fallback when this tool fails."
+        "published: they hold as of that snapshotDate, and the document's url is "
+        "their public source. Each figure is a median, a min-max range or a "
+        "count, as its key names it. figures.unit says what the numbers measure "
+        "(discounts are fractions: 0.2743 is 27.4%). When this tool fails, the "
+        "dated figure inside the reference still stands."
     )
 
 
