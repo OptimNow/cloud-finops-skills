@@ -110,7 +110,11 @@ notifications, filterable by workspace and by tag, which is where the usage
 policy's tags earn their keep. The documentation says not to use budgets as an
 absolute spend cap, because usage data can arrive up to 24 hours late. The one
 blocking control it documents is **Block usage** on a Unity Gateway threshold,
-and it describes that enforcement as approximate. The runtime caps a FinOps
+and it describes that enforcement as approximate. Since 1 November 2026 a Unity Gateway
+budget also counts spend from task-specific AI Functions (`ai_parse_document`,
+`ai_extract`, `ai_classify`) in batch and real-time runs, so a threshold sized for chat or
+agent traffic can now alert on, or block, a document-processing job; size it with both in
+view ([November 2026 release notes](https://docs.databricks.com/aws/en/release-notes/product/2026/november)). The runtime caps a FinOps
 team expects (idle timeout, hourly burn, allowed instance types) live in
 compute policies, covered under "Allocation and Governance" below.
 

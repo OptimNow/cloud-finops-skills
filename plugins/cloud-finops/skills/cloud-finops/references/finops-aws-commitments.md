@@ -75,7 +75,11 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 
 3. **Standard RIs are the only instrument that reserves capacity.** If you need
    guaranteed capacity in a specific AZ (e.g. GPU instances, high-demand regions),
-   Standard RIs with capacity reservation are the only option.
+   Standard RIs with capacity reservation are the only option. An EC2 Capacity Block
+   for ML is paid up front, but since 6 November 2026 CUR 2.0 and Cost Explorer amortise
+   that fee over the reservation, so GPU block spend no longer spikes on the purchase
+   date in amortised views (see "Deriving the amortised view from CUR 2.0" in
+   `finops-allocation-showback.md`).
 
    **EC2 Auto Scaling reservations-first placement (as of July 2026).** EC2 Auto
    Scaling now defaults to a reservations-then-balanced strategy: it prioritises

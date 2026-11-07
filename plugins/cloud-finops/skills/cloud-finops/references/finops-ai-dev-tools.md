@@ -264,6 +264,15 @@ could trip later than set. On the published multipliers (1.25x input for a 5-min
 write, 2x for a 1-hour write) a 1-hour write was metered at 1.25 / 2 = 62.5% of its
 cost. Run v2.1.286 or later, and reconcile gateway spend history from before the fix
 against the Anthropic invoice rather than the meter.
+**Gateway cost reporting (November 2026).** v2.1.317 (2 November) added a cost report
+to the gateway admin API, `GET /v1/organizations/analytics/cost`, which returns past spend
+over a date range in total, per developer, per day or per IdP group, and added
+`anthropic.plan`, `anthropic.seat_type` and `anthropic.provider` to OTel metrics, events
+and spans. v2.1.318 added `assume_role` on `mantle` (Bedrock) upstreams, including for
+per-developer AWS cost attribution. v2.1.319 added `admin.pooled_conflict_rule` and
+`admin.pooled_priority_order`: when a developer belongs to several groups with pooled
+budgets, these set which group's budget pays first, so set them explicitly or overlapping
+groups will draw down in an order nobody chose.
 For gateway users the practical effect is that ClaudeXray and LiteLLM are no longer
 needed *purely* for budget-cap visibility; they remain valuable for metadata injection,
 cross-tool aggregation and analytics. Sources:
