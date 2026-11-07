@@ -97,7 +97,13 @@ so they need their own allocation rule. Which accounts receive a Savings Plan's 
 follows a fixed AWS order (owner account first, then the highest savings percentage), so a
 team's covered share can move when another team's usage changes; see "Discount application
 order" in `finops-aws-commitments.md`. A FOCUS export's `EffectiveCost` does this
-derivation for you. Sources: CUR 2.0 [line item](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-line-item.html),
+derivation for you. Since 6 November 2026 the upfront fee of an EC2 Capacity Block for
+ML is amortised the same way, in CUR 2.0 (`reservation_amortized_upfront_fee_for_billing_period`,
+`reservation_effective_cost`, `reservation_net_effective_cost`) and in Cost Explorer's
+amortised view, instead of landing as one charge on the purchase date; unused block
+capacity appears as its own cost, which usually belongs to the GPU platform team
+(not in GovCloud or China; [AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/10/aws-ec2-capacity-blocks-ml/)).
+Sources: CUR 2.0 [line item](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-line-item.html),
 [reservation](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-reservation.html)
 and [Savings Plan](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-savings-plan.html)
 columns, read 23 October 2026; the drop-outs follow from the column definitions.

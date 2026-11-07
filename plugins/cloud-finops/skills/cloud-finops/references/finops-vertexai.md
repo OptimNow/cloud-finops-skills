@@ -298,8 +298,16 @@ Three real differences sit underneath the identical headline rates:
 
 ### Gemini Developer API specifics
 
-- **A free tier** on the Flash and Flash-Lite SKUs and on Gemini 2.5 Pro, but not on the
-  current Pro preview SKU. Free-tier content is **used to improve Google products**;
+- **2.5 Pro and 2.5 Flash are rerouted on 1 December 2026.** From that date the
+  Developer API sends every request for `gemini-2.5-pro` to `gemini-3.8-flash` and every
+  request for `gemini-2.5-flash` to `gemini-3.5-flash-lite`, billed at the target
+  model's rates, so the 2.5 rows in the multiplier table above stop describing
+  Developer API bills and a forecast built on 2.5 rates must be re-run on the new
+  models. The Vertex AI pricing page still lists both 2.5 models. Source:
+  [Gemini API changelog](https://aistudio.google.com/docs/changelog), entry of
+  2 November 2026, read 7 November 2026.
+- **A free tier** on the Flash and Flash-Lite SKUs and on Gemini 2.5 Pro (until the
+  1 December 2026 rerouting above), but not on the current Pro preview SKU. Free-tier content is **used to improve Google products**;
   paid-tier content is not.
 - **Billing** runs through a Cloud Billing account linked in AI Studio. Since
   **23 March 2026** there is a choice of **prepay** (buy credits, bounded purchase size)
