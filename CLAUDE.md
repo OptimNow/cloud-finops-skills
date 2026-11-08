@@ -4,6 +4,10 @@ Project context for AI assistants and human contributors working on this reposit
 
 ---
 
+## Commits and pull requests
+
+Do not add `Co-Authored-By`, `Claude-Session` or "Generated with Claude Code" lines to commit messages or pull request descriptions.
+
 ## What this repo is
 
 A structured, model-agnostic FinOps knowledge skill for AI agents. The `plugins/cloud-finops/skills/cloud-finops/`
