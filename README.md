@@ -7,12 +7,19 @@
 
 > FinOps knowledge for AI assistants: billing mechanics, commitment decisions and waste runbooks for AWS, Azure, GCP, AI and data platforms. By OptimNow.
 
-[![Listed in the Claude directory](https://img.shields.io/badge/Claude%20directory-listed-ACE849?labelColor=2C2C2C)](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory)
-[![Connector in the Claude directory](https://img.shields.io/badge/Claude%20directory-connector-ACE849?labelColor=2C2C2C)](https://claude.ai/directory/optimnow-cloud-finops)
 [![Latest release](https://img.shields.io/github/v/release/OptimNow/cloud-finops-skills?label=release&color=2C2C2C)](https://github.com/OptimNow/cloud-finops-skills/releases/latest)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/licence-CC%20BY--SA%204.0-C1C1C1?labelColor=2C2C2C)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-[![Install from the Claude directory](https://img.shields.io/badge/Install%20from%20the%20Claude%20directory-D97757?style=for-the-badge&logo=claude&logoColor=white)](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory)
+[![Claude plugin: install the skill](https://img.shields.io/badge/Claude%20plugin-Install%20the%20skill-D97757?style=for-the-badge&logo=claude&logoColor=white&labelColor=2C2C2C)](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory)
+[![Claude connector: add the MCP server](https://img.shields.io/badge/Claude%20connector-Add%20the%20MCP%20server-D97757?style=for-the-badge&logo=claude&logoColor=white&labelColor=2C2C2C)](https://claude.ai/directory/optimnow-cloud-finops)
+
+Both are in the Claude directory. The **plugin** loads the FinOps library into
+Claude's context; the **connector** serves the same library as seven MCP tools that
+Claude calls when a question needs them. Pick one, or see
+[which to choose](docs/CONCEPTS.md#plugin-and-connector).
+
+Not using Claude? The same library works in ChatGPT, Gemini, Cursor, Copilot and other
+tools: see [Install](#install).
 
 Ask your assistant how to reduce a cloud bill, size a commitment, read a term sheet
 or allocate shared AI costs, and it answers from how billing works, with decision
@@ -208,16 +215,13 @@ one carries a confidence level that says whether a single signal is enough to ac
 
 ## Install
 
-| Tool | One-step install |
+| Where | How |
 |---|---|
-| <img src="https://img.shields.io/badge/-Claude%20Code-D97757?logo=anthropic&logoColor=white" alt="Claude Code" height="22"/> | At the Claude Code prompt: `/plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git` then `/plugin install cloud-finops@optimnow`. The plugin is the skill only; for the 7 read-only tools, add the hosted MCP connector separately (row below) |
-| <img src="https://img.shields.io/badge/-Claude.ai%20%2F%20Desktop-D97757?logo=anthropic&logoColor=white" alt="Claude.ai / Claude Desktop" height="22"/> | [Install from the Claude directory](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory) (one click, kept current from this repository). Or [download the latest release zip](https://github.com/OptimNow/cloud-finops-skills/releases/latest), then **Settings -> Skills -> Upload zip** |
-| <img src="https://img.shields.io/badge/-ChatGPT-10A37F?logo=openai&logoColor=white" alt="ChatGPT" height="22"/> | Self-host: `./install.sh --tool chatgpt --grouped` _(a public Cloud FinOps GPT is on the Roadmap)_ |
-| <img src="https://img.shields.io/badge/-Gemini-4285F4?logo=googlegemini&logoColor=white" alt="Gemini" height="22"/> | Self-host: `./install.sh --tool gemini` _(a public Cloud FinOps Gem is on the Roadmap)_ |
-| <img src="https://img.shields.io/badge/-Cursor-000000?logo=cursor&logoColor=white" alt="Cursor" height="22"/> <img src="https://img.shields.io/badge/-Windsurf-3DDC91?logoColor=white" alt="Windsurf" height="22"/> <img src="https://img.shields.io/badge/-Codex-412991?logo=openai&logoColor=white" alt="Codex" height="22"/> <img src="https://img.shields.io/badge/-Aider-0F172A?logoColor=white" alt="Aider" height="22"/> <img src="https://img.shields.io/badge/-Copilot-181717?logo=githubcopilot&logoColor=white" alt="Copilot" height="22"/> <img src="https://img.shields.io/badge/-Kiro%20IDE-FF6F00?logoColor=white" alt="Kiro IDE" height="22"/> <img src="https://img.shields.io/badge/-Gemini%20CLI-4285F4?logo=googlegemini&logoColor=white" alt="Gemini CLI" height="22"/> | One-liner: `curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/install.sh \| bash -s -- --tool <name>` |
-| <img src="https://img.shields.io/badge/-Auto--detect-555555?logo=gnubash&logoColor=white" alt="Auto-detect" height="22"/> | `curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/install.sh \| bash` |
-| <img src="https://img.shields.io/badge/-MCP%20hosted-7C3AED?logoColor=white" alt="MCP hosted" height="22"/> | Nothing to install: `claude mcp add --transport http cloud-finops https://mcp.optimnow.io/mcp`. For Claude.ai / Desktop, [add it from the Claude directory](https://claude.ai/directory/optimnow-cloud-finops) (one click), or **Settings -> Connectors -> Add custom connector** with exactly that URL (exactly that form, `/mcp` with no trailing slash - the widget sandbox domain is derived from it) |
-| <img src="https://img.shields.io/badge/-MCP%20package-7C3AED?logoColor=white" alt="MCP package" height="22"/> | `pip install cloud-finops-mcp` then add to your MCP client config (Claude Code / Cursor / Codex / Windsurf / Cline). Snippets: `./install.sh --tool mcp` |
+| Claude.ai, Claude Desktop | From the Claude directory, one click each: the [plugin](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory) (the skill) and the [connector](https://claude.ai/directory/optimnow-cloud-finops) (the MCP server) |
+| Claude Code | Plugin: `/plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git` then `/plugin install cloud-finops@optimnow`. Connector: `claude mcp add --transport http cloud-finops https://mcp.optimnow.io/mcp` |
+| Cursor, Windsurf, Codex, Aider, Copilot, Kiro, Gemini CLI | `curl -sL https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/install.sh \| bash -s -- --tool <name>` (drop `-s -- --tool <name>` to auto-detect the tool) |
+| Any MCP client | Hosted: add an HTTP MCP server at `https://mcp.optimnow.io/mcp`, exactly that form. Local: `pip install cloud-finops-mcp`, config snippets from `./install.sh --tool mcp` |
+| ChatGPT, Gemini (web) | Self-host for now: `./install.sh --tool chatgpt --grouped` or `./install.sh --tool gemini` |
 
 Full options, troubleshooting, and the model-agnostic API loader: see
 [INSTALLATION.md](./INSTALLATION.md). A version-tagged zip
