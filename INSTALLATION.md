@@ -308,7 +308,9 @@ There are two ways to reach it.
 claude mcp add --transport http cloud-finops https://mcp.optimnow.io/mcp
 ```
 
-For Claude.ai / Claude Desktop, **Settings -> Connectors -> Add custom connector** and
+For Claude.ai / Claude Desktop, the simplest route is the connector's
+[Claude directory listing](https://claude.ai/directory/optimnow-cloud-finops): one click, with the canonical URL
+already set. To add it by hand, **Settings -> Connectors -> Add custom connector** and
 paste exactly `https://mcp.optimnow.io/mcp` - the `/mcp` path, no trailing
 slash. The widget sandbox domain (MCP Apps) is derived from the URL as entered, so a
 variant form (the bare origin, or a trailing slash) connects fine but silently disables

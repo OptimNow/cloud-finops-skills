@@ -72,6 +72,11 @@ Then exercise each of the seven tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
 asks you to confirm you did.
 
+**Connector listing published 2026-11-08** at <https://claude.ai/directory/optimnow-cloud-finops>, after
+the 2026-11-06 resubmission below. The plugin listing was already live. Both are now
+public; the README, INSTALLATION.md, `docs/CONCEPTS.md` and `mcp_server/README.md` link
+the connector listing as the one-click route for Claude.ai and Claude Desktop.
+
 **Verified 2026-11-06, after the 1.49.1 release and `fly deploy`.** Both hosts answer
 `initialize` with `serverInfo.version` 1.49.1 and list seven tools, each with
 `annotations.title` equal to its `title`; the `instructions` no longer mention a

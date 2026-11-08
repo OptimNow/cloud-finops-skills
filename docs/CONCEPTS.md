@@ -77,13 +77,13 @@ knowledge into the model's context, and nothing else.
 
 The plugin is listed in the [Claude directory](https://claude.ai/customize/plugins/id/9d1f1714-07ca-4cb4-b658-bddba8f2ec92%40anthropic-plugin-directory),
 where it installs in one click and is kept current from this repository. The hosted
-MCP connector passed validation for its own listing in the same directory and is back
-in review after a category change; until the listing is live, add it by URL as
-described in the README install table.
+MCP connector has its own [listing in the same directory](https://claude.ai/directory/optimnow-cloud-finops),
+live since 8 November 2026, where it is added in one click; it can also be added by URL
+as described in the README install table.
 
 The hosted MCP connector is optional and is installed separately: as a custom
 connector in Claude.ai or Claude Desktop, or with `claude mcp add` in Claude Code. It
-serves the same library through 6 read-only tools and, on hosts that render MCP Apps,
+serves the same library through 7 read-only tools and, on hosts that render MCP Apps,
 as interactive views. It is offered separately, as an MCP connector and not as part
 of the plugin, on purpose: both carry the same content, and a plugin that also
 declared the server would load the tool definitions in every session next to the
