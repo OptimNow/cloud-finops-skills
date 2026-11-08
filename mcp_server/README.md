@@ -187,7 +187,9 @@ https://mcp.optimnow.io/mcp
 still answers tool calls but no longer renders widgets; re-add the connector with the
 URL above.)
 
-Add it via **Settings -> Connectors -> Add custom connector** and paste exactly that
+The simplest route is the connector's Claude directory listing,
+<https://claude.ai/directory/optimnow-cloud-finops>: one click, with that URL already set. To add it by
+hand, use **Settings -> Connectors -> Add custom connector** and paste exactly that
 URL - the `/mcp` path, no trailing slash; the widget sandbox domain is derived from it.
 A variant form (the bare origin, or a trailing slash) connects fine but silently
 disables widget rendering, because the MCP Apps host validates the sandbox domain

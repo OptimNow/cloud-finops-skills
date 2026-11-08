@@ -267,8 +267,9 @@ leave the sixth ("Do not check the following box") unchecked as instructed.
 
 ### Anthropic Claude directory (plugin bundle)
 
-Status 2026-10-17: submitted through the developer portal, awaiting Anthropic's
-review. The portal shows the state; nothing to resubmit.
+Status 2026-11-08: the plugin listing is live, and the MCP connector listing went
+live on 2026-11-08 at <https://claude.ai/directory/optimnow-cloud-finops>. Details and history in
+[`directory-submission.md`](directory-submission.md).
 
 The link `https://clau.de/plugin-directory-submission` redirects to
 `https://claude.com/docs/directory/publish`. The submission itself is made in the
@@ -294,8 +295,9 @@ short form.
 
 ### JackyST0/awesome-agent-skills
 
-Status 2026-10-26: approved and merged by JackyST0 (PR #131, see the log below); the
-entry is live under DevOps in both READMEs. The list requires 64 stars; the repository had 55 on 2026-09-26 and reached 64 on 2026-10-22.
+Status 2026-11-08: merged on 2026-10-26 (PR #131), then removed on 2026-11-06 when the
+list raised its community threshold from 64 to 512 stars and dropped every entry below
+it. Resubmit only once the repository passes 512 stars. The list requires 64 stars; the repository had 55 on 2026-09-26 and reached 64 on 2026-10-22.
 
 Rules: edit both `README.md` (bullet list) and `README_ZH.md` (table with a platform
 column); the URL must be identical in both and the category the same, or the list's
@@ -396,6 +398,7 @@ Record the actual dates and PR URLs below as they happen.
 | 3 | 2026-10-17 | https://github.com/TensorBlock/awesome-mcp-servers/issues/4024 | Bot-generated docs PR #4025 merged by a maintainer on 2026-10-18 (docs/knowledge-management--memory.md); issue closed as completed |
 | 4 | 2026-10-17 | https://github.com/punkpeye/awesome-remote-mcp-servers/pull/2103 | Validator labels endpoint-ok, has-connector. 2026-10-18: maintainer flagged a merge conflict (main had added coldHat at the same spot); main merged into the branch, entry kept before coldHat. Merged by punkpeye on 2026-10-23 |
 | hesreallyhim | 2026-10-23 | https://github.com/hesreallyhim/awesome-claude-code/issues/3219 | Form validation bot: all checks passed (label validation-passed). Awaiting maintainer review |
-| JackyST0 | 2026-10-23 | https://github.com/JackyST0/awesome-agent-skills/pull/131 | Approved and merged by JackyST0 on 2026-10-26 ("The entry is verified and meets the inclusion requirements"). Entry live under DevOps in README.md and README_ZH.md |
+| JackyST0 | 2026-10-23 | https://github.com/JackyST0/awesome-agent-skills/pull/131 | Approved and merged by JackyST0 on 2026-10-26 ("The entry is verified and meets the inclusion requirements"). Entry live under DevOps in README.md and README_ZH.md. Removed on 2026-11-06, when the list raised its threshold to 512 stars and dropped every community entry below it (66 stars that day); not specific to this entry |
 | mcpservers.org | 2026-10-26 | https://mcpservers.org/servers/optimnow/cloud-finops-skills | Free form approved by email on 2026-10-27; website listing only |
 | mcprush.com | 2026-10-24 | (listed by the site, no submission) | Claimed by Jean on 2026-10-24; badge not added |
+| Claude directory (connector) | 2026-11-06 | https://claude.ai/directory/optimnow-cloud-finops | Live on 2026-11-08 after resubmission; the plugin listing was already live |

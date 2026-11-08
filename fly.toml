@@ -5,8 +5,12 @@
 # the docs must match it byte for byte - the MCP Apps sandbox domain is derived
 # from it). The cloud-finops-mcp.fly.dev host still answers but is deprecated.
 #
-# Scale-to-zero: the machine stops when idle and restarts on the next request,
-# so a quiet month costs only the stopped machine's root filesystem.
+# Scale-to-zero: the machine suspends when idle and resumes on the next request,
+# so a quiet month costs only the root filesystem (Fly bills a stopped or suspended
+# machine the same way). Resuming from suspend takes a few hundred milliseconds,
+# against about 2 seconds or more from a stop (docs.fly.io/launch/autostop-autostart,
+# read 2026-11-08). Suspend needs at most 2 GB of memory, no swap and no schedule;
+# a deploy or host migration discards the snapshot, so the next start is a cold one.
 
 app = "cloud-finops-mcp"
 primary_region = "cdg"
@@ -20,7 +24,7 @@ primary_region = "cdg"
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = "suspend"
   auto_start_machines = true
   min_machines_running = 0
 
