@@ -43,6 +43,13 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   fifteen called the finders with `query` first and read the expected file, including
   two symptom wordings the connector had never routed before. The cycle on the hosted
   connector follows this release.
+- **Ranking fixes from the pre-release review.** "VMs", "RIs" or "GPUs" now match
+  their singular, so "which of our VMs run for nothing" finds the idle VM runbook;
+  US spellings and word families meet the British text ("license optimization"
+  ranks like "licence optimisation", "tagging" meets "tag"); a service name such as
+  RDS, EC2, AKS or BigQuery names its provider; a tie goes to the file named after
+  the query; and a query made only of common words next to a facet returns the
+  facet's list instead of nothing.
 
 ### Private overlays
 
