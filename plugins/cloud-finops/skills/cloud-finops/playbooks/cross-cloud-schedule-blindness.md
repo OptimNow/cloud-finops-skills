@@ -4,6 +4,12 @@ scope: cross-cloud
 service: Compute (EC2 / Azure VM / Compute Engine)
 waste_category: schedule-blindness
 confidence: obvious
+questions:
+  - "Our dev and test environments run 24/7. How much would turning them off at night save?"
+  - "How do we schedule non-production compute to stop outside business hours?"
+  - "How do we find environments that run all weekend with nobody using them?"
+  - "Which workloads must stay on, and how do we avoid breaking them with a schedule?"
+  - "Nos environnements de dev et de test tournent 24h/24 : combien économiser en les éteignant la nuit ?"
 ---
 
 # Schedule Blindness (Non-Production 24/7)

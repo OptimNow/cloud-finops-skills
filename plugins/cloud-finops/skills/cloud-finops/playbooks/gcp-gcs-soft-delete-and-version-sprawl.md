@@ -4,6 +4,12 @@ scope: gcp
 service: Google Cloud Storage
 waste_category: orphaned
 confidence: likely
+questions:
+  - "Our GCS buckets bill far more than the live objects they hold. Why?"
+  - "Is GCS soft delete costing us money on scratch buckets?"
+  - "How do we expire noncurrent object versions in Cloud Storage?"
+  - "What retention should soft delete have on staging buckets?"
+  - "Nos buckets GCS facturent bien plus que les objets visibles : soft delete et versions en cause ?"
 ---
 
 # GCS Soft-Delete and Noncurrent Version Sprawl

@@ -8,6 +8,20 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Security", "Finance"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:bill:deep", "azure:bill:deep", "gcp:bill:partial"]
+questions:
+  - q: "Which tags should every cloud resource carry, at a minimum?"
+    section: "Mandatory tags (minimum viable set)"
+  - q: "How do we tag resources consistently across accounts and subscriptions?"
+    section: "Tag enforcement strategy"
+  - q: "How do we enforce tagging without blocking the engineers?"
+    section: "The three enforcement layers"
+  - q: "Half our resources are untagged. Can we allocate them without retagging everything?"
+    section: "Virtual tagging"
+  - q: "Can we automate tag fixes with an AI agent?"
+    section: "MCP-based tagging automation"
+  - q: "What are the classic tagging mistakes, and how do we avoid them?"
+    section: "Common tagging mistakes"
+  - "Quels tags imposer sur chaque ressource cloud, et comment les faire respecter ?"
 ---
 
 # FinOps Tagging and Naming Governance

@@ -4,6 +4,12 @@ scope: aws
 service: AWS EC2
 waste_category: overprovisioned
 confidence: obvious
+questions:
+  - "We run an 8-GPU instance but only one GPU is busy. How do we fix that?"
+  - "How do we tell whether our training or inference job uses all the GPUs it pays for?"
+  - "Is our code pinning everything to cuda:0 on a multi-GPU machine?"
+  - "Which of our p4d or g5.48xlarge instances could move to a single-GPU type?"
+  - "Notre instance à 8 GPU n'en utilise qu'un : comment le voir et que changer ?"
 ---
 
 # AWS Multi-GPU Instance with Single-GPU Workload

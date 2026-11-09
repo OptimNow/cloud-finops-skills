@@ -4,6 +4,12 @@ scope: gcp
 service: Cloud Logging
 waste_category: overprovisioned
 confidence: likely
+questions:
+  - "Cloud Logging is one of our top GCP costs. Which logs are we paying to ingest?"
+  - "Did someone turn on data access audit logs for every service in GCP?"
+  - "How do we exclude noisy logs from ingestion without losing what we need?"
+  - "Which log names carry most of our Cloud Logging volume?"
+  - "Cloud Logging est l'un de nos premiers postes GCP : quels logs payons-nous pour rien ?"
 ---
 
 # GCP Cloud Logging Ingestion Sprawl

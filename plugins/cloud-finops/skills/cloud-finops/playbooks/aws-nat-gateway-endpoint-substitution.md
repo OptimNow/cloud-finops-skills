@@ -7,6 +7,7 @@ confidence: obvious
 questions:
   - q: "Our NAT gateway bill is higher than the compute it serves. Where does it come from and what do we change?"
     persona: "Engineering and platform"
+    also: ["aws-zombie-nat-gateway"]
   - "My NAT gateway processes 10TB/month to S3. What should I do?"
   - "Would a VPC endpoint be cheaper than routing S3 or DynamoDB traffic through our NAT gateway?"
   - "How do we move traffic to a gateway endpoint without breaking the applications?"

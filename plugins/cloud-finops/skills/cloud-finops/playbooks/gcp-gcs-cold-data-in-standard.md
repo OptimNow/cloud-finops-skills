@@ -4,6 +4,12 @@ scope: gcp
 service: Google Cloud Storage
 waste_category: overprovisioned
 confidence: possible
+questions:
+  - "Most of our Cloud Storage is Standard but rarely read. Should we move it to Nearline or Archive?"
+  - "How do we prove GCS data is cold when GCS does not record last access?"
+  - "Should we turn on Autoclass or write lifecycle rules for our buckets?"
+  - "Which GCS buckets hold logs and backups in Standard storage?"
+  - "Nos buckets Cloud Storage sont en Standard et jamais lus : Nearline, Coldline ou Archive ?"
 ---
 
 # GCS Cold Data Sitting in Standard

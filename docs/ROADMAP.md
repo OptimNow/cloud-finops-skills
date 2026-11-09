@@ -345,10 +345,19 @@ frontmatter field on every reference and playbook (spec and writing rules in
   own words, a named provider halving the files written for another provider, `-es`
   plurals folded, a distinct hint for a stopword-only query, and the model-facing
   claim that every file carries `questions:` corrected to the most-asked files.
-- **Phase 3, generation and guards.** README "What you can ask, by role" generated
-  between markers from the `persona` entries with `--check` in CI (the
-  `business-coverage.sh` pattern); a guard for count (4 to 8), repository vocabulary,
-  and cross-file duplicates (warning first); the field on the remaining files.
+- **Phase 3, generation and guards (shipped 2026-11-09).** The field on the remaining
+  61 files, so every reference and playbook carries it; `scripts/check-questions.py`
+  gates count (4 to 8), vocabulary, cross-file duplicates (a failure, not a warning:
+  there were none), `section` resolution, personas, `also` links and the French
+  question; the README "What you can ask, by role" block generated between markers
+  from the persona-tagged entries by `scripts/render-questions-readme.py` with
+  `--check` in CI (the `business-coverage.sh` pattern), which adds the Executive
+  block and folds the former "Usage examples" list into it; an `also` key on the
+  four questions the README linked to several files; a test that every declared
+  question, asked verbatim, routes to its own file. Generating the tool descriptions
+  from the index was dropped: the directory listing's text should not move with
+  content, and the self-routing test covers the drift the generation was meant to
+  prevent.
 
 Open point carried from phase 1: verify on one uploaded file how claude.ai renders a
 longer frontmatter block, since the `description` field was banned for rendering twice.

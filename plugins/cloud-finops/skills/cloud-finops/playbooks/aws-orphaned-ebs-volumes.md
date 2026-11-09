@@ -4,6 +4,12 @@ scope: aws
 service: AWS EBS
 waste_category: orphaned
 confidence: obvious
+questions:
+  - "Which EBS volumes are attached to nothing, and how much do they cost us?"
+  - "Is it safe to delete available EBS volumes left behind by terminated instances?"
+  - "Why do we have hundreds of small unattached volumes from autoscaling and EKS?"
+  - "How do we stop EBS volumes from surviving the instances they belonged to?"
+  - "Quels volumes EBS ne sont rattachés à rien, et peut-on les supprimer sans risque ?"
 ---
 
 # AWS Orphaned EBS Volumes

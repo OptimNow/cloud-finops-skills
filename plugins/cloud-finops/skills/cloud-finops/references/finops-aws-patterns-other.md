@@ -8,6 +8,12 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["SRE", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:waste:deep", "aws:saas:partial"]
+questions:
+  - "Which AWS costs outside compute, storage and networking tend to be wasted?"
+  - "Our CloudTrail and Config bills are surprisingly high. What is the usual cause?"
+  - "Can AWS Marketplace purchases count towards our enterprise commitment?"
+  - "What logging and monitoring settings quietly inflate an AWS bill?"
+  - "Quels coûts AWS hors calcul, stockage et réseau sont souvent gaspillés : logs, Config, CloudTrail, Marketplace ?"
 ---
 
 # AWS Optimization Patterns: Other services

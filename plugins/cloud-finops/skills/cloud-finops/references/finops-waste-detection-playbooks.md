@@ -8,6 +8,18 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Finance", "SRE"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:waste:deep", "azure:waste:deep", "gcp:waste:deep"]
+questions:
+  - q: "What kinds of cloud waste exist, and which are the biggest in a typical estate?"
+    section: "The eight waste categories"
+  - q: "How do we tell real waste from a resource that only looks idle?"
+    section: "Two-signal classification rule"
+  - q: "How confident can we be that a flagged resource is really waste before we delete it?"
+    section: "Classification confidence tiering"
+  - q: "When we flag a resource as waste, is the saving real yet or only potential, and when do we count it?"
+    section: "Realised savings vs potential savings"
+  - q: "Where do we start a waste hunt in a new cloud account?"
+    section: "Cross-category detection principles"
+  - "Quels types de gaspillage cloud existent, et par lesquels commencer ?"
 ---
 
 # FinOps Waste Detection Playbooks

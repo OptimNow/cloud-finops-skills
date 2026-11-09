@@ -144,6 +144,14 @@ jobs:
       - name: Overlay template cites public headings that exist
         run: python scripts/check-overlay.py docs/overlay-template
 
+      # The question index is the routing surface behind `query` and the entry
+      # points' fallback row; both need PyYAML, hence their place after the install.
+      - name: Question index within its rules (check-questions)
+        run: python scripts/check-questions.py
+
+      - name: README role questions in sync (--check)
+        run: python scripts/render-questions-readme.py --check
+
       - name: Sync references into bundled data/
         working-directory: mcp_server
         run: python scripts/sync_references.py

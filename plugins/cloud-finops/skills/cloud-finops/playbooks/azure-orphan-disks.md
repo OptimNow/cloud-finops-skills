@@ -4,6 +4,12 @@ scope: azure
 service: Azure Managed Disks
 waste_category: orphaned
 confidence: obvious
+questions:
+  - "Which Azure managed disks are attached to nothing?"
+  - "Is it safe to delete disks left behind by deleted VMs?"
+  - "Why do Azure disks survive when we delete the VM?"
+  - "How much do orphan managed disks cost us per month?"
+  - "Quels disques managés Azure ne sont rattachés à aucune VM, et peut-on les supprimer ?"
 ---
 
 # Azure Orphan Managed Disks

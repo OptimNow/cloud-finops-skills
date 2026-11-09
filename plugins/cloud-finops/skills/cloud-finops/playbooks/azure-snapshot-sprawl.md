@@ -4,6 +4,12 @@ scope: azure
 service: Azure Managed Disk Snapshots
 waste_category: orphaned
 confidence: likely
+questions:
+  - "Our Azure snapshot count grows every month. Which can we delete?"
+  - "How do we find snapshots whose source disk no longer exists in Azure?"
+  - "Do Azure disk snapshots expire on their own?"
+  - "Why is storage cost rising in a subscription with no new data?"
+  - "Nos snapshots de disques Azure s'accumulent : lesquels supprimer, et comment les retrouver ?"
 ---
 
 # Azure Snapshot Sprawl

@@ -8,6 +8,11 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["SRE", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:waste:deep"]
+questions:
+  - "Where is the list of AWS cost optimisation patterns, and how is it organised?"
+  - "Which file covers AWS compute, storage, database or networking inefficiencies?"
+  - "Is there a catalogue of AWS waste patterns we can run through account by account?"
+  - "Où trouver le catalogue des gaspillages AWS par famille de services ?"
 ---
 
 # AWS Optimization Pattern Catalogue

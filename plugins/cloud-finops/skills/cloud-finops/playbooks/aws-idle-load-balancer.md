@@ -4,6 +4,12 @@ scope: aws
 service: AWS ELB (ALB / NLB / Classic)
 waste_category: idle
 confidence: obvious
+questions:
+  - "We pay for load balancers that receive no traffic. How do we find them?"
+  - "Is it safe to delete an ALB with no healthy targets?"
+  - "Which of our load balancers have had zero requests for a month?"
+  - "Why do idle load balancers keep costing money after a project ends?"
+  - "Nous payons des load balancers sans trafic : comment les repérer et les supprimer ?"
 ---
 
 # AWS Idle Load Balancer

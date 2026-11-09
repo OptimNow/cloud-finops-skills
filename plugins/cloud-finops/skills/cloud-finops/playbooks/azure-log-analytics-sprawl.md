@@ -7,6 +7,7 @@ confidence: likely
 questions:
   - q: "Our Log Analytics ingestion doubled. Which tables and which settings do we check first?"
     persona: "Engineering and platform"
+    also: ["finops-azure"]
   - "Which Azure Monitor tables cost us the most, and does anyone query them?"
   - "Should we set a daily cap or a commitment tier on our Log Analytics workspace?"
   - "How do we stop diagnostic settings from sending everything to Log Analytics?"

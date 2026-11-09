@@ -8,6 +8,20 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["gcp:ai:deep", "gcp:commitments:deep", "ai-platforms:ai:deep", "ai-platforms:bill:deep", "ai-platforms:commitments:deep", "ai-platforms:waste:deep"]
+questions:
+  - q: "How does Vertex AI bill Gemini, and what counts beyond tokens?"
+    section: "GCP Vertex AI billing model overview"
+  - q: "Should we buy provisioned throughput on Vertex AI, or stay on demand?"
+    section: "When provisioned throughput makes sense on Vertex AI"
+  - q: "Gemini API or Vertex AI: same model, which one should we pay through?"
+    section: "Gemini Developer API (AI Studio) vs Vertex AI: same token price, different mechanics"
+  - q: "How do we cap what an agent project can spend on Gemini?"
+    section: "Project-level spend caps for agent workloads"
+  - q: "Would context caching cut our Gemini bill for long documents?"
+    section: "Vertex AI Context Caching - direct lever for long-context workloads"
+  - q: "Are there commitment discounts on Gemini token spend?"
+    section: "Flexible Savings Plans (FSPs) - commitment discounts on token spend"
+  - "Comment Vertex AI facture Gemini, et faut-il acheter du débit provisionné ?"
 ---
 
 # FinOps on GCP Vertex AI

@@ -4,6 +4,12 @@ scope: aws
 service: AWS EC2
 waste_category: overprovisioned
 confidence: likely
+questions:
+  - "Our GPU instances show almost no GPU usage. Do we need them at all?"
+  - "Does an embeddings or small-model service really need a GPU?"
+  - "How do we tell whether a workload is CPU-bound while sitting on a GPU instance?"
+  - "Which of our AI services could move from GPU to CPU instances?"
+  - "Nos instances GPU tournent presque à vide : le travail est-il en fait sur le CPU ?"
 ---
 
 # AWS GPU Instance for a CPU-Bound Workload

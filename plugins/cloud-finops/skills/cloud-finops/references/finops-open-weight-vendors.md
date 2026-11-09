@@ -8,6 +8,18 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Procurement", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["ai-platforms:ai:deep", "ai-platforms:saas:partial"]
+questions:
+  - q: "Is DeepSeek, Qwen or Kimi cheaper than the big model vendors, and what does the price hide?"
+    section: "Per-vendor billing mechanics"
+  - q: "Open-weight model: do we rent it through an API, a cloud marketplace or host it ourselves?"
+    section: "The three buying channels for an open-weight model"
+  - q: "Does the model's licence change what we can bill or where we can run it?"
+    section: "Licensing is a FinOps input, not a Legal footnote"
+  - q: "Can we run our batch AI jobs at night to pay less per token?"
+    section: "Schedule async work against time-of-day pricing"
+  - q: "Where is our prompt data stored when we call a Chinese model vendor, and does that decide the price?"
+    section: "Data residency decides the channel before price does"
+  - "DeepSeek, Qwen, Kimi : moins chers que les grands fournisseurs, et à quelles conditions ?"
 ---
 
 # FinOps for open-weight model vendors (DeepSeek, Qwen, Kimi, GLM)

@@ -4,6 +4,12 @@ scope: aws
 service: AWS RDS
 waste_category: overprovisioned
 confidence: likely
+questions:
+  - "Our RDS instances run at 20% CPU. Can we downsize them safely?"
+  - "Which RDS metrics prove an instance is oversized?"
+  - "How do we rightsize a production database without an outage?"
+  - "Why did nobody revisit our RDS instance classes since the migration?"
+  - "Nos instances RDS tournent à 20 % de CPU : peut-on les réduire sans risque ?"
 ---
 
 # AWS Oversized RDS Instance

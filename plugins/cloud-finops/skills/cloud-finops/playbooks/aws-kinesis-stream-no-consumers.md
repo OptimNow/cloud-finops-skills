@@ -4,6 +4,12 @@ scope: aws
 service: AWS Kinesis Data Streams
 waste_category: idle
 confidence: likely
+questions:
+  - "Our Kinesis stream receives data but nothing reads it. Are we paying for nothing?"
+  - "How do we find Kinesis streams with producers but no consumers?"
+  - "Can we delete a Kinesis stream that nobody consumes without losing anything?"
+  - "Why does a Kinesis stream cost money when no application reads from it?"
+  - "Un flux Kinesis reçoit des données que personne ne lit : comment le repérer et quoi faire ?"
 ---
 
 # AWS Kinesis Stream with Producers but No Consumers

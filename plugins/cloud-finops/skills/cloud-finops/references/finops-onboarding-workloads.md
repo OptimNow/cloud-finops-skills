@@ -7,6 +7,20 @@ fcp_phases: ["Inform", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Finance", "Procurement", "Leadership"]
 fcp_maturity_entry: "Walk"
+questions:
+  - q: "We are migrating to the cloud. What FinOps work should happen before the first workload lands?"
+    section: "The intake gate"
+  - q: "Should we buy reservations as soon as the migration starts?"
+    section: "The 60-90 day forecast-then-commit rule"
+  - q: "Why does the bill double during a migration, and how do we plan for it?"
+    section: "The double-bubble cost"
+  - q: "Our migration cost estimate was way off. What did we miss?"
+    section: "Migration-cost estimates vs actuals"
+  - q: "We just acquired a company with its own cloud accounts. How do we integrate their spend?"
+    section: "M&A integration"
+  - q: "We are splitting off a business unit. What happens to the shared cloud commitments?"
+    section: "Divestiture and separation"
+  - "Nous migrons vers le cloud : quel travail FinOps faire avant, pendant et après ?"
 ---
 
 # FinOps Onboarding Workloads

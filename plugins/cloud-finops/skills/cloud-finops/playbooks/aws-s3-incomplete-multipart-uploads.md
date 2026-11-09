@@ -4,6 +4,12 @@ scope: aws
 service: Amazon S3
 waste_category: orphaned
 confidence: obvious
+questions:
+  - "Our S3 bill is higher than the objects we can see. What is hiding?"
+  - "What are incomplete multipart uploads, and how do we clean them up?"
+  - "Which lifecycle rule stops S3 from keeping abandoned upload parts forever?"
+  - "How do we find buckets with invisible multipart upload bytes?"
+  - "Notre facture S3 dépasse ce que nous voyons dans les buckets : que cache-t-elle ?"
 ---
 
 # S3 Incomplete Multipart Uploads Never Aborted

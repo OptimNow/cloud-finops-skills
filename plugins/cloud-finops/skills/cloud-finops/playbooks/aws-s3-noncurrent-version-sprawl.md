@@ -4,6 +4,12 @@ scope: aws
 service: Amazon S3
 waste_category: orphaned
 confidence: likely
+questions:
+  - "Our versioned S3 buckets keep growing. Are old versions costing us?"
+  - "How do we expire noncurrent object versions in S3 without losing recovery?"
+  - "Which buckets have versioning on and no expiry rule?"
+  - "Why does Terraform state or CI artefact storage balloon in S3?"
+  - "Nos buckets S3 versionnés grossissent sans fin : les anciennes versions coûtent-elles ?"
 ---
 
 # S3 Noncurrent Version Sprawl

@@ -4,6 +4,12 @@ scope: aws
 service: AWS EBS / RDS Snapshots
 waste_category: orphaned
 confidence: likely
+questions:
+  - "We have thousands of old EBS and RDS snapshots. Which ones can go?"
+  - "How do we find snapshots whose volume or AMI no longer exists?"
+  - "Should we move old snapshots to the archive tier or delete them?"
+  - "Why does our snapshot count grow every month while the workloads do not?"
+  - "Nous avons des milliers de snapshots EBS et RDS : lesquels supprimer ou archiver ?"
 ---
 
 # AWS Snapshot Sprawl

@@ -4,6 +4,12 @@ scope: gcp
 service: GCP Compute Engine / GKE Persistent Disks
 waste_category: orphaned
 confidence: obvious
+questions:
+  - "Which GCP persistent disks are attached to no VM?"
+  - "Is it safe to delete persistent disks left behind by deleted VMs or GKE workloads?"
+  - "Why do persistent disks survive when the VM or the pod is gone?"
+  - "How much do orphan persistent disks cost us on GCP?"
+  - "Quels disques persistants GCP ne sont rattachés à rien, et peut-on les supprimer ?"
 ---
 
 # GCP Orphan Persistent Disks

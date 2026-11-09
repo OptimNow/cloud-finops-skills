@@ -341,10 +341,15 @@ def test_questions_parse_persona() -> None:
     assert {q.persona for q in pb.questions if q.persona} == {"FinOps lead"}
 
 
-def test_questions_absent_is_an_empty_list() -> None:
-    oci = metadata.get_by_name("finops-oci")
-    assert oci is not None
-    assert oci.questions == []
+def test_questions_absent_parses_to_an_empty_list() -> None:
+    assert metadata._parse_questions(None, "synthetic.md") == []
+
+
+def test_every_file_declares_four_to_eight_questions() -> None:
+    """Phase 3 (2026-11-09) put the field on every reference and playbook; CI gates
+    it with scripts/check-questions.py, this pins it from the server's side."""
+    for item in [*metadata.get_index(), *metadata.get_playbook_index()]:
+        assert 4 <= len(item.questions) <= 8, (item.name, len(item.questions))
 
 
 def test_parse_questions_tolerates_malformed_entries() -> None:

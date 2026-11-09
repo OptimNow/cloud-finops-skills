@@ -4,6 +4,12 @@ scope: aws
 service: Amazon EBS
 waste_category: modernization
 confidence: obvious
+questions:
+  - "Should we move our EBS volumes from gp2 to gp3, and is it safe?"
+  - "How much would we save by migrating gp2 volumes to gp3?"
+  - "Our small gp2 volumes run out of burst credits. Would gp3 fix that and cost less?"
+  - "Which EBS volumes still run on gp2, and how do we find them?"
+  - "Faut-il migrer nos volumes EBS de gp2 vers gp3, et que gagne-t-on ?"
 ---
 
 # AWS gp2-to-gp3 Volume Migration

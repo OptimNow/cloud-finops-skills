@@ -8,6 +8,12 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["SRE", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:waste:deep"]
+questions:
+  - "Where does AWS networking spend hide: load balancers, NAT, cross-AZ traffic or egress?"
+  - "Which networking inefficiencies should we check in our AWS accounts?"
+  - "Our data transfer charges are growing faster than our compute. What do we look at?"
+  - "Are we paying for load balancers and IPs that serve nothing?"
+  - "Où se cachent les coûts réseau sur AWS : NAT, load balancers, trafic inter-AZ ou sortie ?"
 ---
 
 # AWS Optimization Patterns: Networking

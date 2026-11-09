@@ -4,6 +4,12 @@ scope: aws
 service: AWS EC2
 waste_category: overprovisioned
 confidence: possible
+questions:
+  - "Could we split one A100 or H100 between several small inference workloads?"
+  - "Our H100 runs at 10% but we cannot move to a smaller GPU. What are the options?"
+  - "What is NVIDIA MIG, and when does it save money on AWS?"
+  - "Which GPU workloads are candidates for partitioning with MIG?"
+  - "Peut-on partager un seul GPU A100 ou H100 entre plusieurs petits modèles sur AWS ?"
 ---
 
 # AWS MIG (Multi-Instance GPU) Candidate

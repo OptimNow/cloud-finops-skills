@@ -4,6 +4,12 @@ scope: azure
 service: Azure Blob Storage
 waste_category: orphaned
 confidence: likely
+questions:
+  - "Our blob storage keeps growing while the number of blobs stays flat. Why?"
+  - "Are blob versioning and soft delete costing us more than they protect?"
+  - "What retention should we set for blob soft delete on scratch containers?"
+  - "How do we expire old blob versions automatically?"
+  - "Notre stockage blob grossit alors que le nombre de blobs est stable : versions et soft delete en cause ?"
 ---
 
 # Azure Blob Version and Soft-Delete Sprawl

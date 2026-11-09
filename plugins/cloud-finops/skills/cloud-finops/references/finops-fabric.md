@@ -8,6 +8,18 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["data-platforms:data:deep", "azure:data:deep", "data-platforms:bill:deep", "data-platforms:commitments:deep", "data-platforms:waste:deep", "data-platforms:budget:partial", "data-platforms:saas:partial"]
+questions:
+  - q: "Our Fabric capacity is throttling at month end. Do we need a bigger F-SKU?"
+    section: "CU smoothing - the most counterintuitive Fabric mechanic"
+  - q: "Should we pause our Fabric capacity at night and at weekends?"
+    section: "Pause / Resume"
+  - q: "Pro, Premium per user or Fabric capacity: which Power BI licence is cheapest for us?"
+    section: "Pricing comparison - Pro vs PPU vs Fabric F-SKU"
+  - q: "Is a Fabric reservation worth it, and for which F-SKU?"
+    section: "Fabric reservation - CU-based, 1 or 3 years"
+  - q: "How do we split one shared Fabric capacity between several business units?"
+    section: "Allocation models for shared capacity"
+  - "Faut-il mettre notre capacité Fabric en pause la nuit, et quelle taille de F-SKU choisir ?"
 ---
 
 # FinOps on Microsoft Fabric

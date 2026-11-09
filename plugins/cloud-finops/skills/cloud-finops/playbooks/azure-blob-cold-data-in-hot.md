@@ -4,6 +4,12 @@ scope: azure
 service: Azure Blob Storage
 waste_category: overprovisioned
 confidence: possible
+questions:
+  - "Most of our blob storage is in the Hot tier but rarely read. How do we tier it down safely?"
+  - "How do we prove that blob data is cold before moving it to Cool or Archive?"
+  - "Which storage accounts hold logs and backups in Hot?"
+  - "Would a lifecycle management policy pay for itself on our blob storage?"
+  - "Nos blobs sont en niveau Hot et jamais lus : comment les passer en Cool ou Archive sans risque ?"
 ---
 
 # Azure Blob Cold Data Sitting in Hot

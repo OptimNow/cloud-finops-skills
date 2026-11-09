@@ -4,6 +4,12 @@ scope: azure
 service: Azure Virtual Machines
 waste_category: idle
 confidence: obvious
+questions:
+  - "We stopped our Azure VMs but we are still billed. Why?"
+  - "What is the difference between a stopped and a deallocated VM in Azure?"
+  - "How do we find VMs that are stopped but still charging compute?"
+  - "Our shutdown schedule runs inside the VM. Why does it not stop the bill?"
+  - "Nos VM Azure sont arrêtées mais toujours facturées : pourquoi, et comment corriger ?"
 ---
 
 # Azure Idle VM (Stopped but Not Deallocated)

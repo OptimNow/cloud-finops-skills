@@ -8,6 +8,16 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["SRE", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:commitments:deep", "aws:waste:deep", "aws:data:partial"]
+questions:
+  - q: "How do we bring our RDS bill down without touching the schema?"
+    section: "RDS cost management strategy"
+  - q: "Reserved Instances for RDS, Aurora or DynamoDB: which commitment fits which database?"
+    section: "Database commitment discount decision tree"
+  - q: "Which database inefficiencies are the most common on AWS, and what do we check?"
+    section: "Databases Optimization Patterns"
+  - q: "Should we commit to our databases the way we commit to EC2?"
+    section: "Database commitment discount decision tree"
+  - "Comment réduire la facture RDS et Aurora, et quels engagements prendre sur les bases de données ?"
 ---
 
 # AWS Optimization Patterns: Databases
