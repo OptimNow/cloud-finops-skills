@@ -14,8 +14,9 @@ closer to ~2-3 KB.
 
 `SKILL.md` and `POWER.md` carry representative examples only and defer here for
 the full list. Over the MCP server, `list_playbooks()` and
-`find_playbooks(scope=, service=, waste_category=, confidence=)` return the same
-set with its facets.
+`find_playbooks(query=, scope=, service=, waste_category=, confidence=)` return the
+same set with its facets; `query` ranks them by the questions each runbook declares
+in its frontmatter.
 
 ### AWS
 

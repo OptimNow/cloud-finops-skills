@@ -7,6 +7,22 @@ fcp_phases: ["Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Leadership", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Product", "Procurement", "ITAM"]
 fcp_maturity_entry: "Crawl"
+questions:
+  - q: "Who should own commitment purchases, and which meetings do we need to run the practice?"
+    persona: "FinOps lead"
+    section: "Governance forums and cadence"
+  - q: "Central FinOps team, champions in each BU or a hub and spoke: which operating model fits us?"
+    section: "Team models"
+  - q: "Where should the FinOps team report: Finance, IT or the CTO?"
+    section: "Where it reports"
+  - q: "Who decides what between FinOps, Engineering, Finance and Procurement?"
+    section: "responsibility matrix"
+  - q: "How do FinOps and the ITFM or TBM team share the same cost numbers without fighting over them?"
+    section: "The ITFM interface"
+  - "Faut-il une équipe FinOps dédiée, et à partir de quelle taille de facture ?"
+  - q: "Who on my leadership team should sponsor FinOps, and what does the sponsor decide?"
+    persona: "Executive"
+    section: "Decision rights and escalation"
 ---
 
 # FinOps Practice Operations

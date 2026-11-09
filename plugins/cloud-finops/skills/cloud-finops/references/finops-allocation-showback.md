@@ -8,6 +8,22 @@ fcp_personas_primary: ["FinOps Practitioner"]
 fcp_personas_collaborating: ["Engineering", "Finance"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:bill:deep", "azure:bill:partial", "gcp:bill:partial"]
+questions:
+  - q: "A third of our bill is unallocated. How do we reach a defensible allocation of shared costs?"
+    persona: "FinOps lead"
+    section: "Defensible allocation keys"
+  - q: "Amortised or unblended: which AWS cost column do we show teams, and why do the totals differ?"
+    section: "Cost-column methodology"
+  - q: "How do we split the network, logging and security bill between the teams that use it?"
+    section: "Shared-services hard cases"
+  - q: "What should a showback report contain, who receives it and how often?"
+    section: "Showback"
+  - q: "Our team totals do not add up to the invoice. How do we reconcile?"
+    section: "Reconcile to invoice"
+  - "Un tiers de notre facture cloud n'est attribué à personne. Par où commence-t-on ?"
+  - q: "Why can nobody tell me what each product costs us to run in the cloud?"
+    persona: "Executive"
+    section: "Why allocation comes before everything else in FinOps"
 ---
 
 # FinOps Allocation and Showback

@@ -19,7 +19,10 @@ file you are touching, follow the conventions in [`CLAUDE.md`](./CLAUDE.md) (FCP
 frontmatter, no em dashes, British spelling in prose, license footer), and pass the
 coverage checks (`./scripts/fcp-coverage.sh --check` and
 `./scripts/business-coverage.sh --check`; the second one reads the
-`business_coverage` frontmatter field that feeds the README coverage tables).
+`business_coverage` frontmatter field that feeds the README coverage tables). A
+reference or playbook may also carry a `questions:` list in its frontmatter: four to
+eight questions written the way a user asks them, none in repository vocabulary, at
+least one in French (rules in `docs/DESIGN.md`, "Reference-file frontmatter").
 
 You keep authorship: every contribution lives in the commit history under your name
 and shows up in `git blame`. Substantive contributors are visible in the repo's

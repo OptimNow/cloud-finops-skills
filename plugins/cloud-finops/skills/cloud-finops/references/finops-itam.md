@@ -8,6 +8,18 @@ fcp_personas_primary: ["FinOps Practitioner", "Procurement"]
 fcp_personas_collaborating: ["Engineering", "Finance", "Leadership"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["saas:saas:deep", "saas:contracts:partial", "aws:saas:partial", "azure:saas:partial", "gcp:saas:partial", "on-prem:saas:partial"]
+questions:
+  - q: "We hold SQL Server licences with Software Assurance. BYOL or licence-included on Azure and AWS, and how do we decide?"
+    section: "BYOL strategy"
+  - q: "Can we bring our Windows, SQL Server or Oracle licences to the cloud, and when is it cheaper?"
+    section: "Common BYOL scenarios"
+  - q: "Should we buy software through the AWS or Azure Marketplace to burn down our commitment?"
+    section: "Marketplace channel governance"
+  - q: "Who owns a licence true-up: FinOps, ITAM or Procurement?"
+    section: "Joint operating model"
+  - q: "Our SaaS vendor bills on consumption and we keep overshooting. How do we monitor it?"
+    section: "Consumption-based SaaS monitoring"
+  - "Nos licences SQL Server avec Software Assurance : BYOL ou licence incluse dans le cloud ?"
 ---
 
 # FinOps and ITAM - Collaborating Across the Technology Estate

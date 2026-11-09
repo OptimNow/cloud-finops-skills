@@ -8,6 +8,19 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["ai-platforms:commitments:deep", "ai-platforms:waste:deep"]
+questions:
+  - q: "Should we buy provisioned throughput or stay pay-as-you-go for 500K requests a day?"
+    persona: "AI product owner"
+    section: "Decision framework"
+  - q: "Our traffic has a daily peak and is quiet at night. Does provisioned capacity still pay off?"
+    section: "Traffic shape"
+  - q: "What happens when we exceed our provisioned capacity? Can we spill over to pay-as-you-go?"
+    section: "Spillover"
+  - q: "Is provisioned GenAI capacity cheaper per token than on-demand?"
+    section: "do not assume provisioned is cheaper"
+  - q: "How do we compare PTUs, Bedrock model units and Vertex throughput units like for like?"
+    section: "Hyperscaler capacity model comparison"
+  - "Faut-il réserver de la capacité pour notre application GenAI ou rester au paiement à l'usage ?"
 ---
 
 # FinOps for GenAI: Capacity Models

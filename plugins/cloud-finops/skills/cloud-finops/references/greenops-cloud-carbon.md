@@ -8,6 +8,22 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Sustainability", "Leadership", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["aws:carbon:deep", "azure:carbon:partial", "gcp:carbon:partial"]
+questions:
+  - q: "We need to start reporting our cloud carbon emissions. Where do we begin?"
+    persona: "FinOps lead"
+    section: "Measurement foundation"
+  - q: "How reliable are the carbon numbers AWS, Azure and Google give us?"
+    section: "Critical reading"
+  - q: "Which cloud region should we pick to cut carbon, and does it cost more?"
+    section: "Region selection"
+  - q: "Can we move batch jobs to times when the grid is cleaner?"
+    section: "Workload shifting"
+  - q: "How does cloud cost optimisation connect to our CSRD or ESG reporting?"
+    section: "FinOps-to-GreenOps integration"
+  - "Comment mesurer et réduire l'empreinte carbone de notre cloud ?"
+  - q: "What should I tell the board about our cloud carbon footprint, and which number is defensible?"
+    persona: "Executive"
+    section: "Measurement foundation"
 ---
 
 # GreenOps & Cloud Carbon Optimisation

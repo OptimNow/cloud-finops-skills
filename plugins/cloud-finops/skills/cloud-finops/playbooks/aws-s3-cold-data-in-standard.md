@@ -4,6 +4,12 @@ scope: aws
 service: Amazon S3
 waste_category: overprovisioned
 confidence: possible
+questions:
+  - "How do I detect S3 buckets that should be on lifecycle policies?"
+  - "Which of our S3 buckets hold data nobody reads, and should we move it to a cheaper class?"
+  - "Is S3 Intelligent-Tiering a safe default, or do we write our own transition rules?"
+  - "Why can we not tell from the bill alone whether S3 data is cold?"
+  - "Quelles données S3 dorment en classe Standard, et comment le prouver avant de les déplacer ?"
 ---
 
 # S3 Cold Data Sitting in Standard

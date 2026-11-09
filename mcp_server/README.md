@@ -26,7 +26,7 @@ carries an `approx_tokens` hint for exactly that reason.
 |---|---|
 | `list_references()` | Browse the knowledge library: what guidance exists, with its FinOps Framework facets and an `approx_tokens` size hint. |
 | `get_reference(name, section?)` | Read one guide - mechanics, decision rules, worked examples. Whole by default, or one H2/H3 section when the question is narrower than the file. |
-| `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | Route a FinOps question (commitment sizing, chargeback design, ...) to the guides that serve it, by FinOps Framework facet. |
+| `find_references(query?, domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | Route a FinOps question (commitment sizing, chargeback design, ...) to the guides that serve it, by FinOps Framework facet or by `query`: the question in the user's own words, ranked against the questions each guide declares it answers. |
 
 The reference faceted query supports any combination of:
 
@@ -38,6 +38,11 @@ The reference faceted query supports any combination of:
   list only. Broad personas (Engineering) collaborate on nearly every file,
   so the default match barely narrows; the flag is the reading-list cut.
 - `maturity` - `Crawl`, `Walk`, `Run`
+- `query` - the question in the user's own words, English or French. Ranks the
+  facet-filtered guides by the `questions:` each declares in its frontmatter, then
+  by title and headings, and returns at most five, each with `match_score`,
+  `matched_question` and `suggested_section` (the heading to pass to
+  `get_reference`). Word overlap only: no embedding, no network call
 
 The listing prints the primary facets only. Secondary capabilities and
 collaborating personas are still fully filterable through `find_references`;
@@ -83,7 +88,7 @@ get_reference("finops-aws-billing", section="billing hierarchy")  # ~2,700 of ~1
 |---|---|
 | `list_playbooks()` | Browse the waste runbooks: which patterns of idle, orphaned, overprovisioned or leaking spend have a ready-made runbook. Carries the same `approx_tokens` hint. |
 | `get_playbook(name)` | Read one runbook: symptoms, detection queries, fix, anti-pattern. |
-| `find_playbooks(scope?, service?, waste_category?, confidence?)` | "We are wasting money on X - how do I find and fix it?" - filter runbooks by provider, service, waste category, confidence. Also the route for questions about your own estate ("which of my RIs are about to expire"): the server cannot see your account, so the runbook's detection query is the answer it hands over. |
+| `find_playbooks(query?, scope?, service?, waste_category?, confidence?)` | "We are wasting money on X - how do I find and fix it?" - filter runbooks by provider, service, waste category, confidence, or pass the symptom in the user's words as `query` and get the runbooks ranked by the questions each one declares. Also the route for questions about your own estate ("which of my RIs are about to expire"): the server cannot see your account, so the runbook's detection query is the answer it hands over. |
 
 The playbook faceted query supports:
 
@@ -92,6 +97,8 @@ The playbook faceted query supports:
 - `waste_category` - `orphaned`, `idle`, `overprovisioned`, `commitment-mismatch`,
   `schedule-blindness`, `modernization`, `ai-ml-inefficiency`, `egress`
 - `confidence` - `obvious`, `likely`, `possible` (OptimNow three-tier model)
+- `query` - the symptom in the user's own words; the same ranking as for
+  references, over each runbook's declared questions, title and service
 
 All filters across both surfaces AND together. String matches are case-insensitive
 and exact (no substring matching).
@@ -337,6 +344,13 @@ Agent prompt: *"Show me the obvious-confidence AWS waste playbooks."*
 Calls `find_playbooks(scope="aws", confidence="obvious")` and gets back the list
 of high-signal AWS patterns (zombie NAT gateway, orphaned EBS volumes, etc.).
 
+Agent prompt: *"Our AWS bill has NAT gateway charges but I do not think anything
+uses them."*
+
+Calls `find_playbooks(query="AWS bill has NAT gateway charges but nothing uses them")`
+and gets back the zombie NAT gateway runbook first, with the question it matched,
+ranked by the questions each runbook declares it answers (English and French).
+
 Agent prompt: *"Walk me through the zombie NAT gateway pattern."*
 
 Calls `get_playbook(name="aws-zombie-nat-gateway")` and gets back the ~90-line
@@ -399,7 +413,9 @@ guide slug and the User-Agent above and nothing from the conversation (a second 
 for the public llms.txt, when the slug is not found). OptimToken keeps its standard
 web access log (Vercel). The hosted connector writes one application-log line per request without the
 arguments and, for a lookup that matched nothing, the arguments that missed, which
-can include a phrase the model copied from your question. The hosting platform keeps
+can include a phrase the model copied from your question (the free-text `query` of
+the two finders is never written to that log, only its word count). The hosting
+platform keeps
 the standard HTTP access log. What is logged, where it lives and for how long is in
 [PRIVACY.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md).
 

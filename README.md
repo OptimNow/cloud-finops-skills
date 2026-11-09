@@ -238,8 +238,8 @@ Full options, troubleshooting, and the model-agnostic API loader: see
   context before it answers. No code runs, no data leaves your machine.
 - **The MCP connector** serves the same library the other way round, as 7 read-only
   tools the model calls when it decides to: list, search by FinOps capability or
-  waste category, fetch one reference or runbook, and read the current figures of an
-  OptimToken pricing guide. One click from its
+  waste category or by a question in your own words, fetch one reference or runbook,
+  and read the current figures of an OptimToken pricing guide. One click from its
   [Claude directory listing](https://claude.ai/directory/optimnow-cloud-finops), or one URL to paste
   (`https://mcp.optimnow.io/mcp`), nothing to install. Tool calls go to a server
   OptimNow runs in Paris; see "Data handling" below.

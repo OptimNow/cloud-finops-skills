@@ -8,6 +8,24 @@ fcp_personas_primary: ["FinOps Practitioner", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Product", "Leadership", "Procurement"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:budget:deep", "azure:budget:deep", "gcp:budget:partial", "ai-platforms:budget:deep"]
+questions:
+  - q: "Finance wants a 12-month cloud forecast with an accuracy target. Which measures do we report, and how tight should the band be at our maturity?"
+    persona: "Finance and procurement"
+    section: "Measuring a forecast"
+  - q: "What is the difference between an estimate, a forecast and a budget for cloud spend?"
+    section: "three different numbers"
+  - q: "Should we forecast on amortised or on billed cost?"
+    section: "amortised"
+  - q: "How often should we re-forecast, and what should trigger it?"
+    section: "Cadence"
+  - q: "How do we forecast an AI workload whose usage we cannot predict?"
+    section: "forecast scenarios"
+  - q: "Our forecast missed by 20%. Was it the model, the drivers or the business?"
+    section: "When a forecast misses"
+  - "Comment construire une prévision de dépenses cloud crédible pour la Finance ?"
+  - q: "Can I trust the cloud forecast Finance gives me, and how far off is normal at our stage?"
+    persona: "Executive"
+    section: "Measuring a forecast"
 ---
 
 # FinOps Forecasting

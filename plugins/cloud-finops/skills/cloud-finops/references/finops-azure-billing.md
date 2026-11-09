@@ -8,6 +8,21 @@ fcp_personas_primary: ["FinOps Practitioner", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Procurement"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["azure:bill:deep", "azure:budget:deep", "azure:contracts:partial"]
+questions:
+  - q: "We are migrating from EA to MCA. What FinOps work do we need to do before the switch?"
+    persona: "Finance and procurement"
+    section: "EA-to-MCA transition"
+  - q: "Which Azure cost export should we set up, and should we use the FOCUS format?"
+    section: "Azure Cost Management exports"
+  - q: "How do we enforce tags on Azure resources without breaking deployments?"
+    section: "Tagging policy design"
+  - q: "Billing account, profile, invoice section or subscription: where should we allocate Azure cost?"
+    section: "Billing scope hierarchy"
+  - q: "Who pays for a reservation bought at the billing account under an MCA?"
+    section: "MCA reservation ownership"
+  - q: "Which Azure Policies help FinOps, and how do we roll them out safely?"
+    section: "Azure Policy"
+  - "Nous passons d'un EA à un MCA : qu'est-ce qui change pour le suivi des coûts ?"
 ---
 
 # Azure Billing Data, Allocation and Governance

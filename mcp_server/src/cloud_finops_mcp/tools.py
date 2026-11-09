@@ -14,10 +14,13 @@ from __future__ import annotations
 
 import difflib
 import logging
+import re
+import unicodedata
 from typing import Any
 
 from .metadata import (
     Playbook,
+    Question,
     Reference,
     find_sections,
     get_by_name,
@@ -42,6 +45,163 @@ SECTION_LIST_LIMIT = 120
 # match plus a short list of the runners-up so a wrong pick is one cheap,
 # correctly-spelled retry away.
 OTHER_MATCH_LIMIT = 5
+
+# --- free-text query -------------------------------------------------------
+#
+# ``find_*(query=...)`` exists because the facet filters are exact-match on
+# framework vocabulary, and the probe battery showed the model rarely owns
+# that vocabulary when the user does not: "NAT" matches no service, a symptom
+# sentence matches no capability. The query ranks what the facets left by word
+# overlap with the ``questions:`` each file declares it answers (written in the
+# user's words, English and French), then its title and description, then its
+# H2/H3 headings. Plain Python, deterministic, no embedding and no network, so
+# it stays inside the closed-world contract the six retrieval tools make.
+
+# At most this many ranked entries come back. A query is a routing step, not a
+# listing: the caller wants the file to fetch next, plus a runner-up or two.
+QUERY_RESULT_LIMIT = 5
+
+# Below this score an entry shares too little with the query to be worth
+# fetching - one incidental word out of five, say. Scores are coverage
+# fractions weighted by surface; see _score_against_query.
+QUERY_MIN_SCORE = 0.2
+
+_QUESTION_WEIGHT = 1.0
+_TITLE_WEIGHT = 0.5
+_HEADING_WEIGHT = 0.35
+
+_QUERY_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+# Function words in the two languages the questions are written in. Kept
+# short on purpose: the list only has to stop a query's grammar from matching
+# every file, not model either language.
+_STOPWORDS = frozenset(
+    """
+    a an the of to in on at for and or is are be been was were we our us my i me
+    it its do does did not no should can could would will how what which who why
+    when where this that these those with without from by as you your they them
+    their have has had if than then so but about any all still just also into
+    over per vs more much many some one
+    le la les l un une des de du d et ou au aux en dans sur pour par que qui
+    quoi qu ne pas est sont nous notre nos vos votre ce cet cette ces il elle
+    ils elles se sa son ses y comment pourquoi quand quel quelle quels quelles
+    faut plus sans avec dont encore
+    """.split()
+)
+
+
+def _fold(text: str) -> str:
+    """Lowercase ASCII fold, so ``Coûte`` matches ``coute`` and ``Réservation`` ``reservation``."""
+    decomposed = unicodedata.normalize("NFKD", text)
+    return "".join(ch for ch in decomposed if not unicodedata.combining(ch)).lower()
+
+
+def _stem(token: str) -> str:
+    """Crude plural folding: ``gateways`` to ``gateway``, ``policies`` to ``policy``."""
+    if len(token) > 4 and token.endswith("ies"):
+        return token[:-3] + "y"
+    if len(token) > 3 and token.endswith("s") and not token.endswith("ss"):
+        return token[:-1]
+    return token
+
+
+def query_tokens(text: str) -> set[str]:
+    """The content words of ``text``: folded, stemmed, stopwords and single letters dropped."""
+    return {
+        _stem(tok)
+        for tok in _QUERY_TOKEN_RE.findall(_fold(text))
+        if tok not in _STOPWORDS and len(tok) > 1
+    }
+
+
+def _coverage(query: set[str], text: str) -> float:
+    """Fraction of the query's content words that ``text`` carries."""
+    if not query:
+        return 0.0
+    return len(query & query_tokens(text)) / len(query)
+
+
+def _score_against_query(
+    query: set[str],
+    questions: list[Question],
+    title_text: str,
+    headings: list[str],
+) -> tuple[float, Question | None]:
+    """Score one indexed file against a tokenised query.
+
+    Returns ``(score, best_question)``. The score is the best question's
+    coverage at full weight, plus title/description coverage at half weight,
+    plus the best heading's coverage at about a third - so a file that
+    declares the user's question outranks one that merely shares its nouns,
+    and a file with no ``questions:`` block yet is still reachable through
+    its title and headings.
+    """
+    best_question: Question | None = None
+    best_coverage = 0.0
+    for question in questions:
+        coverage = _coverage(query, question.text)
+        if coverage > best_coverage:
+            best_question, best_coverage = question, coverage
+    title_coverage = _coverage(query, title_text)
+    heading_coverage = max((_coverage(query, h) for h in headings), default=0.0)
+    score = (
+        _QUESTION_WEIGHT * best_coverage
+        + _TITLE_WEIGHT * title_coverage
+        + _HEADING_WEIGHT * heading_coverage
+    )
+    return score, best_question
+
+
+def _rank_by_query(items: list, query: str, title_text) -> list[tuple[Any, float, Question | None]]:
+    """``(item, score, matched_question)`` for the items worth returning, best first.
+
+    ``title_text`` maps an item to the text scored at title weight: title plus
+    description for a reference, title plus service for a playbook. Ties break
+    on name so the order is stable from one call to the next.
+    """
+    tokens = query_tokens(query)
+    if not tokens:
+        return []
+    ranked: list[tuple[Any, float, Question | None]] = []
+    for item in items:
+        score, question = _score_against_query(tokens, item.questions, title_text(item), item.headings)
+        if score >= QUERY_MIN_SCORE:
+            ranked.append((item, score, question))
+    ranked.sort(key=lambda entry: (-entry[1], entry[0].name))
+    return ranked[:QUERY_RESULT_LIMIT]
+
+
+def _query_entry(item, score: float, question: Question | None) -> dict[str, Any]:
+    """A listing entry plus what the query matched, so the next call can go to the section."""
+    entry = item.to_dict()
+    entry["match_score"] = round(score, 2)
+    entry["matched_question"] = question.text if question else None
+    entry["suggested_section"] = question.section if question is not None else None
+    return entry
+
+
+def _query_miss_help(kind: str) -> dict[str, Any]:
+    """Explain a ``query`` that matched nothing, in place of a bare ``total: 0``."""
+    return {
+        "hint": (
+            f"No {kind} shares a content word with the query - its questions, title "
+            "and headings were all checked. Try fewer or more specific words (the "
+            "service or the symptom), or drop the query and browse with the facets."
+        )
+    }
+
+
+def _loggable(filters: dict[str, Any], query_text: str) -> dict[str, Any]:
+    """The zero-result log line for a query miss.
+
+    The query text itself is never written: PRIVACY.md promises that the miss
+    log holds facet values, not conversation text, and a ``query`` is the
+    user's sentence. The word count keeps the coverage signal that the log
+    exists for (how often users phrase questions the library does not catch).
+    """
+    kept = {k: v for k, v in filters.items() if k != "query"}
+    kept["query_words"] = len(query_tokens(query_text))
+    return kept
 
 
 def _log_zero_result(tool: str, active: dict[str, Any]) -> None:
@@ -303,6 +463,7 @@ def _empty_result_help(
 
 
 def find_references(
+    query: str | None = None,
     domain: str | None = None,
     capability: str | None = None,
     phase: str | None = None,
@@ -310,19 +471,29 @@ def find_references(
     maturity: str | None = None,
     persona_primary_only: bool = False,
 ) -> dict[str, Any]:
-    """Filter references by FCP frontmatter.
+    """Filter references by FCP frontmatter, and rank them by a free-text ``query``.
 
-    All parameters are optional and combine with AND semantics. String matches
+    The facets are optional and combine with AND semantics. String matches
     are case-insensitive and exact (no substring matching). Empty filters return
-    the full index. A query that matches nothing returns ``hint`` and
+    the full index. A facet query that matches nothing returns ``hint`` and
     ``valid_values`` alongside ``total: 0``, so a typo is distinguishable from a
     genuine coverage gap.
+
+    ``query`` is the user's question in their own words. The facets narrow the
+    set first; the query then ranks what is left by word overlap with each
+    reference's declared ``questions``, its title and description, and its
+    H2/H3 headings (see ``_score_against_query``), returns at most
+    ``QUERY_RESULT_LIMIT`` entries, and adds ``match_score``,
+    ``matched_question`` and ``suggested_section`` to each. A query that
+    matches nothing returns ``hint`` alone.
 
     ``capability`` and ``persona`` filter over the secondary and collaborating
     declarations too, even though the returned entries no longer print them -
     the listing shape is trimmed for tokens, the filtering is not.
 
     Args:
+        query: the user's question or symptom, any length, English or
+            French; blank is treated as absent.
         domain: one of the four FinOps Framework domains, e.g.
             ``"Optimize Usage & Cost"``.
         capability: a FinOps Capability, matched against both the primary and
@@ -369,7 +540,25 @@ def find_references(
     if persona_primary_only and "persona" in active:
         reported_filters["persona_primary_only"] = True
 
-    result: dict[str, Any] = {
+    query_text = query.strip() if isinstance(query, str) else ""
+    if query_text:
+        reported_filters["query"] = query_text
+        ranked = _rank_by_query(matches, query_text, lambda r: f"{r.title} {r.description}")
+        result: dict[str, Any] = {
+            "filters": reported_filters,
+            "references": [_query_entry(r, score, q) for r, score, q in ranked],
+            "total": len(ranked),
+        }
+        if not ranked:
+            result.update(
+                _empty_result_help(active, reference_vocabulary())
+                if active and not matches
+                else _query_miss_help("reference")
+            )
+            _log_zero_result("find_references", _loggable(reported_filters, query_text))
+        return result
+
+    result = {
         "filters": reported_filters,
         "references": [r.to_dict() for r in matches],
         "total": len(matches),
@@ -429,22 +618,33 @@ def get_playbook(name: str) -> dict[str, Any]:
 
 
 def find_playbooks(
+    query: str | None = None,
     scope: str | None = None,
     service: str | None = None,
     waste_category: str | None = None,
     confidence: str | None = None,
 ) -> dict[str, Any]:
-    """Filter playbooks by their pattern frontmatter.
+    """Filter playbooks by their pattern frontmatter, and rank them by a free-text ``query``.
 
-    All parameters are optional and combine with AND semantics. String matches
-    are case-insensitive and exact (no substring matching). A query that
+    The facets are optional and combine with AND semantics. String matches
+    are case-insensitive and exact (no substring matching). A facet query that
     matches nothing returns `hint` and `valid_values` alongside `total: 0`.
+
+    ``query`` is the user's symptom in their own words ("NAT gateway charges
+    but nothing uses them", "passerelle NAT qui ne sert à rien"). The facets
+    narrow the set first; the query ranks what is left by word overlap with
+    each playbook's declared ``questions``, its title and service, and its
+    headings, returns at most ``QUERY_RESULT_LIMIT`` entries, and adds
+    ``match_score``, ``matched_question`` and ``suggested_section`` to each.
+    A query that matches nothing returns `hint` alone.
 
     The double-backtick values listed below are the accepted vocabulary for
     each facet, and are pinned against the bundled data by
     `tests/test_conformance.py` - keep them in step when content changes.
 
     Args:
+        query: the user's symptom or question, any length, English or
+            French; blank is treated as absent.
         scope: ``aws``, ``azure``, ``gcp``, or ``cross-cloud``.
         service: provider service name (e.g. ``"AWS NAT Gateway"``,
             ``"Azure Managed Disks"``). Exact-match against a free-text field -
@@ -481,7 +681,28 @@ def find_playbooks(
             continue
         matches.append(pb)
 
-    result: dict[str, Any] = {
+    reported_filters: dict[str, Any] = dict(active)
+    query_text = query.strip() if isinstance(query, str) else ""
+    if query_text:
+        reported_filters["query"] = query_text
+        ranked = _rank_by_query(
+            matches, query_text, lambda pb: f"{pb.title} {pb.service or ''}"
+        )
+        result: dict[str, Any] = {
+            "filters": reported_filters,
+            "playbooks": [_query_entry(pb, score, q) for pb, score, q in ranked],
+            "total": len(ranked),
+        }
+        if not ranked:
+            result.update(
+                _empty_result_help(active, playbook_vocabulary())
+                if active and not matches
+                else _query_miss_help("playbook")
+            )
+            _log_zero_result("find_playbooks", _loggable(reported_filters, query_text))
+        return result
+
+    result = {
         "filters": active,
         "playbooks": [pb.to_dict() for pb in matches],
         "total": len(matches),

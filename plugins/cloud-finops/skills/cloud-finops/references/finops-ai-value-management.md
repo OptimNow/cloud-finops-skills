@@ -8,6 +8,22 @@ fcp_personas_primary: ["FinOps Practitioner", "Leadership"]
 fcp_personas_collaborating: ["Engineering", "Product", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["ai-platforms:budget:deep", "ai-platforms:ai:deep"]
+questions:
+  - q: "Our AI projects cost a lot. When do they pay back, and which ones should we stop?"
+    persona: "Executive"
+    section: "Stage gate model"
+  - q: "How do we decide which AI initiatives get funded next quarter?"
+    persona: "Executive"
+    section: "The AI Investment Council"
+  - q: "Is the AI value my teams report real, or a forecast dressed as a result?"
+    persona: "Executive"
+    section: "Realisation rate is not a quality metric"
+  - q: "How do we quantify the business value of an AI feature: cost displacement, revenue uplift, retention or premium pricing?"
+    section: "Pick the method from the economic mechanism"
+  - "What does an AI initiative cost beyond the API bill?"
+  - q: "Can we book an AI saving in the P&L, and when is it only spend avoided?"
+    section: "Book the value somewhere"
+  - "Nos projets IA coûtent cher : quand sont-ils rentabilisés, et lesquels arrêter ?"
 ---
 
 # FinOps for AI: Managing Value and Practice Operations

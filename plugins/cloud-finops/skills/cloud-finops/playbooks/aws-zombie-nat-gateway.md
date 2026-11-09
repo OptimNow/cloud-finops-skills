@@ -4,6 +4,12 @@ scope: aws
 service: AWS NAT Gateway
 waste_category: idle
 confidence: obvious
+questions:
+  - "Our AWS bill has NAT gateway charges but I do not think anything uses them. What should I do?"
+  - "Is it safe to delete a NAT gateway nobody seems to use?"
+  - "Why do we pay for NAT gateways in accounts where nothing runs any more?"
+  - "How do we find NAT gateways that cost money without carrying traffic?"
+  - "On paie des NAT gateways qui ne servent à rien : comment les repérer et les supprimer sans risque ?"
 ---
 
 # AWS Zombie NAT Gateway

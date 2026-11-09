@@ -8,6 +8,19 @@ fcp_personas_primary: ["FinOps Practitioner", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Procurement", "Leadership"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["azure:commitments:deep", "azure:contracts:partial", "azure:saas:partial"]
+questions:
+  - q: "My Azure reservation exchanges stop working in 2027. What changes and what should I do before then?"
+    section: "Commitment liquidity after February 2027"
+  - q: "Azure Savings Plan or Reservation for our VMs: how do we choose?"
+    section: "Savings Plan vs Reservation"
+  - q: "Can we reserve Azure SQL, Cosmos DB or storage, and when is it worth it?"
+    section: "Database commitment decision tree"
+  - q: "How does a MACC change the real discount on our Azure reservations?"
+    section: "Net discount under a MACC"
+  - "Does Azure Hybrid Benefit stack with reservations, and who should track our licences?"
+  - q: "How much should we reserve in Azure, and what does Advisor get wrong?"
+    section: "Commitment sizing methodology"
+  - "Nos réservations Azure arrivent à échéance : on renouvelle, on bascule en Savings Plan ou on laisse courir ?"
 ---
 
 # Azure Commitment Discounts

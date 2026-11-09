@@ -8,6 +8,19 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Leadership", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["ai-platforms:ai:deep", "on-prem:ai:partial"]
+questions:
+  - q: "Should we self-host an open-weight model on rented H100s instead of paying per token, and what hidden costs do TCO calculators miss?"
+    persona: "AI product owner"
+    section: "The hidden cost surface"
+  - q: "At what volume does running our own model become cheaper than a managed API?"
+    section: "Where self-hosted wins"
+  - q: "Which GPU rental vendor should we pick, and what should we check before committing?"
+    section: "Vendor selection costs"
+  - q: "Can we route some traffic to our own model and the rest to a managed API?"
+    section: "The hybrid pattern"
+  - q: "Are we mature enough to run inference ourselves?"
+    section: "maturity-driven decision rubric"
+  - "Faut-il héberger nous-mêmes un modèle open-weight ou payer au token ?"
 ---
 
 # AI inference: self-hosted vs managed APIs - a FinOps perspective

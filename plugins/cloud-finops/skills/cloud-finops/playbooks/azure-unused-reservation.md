@@ -4,6 +4,12 @@ scope: azure
 service: Azure Reservations
 waste_category: commitment-mismatch
 confidence: obvious
+questions:
+  - "Our Azure reservation shows 0% utilisation. Why are we still paying for it?"
+  - "We migrated our VMs to a new family and the reservation stopped applying. What do we do?"
+  - "Our Azure reservations are expiring. Which ones do we renew and which were never used?"
+  - "Can we get a refund or exchange for an Azure reservation nobody uses?"
+  - "Une réservation Azure affiche 0 % d'utilisation : pourquoi paie-t-on encore ?"
 ---
 
 # Unused Azure Reservation

@@ -7,6 +7,23 @@ fcp_phases: ["Inform", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner", "Leadership", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Product", "Procurement"]
 fcp_maturity_entry: "Walk"
+questions:
+  - q: "Are we spending the right amount on cloud for a company our size?"
+    persona: "Executive"
+    section: "Benchmarking: internal first, external with caveats"
+  - q: "How do I know whether my FinOps team is doing a good job?"
+    persona: "Executive"
+    section: "Scorecard: making the practice itself measurable"
+  - q: "Which three numbers about cloud should the CFO and the CIO see every month?"
+    persona: "Executive"
+    section: "The executive conversation"
+  - q: "Which KPIs should a FinOps practice track at each maturity stage?"
+    section: "The KPI portfolio by maturity stage"
+  - q: "How do we report savings: realised, potential or avoided, and who signs them off?"
+    section: "The KPI portfolio by maturity stage"
+  - q: "Cost per customer, per order or per transaction: how do we choose a unit-economics denominator?"
+    section: "Unit economics"
+  - "Dépensons-nous trop en cloud pour une entreprise de notre taille, et comment le savoir ?"
 ---
 
 # FinOps KPIs, Benchmarking, and the Executive Conversation

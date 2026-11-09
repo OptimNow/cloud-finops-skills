@@ -8,6 +8,19 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Procurement", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["saas:ai:deep", "saas:saas:deep", "saas:waste:deep", "saas:bill:partial", "saas:budget:partial", "saas:commitments:partial"]
+questions:
+  - q: "Our AI coding tool spend tripled in 6 months. How do we control it without banning the tools?"
+    persona: "AI product owner"
+    section: "Optimisation levers"
+  - q: "Cursor, Copilot, Claude Code or Codex: how does each one bill us, and which model fits our team?"
+    section: "Two billing architectures"
+  - q: "How do we attribute Claude Code or Codex API spend to developers and projects?"
+    section: "Cost attribution patterns"
+  - q: "Why does a developer's Cursor bill vary so much from month to month?"
+    section: "Token rate variability"
+  - q: "Do MCP servers and context files make every coding session more expensive?"
+    section: "context-load tax"
+  - "Nos dépenses d'outils de codage IA explosent : comment les encadrer sans les interdire ?"
 ---
 
 # FinOps for AI Coding Tools

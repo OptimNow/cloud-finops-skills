@@ -6,6 +6,18 @@ fcp_phases: ["Inform", "Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner"]
 fcp_personas_collaborating: ["Engineering", "Finance", "Leadership"]
 fcp_maturity_entry: "Crawl"
+questions:
+  - q: "What would it take to cut our cloud bill by 20% without slowing delivery?"
+    persona: "Executive"
+    section: "Visibility before optimisation"
+  - q: "Where should we start with FinOps, and what should we expect in the first six months?"
+    persona: "Executive"
+    section: "How OptimNow approaches customer problems"
+  - q: "How does OptimNow approach a FinOps engagement, and what does it refuse to do?"
+    section: "What OptimNow does not do"
+  - q: "Why does OptimNow insist on visibility before optimisation?"
+    section: "Visibility before optimisation"
+  - "Par où commencer une démarche FinOps, et qu'attendre des six premiers mois ?"
 ---
 
 # OptimNow Methodology

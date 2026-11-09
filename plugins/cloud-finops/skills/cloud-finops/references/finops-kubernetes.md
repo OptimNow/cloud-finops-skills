@@ -8,6 +8,19 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Platform Engineering", "SRE", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["aws:bill:partial", "azure:bill:partial", "gcp:bill:partial", "aws:waste:partial", "azure:waste:partial", "gcp:waste:partial"]
+questions:
+  - q: "How do we split the cost of a shared Kubernetes cluster between teams?"
+    persona: "Engineering and platform"
+    section: "Why K8s allocation is hard"
+  - q: "OpenCost, Kubecost or the cloud provider's own cost allocation: which one do we pick?"
+    section: "Tooling"
+  - q: "Our pods request far more CPU and memory than they use. How do we rightsize safely?"
+    section: "Container rightsizing"
+  - q: "Karpenter or Cluster Autoscaler: which one saves more, and how do we tune it?"
+    section: "Karpenter vs Cluster Autoscaler"
+  - q: "How much of our cluster bill is idle nodes, and how do we measure it?"
+    section: "Idle node cost"
+  - "Comment répartir le coût d'un cluster Kubernetes partagé entre les équipes ?"
 ---
 
 # FinOps on Kubernetes

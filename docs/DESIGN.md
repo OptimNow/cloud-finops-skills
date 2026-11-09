@@ -531,6 +531,11 @@ fcp_personas_primary: ["{persona}", ...]             # FinOps Practitioner / Eng
 fcp_personas_collaborating: ["{persona}", ...]       # optional
 fcp_maturity_entry: "Crawl" | "Walk" | "Run"         # the gate below which the file is premature
 business_coverage: ["{provider}:{need}:{depth}", ...]  # optional - the README matrix cells this file serves (see below)
+questions:                                           # optional - block list of 4 to 8 questions in user words (see below)
+  - "{a question as a user asks it}"
+  - q: "{a question the README lists by role}"
+    persona: "{README role}"                          # optional - feeds the README "What you can ask, by role"
+    section: "{H2 or H3 heading phrase}"              # optional - the section that answers it
 ---
 ```
 
@@ -545,6 +550,31 @@ files; a cell nobody declares renders as not covered. Depth is a declared
 judgement, reviewed in the PR that grows the file, not a measurement. Inline list
 form only, like `fcp_capabilities_secondary`. Practice-level files (framework,
 methodology, KPIs, practice operations, onboarding) declare nothing.
+
+`questions` (November 2026, phase 1 of the question index) lists the questions the
+file answers, written the way a user asks them. It is the one frontmatter field that
+speaks the user's language rather than the framework's, and it feeds every surface
+at once: the SKILL.md / POWER.md routing fallback (grep the lists when no routing
+keyword matches), retrieval on the ChatGPT, Gemini and llms-full surfaces (the text
+travels with the knowledge file), and, since phase 2 (same day), the `query`
+parameter on the MCP finders, which rank by word overlap on the questions, then the
+title, then the headings, with no embedding and no network call; phase 3 adds the
+generated README "What you can ask, by role" section. Writing
+rules, enforced by the phase-1 insertion script and to be moved into a CI guard in
+phase 3: four to eight questions per file; the user's words, never the repository's
+(no "playbook", "reference", "runbook", no file slug); one decision or symptom per
+question; at least one question in French; no question repeated in two files (a
+duplicate is a routing ambiguity); a probe the skill answered badly goes in verbatim,
+with its dash turned into a full stop. Plain strings by default; the mapping form
+(`q:` with `persona:` and `section:`) only where the README lists the question by
+role or where one section answers it; `persona` values are the four README roles plus
+`Executive` (CTO, CIO, CFO), which phase 3 adds to the README. Playbooks carry the
+field too. The YAML block
+form is deliberate here, unlike `business_coverage`: the coverage scripts read their
+own keys by prefix and ignore the rest of the block, and `check-style.sh` strips the
+frontmatter, so the block costs nothing in CI; the MCP loader reads it with
+`yaml.safe_load`. Applies to the 27 most-asked files since phase 1; a new file should
+carry it from its first PR.
 
 `fcp_phases` is deliberately independent of `fcp_domain`: a file whose primary
 domain is Understand Usage & Cost (e.g. finops-kubernetes) legitimately carries

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from cloud_finops_mcp import metadata, tools
 
 
@@ -526,3 +528,183 @@ def test_zero_result_faceted_query_is_logged(caplog) -> None:
     assert len(zero_logs) == 2
     assert any("find_playbooks" in m for m in zero_logs)
     assert any("find_references" in m for m in zero_logs)
+
+
+# --- query ranking (phase 2 of the question index) -------------------------
+
+
+PLAYBOOK_LISTING_KEYS = {
+    "name",
+    "title",
+    "scope",
+    "service",
+    "waste_category",
+    "confidence",
+    "approx_tokens",
+}
+QUERY_EXTRA_KEYS = {"match_score", "matched_question", "suggested_section"}
+
+
+def test_query_tokens_fold_accents_stopwords_and_plurals() -> None:
+    assert tools.query_tokens("Les passerelles NAT qui ne servent à rien") == {
+        "passerelle",
+        "nat",
+        "servent",
+        "rien",
+    }
+    # Three-letter tokens are not plural-stemmed ("ris" stays "ris", "aws" stays "aws");
+    # both sides of a comparison pass through the same tokeniser, so they still match.
+    assert tools.query_tokens("Which of my RIs are about to expire?") == {"ris", "expire"}
+    assert tools.query_tokens("   ") == set()
+
+
+def test_listings_still_withhold_questions() -> None:
+    """The listings must not grow with the index: questions ride only on query results."""
+    assert set(tools.list_playbooks()["playbooks"][0]) == PLAYBOOK_LISTING_KEYS
+    assert set(tools.list_references()["references"][0]) == LISTING_KEYS
+    assert set(tools.find_playbooks(scope="aws")["playbooks"][0]) == PLAYBOOK_LISTING_KEYS
+
+
+# The wordings the probe battery saw fail or route stochastically through the
+# connector (P31, P12, P13, Log Analytics). Each is declared verbatim in the
+# matching file's ``questions:`` block since phase 1, so the ranking must put
+# that file first.
+PLAYBOOK_WORDINGS = [
+    (
+        "Our AWS bill has NAT gateway charges but I do not think anything uses them. "
+        "What should I do?",
+        "aws-zombie-nat-gateway",
+    ),
+    (
+        "Which of my RIs are about to expire without a renewal decision?",
+        "aws-expiring-commitment-no-decision",
+    ),
+    (
+        "My NAT gateway processes 10TB/month to S3 - what should I do?",
+        "aws-nat-gateway-endpoint-substitution",
+    ),
+    (
+        "Our Log Analytics ingestion doubled. Which tables do we check first?",
+        "azure-log-analytics-sprawl",
+    ),
+]
+
+
+@pytest.mark.parametrize(("wording", "expected"), PLAYBOOK_WORDINGS)
+def test_query_routes_probe_wordings_to_the_playbook(wording: str, expected: str) -> None:
+    result = tools.find_playbooks(query=wording)
+    assert result["total"] >= 1
+    top = result["playbooks"][0]
+    assert top["name"] == expected
+    assert set(top) == PLAYBOOK_LISTING_KEYS | QUERY_EXTRA_KEYS
+    assert top["matched_question"]
+    assert result["filters"] == {"query": wording}
+
+
+REFERENCE_WORDINGS = [
+    (
+        "We hold SQL Server licences with Software Assurance, BYOL or licence-included "
+        "on Azure and AWS?",
+        "finops-itam",
+        "BYOL strategy",
+    ),
+    (
+        "Our Azure OpenAI PTU utilisation is under 40% at night, should we drop back "
+        "to pay-as-you-go?",
+        "finops-azure-openai",
+        "When PTUs make sense",
+    ),
+    (
+        "How should we size our first Savings Plan when usage is seasonal?",
+        "finops-aws-commitments",
+        "Phased purchasing",
+    ),
+    (
+        "My Azure reservation exchanges stop working in 2027, what changes and what "
+        "should I do before then?",
+        "finops-azure-commitments",
+        "Commitment liquidity after February 2027",
+    ),
+]
+
+
+@pytest.mark.parametrize(("wording", "expected", "section"), REFERENCE_WORDINGS)
+def test_query_routes_probe_wordings_to_the_reference(
+    wording: str, expected: str, section: str
+) -> None:
+    result = tools.find_references(query=wording)
+    top = result["references"][0]
+    assert top["name"] == expected
+    assert top["suggested_section"] == section
+    assert set(top) == LISTING_KEYS | QUERY_EXTRA_KEYS
+    assert result["total"] <= tools.QUERY_RESULT_LIMIT
+
+
+def test_query_in_french_reaches_a_nat_playbook() -> None:
+    result = tools.find_playbooks(query="passerelle NAT qui ne sert à rien")
+    assert result["total"] >= 2
+    assert result["playbooks"][0]["name"] in {
+        "aws-zombie-nat-gateway",
+        "aws-nat-gateway-endpoint-substitution",
+    }
+
+
+def test_query_reaches_a_file_with_no_questions_block_through_its_title() -> None:
+    result = tools.find_playbooks(query="orphaned EBS volumes")
+    assert result["playbooks"][0]["name"] == "aws-orphaned-ebs-volumes"
+    assert result["playbooks"][0]["matched_question"] is None
+
+
+def test_query_combines_with_facets() -> None:
+    aws = tools.find_playbooks(query="NAT gateway charges", scope="aws")
+    assert aws["playbooks"][0]["name"] == "aws-zombie-nat-gateway"
+    assert aws["filters"] == {"scope": "aws", "query": "NAT gateway charges"}
+    azure = tools.find_playbooks(query="NAT gateway charges", scope="azure")
+    assert azure["total"] == 0
+    assert azure["playbooks"] == []
+    assert "hint" in azure
+    assert "valid_values" not in azure
+
+
+def test_query_with_an_invalid_facet_reports_the_facet() -> None:
+    result = tools.find_playbooks(query="NAT gateway", scope="not-a-scope")
+    assert result["total"] == 0
+    assert "valid_values" in result
+
+
+def test_query_that_matches_nothing_returns_a_hint() -> None:
+    result = tools.find_references(query="xylophone quartz marmalade")
+    assert result["total"] == 0
+    assert result["references"] == []
+    assert "hint" in result
+
+
+def test_blank_query_is_treated_as_absent(expected_playbooks: int) -> None:
+    result = tools.find_playbooks(query="   ")
+    assert result["total"] == expected_playbooks
+    assert result["filters"] == {}
+    assert set(result["playbooks"][0]) == PLAYBOOK_LISTING_KEYS
+
+
+def test_query_results_are_ranked_best_first() -> None:
+    result = tools.find_references(query="how do we split the cost of a shared Kubernetes cluster")
+    scores = [r["match_score"] for r in result["references"]]
+    assert scores == sorted(scores, reverse=True)
+    assert result["references"][0]["name"] == "finops-kubernetes"
+
+
+# Executive wordings: decisions and outcomes, no FinOps vocabulary. Declared with
+# the Executive persona on the files that answer them (added 2026-11-09).
+EXECUTIVE_WORDINGS = [
+    ("Are we spending the right amount on cloud for a company our size?", "finops-kpis-benchmarking"),
+    ("How do I know whether my FinOps team is doing a good job?", "finops-kpis-benchmarking"),
+    ("Our AI projects cost a lot, when do they pay back?", "finops-ai-value-management"),
+    ("Should we sign a three-year commitment with AWS?", "finops-cloud-contracts"),
+    ("What would it take to cut our cloud bill by 20% without slowing delivery?", "optimnow-methodology"),
+]
+
+
+@pytest.mark.parametrize(("wording", "expected"), EXECUTIVE_WORDINGS)
+def test_query_routes_executive_wordings(wording: str, expected: str) -> None:
+    result = tools.find_references(query=wording)
+    assert result["references"][0]["name"] == expected

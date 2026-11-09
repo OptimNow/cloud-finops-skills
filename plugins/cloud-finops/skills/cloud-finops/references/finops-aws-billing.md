@@ -8,6 +8,21 @@ fcp_personas_primary: ["FinOps Practitioner", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Procurement"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:bill:deep", "aws:budget:deep"]
+questions:
+  - q: "Our client wants separate AWS invoices per business unit. Their AWS contact suggested Cost Categories. Is that right?"
+    persona: "Finance and procurement"
+    section: "AWS billing hierarchy and separate invoices"
+  - q: "CUR, Data Exports or Cost Explorer: which AWS cost data should we build on?"
+    section: "AWS cost data foundation"
+  - q: "How do we organise AWS accounts and tags so the bill can be allocated?"
+    section: "AWS cost allocation"
+  - q: "Which IAM actions should we block in sandbox accounts to prevent expensive mistakes?"
+    section: "Cost-preventive SCPs"
+  - q: "Can we put a hard spending cap on an AWS account?"
+    section: "Spend limits"
+  - q: "How do we set AWS Budgets and anomaly alerts that people act on?"
+    section: "AWS Budgets"
+  - "Comment obtenir une facture AWS séparée par entité sans casser l'allocation des coûts ?"
 ---
 
 # AWS Billing Data, Allocation and Governance
