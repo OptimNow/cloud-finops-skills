@@ -82,6 +82,7 @@ Hub at https://optimtoken.optimnow.io.
 
 - [DEPENDENCIES.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/DEPENDENCIES.md): cross-repo dependency map for the five OptimNow repos, and which repos a change ripples into
 - [Private overlays](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/docs/OVERLAYS.md): how to layer your own figures, policies and client context on top of the public files without forking them, with a template and a check
+- [CHANGELOG.md](https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/CHANGELOG.md): what each version changes for users, newest first
 - [Repository](https://github.com/OptimNow/cloud-finops-skills): source, installer, and MCP server
 - [MCP server on PyPI](https://pypi.org/project/cloud-finops-mcp/): `pip install cloud-finops-mcp`
 - [Hosted MCP endpoint](https://mcp.optimnow.io/mcp): streamable HTTP, nothing to install

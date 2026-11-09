@@ -367,7 +367,8 @@ plus FinOps community publications. Each change is confirmed on the provider's o
 documentation and reviewed by a practitioner before it is applied. Every merge to
 `main` becomes a new plugin version in the Claude directory, and a version-tagged
 release ships the same content to PyPI and the MCP Registry. Watch or star the
-repository to be notified.
+repository to be notified, and read [CHANGELOG.md](./CHANGELOG.md) for what each
+version changes for you, in plain words.
 
 ---
 

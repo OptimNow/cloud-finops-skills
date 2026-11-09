@@ -44,6 +44,8 @@ cloud-finops-skills/
 ├── PRIVACY.md             <- Privacy policy for the skill, the hosted connector and
 │                             the PyPI package (the directory listing asks for its URL)
 ├── CONTRIBUTING.md        <- Contribution guide (types, process, push-backs)
+├── CHANGELOG.md           <- What each version changes for users, newest first
+│                             (since 1.50.0; the release body links it)
 ├── llms.txt               <- llmstxt.org-format index (linked sections; CI-gated)
 ├── DEPENDENCIES.md        <- Cross-repo dependency map for the five OptimNow repos,
 │                             plus the "if I change X, what else needs review" table

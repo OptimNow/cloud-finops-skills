@@ -786,6 +786,10 @@ from how the directory works:
 
 ## Pull request checklist
 
+- [ ] A user-visible change (content a user would notice, a tool parameter, an
+      install path) has a line under the unreleased version in `CHANGELOG.md`,
+      written for the person who uses the skill, not for the maintainer. The release
+      PR turns "(unreleased)" into the date
 - [ ] New reference file follows the `finops-{domain}.md` naming convention
 - [ ] YAML FCP frontmatter included on the new file (see "Reference-file frontmatter")
 - [ ] Routing table updated in both SKILL.md and POWER.md

@@ -59,3 +59,5 @@ jobs:
             The attached `llms-full.txt` is the whole library (entry point, references, playbooks) in one file, built from this tag; `llms.txt` links to the latest-release copy.
 
             For Claude Code users (and 11 other tools), see [INSTALLATION.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/INSTALLATION.md) for the cross-tool installer and the model-agnostic response contract.
+
+            What this version changes for you, in plain words: [CHANGELOG.md](https://github.com/OptimNow/cloud-finops-skills/blob/main/CHANGELOG.md). The list below is the generated commit log.
