@@ -1,0 +1,22 @@
+{
+ "live_value": 0.22,
+ "method": "retail-prices",
+ "price": "azure-fabric-cu-hour-westeurope",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Microsoft Fabric' and armRegionName eq 'westeurope' and priceType eq 'Consumption' and productName eq 'Fabric Capacity' and skuName eq 'Data Warehouse Capacity Usage'"
+ },
+ "raw": [
+  {
+   "armRegionName": "westeurope",
+   "meterName": "Data Warehouse Capacity Usage CU",
+   "productName": "Fabric Capacity",
+   "retailPrice": 0.22,
+   "skuName": "Data Warehouse Capacity Usage",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 Hour"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

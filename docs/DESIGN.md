@@ -70,6 +70,42 @@ maintainer-local coverage battery (`pipeline/coverage-probes.md`) so it is re-ru
 before every release. A report that is right but out of scope goes to
 `docs/ROADMAP.md` with the issue number, not to a silent close.
 
+**Price drift check (since 2026-11-09).** The infrastructure list prices the files
+carry as dated illustrative figures (a NAT gateway hour, a gp3 GB-month, an App Service
+plan, the GKE cluster fee, the Databricks DBCU plans: ninety provider SKUs, written in
+150 places across the playbooks and nine references) have no live source, unlike the AI
+token rates routed to the AI Pricing Hub and the OptimToken figures the connector
+serves. `scripts/price-manifest.yaml` lists each SKU once (`prices:`, with the query
+that reads it on the AWS Price List API, the Azure Retail Prices API, the Google Cloud
+Billing Catalog API or a Google pricing page) and each place its number is written
+(`figures:`, with the derivation where the text carries a monthly or per-TB figure).
+`scripts/check-prices.py` fetches every price, applies the derivation and compares
+with the number as written within a 2% tolerance that absorbs the rounding
+("~$33/month"); `.github/workflows/price-drift.yml` runs it every Saturday and, on a
+drift or a broken query, opens or updates one issue labelled `price-drift` with the
+report. What it never does: edit a content file. A drift is a proposal; the
+maintainer re-reads the figure on the provider's page and applies it, with its new
+date, in a content PR. A query that fails exits 2, so a broken query is never read as
+"no drift", and a provider whose secret is missing is skipped, not failed. The same
+script runs in CI with `--offline` against the fixtures recorded in
+`scripts/fixtures/prices/`, which fails when a figure is edited without its manifest
+line or an anchor no longer matches its file. A list price no API serves (the Snowflake
+storage tiers, read from the Service Consumption Table PDF) is a `source: page` figure:
+anchored like the others, never fetched, and listed under "Check by hand" in the weekly
+report, with its file, line, figure and URL, once the date the file says it was read is
+older than `max_age_days` (90 by default), so the maintainer gets a reminder instead of
+silence; the offline CI run checks its anchor and does not age it, so a calendar date
+never fails a build. When a new figure enters a playbook or a reference: add a `prices:`
+entry if the SKU is new (provider, unit, query, probed on the API first), a `figures:`
+entry (file, anchor found on one line, figure as written, price, derivation), run
+`python scripts/check-prices.py --record` with the credentials to hand so the fixture
+exists, and check that `--offline` passes; for a figure no API serves, a `figures:`
+entry with `source: page`, `url` and `read_on` instead. A figure that is not a list
+price (a scale example, a range, a seat price) is left out, and the manifest header
+says which ones and why. The AI price tables (model rates, seat prices) are not in the
+manifest in either form: they are being reduced to ratios with a pointer to the AI
+Pricing Hub.
+
 ---
 
 ## Lessons learned

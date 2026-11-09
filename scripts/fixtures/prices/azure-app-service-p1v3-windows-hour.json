@@ -1,0 +1,22 @@
+{
+ "live_value": 0.315,
+ "method": "retail-prices",
+ "price": "azure-app-service-p1v3-windows-hour",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Azure App Service' and armRegionName eq 'eastus' and priceType eq 'Consumption' and skuName eq 'P1 v3' and productName eq 'Azure App Service Premium v3 Plan'"
+ },
+ "raw": [
+  {
+   "armRegionName": "eastus",
+   "meterName": "P1 v3 App",
+   "productName": "Azure App Service Premium v3 Plan",
+   "retailPrice": 0.315,
+   "skuName": "P1 v3",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 Hour"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

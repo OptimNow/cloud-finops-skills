@@ -1,0 +1,55 @@
+{
+ "live_value": 0.045,
+ "method": "price-list",
+ "price": "aws-nat-gateway-gb",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "NatGateway-Bytes"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "group": "NGW:NatGateway",
+     "groupDescription": "Charge for per GB data processed by NatGateways",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "NatGateway",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "usagetype": "NatGateway-Bytes"
+    },
+    "sku": "59S5R83GFPUAGVR5"
+   },
+   "terms": {
+    "OnDemand": {
+     "59S5R83GFPUAGVR5.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "59S5R83GFPUAGVR5.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.045 per GB Data Processed by NAT Gateways",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0450000000"
+        },
+        "rateCode": "59S5R83GFPUAGVR5.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB"
+       }
+      },
+      "sku": "59S5R83GFPUAGVR5",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,18 @@
+{
+ "live_value": 74.4,
+ "method": "page",
+ "price": "gcp-gke-free-tier-month",
+ "provider": "gcp",
+ "query": {
+  "page": {
+   "regex": "free tier provides \\$([0-9.]+) in monthly credits",
+   "url": "https://cloud.google.com/kubernetes-engine/pricing"
+  }
+ },
+ "raw": {
+  "method": "page",
+  "snippet": "=\"true\" class=\" \"><p><span class=\"MyvX5d\">Free tier</span></p></div></h3><div class=\"z5liZ giuCWe\"><div jsaction=\"rcuQ6b:npT2md\" jscontroller=\"M0Q3Qb\" data-is-cws-richtext=\"true\" class=\" \"><p>The GKE free tier provides $74.40 in monthly credits per billing account, which is equivalent to one free Autopilot or zonal Standard cluster per month. Free tier credits are only applied to zonal and Autopilot clusters and cannot be applied to any oth",
+  "url": "https://cloud.google.com/kubernetes-engine/pricing"
+ },
+ "recorded": "2026-11-09"
+}

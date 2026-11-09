@@ -1,0 +1,54 @@
+{
+ "live_value": 0.008,
+ "method": "price-list",
+ "price": "aws-efs-archive-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-ArchiveTimedStorage-ByteHrs"
+  },
+  "service_code": "AmazonEFS"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEFS",
+     "servicename": "Amazon Elastic File System",
+     "storageClass": "Archive",
+     "usagetype": "USE1-ArchiveTimedStorage-ByteHrs"
+    },
+    "sku": "YCZGN223MRTHYV6P"
+   },
+   "terms": {
+    "OnDemand": {
+     "YCZGN223MRTHYV6P.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "YCZGN223MRTHYV6P.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD $0.008 per GB-Mo for Archive storage (USE1)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0080000000"
+        },
+        "rateCode": "YCZGN223MRTHYV6P.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "YCZGN223MRTHYV6P",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,55 @@
+{
+ "live_value": 0.06,
+ "method": "price-list",
+ "price": "aws-s3-files-write-gb",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-Files-Write"
+  },
+  "service_code": "AmazonS3"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "group": "S3-API-Files-Write",
+     "groupDescription": "Files data writes",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "Write",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonS3",
+     "servicename": "Amazon Simple Storage Service",
+     "usagetype": "USE1-Files-Write"
+    },
+    "sku": "2VZ9XK6PS8MRHKCM"
+   },
+   "terms": {
+    "OnDemand": {
+     "2VZ9XK6PS8MRHKCM.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "2VZ9XK6PS8MRHKCM.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD 0.06 per GB for USE1-Files-Write in US East (N. Virginia)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0600000000"
+        },
+        "rateCode": "2VZ9XK6PS8MRHKCM.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB"
+       }
+      },
+      "sku": "2VZ9XK6PS8MRHKCM",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

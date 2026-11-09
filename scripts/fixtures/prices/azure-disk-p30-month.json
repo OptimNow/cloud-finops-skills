@@ -1,0 +1,22 @@
+{
+ "live_value": 135.17,
+ "method": "retail-prices",
+ "price": "azure-disk-p30-month",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Storage' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Premium SSD Managed Disks' and meterName eq 'P30 LRS Disk'"
+ },
+ "raw": [
+  {
+   "armRegionName": "eastus",
+   "meterName": "P30 LRS Disk",
+   "productName": "Premium SSD Managed Disks",
+   "retailPrice": 135.17,
+   "skuName": "P30 LRS",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1/Month"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

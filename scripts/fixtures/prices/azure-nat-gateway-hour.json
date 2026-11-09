@@ -1,0 +1,22 @@
+{
+ "live_value": 0.045,
+ "method": "retail-prices",
+ "price": "azure-nat-gateway-hour",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'NAT Gateway' and armRegionName eq 'Global' and priceType eq 'Consumption' and skuName eq 'Standard' and meterName eq 'Standard Gateway'"
+ },
+ "raw": [
+  {
+   "armRegionName": "Global",
+   "meterName": "Standard Gateway",
+   "productName": "NAT Gateway",
+   "retailPrice": 0.045,
+   "skuName": "Standard",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 Hour"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,59 @@
+{
+ "live_value": 0.125,
+ "method": "price-list",
+ "price": "aws-ebs-io2-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "EBS:VolumeUsage.io2"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "maxIopsvolume": "256000",
+     "maxThroughputvolume": "4000 MiB/s",
+     "maxVolumeSize": "64 TiB",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storageMedia": "SSD-backed",
+     "usagetype": "EBS:VolumeUsage.io2",
+     "volumeApiName": "io2",
+     "volumeType": "Provisioned IOPS"
+    },
+    "sku": "6V576P37PS7K7KYU"
+   },
+   "terms": {
+    "OnDemand": {
+     "6V576P37PS7K7KYU.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "6V576P37PS7K7KYU.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.125 per GB-month of Provisioned IOPS SSD (io2)  provisioned storage - US East (Northern Virginia)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.1250000000"
+        },
+        "rateCode": "6V576P37PS7K7KYU.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-month"
+       }
+      },
+      "sku": "6V576P37PS7K7KYU",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

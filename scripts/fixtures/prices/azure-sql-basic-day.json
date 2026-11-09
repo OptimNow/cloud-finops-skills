@@ -1,0 +1,22 @@
+{
+ "live_value": 0.161,
+ "method": "retail-prices",
+ "price": "azure-sql-basic-day",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'SQL Database' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'SQL Database Single Basic' and skuName eq 'B' and meterName eq 'B DTU'"
+ },
+ "raw": [
+  {
+   "armRegionName": "eastus",
+   "meterName": "B DTU",
+   "productName": "SQL Database Single Basic",
+   "retailPrice": 0.161,
+   "skuName": "B",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1/Day"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

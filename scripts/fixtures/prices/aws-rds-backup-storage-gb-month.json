@@ -1,0 +1,1218 @@
+{
+ "live_value": 0.095,
+ "method": "price-list",
+ "price": "aws-rds-backup-storage-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "RDS:ChargedBackupUsage"
+  },
+  "service_code": "AmazonRDS"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "MariaDB",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "18",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0018",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "5EVZBQMU8J3ZTKHK"
+   },
+   "terms": {
+    "OnDemand": {
+     "5EVZBQMU8J3ZTKHK.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "5EVZBQMU8J3ZTKHK.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running MariaDB",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "5EVZBQMU8J3ZTKHK.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "5EVZBQMU8J3ZTKHK",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Standard",
+     "databaseEngine": "Db2",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "28",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0028",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "6CDJGXKADK624WMV"
+   },
+   "terms": {
+    "OnDemand": {
+     "6CDJGXKADK624WMV.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "6CDJGXKADK624WMV.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "6CDJGXKADK624WMV.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "6CDJGXKADK624WMV",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "Oracle",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "5",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0005",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "6HEUAXQK3NG6SAUN"
+   },
+   "terms": {
+    "OnDemand": {
+     "6HEUAXQK3NG6SAUN.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "6HEUAXQK3NG6SAUN.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "6HEUAXQK3NG6SAUN.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "6HEUAXQK3NG6SAUN",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "PostgreSQL",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "14",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0014",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "6W8ECRFVDATCER7J"
+   },
+   "terms": {
+    "OnDemand": {
+     "6W8ECRFVDATCER7J.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "6W8ECRFVDATCER7J.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running PostgreSQL",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "6W8ECRFVDATCER7J.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "6W8ECRFVDATCER7J",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Enterprise",
+     "databaseEngine": "Oracle (on-premises for Outposts)",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "240",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0240",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "7EFUVNJHCAX4U833"
+   },
+   "terms": {
+    "OnDemand": {
+     "7EFUVNJHCAX4U833.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "7EFUVNJHCAX4U833.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  Oracle EE on Outposts",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "7EFUVNJHCAX4U833.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "7EFUVNJHCAX4U833",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "Oracle",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "4",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0004",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "8Z9JE78JS6Z3H3SN"
+   },
+   "terms": {
+    "OnDemand": {
+     "8Z9JE78JS6Z3H3SN.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "8Z9JE78JS6Z3H3SN.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "8Z9JE78JS6Z3H3SN.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "8Z9JE78JS6Z3H3SN",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "MySQL (on-premise for Outpost)",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "210",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Outposts",
+     "operation": "CreateDBInstance:0210",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "B2XDPTNXCRU552G7"
+   },
+   "terms": {
+    "OnDemand": {
+     "B2XDPTNXCRU552G7.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "B2XDPTNXCRU552G7.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running MySQL (on-premise for Outpost)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "B2XDPTNXCRU552G7.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "B2XDPTNXCRU552G7",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "SQL Server",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "15",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0015",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "B3PVEPTHAJBRRU4V"
+   },
+   "terms": {
+    "OnDemand": {
+     "B3PVEPTHAJBRRU4V.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "B3PVEPTHAJBRRU4V.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "B3PVEPTHAJBRRU4V.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "B3PVEPTHAJBRRU4V",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Community",
+     "databaseEngine": "Db2",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "27",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0027",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "CRJVBEX89YHWVUSX"
+   },
+   "terms": {
+    "OnDemand": {
+     "CRJVBEX89YHWVUSX.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "CRJVBEX89YHWVUSX.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2 CE (BYOL)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "CRJVBEX89YHWVUSX.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "CRJVBEX89YHWVUSX",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Enterprise",
+     "databaseEngine": "SQL Server (on-premise for Outpost)",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "230",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Outposts",
+     "operation": "CreateDBInstance:0230",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "EWNJUQ4BXM8XM9BT"
+   },
+   "terms": {
+    "OnDemand": {
+     "EWNJUQ4BXM8XM9BT.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "EWNJUQ4BXM8XM9BT.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  SQL Server (for Outpost) EE (LI)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "EWNJUQ4BXM8XM9BT.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "EWNJUQ4BXM8XM9BT",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "Any",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "0",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "FJBXDXSNQ7XGXNKR"
+   },
+   "terms": {
+    "OnDemand": {
+     "FJBXDXSNQ7XGXNKR.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "FJBXDXSNQ7XGXNKR.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "FJBXDXSNQ7XGXNKR.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "FJBXDXSNQ7XGXNKR",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "SQL Server",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "11",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0011",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "K2MT2XUYRYYMRQ6E"
+   },
+   "terms": {
+    "OnDemand": {
+     "K2MT2XUYRYYMRQ6E.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "K2MT2XUYRYYMRQ6E.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "K2MT2XUYRYYMRQ6E.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "K2MT2XUYRYYMRQ6E",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "MySQL",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "2",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0002",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "K3UBKPV6YHHG5TMU"
+   },
+   "terms": {
+    "OnDemand": {
+     "K3UBKPV6YHHG5TMU.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "K3UBKPV6YHHG5TMU.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running MySQL",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "K3UBKPV6YHHG5TMU.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "K3UBKPV6YHHG5TMU",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Advanced",
+     "databaseEngine": "Db2",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "29",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0029",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "KJWAR8U8NPVFJ4UN"
+   },
+   "terms": {
+    "OnDemand": {
+     "KJWAR8U8NPVFJ4UN.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "KJWAR8U8NPVFJ4UN.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "KJWAR8U8NPVFJ4UN.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "KJWAR8U8NPVFJ4UN",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Standard",
+     "databaseEngine": "Db2",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "34",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0034",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "M9XC8CRRXPKT5FS3"
+   },
+   "terms": {
+    "OnDemand": {
+     "M9XC8CRRXPKT5FS3.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "M9XC8CRRXPKT5FS3.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "M9XC8CRRXPKT5FS3.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "M9XC8CRRXPKT5FS3",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "PostgreSQL (on-premise for Outpost)",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "220",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Outposts",
+     "operation": "CreateDBInstance:0220",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "MR7QCYUB29ZW2W6J"
+   },
+   "terms": {
+    "OnDemand": {
+     "MR7QCYUB29ZW2W6J.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "MR7QCYUB29ZW2W6J.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running PostgreSQL (on-premise for Outpost)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "MR7QCYUB29ZW2W6J.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "MR7QCYUB29ZW2W6J",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Web",
+     "databaseEngine": "SQL Server (on-premise for Outpost)",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "232",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Outposts",
+     "operation": "CreateDBInstance:0232",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "Q9N8A8VRNBE88Y8J"
+   },
+   "terms": {
+    "OnDemand": {
+     "Q9N8A8VRNBE88Y8J.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "Q9N8A8VRNBE88Y8J.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  SQL Server (for Outpost) Web (LI)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "Q9N8A8VRNBE88Y8J.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "Q9N8A8VRNBE88Y8J",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Advanced",
+     "databaseEngine": "Db2",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "35",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0035",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "RN8N6RZ4KD6K263T"
+   },
+   "terms": {
+    "OnDemand": {
+     "RN8N6RZ4KD6K263T.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "RN8N6RZ4KD6K263T.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "RN8N6RZ4KD6K263T.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "RN8N6RZ4KD6K263T",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Standard",
+     "databaseEngine": "SQL Server (on-premise for Outpost)",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "231",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Outposts",
+     "operation": "CreateDBInstance:0231",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "S4MTV8MPHPUR7X4F"
+   },
+   "terms": {
+    "OnDemand": {
+     "S4MTV8MPHPUR7X4F.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "S4MTV8MPHPUR7X4F.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  SQL Server (for Outpost) SE (LI)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "S4MTV8MPHPUR7X4F.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "S4MTV8MPHPUR7X4F",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Enterprise-BYOM",
+     "databaseEngine": "SQL Server",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "53",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0053",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "SVYCZNNM2NTPSF5S"
+   },
+   "terms": {
+    "OnDemand": {
+     "SVYCZNNM2NTPSF5S.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "SVYCZNNM2NTPSF5S.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "SVYCZNNM2NTPSF5S.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "SVYCZNNM2NTPSF5S",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Standard-BYOM",
+     "databaseEngine": "SQL Server",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "52",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0052",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "TKKVU7CXWUWP9VV3"
+   },
+   "terms": {
+    "OnDemand": {
+     "TKKVU7CXWUWP9VV3.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "TKKVU7CXWUWP9VV3.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "TKKVU7CXWUWP9VV3.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "TKKVU7CXWUWP9VV3",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Enterprise Developer",
+     "databaseEngine": "SQL Server",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "51",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0051",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "TNRD4SBF3C4TK6NB"
+   },
+   "terms": {
+    "OnDemand": {
+     "TNRD4SBF3C4TK6NB.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "TNRD4SBF3C4TK6NB.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "TNRD4SBF3C4TK6NB.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "TNRD4SBF3C4TK6NB",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "Oracle",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "3",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0003",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "U4JAJXT5U9D3CH4R"
+   },
+   "terms": {
+    "OnDemand": {
+     "U4JAJXT5U9D3CH4R.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "U4JAJXT5U9D3CH4R.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "U4JAJXT5U9D3CH4R.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "U4JAJXT5U9D3CH4R",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEdition": "Standard Two",
+     "databaseEngine": "Oracle (on-premises for Outposts)",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "241",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0241",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "UDZH8EVW8WATU72G"
+   },
+   "terms": {
+    "OnDemand": {
+     "UDZH8EVW8WATU72G.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "UDZH8EVW8WATU72G.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  Oracle SE2 on Outposts",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "UDZH8EVW8WATU72G.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "UDZH8EVW8WATU72G",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "SQL Server",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "12",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0012",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "URR44Q9KYHK5S3DY"
+   },
+   "terms": {
+    "OnDemand": {
+     "URR44Q9KYHK5S3DY.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "URR44Q9KYHK5S3DY.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "URR44Q9KYHK5S3DY.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "URR44Q9KYHK5S3DY",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "Oracle",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "19",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0019",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "V3DWJ4ZYA85M62UZ"
+   },
+   "terms": {
+    "OnDemand": {
+     "V3DWJ4ZYA85M62UZ.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "V3DWJ4ZYA85M62UZ.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "V3DWJ4ZYA85M62UZ.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "V3DWJ4ZYA85M62UZ",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "SQL Server",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "10",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0010",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "VTV96BBX3XXCZRDA"
+   },
+   "terms": {
+    "OnDemand": {
+     "VTV96BBX3XXCZRDA.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "VTV96BBX3XXCZRDA.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "VTV96BBX3XXCZRDA.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "VTV96BBX3XXCZRDA",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "Oracle",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "20",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0020",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "X9JHPGFZNMY9CXBC"
+   },
+   "terms": {
+    "OnDemand": {
+     "X9JHPGFZNMY9CXBC.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "X9JHPGFZNMY9CXBC.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "X9JHPGFZNMY9CXBC.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "X9JHPGFZNMY9CXBC",
+      "termAttributes": {}
+     }
+    }
+   }
+  },
+  {
+   "product": {
+    "attributes": {
+     "databaseEngine": "Oracle",
+     "deploymentOption": "Single-AZ",
+     "engineCode": "6",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "CreateDBInstance:0006",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonRDS",
+     "servicename": "Amazon Relational Database Service",
+     "storageMedia": "AmazonS3",
+     "usagetype": "RDS:ChargedBackupUsage"
+    },
+    "sku": "YHUS7AUXS3EEWYZ3"
+   },
+   "terms": {
+    "OnDemand": {
+     "YHUS7AUXS3EEWYZ3.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "YHUS7AUXS3EEWYZ3.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0950000000"
+        },
+        "rateCode": "YHUS7AUXS3EEWYZ3.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "YHUS7AUXS3EEWYZ3",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

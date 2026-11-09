@@ -1,0 +1,89 @@
+{
+ "live_value": 21.957642,
+ "method": "price-list",
+ "price": "aws-ec2-p4d-24xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "capacitystatus": "Used",
+   "instanceType": "p4d.24xlarge",
+   "location": "US East (N. Virginia)",
+   "operatingSystem": "Linux",
+   "operation": "RunInstances",
+   "preInstalledSw": "NA",
+   "tenancy": "Shared"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availabilityzone": "NA",
+     "capacitystatus": "Used",
+     "classicnetworkingsupport": "false",
+     "clockSpeed": "3 GHz",
+     "currentGeneration": "Yes",
+     "dedicatedEbsThroughput": "19000 Mbps",
+     "dedicatedEbsThroughputDescription": "19000 Mbps",
+     "ecu": "345",
+     "enhancedNetworkingSupported": "No",
+     "gpu": "8",
+     "gpuMemory": "320 GB HBM2",
+     "instanceFamily": "GPU instance",
+     "instanceFamilyCategory": "Accelerated Computing",
+     "instanceType": "p4d.24xlarge",
+     "intelAvx2Available": "Yes",
+     "intelAvxAvailable": "Yes",
+     "intelTurboAvailable": "Yes",
+     "licenseModel": "No License required",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "marketoption": "OnDemand",
+     "memory": "1152 GiB",
+     "networkPerformance": "400 Gigabit",
+     "normalizationSizeFactor": "192",
+     "operatingSystem": "Linux",
+     "operation": "RunInstances",
+     "physicalProcessor": "Intel Xeon Platinum 8275L",
+     "preInstalledSw": "NA",
+     "processorArchitecture": "64-bit",
+     "processorFeatures": "Intel AVX; Intel AVX2; Intel AVX512; Intel Turbo",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storage": "8 x 1000 SSD",
+     "tenancy": "Shared",
+     "usagetype": "BoxUsage:p4d.24xlarge",
+     "vcpu": "96",
+     "vpcnetworkingsupport": "true"
+    },
+    "sku": "H7NGEAC6UEHNTKSJ"
+   },
+   "terms": {
+    "OnDemand": {
+     "H7NGEAC6UEHNTKSJ.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "H7NGEAC6UEHNTKSJ.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$21.957642 per On Demand Linux p4d.24xlarge Instance Hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "21.9576420000"
+        },
+        "rateCode": "H7NGEAC6UEHNTKSJ.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "H7NGEAC6UEHNTKSJ",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

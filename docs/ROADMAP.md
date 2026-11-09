@@ -387,6 +387,17 @@ longer frontmatter block, since the `description` field was banned for rendering
 
 ## Depth passes (extend existing files when bandwidth allows)
 
+- **Dated-price rule over the references, and the Google catalogue queries (left on
+  2026-11-09).** `scripts/check-dated-prices.sh` gates the playbooks only: the same
+  paragraph rule over the references flags 66 paragraphs in 21 files, mostly scale
+  examples that are not prices, so a reference pass means deciding paragraph by
+  paragraph which figures date themselves and which go. The price-drift manifest
+  covers the reference list prices already (CloudFront, S3 Files, EFS, Cost Explorer,
+  Azure networking, Fabric); what it does not yet exercise is the Google Cloud Billing
+  Catalog path, which needs a `PRICE_CHECK_GOOGLE_API_KEY` secret and whose two SKU
+  descriptions are unverified until the first run with one. Until then the Google
+  figures are read from the pricing pages.
+
 - **Redshift.** The library covers Redshift commitments (the decision tree in
   `finops-aws-patterns-databases.md`) but not its usage cost. Verified on
   2026-10-22 (https://aws.amazon.com/redshift/pricing/, YouTube batch 08, item

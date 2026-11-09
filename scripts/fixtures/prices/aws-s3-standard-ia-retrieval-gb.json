@@ -1,0 +1,55 @@
+{
+ "live_value": 0.01,
+ "method": "price-list",
+ "price": "aws-s3-standard-ia-retrieval-gb",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "Retrieval-SIA"
+  },
+  "service_code": "AmazonS3"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "group": "S3-API-SIA-Retrieval",
+     "groupDescription": "Object Retrieval in Standard-Infrequent Access",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonS3",
+     "servicename": "Amazon Simple Storage Service",
+     "usagetype": "Retrieval-SIA"
+    },
+    "sku": "7594RTQEE8ND34GA"
+   },
+   "terms": {
+    "OnDemand": {
+     "7594RTQEE8ND34GA.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "7594RTQEE8ND34GA.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.01 per GB - flat fee for all bytes retrieved in Standard-Infrequent Access",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0100000000"
+        },
+        "rateCode": "7594RTQEE8ND34GA.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB"
+       }
+      },
+      "sku": "7594RTQEE8ND34GA",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,70 @@
+{
+ "live_value": 0.23,
+ "method": "price-list",
+ "price": "aws-sagemaker-host-ml-m5-xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-Host:ml.m5.xlarge"
+  },
+  "service_code": "AmazonSageMaker"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "clockSpeed": "3.1 GHz",
+     "component": "Hosting",
+     "computeType": "Standard Instances",
+     "currentGeneration": "Yes",
+     "gpu": "0",
+     "gpuMemory": "0",
+     "instanceName": "ml.m5.xlarge",
+     "instanceType": "ml.m5.xlarge-Hosting",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "memory": "16 GiB",
+     "networkPerformance": "Up to 10 Gigabit",
+     "operation": "RunInstance",
+     "physicalCpu": "Intel Xeon Platinum 8175 (Skylake)",
+     "physicalGpu": "None",
+     "platoinstancename": "m5",
+     "platoinstancetype": "Hosting",
+     "processorArchitecture": "64-bit",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonSageMaker",
+     "servicename": "Amazon SageMaker",
+     "storage": "EBS only",
+     "usagetype": "USE1-Host:ml.m5.xlarge",
+     "vCpu": "4"
+    },
+    "sku": "JDZQJFUVUR8SUWHS"
+   },
+   "terms": {
+    "OnDemand": {
+     "JDZQJFUVUR8SUWHS.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "JDZQJFUVUR8SUWHS.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.23 per Hosting ml.m5.xlarge hour in US East (N. Virginia)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.2300000000"
+        },
+        "rateCode": "JDZQJFUVUR8SUWHS.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "JDZQJFUVUR8SUWHS",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

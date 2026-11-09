@@ -1,0 +1,57 @@
+{
+ "live_value": 0.0125,
+ "method": "price-list",
+ "price": "aws-s3-intelligent-tiering-infrequent-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "TimedStorage-INT-IA-ByteHrs"
+  },
+  "service_code": "AmazonS3"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availability": "N/A",
+     "durability": "N/A",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonS3",
+     "servicename": "Amazon Simple Storage Service",
+     "storageClass": "Intelligent-Tiering",
+     "usagetype": "TimedStorage-INT-IA-ByteHrs",
+     "volumeType": "Intelligent-Tiering Infrequent Access"
+    },
+    "sku": "M7WA952JTYFHTE64"
+   },
+   "terms": {
+    "OnDemand": {
+     "M7WA952JTYFHTE64.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "M7WA952JTYFHTE64.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.0125 per GB-Month of storage used in Intelligent-Tiering, Infrequent Access Tier",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0125000000"
+        },
+        "rateCode": "M7WA952JTYFHTE64.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "M7WA952JTYFHTE64",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

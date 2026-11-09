@@ -1,0 +1,89 @@
+{
+ "live_value": 1.624,
+ "method": "price-list",
+ "price": "aws-ec2-g5-4xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "capacitystatus": "Used",
+   "instanceType": "g5.4xlarge",
+   "location": "US East (N. Virginia)",
+   "operatingSystem": "Linux",
+   "operation": "RunInstances",
+   "preInstalledSw": "NA",
+   "tenancy": "Shared"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availabilityzone": "NA",
+     "capacitystatus": "Used",
+     "classicnetworkingsupport": "false",
+     "clockSpeed": "2.8 GHz",
+     "currentGeneration": "Yes",
+     "dedicatedEbsThroughput": "8000 Mbps",
+     "dedicatedEbsThroughputDescription": "8000 Mbps",
+     "ecu": "NA",
+     "enhancedNetworkingSupported": "Yes",
+     "gpu": "1",
+     "gpuMemory": "24 GB",
+     "instanceFamily": "GPU instance",
+     "instanceFamilyCategory": "Accelerated Computing",
+     "instanceType": "g5.4xlarge",
+     "intelAvx2Available": "No",
+     "intelAvxAvailable": "No",
+     "intelTurboAvailable": "No",
+     "licenseModel": "No License required",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "marketoption": "OnDemand",
+     "memory": "64 GiB",
+     "networkPerformance": "Up to 25 Gigabit",
+     "normalizationSizeFactor": "1.614314115",
+     "operatingSystem": "Linux",
+     "operation": "RunInstances",
+     "physicalProcessor": "AMD EPYC 7R32",
+     "preInstalledSw": "NA",
+     "processorArchitecture": "64-bit",
+     "processorFeatures": "AMD Turbo; AVX; AVX2",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storage": "1 x 600 GB NVMe SSD",
+     "tenancy": "Shared",
+     "usagetype": "BoxUsage:g5.4xlarge",
+     "vcpu": "16",
+     "vpcnetworkingsupport": "true"
+    },
+    "sku": "4GQWNPC9K2PZAY97"
+   },
+   "terms": {
+    "OnDemand": {
+     "4GQWNPC9K2PZAY97.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "4GQWNPC9K2PZAY97.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$1.624 per On Demand Linux g5.4xlarge Instance Hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "1.6240000000"
+        },
+        "rateCode": "4GQWNPC9K2PZAY97.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "4GQWNPC9K2PZAY97",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,24 @@
+{
+ "live_value": 0.17000021,
+ "method": "page",
+ "price": "gcp-pd-ssd-gib-month-us-central1",
+ "provider": "gcp",
+ "query": {
+  "catalog": {
+   "description": "SSD backed PD Capacity",
+   "region": "us-central1",
+   "service": "services/6F81-5844-456A"
+  },
+  "page": {
+   "regex": "SSD provisioned space</p></td><td[^>]*>\\$([0-9.]+) / 1 gibibyte hour",
+   "unit_factor": 730,
+   "url": "https://cloud.google.com/compute/disks-image-pricing"
+  }
+ },
+ "raw": {
+  "method": "page",
+  "snippet": " and above</div><div>$0.000054795 / 1 gibibyte hour, per 1 month / account</div></div></td></tr><tr class=\"YXefId\" ssk='9:tableRow1'><td class=\"dXsTZe\" rowspan=\"1\" colspan=\"1\" ssk='11:tableCell10'><p>SSD provisioned space</p></td><td class=\"dXsTZe\" rowspan=\"1\" colspan=\"1\" ssk='11:tableCell11'>$0.000232877 / 1 gibibyte hour</td></tr><tr class=\"YXefId\" ssk='9:tableRow2'><td class=\"dXsTZe\" rowspan=\"1\" colspan=\"1\" ssk='11:tableCell20'><p>Balanced provisioned space</p></td><td class=\"dXsTZe\" rowspan=\"1\" colspan=\"1\" ssk='11:",
+  "url": "https://cloud.google.com/compute/disks-image-pricing"
+ },
+ "recorded": "2026-11-09"
+}

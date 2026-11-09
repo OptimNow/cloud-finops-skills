@@ -1,0 +1,89 @@
+{
+ "live_value": 0.526,
+ "method": "price-list",
+ "price": "aws-ec2-g4dn-xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "capacitystatus": "Used",
+   "instanceType": "g4dn.xlarge",
+   "location": "US East (N. Virginia)",
+   "operatingSystem": "Linux",
+   "operation": "RunInstances",
+   "preInstalledSw": "NA",
+   "tenancy": "Shared"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availabilityzone": "NA",
+     "capacitystatus": "Used",
+     "classicnetworkingsupport": "false",
+     "clockSpeed": "2.5 GHz",
+     "currentGeneration": "Yes",
+     "dedicatedEbsThroughput": "3500 Mbps",
+     "dedicatedEbsThroughputDescription": "3500 Mbps",
+     "ecu": "NA",
+     "enhancedNetworkingSupported": "Yes",
+     "gpu": "1",
+     "gpuMemory": "16 GB",
+     "instanceFamily": "GPU instance",
+     "instanceFamilyCategory": "Accelerated Computing",
+     "instanceType": "g4dn.xlarge",
+     "intelAvx2Available": "Yes",
+     "intelAvxAvailable": "Yes",
+     "intelTurboAvailable": "Yes",
+     "licenseModel": "No License required",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "marketoption": "OnDemand",
+     "memory": "16 GiB",
+     "networkPerformance": "Up to 25 Gigabit",
+     "normalizationSizeFactor": "1",
+     "operatingSystem": "Linux",
+     "operation": "RunInstances",
+     "physicalProcessor": "Intel Xeon Family",
+     "preInstalledSw": "NA",
+     "processorArchitecture": "64-bit",
+     "processorFeatures": "Intel AVX; Intel AVX2; Intel AVX512; Intel Turbo",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storage": "125 GB NVMe SSD",
+     "tenancy": "Shared",
+     "usagetype": "BoxUsage:g4dn.xlarge",
+     "vcpu": "4",
+     "vpcnetworkingsupport": "true"
+    },
+    "sku": "7TVXMFHQR6U7W5CV"
+   },
+   "terms": {
+    "OnDemand": {
+     "7TVXMFHQR6U7W5CV.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "7TVXMFHQR6U7W5CV.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.526 per On Demand Linux g4dn.xlarge Instance Hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.5260000000"
+        },
+        "rateCode": "7TVXMFHQR6U7W5CV.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "7TVXMFHQR6U7W5CV",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

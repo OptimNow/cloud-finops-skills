@@ -1,0 +1,24 @@
+{
+ "live_value": 89000.0,
+ "method": "retail-prices",
+ "price": "azure-databricks-dbcu-100000-1y",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '100,000 DBCUs'",
+  "reservation_term": "1 Year"
+ },
+ "raw": [
+  {
+   "armRegionName": "Global",
+   "meterName": "100,000 DBCUs DBU",
+   "productName": "Azure Databricks",
+   "reservationTerm": "1 Year",
+   "retailPrice": 89000.0,
+   "skuName": "100,000 DBCUs",
+   "tierMinimumUnits": 0.0,
+   "type": "Reservation",
+   "unitOfMeasure": "1 Hour"
+  }
+ ],
+ "recorded": "2026-11-09"
+}
