@@ -81,6 +81,14 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   seat attributes, per-developer AWS attribution, pooled budget priority settings.
 - **Azure commitments**: the file pruned of internal repetition to fit the token budget;
   no mechanic, figure or dated claim dropped.
+- **1 November scan applied** (eleven items, each read on the provider's page on
+  9 November 2026): ECS Managed Instances consolidation and ECS GPU sharing with NVIDIA
+  MPS; Aurora Serverless v2 to 384 ACUs on PostgreSQL; RDS storage autoscaling on
+  additional Oracle and SQL Server volumes; Neptune online index rebuild; ElastiCache
+  data tiering on r7gd and r8gd; the OpenSearch Serverless warm tier; why Savings Plans
+  recommendations differ between the management and a member account; GPT-6.1 Terra's
+  place in the Bedrock cost tiers and GPT-5.6 in GovCloud; Azure VNet flow logs
+  filtering at collection.
 - Six section pointers in the question index now cite a full heading where a short
   phrase matched several.
 - **Every illustrative price in the runbooks now carries its date and region beside
@@ -138,8 +146,8 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
 - CLAUDE.md slimmed: its reference sections moved to `docs/DESIGN.md`. Commits and
   pull requests carry no assistant attribution lines.
 - **A weekly price-drift check.** `scripts/price-manifest.yaml` lists every
-  infrastructure list price the library carries (about seventy provider SKUs, written
-  in about a hundred places) with the query that reads it on the AWS Price List API,
+  infrastructure list price the library carries (ninety provider SKUs, written in 150
+  places) with the query that reads it on the AWS Price List API,
   the Azure Retail Prices API or Google's catalogue and pricing pages;
   `scripts/check-prices.py` re-reads them and compares with the figures as written;
   the `price-drift` workflow runs it every Saturday and opens one labelled issue when

@@ -387,6 +387,17 @@ Apply at the DCR level - changes propagate within minutes and reduce ingestion
 volume immediately. Save 30-60% on chatty workspaces with no observability loss
 when scoped well.
 
+The same lever exists outside the workspace for network telemetry. Network Watcher VNet
+flow logs filter at collection since October 2026 (general availability announced on
+26 October): by direction, source and destination IP or CIDR, port, protocol, encryption
+state and flow state, on a flow log targeting a VNet, subnet or NIC, changed in place
+without recreating the log. The volume collected drives the per-GB Network Watcher
+meter, the storage account and, with traffic analytics on, the per-GB processing charge,
+so one filter cuts all three; a VNet-level log captures gateway traffic by default, which
+is usually the first thing to exclude. Sources: [Azure Updates](https://azure.microsoft.com/en-us/updates?id=577782),
+[VNet flow logs filtering](https://learn.microsoft.com/en-us/azure/network-watcher/vnet-flow-logs-filtering)
+(read 9 November 2026; the Learn page still carried a preview banner on that date).
+
 ### Lever 4: Daily ingestion cap as circuit-breaker, not strategy
 
 The workspace daily cap drops data above the threshold and fires an alert. It is

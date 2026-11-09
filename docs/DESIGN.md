@@ -72,8 +72,8 @@ before every release. A report that is right but out of scope goes to
 
 **Price drift check (since 2026-11-09).** The infrastructure list prices the files
 carry as dated illustrative figures (a NAT gateway hour, a gp3 GB-month, an App Service
-plan, the GKE cluster fee: about seventy provider SKUs, written in about a hundred
-places across the playbooks and six references) have no live source, unlike the AI
+plan, the GKE cluster fee, the Databricks DBCU plans: ninety provider SKUs, written in
+150 places across the playbooks and nine references) have no live source, unlike the AI
 token rates routed to the AI Pricing Hub and the OptimToken figures the connector
 serves. `scripts/price-manifest.yaml` lists each SKU once (`prices:`, with the query
 that reads it on the AWS Price List API, the Azure Retail Prices API, the Google Cloud
