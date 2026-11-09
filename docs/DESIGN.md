@@ -89,13 +89,22 @@ date, in a content PR. A query that fails exits 2, so a broken query is never re
 "no drift", and a provider whose secret is missing is skipped, not failed. The same
 script runs in CI with `--offline` against the fixtures recorded in
 `scripts/fixtures/prices/`, which fails when a figure is edited without its manifest
-line or an anchor no longer matches its file. When a new figure enters a playbook or
-a reference: add a `prices:` entry if the SKU is new (provider, unit, query, probed on
-the API first), a `figures:` entry (file, anchor found on one line, figure as written,
-price, derivation), run `python scripts/check-prices.py --record` with the credentials
-to hand so the fixture exists, and check that `--offline` passes. A figure that is not
-a list price (a scale example, a range, a seat price) is left out, and the manifest
-header says which ones and why.
+line or an anchor no longer matches its file. A list price no API serves (the Snowflake
+storage tiers, read from the Service Consumption Table PDF) is a `source: page` figure:
+anchored like the others, never fetched, and listed under "Check by hand" in the weekly
+report, with its file, line, figure and URL, once the date the file says it was read is
+older than `max_age_days` (90 by default), so the maintainer gets a reminder instead of
+silence; the offline CI run checks its anchor and does not age it, so a calendar date
+never fails a build. When a new figure enters a playbook or a reference: add a `prices:`
+entry if the SKU is new (provider, unit, query, probed on the API first), a `figures:`
+entry (file, anchor found on one line, figure as written, price, derivation), run
+`python scripts/check-prices.py --record` with the credentials to hand so the fixture
+exists, and check that `--offline` passes; for a figure no API serves, a `figures:`
+entry with `source: page`, `url` and `read_on` instead. A figure that is not a list
+price (a scale example, a range, a seat price) is left out, and the manifest header
+says which ones and why. The AI price tables (model rates, seat prices) are not in the
+manifest in either form: they are being reduced to ratios with a pointer to the AI
+Pricing Hub.
 
 ---
 

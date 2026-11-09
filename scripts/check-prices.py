@@ -15,10 +15,13 @@ What it does: reads scripts/price-manifest.yaml (one `prices:` entry per provide
 SKU, one `figures:` entry per place a number is written), fetches each price from
 the provider's own price list, applies the figure's derivation (730 hours a month,
 1,000 GB a TB), compares with the number written in the file within the tolerance,
-and prints a markdown report. Exit codes:
+and prints a markdown report. A figure no API serves (a Snowflake storage tier read
+from a PDF) is a `source: page` figure: never fetched, but aged against the date it
+was read, and listed under "Check by hand" once it is older than `max_age_days`, so
+the maintainer gets a reminder instead of silence. Exit codes:
 
-  0  every figure within tolerance
-  1  at least one figure drifted
+  0  every figure within tolerance and no page-only figure past its age
+  1  at least one figure drifted, or a page-only figure is due for a re-read
   2  a query failed, a manifest anchor no longer matches its file, or nothing
      could be checked, so a broken query is never read as "no drift"
 
@@ -65,6 +68,7 @@ MANIFEST_PATH = REPO_ROOT / "scripts" / "price-manifest.yaml"
 FIXTURES_DIR = REPO_ROOT / "scripts" / "fixtures" / "prices"
 
 DEFAULT_TOLERANCE = 0.02
+DEFAULT_MAX_AGE_DAYS = 90
 PROVIDERS = ("aws", "azure", "gcp")
 AWS_PRICING_REGION = "us-east-1"
 AZURE_RETAIL_URL = "https://prices.azure.com/api/retail/prices"
@@ -92,16 +96,24 @@ class Figure:
     file: str
     anchor: str
     figure: str
-    price: str
+    price: str = ""  # empty for a page-only figure
     derivation: str | None = None
     other: str | None = None
     tolerance: float = DEFAULT_TOLERANCE
     note: str = ""
+    source: str = "api"  # api: compared with a fetched price; page: aged, never fetched
+    url: str = ""
+    read_on: dt.date | None = None
+    max_age_days: int = DEFAULT_MAX_AGE_DAYS
     line: int = 0
 
     @property
     def written(self) -> float:
         return float(self.figure.replace(",", ""))
+
+    @property
+    def due_on(self) -> dt.date | None:
+        return self.read_on + dt.timedelta(days=self.max_age_days) if self.read_on else None
 
 
 @dataclass
@@ -158,24 +170,33 @@ def load_manifest(path: Path) -> tuple[dict[str, Price], list[Figure]]:
     for i, body in enumerate(data["figures"] or [], start=1):
         if not isinstance(body, dict):
             raise ManifestError(f"figure {i}: expected a mapping")
-        missing = [k for k in ("file", "anchor", "figure", "price") if k not in body]
+        where = f"figure {i} ({body.get('file', '?')})"
+        missing = [k for k in ("file", "anchor", "figure") if k not in body]
         if missing:
-            raise ManifestError(f"figure {i}: missing {', '.join(missing)}")
-        if body["price"] not in prices:
-            raise ManifestError(f"figure {i} ({body['file']}): unknown price {body['price']!r}")
-        other = body.get("other")
-        if other is not None and other not in prices:
-            raise ManifestError(f"figure {i} ({body['file']}): unknown other price {other!r}")
-        derivation = body.get("derivation")
-        if derivation is not None:
-            tokenise_derivation(str(derivation))  # raises on a bad expression
-            if "other" in str(derivation) and other is None:
-                raise ManifestError(f"figure {i} ({body['file']}): derivation uses `other` without an `other:` price")
+            raise ManifestError(f"{where}: missing {', '.join(missing)}")
         figure = str(body["figure"])
         try:
             float(figure.replace(",", ""))
         except ValueError:
-            raise ManifestError(f"figure {i} ({body['file']}): {figure!r} is not a number as written") from None
+            raise ManifestError(f"{where}: {figure!r} is not a number as written") from None
+        source = str(body.get("source", "api"))
+        if source == "page":
+            figures.append(parse_page_figure(where, body, figure))
+            continue
+        if source != "api":
+            raise ManifestError(f"{where}: source must be api (the default) or page")
+        if "price" not in body:
+            raise ManifestError(f"{where}: missing price (or `source: page` with url and read_on)")
+        if body["price"] not in prices:
+            raise ManifestError(f"{where}: unknown price {body['price']!r}")
+        other = body.get("other")
+        if other is not None and other not in prices:
+            raise ManifestError(f"{where}: unknown other price {other!r}")
+        derivation = body.get("derivation")
+        if derivation is not None:
+            tokenise_derivation(str(derivation))  # raises on a bad expression
+            if "other" in str(derivation) and other is None:
+                raise ManifestError(f"{where}: derivation uses `other` without an `other:` price")
         figures.append(
             Figure(
                 file=str(body["file"]),
@@ -189,6 +210,40 @@ def load_manifest(path: Path) -> tuple[dict[str, Price], list[Figure]]:
             )
         )
     return prices, figures
+
+
+def parse_page_figure(where: str, body: dict, figure: str) -> Figure:
+    """A figure no API serves: anchored like the others, aged instead of compared."""
+    for key in ("price", "derivation", "other", "tolerance"):
+        if key in body:
+            raise ManifestError(f"{where}: a page-only figure takes no {key}")
+    missing = [k for k in ("url", "read_on") if k not in body]
+    if missing:
+        raise ManifestError(f"{where}: a page-only figure needs {', '.join(missing)}")
+    url = str(body["url"])
+    if not url.startswith(("http://", "https://")):
+        raise ManifestError(f"{where}: url must start with http:// or https://")
+    read_on = body["read_on"]
+    if isinstance(read_on, dt.datetime):
+        read_on = read_on.date()
+    if not isinstance(read_on, dt.date):
+        try:
+            read_on = dt.date.fromisoformat(str(read_on))
+        except ValueError:
+            raise ManifestError(f"{where}: read_on must be a date written YYYY-MM-DD") from None
+    max_age = body.get("max_age_days", DEFAULT_MAX_AGE_DAYS)
+    if isinstance(max_age, bool) or not isinstance(max_age, int) or max_age <= 0:
+        raise ManifestError(f"{where}: max_age_days must be a positive whole number of days")
+    return Figure(
+        file=str(body["file"]),
+        anchor=str(body["anchor"]),
+        figure=figure,
+        source="page",
+        url=url,
+        read_on=read_on,
+        max_age_days=max_age,
+        note=str(body.get("note", "")),
+    )
 
 
 def validate_query(name: str, provider: str, query: Any) -> None:
@@ -551,8 +606,9 @@ def fmt(value: float) -> str:
 
 def build_report(
     *,
-    today: str,
+    today: dt.date,
     mode: str,
+    offline: bool,
     prices: dict[str, Price],
     figures: list[Figure],
     fetches: dict[str, Fetch],
@@ -564,17 +620,22 @@ def build_report(
     failed = [(n, f) for n, f in fetches.items() if f.status == "failed"]
     skipped = [(n, f) for n, f in fetches.items() if f.status == "skipped"]
     ok_prices = [(n, f) for n, f in fetches.items() if f.status == "ok"]
-    unverified = [fig for fig in figures if fetches[fig.price].status != "ok" or (fig.other and fetches[fig.other].status != "ok")]
+    api_figures = [fig for fig in figures if fig.source == "api"]
+    unverified = [fig for fig in api_figures if fetches[fig.price].status != "ok" or (fig.other and fetches[fig.other].status != "ok")]
+    page_figures = [fig for fig in figures if fig.source == "page" and fig.line]
+    # Aging is a live-run concern: the CI offline run must not go red on a calendar date.
+    aged = [] if offline else [fig for fig in page_figures if (today - fig.read_on).days > fig.max_age_days]
 
     by_provider = {p: sum(1 for n, f in ok_prices if prices[n].provider == p) for p in PROVIDERS}
     lines: list[str] = []
-    lines.append(f"# Price drift check - {today}")
+    lines.append(f"# Price drift check - {today.isoformat()}")
     lines.append("")
     lines.append(
         f"Mode: {mode}. {len(checked)} figure(s) compared against {len(ok_prices)} live price(s) "
         f"(aws {by_provider['aws']}, azure {by_provider['azure']}, gcp {by_provider['gcp']}). "
         f"Drift: {len(drifts)}. Failed queries: {len(failed)}. Skipped for credentials: {len(skipped)}. "
-        f"Manifest errors: {len(anchor_errors)}."
+        f"Manifest errors: {len(anchor_errors)}. Page-only figures: {len(page_figures)} watched, "
+        + (f"{len(aged)} past their age." if not offline else "not aged offline.")
     )
     lines.append("")
 
@@ -596,6 +657,18 @@ def build_report(
     else:
         lines.append("No drift: every compared figure is within its tolerance.")
     lines.append("")
+
+    if aged:
+        lines.append("## Check by hand")
+        lines.append("")
+        lines.append("No API serves these figures, so they are not fetched; each one was read from the page below longer ago than its `max_age_days` allows. Re-read it there, change the number and its date in the file if they moved, and set `read_on` in the manifest to today's date either way.")
+        lines.append("")
+        lines.append("| File | Line | Figure | Read on | Age | URL |")
+        lines.append("|---|---|---|---|---|---|")
+        for fig in sorted(aged, key=lambda f: (f.file, f.line)):
+            age = (today - fig.read_on).days
+            lines.append(f"| `{fig.file}` | {fig.line} | ${fig.figure} | {fig.read_on.isoformat()} | {age} days (limit {fig.max_age_days}) | {fig.url} |")
+        lines.append("")
 
     if anchor_errors:
         lines.append("## Manifest out of step with the files")
@@ -639,13 +712,25 @@ def build_report(
     lines.append("</details>")
     lines.append("")
 
+    if page_figures:
+        lines.append("<details>")
+        lines.append(f"<summary>Page-only figures watched ({len(page_figures)})</summary>")
+        lines.append("")
+        lines.append("| File | Line | Figure | Read on | Due | URL |")
+        lines.append("|---|---|---|---|---|---|")
+        for fig in sorted(page_figures, key=lambda f: (f.file, f.line)):
+            lines.append(f"| `{fig.file}` | {fig.line} | ${fig.figure} | {fig.read_on.isoformat()} | {fig.due_on.isoformat()} | {fig.url} |")
+        lines.append("")
+        lines.append("</details>")
+        lines.append("")
+
     if anchor_errors or failed:
         code = EXIT_FAILED
     elif not ok_prices:
         code = EXIT_FAILED
         lines.append("Nothing could be checked: every provider was skipped. Add at least one credential, or check that the Azure Retail Prices API is reachable.")
         lines.append("")
-    elif drifts:
+    elif drifts or aged:
         code = EXIT_DRIFT
     else:
         code = EXIT_OK
@@ -663,7 +748,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.offline and args.record:
         parser.error("--offline and --record exclude each other")
 
-    today = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
+    today = dt.datetime.now(dt.timezone.utc).date()
     try:
         prices, figures = load_manifest(args.manifest)
     except ManifestError as exc:
@@ -675,7 +760,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.provider:
         prices = {n: p for n, p in prices.items() if p.provider == args.provider}
-        figures = [f for f in figures if f.price in prices and (f.other is None or f.other in prices)]
+        figures = [f for f in figures if f.source == "page" or (f.price in prices and (f.other is None or f.other in prices))]
 
     anchor_errors = [e for e in (locate(fig) for fig in figures) if e]
 
@@ -690,12 +775,19 @@ def main(argv: list[str] | None = None) -> int:
         value = f"{fmt(f.value)} {price.unit}" if f.value is not None else f.detail
         print(f"{tag} {name}: {value}", file=sys.stderr)
         if args.record and f.status == "ok":
-            record_fixture(price, f, today)
+            record_fixture(price, f, today.isoformat())
 
-    results = [r for r in (compare(fig, fetches) for fig in figures if fig.line) if r is not None]
+    results = [r for r in (compare(fig, fetches) for fig in figures if fig.line and fig.source == "api") if r is not None]
     mode = "offline (fixtures)" if args.offline else ("live, fixtures recorded" if args.record else "live")
     report, code = build_report(
-        today=today, mode=mode, prices=prices, figures=figures, fetches=fetches, results=results, anchor_errors=anchor_errors
+        today=today,
+        mode=mode,
+        offline=args.offline,
+        prices=prices,
+        figures=figures,
+        fetches=fetches,
+        results=results,
+        anchor_errors=anchor_errors,
     )
     print(report)
     if args.output:

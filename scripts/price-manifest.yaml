@@ -32,6 +32,13 @@
 #          default, raised only where the text rounds harder and says so with "~" or
 #          "roughly"). A figure edited in a file without its entry here fails the CI run.
 #
+#          A figure no API serves (a Snowflake tier read from a PDF) is written with
+#          `source: page` in place of `price`: `url` (where it was read), `read_on` (the date
+#          the file says it was read, YYYY-MM-DD) and `max_age_days` (90 by default). The
+#          script never fetches it; a live run lists it under "Check by hand" once it is
+#          older than max_age_days, with its file, line, figure and URL, and exits 1 so the
+#          weekly issue carries the reminder. The offline CI run checks its anchor only.
+#
 # Left out on purpose: scale examples that are not prices (the "$50/month" instance of the
 # schedule-blindness arithmetic, "a $50K/month anomaly"), ranges ("$5-15/month per warm
 # instance", Azure SQL serverless "~$15/month"), seat and token prices (routed to the AI
@@ -437,6 +444,98 @@ prices:
       filter: serviceName eq 'Microsoft Fabric' and armRegionName eq 'westeurope' and priceType eq 'Reservation' and skuName eq 'Fabric Capacity'
       reservation_term: 3 Years
 
+  # Azure Databricks pre-purchase (DBCU) plans: one reservation row per plan and term, priced
+  # once for every public region under armRegionName Global. Each plan's price is the lower
+  # bound of a Databricks committed-use band, which is how finops-databricks.md quotes them.
+  azure-databricks-dbcu-12500-1y:
+    provider: azure
+    unit: USD for the term, 12,500 DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '12,500 DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-25000-1y:
+    provider: azure
+    unit: USD for the term, 25,000 DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '25,000 DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-50000-1y:
+    provider: azure
+    unit: USD for the term, 50,000 DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '50,000 DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-100000-1y:
+    provider: azure
+    unit: USD for the term, 100,000 DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '100,000 DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-200000-1y:
+    provider: azure
+    unit: USD for the term, 200,000 DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '200,000 DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-350000-1y:
+    provider: azure
+    unit: USD for the term, 350,000 DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '350,000 DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-500000-1y:
+    provider: azure
+    unit: USD for the term, 500,000 DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '500,000 DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-750000-1y:
+    provider: azure
+    unit: USD for the term, 750,000 DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '750,000 DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-1m-1y:
+    provider: azure
+    unit: USD for the term, 1 million DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '1 Million DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-1.5m-1y:
+    provider: azure
+    unit: USD for the term, 1.5 million DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '1.5 Million DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-2m-1y:
+    provider: azure
+    unit: USD for the term, 2 million DBCUs, 1 year
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '2 Million DBCUs'", reservation_term: 1 Year}
+  azure-databricks-dbcu-37500-3y:
+    provider: azure
+    unit: USD for the term, 37,500 DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '37,500 DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-75000-3y:
+    provider: azure
+    unit: USD for the term, 75,000 DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '75,000 DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-150000-3y:
+    provider: azure
+    unit: USD for the term, 150,000 DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '150,000 DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-300000-3y:
+    provider: azure
+    unit: USD for the term, 300,000 DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '300,000 DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-600000-3y:
+    provider: azure
+    unit: USD for the term, 600,000 DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '600,000 DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-1.05m-3y:
+    provider: azure
+    unit: USD for the term, 1.05 million DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '1.05 Million DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-1.5m-3y:
+    provider: azure
+    unit: USD for the term, 1.5 million DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '1.5 Million DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-2.25m-3y:
+    provider: azure
+    unit: USD for the term, 2.25 million DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '2.25 Million DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-3m-3y:
+    provider: azure
+    unit: USD for the term, 3 million DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '3 Million DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-4.5m-3y:
+    provider: azure
+    unit: USD for the term, 4.5 million DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '4.5 Million DBCUs'", reservation_term: 3 Years}
+  azure-databricks-dbcu-6m-3y:
+    provider: azure
+    unit: USD for the term, 6 million DBCUs, 3 years
+    query: {filter: "serviceName eq 'Azure Databricks' and armRegionName eq 'Global' and priceType eq 'Reservation' and skuName eq '6 Million DBCUs'", reservation_term: 3 Years}
+
   # ---- Google Cloud: Billing Catalog API with a key, the pricing page without -------------
 
   gcp-gke-cluster-hour:
@@ -622,3 +721,35 @@ figures:
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-fabric.md, anchor: 'pay-as-you-go $0.22 per CU-hour', figure: '0.22', price: azure-fabric-cu-hour-westeurope}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-fabric.md, anchor: '1-year reservation $1,146 per CU per year', figure: '1,146', price: azure-fabric-reservation-1y-westeurope}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-fabric.md, anchor: '3-year reservation $3,438 per CU', figure: '3,438', price: azure-fabric-reservation-3y-westeurope}
+
+  # Databricks committed-use bands: each row of the table is one 1-year and one 3-year DBCU plan.
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: 'for $12,000 (both read', figure: '12,000', price: azure-databricks-dbcu-12500-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $12,000 | 4% |', figure: '12,000', price: azure-databricks-dbcu-12500-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $12,000 | 4% |', figure: '35,250', price: azure-databricks-dbcu-37500-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $23,500 | 6% |', figure: '23,500', price: azure-databricks-dbcu-25000-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $23,500 | 6% |', figure: '69,000', price: azure-databricks-dbcu-75000-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $46,000 | 8% |', figure: '46,000', price: azure-databricks-dbcu-50000-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $46,000 | 8% |', figure: '135,000', price: azure-databricks-dbcu-150000-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $89,000 | 11% |', figure: '89,000', price: azure-databricks-dbcu-100000-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $89,000 | 11% |', figure: '261,000', price: azure-databricks-dbcu-300000-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $172,000 | 14% |', figure: '172,000', price: azure-databricks-dbcu-200000-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $172,000 | 14% |', figure: '504,000', price: azure-databricks-dbcu-600000-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $287,000 | 18% |', figure: '287,000', price: azure-databricks-dbcu-350000-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $287,000 | 18% |', figure: '819,000', price: azure-databricks-dbcu-1.05m-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $400,000 | 20% |', figure: '400,000', price: azure-databricks-dbcu-500000-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $400,000 | 20% |', figure: '1,140,000', price: azure-databricks-dbcu-1.5m-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $577,500 | 23% |', figure: '577,500', price: azure-databricks-dbcu-750000-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $577,500 | 23% |', figure: '1,642,500', price: azure-databricks-dbcu-2.25m-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $730,000 | 27% |', figure: '730,000', price: azure-databricks-dbcu-1m-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $730,000 | 27% |', figure: '2,070,000', price: azure-databricks-dbcu-3m-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $1,050,000 | 30% |', figure: '1,050,000', price: azure-databricks-dbcu-1.5m-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $1,050,000 | 30% |', figure: '2,970,000', price: azure-databricks-dbcu-4.5m-3y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $1,340,000 | 33% |', figure: '1,340,000', price: azure-databricks-dbcu-2m-1y}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-databricks.md, anchor: '| $1,340,000 | 33% |', figure: '3,780,000', price: azure-databricks-dbcu-6m-3y}
+
+  # ---- page-only: no API serves these, so they are aged, not fetched ----------------------
+
+  # Snowflake Service Consumption Table (a PDF): capacity storage and AI Credit list prices,
+  # read 24 October 2026 as the file's source line says.
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-snowflake.md, anchor: 'AWS US East: $23.00 per TB-month on demand', figure: '23.00', source: page, url: 'https://www.snowflake.com/legal-files/CreditConsumptionTable.pdf', read_on: 2026-10-24}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-snowflake.md, anchor: 'Global AI Credits at $2.00 on demand', figure: '2.00', source: page, url: 'https://www.snowflake.com/legal-files/CreditConsumptionTable.pdf', read_on: 2026-10-24}

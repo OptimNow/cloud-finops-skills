@@ -81,7 +81,7 @@ jobs:
           today="$(date -u +%Y-%m-%d)"
           title="Price drift - $today"
           case "$EXIT_CODE" in
-            1) verdict="At least one figure written in the skill no longer matches the provider's list price." ;;
+            1) verdict="At least one figure written in the skill no longer matches the provider's list price, or a page-only figure is past the age at which it should be re-read." ;;
             *) verdict="A price query failed or a manifest anchor no longer matches its file, so part of the library is unverified this week." ;;
           esac
           {
