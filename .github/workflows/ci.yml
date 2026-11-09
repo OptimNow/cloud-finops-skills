@@ -138,6 +138,12 @@ jobs:
       - name: SKILL.md description within the claude.ai limit
         run: bash scripts/check-skill-description.sh
 
+      # Also needs PyYAML. docs/overlay-template/ is the only overlay in the
+      # repository; checking it keeps the public headings it cites from moving
+      # underneath it (docs/OVERLAYS.md).
+      - name: Overlay template cites public headings that exist
+        run: python scripts/check-overlay.py docs/overlay-template
+
       - name: Sync references into bundled data/
         working-directory: mcp_server
         run: python scripts/sync_references.py

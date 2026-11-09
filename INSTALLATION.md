@@ -506,6 +506,16 @@ Source: https://github.com/OptimNow/ai-roi-calculator-mcp
 
 ---
 
+## Your own private layer (optional)
+
+Negotiated rates, tag taxonomy, coverage targets, decisions already taken: none of
+that belongs in the public files, and none of it needs a fork. Write a private
+overlay, a second skill folder beside this one that cites the public sections by
+heading and adds your calibration. The convention, the template and the check that
+keeps it in step with public releases are in [docs/OVERLAYS.md](./docs/OVERLAYS.md).
+
+---
+
 ## Updating
 
 ```bash

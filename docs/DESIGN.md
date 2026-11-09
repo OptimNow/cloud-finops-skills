@@ -686,6 +686,43 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
 
 ---
 
+## Private overlays
+
+**Decision (2026-11-09).** Anything an organisation holds that the public files cannot
+carry (negotiated rates, observed contract figures, coverage targets, tag taxonomies,
+decisions taken, client profiles) lives in a *private overlay*: a second skill folder
+beside the public one that cites public sections by heading and never restates a
+mechanic. The convention is public (`docs/OVERLAYS.md`, with a minimal template in
+`docs/overlay-template/`); the content of any overlay is not, and no overlay is ever
+committed here. OptimNow's own advisory layers follow the same convention and stay
+outside the repository.
+
+Why a published convention rather than the README's fork advice alone: a fork drifts
+and stops receiving corrections; an overlay copies nothing, so a public release never
+breaks it. The convention also fixes the public / private boundary in one place: the
+public repository holds every mechanic, the overlay holds every calibration, and a
+mechanic found missing while writing an overlay is fixed by a pull request rather than
+inside the overlay. Copied text would carry CC BY-SA with it; an overlay that copies
+nothing has no licence question.
+
+The contract an overlay's `SKILL.md` carries: `description` names the cloud-finops
+skill and the public file it builds on; `overlay_of` lists each public file and the
+exact H2 / H3 headings cited; `questions` follows the public rules (four to eight, the
+user's words, at least one in the users' language) and holds only questions the public
+files cannot answer. Body in five fixed sections: load the public first, the one rule,
+routing (last row always "any mechanic: not here"), how to use it, handling rules
+(dated and rounded figures, identifiers stripped, confidence levels internal).
+
+`scripts/check-overlay.py <folder>` is the mechanical half of the rule: cited files and
+headings exist (the `get_reference(section=)` partial match), `questions` valid and not
+duplicating a public question, no sentence of ten words or more copied from a public
+reference or playbook, no em dash. CI runs it on `docs/overlay-template/`, so a public
+heading cannot be renamed without the template and `docs/OVERLAYS.md` moving with it.
+Real overlays are checked by their owners after each public release. The check needs
+PyYAML, so its CI step sits after the MCP server install, like check-skill-description.
+
+---
+
 ## Claude directory listing
 
 The repository is prepared for two listings in Anthropic's Claude directory

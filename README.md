@@ -364,13 +364,22 @@ OptimNow tool (an MCP tool name, an endpoint URL, a provenance field), read
 
 ## Adapting this skill for your organisation
 
-Fork the repository and customise the reference files for your context: your cloud
-stack, your internal policies, your tag taxonomy, your negotiated rates. A fork gives
-you a stable base you can pull upstream updates into at your own pace. Typical
-customisations:
+Two paths, both first-class.
+
+**An overlay** is a second, private skill folder beside this one. It cites the public
+sections it builds on by heading and adds what this repository deliberately leaves
+out: your negotiated rates, your tag taxonomy, your coverage targets, the decisions
+your committee already took, one client account's profile. It copies nothing, so a
+public update never breaks it, and a check tells you when a heading it cites has
+moved. Start from [docs/OVERLAYS.md](./docs/OVERLAYS.md) and the template in
+`docs/overlay-template/`.
+
+**A fork** is the right tool when you want to change the public text itself: a
+different methodology, your own house style, a provider this repository does not
+cover. A fork gives you a stable base you can pull upstream updates into at your own
+pace. Typical customisations:
 
 - Adding organisation-specific tag requirements to `finops-tagging.md`
-- Replacing illustrative figures with your negotiated rates
 - Adding reference files for internal tools or platforms not covered here
 - Adjusting the methodology file to your team's own approach
 

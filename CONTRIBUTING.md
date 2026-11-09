@@ -37,7 +37,9 @@ you - can fork, customise, and redistribute under their own brand, as long as th
 credit and share-alike. If you want a project under your own name rather than
 contributing here, fork freely; see "Adapting this skill for your organisation" in
 the [README](./README.md#adapting-this-skill-for-your-organisation) for the fork
-playbook. Both paths are first-class.
+playbook. Both paths are first-class. A third needs no fork at all: your own figures,
+policies or client context layered on top of the public files as a private overlay,
+see [docs/OVERLAYS.md](./docs/OVERLAYS.md).
 
 ## Repository structure
 

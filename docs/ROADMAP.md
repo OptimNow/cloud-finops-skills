@@ -281,6 +281,14 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   is proposed, or if OptimToken failures show up in this server's answers beyond that
   one tool.
 
+- **Private content stays out of the repository; the overlay convention is its public
+  surface (decided 2026-11-09).** Observed figures, negotiated terms, tactics,
+  thresholds and client context are never written into a public file or a pull
+  request. The way to hold them beside the skill is a private overlay
+  (`docs/OVERLAYS.md`): cite the public sections by heading, add the calibration, copy
+  nothing. A mechanic found missing while writing an overlay is fixed here, in public,
+  which is also how the private work feeds the public base.
+
 ## Routing record (probe cycles 4 to 7)
 
 Probe cycles 4 to 7 (August 2026) measured how the same library grounds answers
