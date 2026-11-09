@@ -61,6 +61,15 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   throughput floor; backup tiers (the continuous 7-day tier has no storage charge, the
   30- and 35-day tiers bill storage, every restore is charged); Dev/Test pricing offers
   before scheduling. Verified on Microsoft Learn, 9 November 2026.
+- **Bring your own licence or licence-included**: the ITAM guide gains a six-step
+  decision procedure (is the licence allowed there, which deployment model that forces,
+  how each vendor counts cores, how to read the premium on the bill, what each side
+  gives up, a default per workload class), a table of the routes open per provider for
+  Windows Server, SQL Server and Oracle, and the Software Assurance renewal question.
+  Every rule is linked to the vendor's page, read 9 November 2026: the 1 October 2019
+  Listed Provider rule, License Mobility, the Flexible Virtualization Benefit, RDS for
+  SQL Server Bring Your Own Media, Oracle's two-vCPUs-per-licence count, Cloud SQL
+  without BYOL.
 - **Microsoft Fabric**: the free mirroring storage allowance stops while a capacity is
   paused.
 - **Vertex AI**: the Developer API reroutes `gemini-2.5-pro` and `gemini-2.5-flash` to

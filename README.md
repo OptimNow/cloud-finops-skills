@@ -51,6 +51,7 @@ Each question below is answered by a file that exists in this repository today.
 - "What has to be true in Finance and in the ERP before we move from showback to chargeback?" ([finops-chargeback.md](plugins/cloud-finops/skills/cloud-finops/references/finops-chargeback.md))
 - "Our AWS enterprise agreement renews in 6 months. What should we check on the term sheet before signing?" ([finops-cloud-contracts.md](plugins/cloud-finops/skills/cloud-finops/references/finops-cloud-contracts.md))
 - "Finance wants a 12-month cloud forecast with an accuracy target. Which measures do we report, and how tight should the band be at our maturity?" ([finops-forecasting.md](plugins/cloud-finops/skills/cloud-finops/references/finops-forecasting.md))
+- "Our Software Assurance renewal is due. Does keeping it pay for itself through Azure Hybrid Benefit or licence mobility?" ([finops-itam.md](plugins/cloud-finops/skills/cloud-finops/references/finops-itam.md))
 
 **Engineering and platform**
 
