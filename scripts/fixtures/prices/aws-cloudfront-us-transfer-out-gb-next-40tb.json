@@ -1,0 +1,123 @@
+{
+ "live_value": 0.08,
+ "method": "price-list",
+ "price": "aws-cloudfront-us-transfer-out-gb-next-40tb",
+ "provider": "aws",
+ "query": {
+  "begin_range": "10240",
+  "filters": {
+   "usagetype": "US-DataTransfer-Out-Bytes"
+  },
+  "service_code": "AmazonCloudFront"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "fromLocation": "United States",
+     "fromLocationType": "AWS Edge Location",
+     "fromRegionCode": "",
+     "operation": "",
+     "servicecode": "AmazonCloudFront",
+     "servicename": "Amazon CloudFront",
+     "toLocation": "External",
+     "toLocationType": "Other",
+     "toRegionCode": "",
+     "transferType": "CloudFront Outbound",
+     "usagetype": "US-DataTransfer-Out-Bytes"
+    },
+    "sku": "GV2WFGX37Q9PDSHF"
+   },
+   "terms": {
+    "OnDemand": {
+     "GV2WFGX37Q9PDSHF.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "GV2WFGX37Q9PDSHF.JRTCKXETXF.3B9CK5AZ6J": {
+        "appliesTo": [],
+        "beginRange": "512000",
+        "description": "$0.030 per GB - next 524 TB / month data transfer out",
+        "endRange": "1048576",
+        "pricePerUnit": {
+         "USD": "0.0300000000"
+        },
+        "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.3B9CK5AZ6J",
+        "unit": "GB"
+       },
+       "GV2WFGX37Q9PDSHF.JRTCKXETXF.AZ7GJS7NVF": {
+        "appliesTo": [],
+        "beginRange": "153600",
+        "description": "$0.040 per GB - next 350 TB / month data transfer out",
+        "endRange": "512000",
+        "pricePerUnit": {
+         "USD": "0.0400000000"
+        },
+        "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.AZ7GJS7NVF",
+        "unit": "GB"
+       },
+       "GV2WFGX37Q9PDSHF.JRTCKXETXF.N9EW5UVVPA": {
+        "appliesTo": [],
+        "beginRange": "51200",
+        "description": "$0.060 per GB - next 100 TB / month data transfer out",
+        "endRange": "153600",
+        "pricePerUnit": {
+         "USD": "0.0600000000"
+        },
+        "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.N9EW5UVVPA",
+        "unit": "GB"
+       },
+       "GV2WFGX37Q9PDSHF.JRTCKXETXF.Q3Z75P77EN": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.085 per GB - first 10 TB / month data transfer out",
+        "endRange": "10240",
+        "pricePerUnit": {
+         "USD": "0.0850000000"
+        },
+        "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.Q3Z75P77EN",
+        "unit": "GB"
+       },
+       "GV2WFGX37Q9PDSHF.JRTCKXETXF.RBMR72YW69": {
+        "appliesTo": [],
+        "beginRange": "1048576",
+        "description": "$0.025 per GB - next 4 PB / month data transfer out",
+        "endRange": "5242880",
+        "pricePerUnit": {
+         "USD": "0.0250000000"
+        },
+        "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.RBMR72YW69",
+        "unit": "GB"
+       },
+       "GV2WFGX37Q9PDSHF.JRTCKXETXF.SW9U2ZKBYX": {
+        "appliesTo": [],
+        "beginRange": "5242880",
+        "description": "$0.020 per GB - data transfer out / month over 5 PB",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0200000000"
+        },
+        "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.SW9U2ZKBYX",
+        "unit": "GB"
+       },
+       "GV2WFGX37Q9PDSHF.JRTCKXETXF.VF6T3GAUKQ": {
+        "appliesTo": [],
+        "beginRange": "10240",
+        "description": "$0.080 per GB - next 40 TB / month data transfer out",
+        "endRange": "51200",
+        "pricePerUnit": {
+         "USD": "0.0800000000"
+        },
+        "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.VF6T3GAUKQ",
+        "unit": "GB"
+       }
+      },
+      "sku": "GV2WFGX37Q9PDSHF",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

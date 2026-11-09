@@ -13,7 +13,10 @@
 #                   begin_range (the tier to read when a price has several, default "0") and
 #                   term (OnDemand by default, FlatRate for the CloudFront plans)
 #            azure  filter, the OData $filter of the Retail Prices API; optional
-#                   reservation_term ("1 Year", "3 Years") when priceType is Reservation
+#                   reservation_term ("1 Year", "3 Years") when priceType is Reservation,
+#                   tier_minimum_units (the tierMinimumUnits of the row to read when one
+#                   meter carries several volume tiers: the internet egress tiers, the
+#                   Private Endpoint data rate)
 #            gcp    catalog (service, description, optional region and start_usage_amount),
 #                   read with GOOGLE_API_KEY, and/or page (url, regex with one capturing
 #                   group), read without a key; each block takes an optional unit_factor
@@ -101,6 +104,22 @@ prices:
       service_code: AmazonCloudFront
       filters: {usagetype: US-DataTransfer-Out-Bytes}
       begin_range: "0"
+  aws-ec2-transfer-out-internet-gb-next-40tb:
+    provider: aws
+    unit: USD per GB, next 40 TB tier
+    note: The 10-50 TB dimension of the same meter as aws-ec2-transfer-out-internet-gb.
+    query:
+      service_code: AWSDataTransfer
+      filters: {usagetype: DataTransfer-Out-Bytes, fromLocation: US East (N. Virginia), toLocation: External}
+      begin_range: "10240"
+  aws-cloudfront-us-transfer-out-gb-next-40tb:
+    provider: aws
+    unit: USD per GB, next 40 TB tier, North America
+    note: The 10-50 TB dimension of the same meter as aws-cloudfront-us-transfer-out-gb.
+    query:
+      service_code: AmazonCloudFront
+      filters: {usagetype: US-DataTransfer-Out-Bytes}
+      begin_range: "10240"
   aws-cloudfront-plan-pro-month:
     provider: aws
     unit: USD per month
@@ -410,6 +429,44 @@ prices:
     note: Ingress and egress rows, one rate.
     query:
       filter: serviceName eq 'Virtual Network' and armRegionName eq 'Global' and priceType eq 'Consumption' and productName eq 'Virtual Network Peering'
+  azure-vnet-peering-global-zone1-gb:
+    provider: azure
+    unit: USD per GB, each side, global peering between zone-1 regions
+    note: Ingress and egress rows, one rate; eastus pins zone 1.
+    query:
+      filter: serviceName eq 'Virtual Network' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Global Virtual Network Peering'
+  azure-private-endpoint-gb:
+    provider: azure
+    unit: USD per GB processed, first tier
+    note: The egress row; the ingress row carries the same rate. Lower tiers above 1 PB and 5 PB.
+    query:
+      filter: serviceName eq 'Virtual Network' and armRegionName eq 'Global' and priceType eq 'Consumption' and productName eq 'Virtual Network Private Link' and meterName eq 'Standard Data Processed - Egress'
+      tier_minimum_units: 0
+  azure-internet-egress-gb-to-10tb:
+    provider: azure
+    unit: USD per GB, 100 GB to 10 TB, Microsoft global network routing
+    note: One meter, six tierMinimumUnits rows (0 is the free 100 GB); tier_minimum_units picks the row.
+    query:
+      filter: "serviceName eq 'Bandwidth' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Rtn Preference: MGN' and meterName eq 'Standard Data Transfer Out'"
+      tier_minimum_units: 100
+  azure-internet-egress-gb-to-50tb:
+    provider: azure
+    unit: USD per GB, 10 to 50 TB, Microsoft global network routing
+    query:
+      filter: "serviceName eq 'Bandwidth' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Rtn Preference: MGN' and meterName eq 'Standard Data Transfer Out'"
+      tier_minimum_units: 10335
+  azure-internet-egress-gb-to-150tb:
+    provider: azure
+    unit: USD per GB, 50 to 150 TB, Microsoft global network routing
+    query:
+      filter: "serviceName eq 'Bandwidth' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Rtn Preference: MGN' and meterName eq 'Standard Data Transfer Out'"
+      tier_minimum_units: 51295
+  azure-internet-egress-gb-above-150tb:
+    provider: azure
+    unit: USD per GB, above 150 TB, Microsoft global network routing
+    query:
+      filter: "serviceName eq 'Bandwidth' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Rtn Preference: MGN' and meterName eq 'Standard Data Transfer Out'"
+      tier_minimum_units: 153695
   azure-private-endpoint-hour:
     provider: azure
     unit: USD per endpoint-hour
@@ -666,34 +723,43 @@ figures:
 
   # ---- references ---------------------------------------------------------------------------
 
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'charged separately at ~$0.02/GB outbound', figure: '0.02', price: azure-inter-region-transfer-gb}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'VNet peering charges **$0.01/GB on each side**', figure: '0.01', price: azure-vnet-peering-intra-region-gb}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '**per-hour** (~$0.045/hr)', figure: '0.045', price: azure-nat-gateway-hour}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '(~$0.045/GB). On AKS clusters', figure: '0.045', price: azure-nat-gateway-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'charged separately at $0.02/GB outbound', figure: '0.02', price: azure-inter-region-transfer-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'egress to peer: $0.01/GB', figure: '0.01', price: azure-vnet-peering-intra-region-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '**per-hour** ($0.045/hr)', figure: '0.045', price: azure-nat-gateway-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '($0.045/GB), list rates read', figure: '0.045', price: azure-nat-gateway-gb}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'NAT Gateway costs ~$33/month idle', figure: '33', price: azure-nat-gateway-hour, derivation: rate * 730}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '| Cost | ~$0.01/hour per endpoint', figure: '0.01', price: azure-private-endpoint-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '| Cost | $0.01/hour per endpoint', figure: '0.01', price: azure-private-endpoint-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '| Cost | $0.01/hour per endpoint', figure: '0.01', price: azure-private-endpoint-gb, note: 'the second $0.01 on the line: per GB processed, each way'}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'non-trivial (~$1,460 at the', figure: '1,460', price: azure-private-endpoint-hour, derivation: rate * 730 * 200}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'within a region, $0.035/GB for global peering', figure: '0.035', price: azure-vnet-peering-global-zone1-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '| 100 GB - 10 TB | $0.087 |', figure: '0.087', price: azure-internet-egress-gb-to-10tb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '| 10 - 50 TB | $0.083 |', figure: '0.083', price: azure-internet-egress-gb-to-50tb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '| 50 - 150 TB | $0.07 |', figure: '0.07', price: azure-internet-egress-gb-to-150tb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '| Above 150 TB | $0.05 list', figure: '0.05', price: azure-internet-egress-gb-above-150tb}
 
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Pro | $15 | 50 TB |', figure: '15', price: aws-cloudfront-plan-pro-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Business | $200 |', figure: '200', price: aws-cloudfront-plan-business-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Premium | $1,000 |', figure: '1,000', price: aws-cloudfront-plan-premium-month}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at $0.085/GB. The Pro plan', figure: '0.085', price: aws-cloudfront-us-transfer-out-gb}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at $0.085/GB. The Pro plan', figure: '4,250', price: aws-cloudfront-us-transfer-out-gb, derivation: rate * 50000, note: 50 TB at the first-tier rate, as the text says}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at the $0.085/GB first tier', figure: '0.085', price: aws-cloudfront-us-transfer-out-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at the $0.085/GB first tier', figure: '4,250', price: aws-cloudfront-us-transfer-out-gb, derivation: rate * 50000, note: 50 TB at the first-tier rate, as the text says}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'the same 50 TB for $15. For', figure: '15', price: aws-cloudfront-plan-pro-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '25 WAF rules at $1/rule/month', figure: '1', price: aws-waf-rule-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'is $25/month of standalone WAF value', figure: '25', price: aws-waf-rule-month, derivation: rate * 25}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'exceeds the $15 Pro price', figure: '15', price: aws-cloudfront-plan-pro-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'Premium at $1,000/month or staying', figure: '1,000', price: aws-cloudfront-plan-premium-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'offer 50 TB for $15 because', figure: '15', price: aws-cloudfront-plan-pro-month}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at roughly $0.09/GB - 50 TB/month becomes $4,500', figure: '0.09', price: aws-ec2-transfer-out-internet-gb}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at roughly $0.09/GB - 50 TB/month becomes $4,500', figure: '4,500', price: aws-ec2-transfer-out-internet-gb, derivation: rate * 50000}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'the $0.080 tier above 10 TB', figure: '0.080', price: aws-cloudfront-us-transfer-out-gb-next-40tb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'pull the exact figure nearer $4,000', figure: '4,000', price: aws-cloudfront-us-transfer-out-gb, other: aws-cloudfront-us-transfer-out-gb-next-40tb, derivation: rate * 9216 + other * 40960, tolerance: 0.03, note: '"nearer $4,000" for 4,060: 9 TB at the first tier after the free TB, 40 TB at the next'}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'for the first 10 TB and $0.085/GB for the next 40', figure: '0.09', price: aws-ec2-transfer-out-internet-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'for the first 10 TB and $0.085/GB for the next 40', figure: '0.085', price: aws-ec2-transfer-out-internet-gb-next-40tb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'becomes about $4,400 in egress', figure: '4,400', price: aws-ec2-transfer-out-internet-gb, other: aws-ec2-transfer-out-internet-gb-next-40tb, derivation: rate * 10240 + other * 40960, note: '10 TB at the first tier, 40 TB at the next'}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'CloudFront Pro is $15 plus', figure: '15', price: aws-cloudfront-plan-pro-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Filesystem storage (hot tier) | $0.30/GB-month |', figure: '0.30', price: aws-s3-files-storage-gb-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Reads | $0.03/GB |', figure: '0.03', price: aws-s3-files-read-gb}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Writes | $0.06/GB |', figure: '0.06', price: aws-s3-files-write-gb}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'standard S3 pricing ($0.023/GB-month Standard', figure: '0.023', price: aws-s3-standard-gb-month}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '**First-read cost for small files:** $0.06/GB', figure: '0.06', price: aws-s3-files-write-gb}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '(the import write), not $0.03/GB.', figure: '0.03', price: aws-s3-files-read-gb}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'cached file are $0.03/GB', figure: '0.03', price: aws-s3-files-read-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'the $0.06/GB write rate (the import write)', figure: '0.06', price: aws-s3-files-write-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '$0.03/GB read rate (both us-east-1', figure: '0.03', price: aws-s3-files-read-gb}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '$0.0125/GB-month in the infrequent tier', figure: '0.0125', price: aws-s3-intelligent-tiering-infrequent-gb-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$225 ($0.025/GB IA)', figure: '0.025', price: aws-efs-ia-gb-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$225 ($0.025/GB IA)', figure: '225', price: aws-efs-ia-gb-month, derivation: rate * 9000}
@@ -707,9 +773,12 @@ figures:
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$3 ($0.06/GB first read)', figure: '3', price: aws-s3-files-write-gb, derivation: rate * 50}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '$6 ($0.06/GB via Files)', figure: '0.06', price: aws-s3-files-write-gb}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '$6 ($0.06/GB via Files)', figure: '6', price: aws-s3-files-write-gb, derivation: rate * 100}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'where the $0.06/GB first-read import', figure: '0.06', price: aws-s3-files-write-gb}
 
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-billing.md, anchor: 'API queries are charged ($0.01 per request)', figure: '0.01', price: aws-cost-explorer-api-request}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-billing.md, anchor: 'Cost Explorer **API** calls are charged at $0.01', figure: '0.01', price: aws-cost-explorer-api-request}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md, anchor: 'block storage runs $0.08 (EBS gp3, us-east-1) to', figure: '0.08', price: aws-ebs-gp3-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md, anchor: '$0.17 per GB-month (GCP pd-ssd, us-central1)', figure: '0.17', price: gcp-pd-ssd-gib-month-us-central1}
 
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-patterns-networking.md, anchor: 'AWS charges $0.005/hr (~$3.60/month)', figure: '0.005', price: aws-public-ipv4-hour}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-patterns-networking.md, anchor: 'AWS charges $0.005/hr (~$3.60/month)', figure: '3.60', price: aws-public-ipv4-hour, derivation: rate * 730}

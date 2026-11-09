@@ -1,0 +1,73 @@
+{
+ "live_value": 0.087,
+ "method": "retail-prices",
+ "price": "azure-internet-egress-gb-to-10tb",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Bandwidth' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Rtn Preference: MGN' and meterName eq 'Standard Data Transfer Out'",
+  "tier_minimum_units": 100
+ },
+ "raw": [
+  {
+   "armRegionName": "eastus",
+   "meterName": "Standard Data Transfer Out",
+   "productName": "Rtn Preference: MGN",
+   "retailPrice": 0.0,
+   "skuName": "Standard",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  },
+  {
+   "armRegionName": "eastus",
+   "meterName": "Standard Data Transfer Out",
+   "productName": "Rtn Preference: MGN",
+   "retailPrice": 0.087,
+   "skuName": "Standard",
+   "tierMinimumUnits": 100.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  },
+  {
+   "armRegionName": "eastus",
+   "meterName": "Standard Data Transfer Out",
+   "productName": "Rtn Preference: MGN",
+   "retailPrice": 0.083,
+   "skuName": "Standard",
+   "tierMinimumUnits": 10335.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  },
+  {
+   "armRegionName": "eastus",
+   "meterName": "Standard Data Transfer Out",
+   "productName": "Rtn Preference: MGN",
+   "retailPrice": 0.05,
+   "skuName": "Standard",
+   "tierMinimumUnits": 153695.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  },
+  {
+   "armRegionName": "eastus",
+   "meterName": "Standard Data Transfer Out",
+   "productName": "Rtn Preference: MGN",
+   "retailPrice": 0.05,
+   "skuName": "Standard",
+   "tierMinimumUnits": 512095.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  },
+  {
+   "armRegionName": "eastus",
+   "meterName": "Standard Data Transfer Out",
+   "productName": "Rtn Preference: MGN",
+   "retailPrice": 0.07,
+   "skuName": "Standard",
+   "tierMinimumUnits": 51295.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

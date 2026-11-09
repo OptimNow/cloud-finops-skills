@@ -57,7 +57,7 @@ import json
 import os
 import re
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -438,8 +438,14 @@ def azure_fetch(query: dict) -> list[dict]:
 
 def azure_extract(items: list[dict], query: dict) -> float:
     term = query.get("reservation_term")
-    selected = [it for it in items if term is None or it.get("reservationTerm") == term]
-    what = f"{len(items)} item(s)" + (f", reservation term {term}" if term else "")
+    tier = query.get("tier_minimum_units")  # the tierMinimumUnits row to read when one meter has several
+    selected = [
+        it
+        for it in items
+        if (term is None or it.get("reservationTerm") == term)
+        and (tier is None or float(it.get("tierMinimumUnits") or 0) == float(tier))
+    ]
+    what = f"{len(items)} item(s)" + (f", reservation term {term}" if term else "") + (f", tier from {tier} units" if tier is not None else "")
     return one_distinct([float(it["retailPrice"]) for it in selected if "retailPrice" in it], what)
 
 

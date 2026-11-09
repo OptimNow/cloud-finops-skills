@@ -72,13 +72,14 @@ before every release. A report that is right but out of scope goes to
 
 **Price drift check (since 2026-11-09).** The infrastructure list prices the files
 carry as dated illustrative figures (a NAT gateway hour, a gp3 GB-month, an App Service
-plan, the GKE cluster fee, the Databricks DBCU plans: ninety provider SKUs, written in
-150 places across the playbooks and nine references) have no live source, unlike the AI
+plan, the GKE cluster fee, the Databricks DBCU plans: ninety-eight provider SKUs, written in
+163 places across the playbooks and ten references) have no live source, unlike the AI
 token rates routed to the AI Pricing Hub and the OptimToken figures the connector
 serves. `scripts/price-manifest.yaml` lists each SKU once (`prices:`, with the query
 that reads it on the AWS Price List API, the Azure Retail Prices API, the Google Cloud
 Billing Catalog API or a Google pricing page) and each place its number is written
-(`figures:`, with the derivation where the text carries a monthly or per-TB figure).
+(`figures:`, with the derivation where the text carries a monthly or per-TB figure); an
+Azure meter sold in volume tiers names the row it reads with `tier_minimum_units`.
 `scripts/check-prices.py` fetches every price, applies the derivation and compares
 with the number as written within a 2% tolerance that absorbs the rounding
 ("~$33/month"); `.github/workflows/price-drift.yml` runs it every Saturday and, on a

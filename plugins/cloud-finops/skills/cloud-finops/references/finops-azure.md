@@ -1161,7 +1161,7 @@ compound to material amounts on busy workloads.
 
 Outbound to internet, per-GB pricing decreases by volume (eastus list rates on the default
 Microsoft-network routing, Retail Prices API read 9 November 2026; the Internet routing
-preference runs $0.08 to $0.04 across the same tiers):
+preference is cheaper on every tier):
 
 | Volume per month | Price per GB |
 |---|---|

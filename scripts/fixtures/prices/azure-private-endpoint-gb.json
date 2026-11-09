@@ -1,0 +1,43 @@
+{
+ "live_value": 0.01,
+ "method": "retail-prices",
+ "price": "azure-private-endpoint-gb",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Virtual Network' and armRegionName eq 'Global' and priceType eq 'Consumption' and productName eq 'Virtual Network Private Link' and meterName eq 'Standard Data Processed - Egress'",
+  "tier_minimum_units": 0
+ },
+ "raw": [
+  {
+   "armRegionName": "Global",
+   "meterName": "Standard Data Processed - Egress",
+   "productName": "Virtual Network Private Link",
+   "retailPrice": 0.01,
+   "skuName": "Standard",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  },
+  {
+   "armRegionName": "Global",
+   "meterName": "Standard Data Processed - Egress",
+   "productName": "Virtual Network Private Link",
+   "retailPrice": 0.006,
+   "skuName": "Standard",
+   "tierMinimumUnits": 1000000.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  },
+  {
+   "armRegionName": "Global",
+   "meterName": "Standard Data Processed - Egress",
+   "productName": "Virtual Network Private Link",
+   "retailPrice": 0.004,
+   "skuName": "Standard",
+   "tierMinimumUnits": 5000000.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  }
+ ],
+ "recorded": "2026-11-09"
+}
