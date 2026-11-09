@@ -20,14 +20,14 @@ A common SageMaker pattern is "one endpoint per model": each model gets its
 own dedicated real-time endpoint with its own instance(s). When models
 share a runtime and each receives only light traffic, the total spend is
 dominated by paying for idle dedicated capacity rather than serving
-requests. Three lightly-used endpoints at `ml.m5.xlarge` cost ~$510/month
-combined; six cost ~$1,020/month; nine cost ~$1,530/month - and most of
-that is the per-endpoint hourly base, not the actual inference work. The
-fix is to consolidate compatible models onto a single endpoint using either
+requests. At us-east-1 list rates read in November 2026, three lightly-used
+endpoints at `ml.m5.xlarge` cost ~$510/month combined; six cost
+~$1,020/month; nine cost ~$1,530/month - and most of that is the
+per-endpoint hourly base, not the actual inference work. The fix is to
+consolidate compatible models onto a single endpoint using either
 **Multi-Model Endpoints (MME)** or the newer **Inference Components (IC)**.
-The monthly figures are illustrative us-east-1 list rates as at May 2026 -
-they show how the cost scales per endpoint, not today's bill; verify
-against live pricing before quoting.
+The monthly figures are illustrative: they show how the cost scales per
+endpoint, not today's bill; verify against live pricing before quoting.
 
 ## Symptoms
 

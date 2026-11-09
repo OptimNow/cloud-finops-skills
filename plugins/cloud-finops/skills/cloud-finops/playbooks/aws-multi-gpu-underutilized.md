@@ -18,14 +18,14 @@ questions:
 
 High-end GPU instances pack multiple GPUs in a single server: `g5.48xlarge`
 (8 x A10G), `p4d.24xlarge` (8 x A100 40 GB), `p4de.24xlarge` (8 x A100 80
-GB), `p5.48xlarge` (8 x H100). Pricing is for the whole server: ~$16/hour
-for `g5.48xlarge`, ~$22/hour for `p4d.24xlarge`, ~$55/hour for
-`p5.48xlarge`. When the workload runs on a single GPU and the other seven
-sit idle, the customer is paying 7/8 of the bill for idle hardware. This
-is one of the highest-confidence waste patterns: per-GPU telemetry shows
-it unambiguously. The rates above are illustrative us-east-1 on-demand list
-prices written between May and August 2026 - the 7/8 ratio is the durable
-part; verify the rates against live pricing before quoting.
+GB), `p5.48xlarge` (8 x H100). Pricing is for the whole server; at
+us-east-1 on-demand list rates read in November 2026, ~$16/hour for
+`g5.48xlarge`, ~$22/hour for `p4d.24xlarge`, ~$55/hour for `p5.48xlarge`.
+When the workload runs on a single GPU and the other seven sit idle, the
+customer is paying 7/8 of the bill for idle hardware. This is one of the
+highest-confidence waste patterns: per-GPU telemetry shows it unambiguously.
+The rates are illustrative and the 7/8 ratio is the durable part; verify
+the rates against live pricing before quoting.
 
 ## Symptoms
 

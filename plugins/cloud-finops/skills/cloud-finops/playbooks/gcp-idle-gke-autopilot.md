@@ -16,14 +16,16 @@ questions:
 
 ## Problem
 
-GKE charges a flat **cluster management fee** (~$0.10/cluster/hour =
-~$72/month per cluster) regardless of workload activity. Even when no user
-workloads run, Autopilot keeps system-managed pods alive (control-plane
-logging, metrics agent, GMP collectors, networking). Dev / test / sandbox
-clusters left running over weekends and abandoned-after-the-PoC clusters
-accumulate this fee silently. The management fee above is an illustrative
-list rate as at August 2026 - verify against live pricing before sizing a
-business case.
+GKE charges a flat **cluster management fee** of $0.10 per cluster per hour
+(list rate read in November 2026, about $73/month per cluster) regardless
+of workload activity; the free tier credits $74.40 per billing account per
+month, one Autopilot or zonal Standard cluster, and nothing beyond it. Even
+when no user workloads run, Autopilot keeps system-managed pods alive
+(control-plane logging, metrics agent, GMP collectors, networking). Dev /
+test / sandbox clusters left running over weekends and
+abandoned-after-the-PoC clusters accumulate this fee silently. The
+management fee is illustrative; verify against live pricing before sizing
+a business case.
 
 Two caveats before you build a business case on the management fee:
 
@@ -45,8 +47,9 @@ Two caveats before you build a business case on the management fee:
   cluster is older than 30 days
 - The cluster lives in an environment-named project (`*-dev-*`,
   `*-sandbox-*`, `*-poc-*`) that has matured past its initial purpose
-- Cost-per-cluster trend is flat at the management-fee floor (~$72/mo
-  for Autopilot, more if there is any pod activity)
+- Cost-per-cluster trend is flat at the management-fee floor (about
+  $73/month at the November 2026 list rate, more if there is any pod
+  activity)
 
 ## Detection
 

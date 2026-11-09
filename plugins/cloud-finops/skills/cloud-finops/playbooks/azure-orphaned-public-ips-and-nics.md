@@ -17,7 +17,8 @@ questions:
 ## Problem
 
 A Standard SKU public IP address bills every hour it exists (~$0.005/hr,
-roughly $3.65/month; illustrative list rate, written August 2026) whether
+roughly $3.65/month; East US list rate read in November 2026, illustrative)
+whether
 or not it is attached to anything. Deleting a VM does not delete its
 public IP or its network interface - both survive as free-floating
 resources, and every deleted VM, torn-down load balancer, or abandoned

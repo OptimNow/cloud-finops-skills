@@ -17,12 +17,12 @@ questions:
 ## Problem
 
 Application Load Balancers and Network Load Balancers carry an hourly
-charge (around $0.0225/hr for ALB = about $16.43/month) plus an LCU/NLCU usage
-component. A load balancer with no targets, or with targets that receive
-no requests, still pays the full hourly. Idle ELBs accumulate after
-service decommissions, blue/green migrations, and one-off load tests. The
-hourly and monthly figures are illustrative us-east-1 list rates as at May
-2026 - verify against live pricing before sizing a business case.
+charge (at us-east-1 list rates read in November 2026, $0.0225/hr for an
+ALB, about $16.43/month) plus an LCU/NLCU usage component. A load balancer
+with no targets, or with targets that receive no requests, still pays the
+full hourly. Idle ELBs accumulate after service decommissions, blue/green
+migrations, and one-off load tests. The hourly and monthly figures are
+illustrative; verify against live pricing before sizing a business case.
 
 ## Symptoms
 

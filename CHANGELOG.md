@@ -83,6 +83,16 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   no mechanic, figure or dated claim dropped.
 - Six section pointers in the question index now cite a full heading where a short
   phrase matched several.
+- **Every illustrative price in the runbooks now carries its date and region beside
+  the figure**, so an answer that quotes "$0.045 per GB for a NAT gateway" carries
+  "us-east-1, November 2026" with it. The AWS figures were re-read on the Price List
+  API on 9 November 2026 and had not moved since May; the Azure and Google figures
+  were re-read on the Retail Prices API and the pricing pages the same day. Four
+  corrections: the EBS tier rates (gp3, gp2 and io2 each their own), the RDS backup
+  storage rate and its free allowance, the Azure Premium SSD P30 rate, and the
+  Archive tier rate; App Service figures are now given per operating system, since
+  a Linux and a Windows P1v3 differ by a factor of two. A CI guard keeps a date in
+  every runbook paragraph that carries a price.
 
 ### Tell us when it is wrong
 

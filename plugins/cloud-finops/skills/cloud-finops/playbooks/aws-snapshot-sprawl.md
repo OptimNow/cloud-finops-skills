@@ -16,13 +16,15 @@ questions:
 
 ## Problem
 
-EBS and RDS snapshots are billed at roughly $0.05/GB-month (Standard EBS
-snapshots; Archive tier is cheaper at the cost of slower restore). Over
-years of un-curated CI / CD pipelines, broken backup automation, and
-forgotten one-off "before-the-upgrade" snapshots, accounts accumulate tens
-of TB of snapshot storage with no owner and no recovery test in living
-memory. Cost grows linearly forever; nothing prunes it. The per-GB rate
-above is an illustrative us-east-1 list rate as at May 2026 - verify
+At us-east-1 list rates read in November 2026, EBS snapshots are billed at
+$0.05/GB-month in the Standard tier (the Archive tier is cheaper at the cost
+of slower restore), and RDS backup storage, automated backups and manual
+snapshots together, is free up to 100% of the provisioned database storage
+in the Region and $0.095/GB-month above that. Over years of un-curated
+CI / CD pipelines, broken backup automation, and forgotten one-off
+"before-the-upgrade" snapshots, accounts accumulate tens of TB of snapshot
+storage with no owner and no recovery test in living memory. Cost grows
+linearly forever; nothing prunes it. The rates are illustrative; verify
 against live pricing before sizing a business case.
 
 ## Symptoms
