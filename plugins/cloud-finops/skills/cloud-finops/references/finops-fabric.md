@@ -144,6 +144,16 @@ charges stop**; storage and metadata continue to accrue. Resume takes a few
 minutes. This is functionally equivalent to Azure SQL Serverless auto-pause but
 **not automatic** - you have to schedule it.
 
+**Mirroring storage stops being free while paused.** Database and open mirroring
+come with free OneLake storage for the replicas, 1 TB per purchased CU (64 TB on an
+F64), and the replication compute does not consume CUs. That allowance applies only
+while the capacity runs: paused, the mirrored data bills as ordinary OneLake storage
+and nothing replicates, so pausing a capacity that holds large mirrors trades compute
+savings against a new storage line. Queries over mirrored data (SQL, Power BI, Spark)
+consume CUs at normal rates
+([Mirroring - cost](https://learn.microsoft.com/en-us/fabric/mirroring/overview),
+read 9 November 2026).
+
 **Use cases:**
 - Non-production / dev / departmental capacities only needed during business
   hours.
