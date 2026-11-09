@@ -9,10 +9,4 @@ above a small floor (e.g. $100)
 $100/hour for 8 hours and $30/hour
 $50,000 refund cap
 the greater of $20 or AWS's own conservative estimate
-$1,600/month can cost $8,800 (illustrative figures)
-$0.0003 per conversation
-2.8M tokens/month, $1,400
-47 API calls, about $2.30 per query
-220 searches/month at $0.08
 €150/tCO2e
-a ~$0.02 turn into ~$0.12

@@ -666,7 +666,13 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
   a break-even calculation. Absolute $/1M-token and $/hour figures belong in the AI
   Pricing Hub (<https://optimtoken.optimnow.io>), which is queried live. Where a worked
   example genuinely needs a number to be legible, keep one, mark it illustrative, and
-  date it inline. In a playbook the date goes in the same paragraph as the figure,
+  date it inline. Since 9 November 2026 (maintainer decision) the AI model and AI tool
+  price tables carry no absolute figure at all: `finops-anthropic.md`,
+  `finops-open-weight-vendors.md` and `finops-ai-dev-tools.md` give the tier structure,
+  the multipliers and the ratios between tiers and point once per section to the AI
+  Pricing Hub (or, for a seat price or a model the hub does not list, to the vendor's
+  pricing page with its read date), while the exception for one dated figure in a worked
+  example stands. In a playbook the date goes in the same paragraph as the figure,
   beside it where the sentence allows: the 9 November 2026 probe smoke showed the
   model relaying a playbook's figures and dropping the date that sat in a trailing
   sentence, and `scripts/check-dated-prices.sh` gates the paragraph rule in CI since

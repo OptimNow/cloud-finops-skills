@@ -66,7 +66,8 @@ shows the spike, the request that caused it has long since run.
 
 **The structural mismatch:** Traditional FinOps was built for predictable infrastructure.
 AI workloads behave more like real-time COGS than capacity plans. A feature estimated
-at $1,600/month can cost $8,800 (illustrative figures) without any infrastructure
+at $1,600/month can cost $8,800 (illustrative figures, February 2026) without any
+infrastructure
 change - the variance comes entirely from user behaviour and model design decisions.
 
 **The critical inversion:** For AI workloads, the FinOps sequence must run in reverse.
@@ -427,7 +428,8 @@ Once costs are attributed, translate them from infrastructure metrics to busines
 - Query answered
 - Report generated
 
-**Step 2 - Calculate the three-layer cost per unit:**
+**Step 2 - Calculate the three-layer cost per unit** (illustrative figures for a support
+conversation, written February 2026; the shape is the point, not the numbers):
 
 | Layer | What it measures | Example |
 |---|---|---|
@@ -789,7 +791,7 @@ A feature loses adoption but continues processing in the background - pre-proces
 documents, indexing content, maintaining persistent connections, or retrying failed calls.
 Cost persists while value delivered collapses.
 
-*Real example (figures illustrative):* An AI summarization feature was used heavily at
+*Real example (figures illustrative, February 2026):* An AI summarization feature was used heavily at
 launch, then dropped to fewer than 5 active users per day. The feature continued
 pre-processing every uploaded document regardless of whether a summary was requested -
 2.8M tokens/month, $1,400. Actual value delivered: negligible.
@@ -814,7 +816,7 @@ whatever the retry policy allows). This compounds when agents interact with SaaS
 that charge per query - each retry or validation loop triggers additional SaaS charges
 alongside model costs.
 
-*Real example (figures illustrative):* A sales intelligence agent validated its own output
+*Real example (figures illustrative, February 2026):* A sales intelligence agent validated its own output
 with a second API call. When validation failed, it retried the full sequence. A single user
 query generated 47 API calls, about $2.30 per query where a single call would have cost
 $0.05. At 12,000 queries/month: $27,600 in unintended cost. When
@@ -838,7 +840,7 @@ cross-region data transfer appearing in billing without a clear infrastructure c
 A feature appears viable at low volume. Each interaction loses money, but losses are
 small and unnoticed. As adoption grows, the scale-up accelerates the loss.
 
-*Real example (figures illustrative):* An AI-powered search feature was included in a
+*Real example (figures illustrative, February 2026):* An AI-powered search feature was included in a
 standard $15/user/month subscription. Power users performed 220 searches/month at $0.08
 each - $17.60 in AI costs per user, against $15 in subscription revenue, before any other
 cost of serving the account. Break-even sat at roughly 187 searches/month, and the users
