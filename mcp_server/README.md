@@ -42,7 +42,9 @@ The reference faceted query supports any combination of:
   facet-filtered guides by the `questions:` each declares in its frontmatter, then
   by title and headings, and returns at most five, each with `match_score`,
   `matched_question` and `suggested_section` (the heading to pass to
-  `get_reference`). Word overlap only: no embedding, no network call
+  `get_reference`). Word overlap only, each word weighted by its rarity across the
+  index and a named provider halving the files written for another provider: no
+  embedding, no network call
 
 The listing prints the primary facets only. Secondary capabilities and
 collaborating personas are still fully filterable through `find_references`;

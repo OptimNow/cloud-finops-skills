@@ -10,7 +10,7 @@ business_coverage: ["ai-platforms:ai:deep", "ai-platforms:bill:deep", "ai-platfo
 questions:
   - q: "Our monthly bill jumped from $12K to $38K after a developer enabled Fast mode in Claude Code. How do I get this under control?"
     persona: "Engineering and platform"
-    section: "Fast mode"
+    section: "Fast mode pricing"
   - q: "How is Claude API usage billed beyond input and output tokens?"
     section: "Rate structure"
   - q: "Does prompt caching or the Batch API cut our Anthropic bill, and when?"

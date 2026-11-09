@@ -8,8 +8,10 @@ is the mechanical half of that convention:
   1. SKILL.md frontmatter: a `name` that shadows no public file, a
      `description` that names the cloud-finops skill, a non-empty `overlay_of`.
   2. Every `overlay_of` entry names a public reference or playbook that exists,
-     and every listed section matches an H2 or H3 heading of that file, with
-     the same case-insensitive partial match get_reference(section=) applies.
+     and every listed section matches an H2 or H3 heading of that file the way
+     the connector's first tier for get_reference(section=) does: lower-case,
+     punctuation set aside, a substring of the heading. The connector is more
+     tolerant still, so a citation that passes here always resolves there.
   3. `questions`: four to eight, none in repository vocabulary, none already
      declared by a public file (a duplicate is a routing ambiguity).
   4. No sentence of ten words or more, in the body of SKILL.md or in any other
@@ -46,6 +48,13 @@ QUESTION_VOCABULARY = ("playbook", "reference", "runbook", "finops-")
 EM_DASH = "—"
 HEADING_RE = re.compile(r"^#{2,3}\s+(.+?)\s*$")
 LIST_ITEM_RE = re.compile(r"^(?:[-*]|\d+\.)\s+")
+# Code fences the way metadata._atx_headings sees them: backticks or tildes,
+# indented up to three spaces, closed by the same marker.
+FENCE_RE = re.compile(r"^[ \t]{0,3}(`{3,}|~{3,})")
+# The connector's first matching tier for get_reference(section=).
+TRAILING_COUNT_RE = re.compile(r"\s*\(\s*\d+\s*\)\s*$")
+HEADING_WORD_RE = re.compile(r"[a-z0-9]+")
+PUBLIC_SKILL_NAME = "cloud-finops"
 SENTENCE_SPLIT_RE = re.compile(r"[.?!;:|]+")
 PUNCT_RE = re.compile(r"[^\w\s]")
 WS_RE = re.compile(r"\s+")
@@ -86,17 +95,24 @@ def load_yaml(fm_text: str, label: str) -> dict:
 
 def headings_of(body: str) -> list[str]:
     out: list[str] = []
-    in_fence = False
+    fence: str | None = None
     for line in body.split("\n"):
-        if line.startswith("```"):
-            in_fence = not in_fence
+        fence_match = FENCE_RE.match(line)
+        if fence_match:
+            marker = fence_match.group(1)[0]
+            fence = marker if fence is None else (None if fence == marker else fence)
             continue
-        if in_fence:
+        if fence is not None:
             continue
         match = HEADING_RE.match(line)
         if match:
             out.append(match.group(1).strip())
     return out
+
+
+def heading_key(text: str) -> str:
+    """Lower-case, trailing "(n)" count dropped, punctuation out, words joined by one space."""
+    return " ".join(HEADING_WORD_RE.findall(TRAILING_COUNT_RE.sub("", text).lower()))
 
 
 def normalise(text: str) -> str:
@@ -235,8 +251,8 @@ def main(argv: list[str]) -> int:
     name = fm.get("name")
     if not isinstance(name, str) or not name.strip():
         errors.append("SKILL.md: `name` is missing")
-    elif name in public:
-        errors.append(f"SKILL.md: `name` {name} shadows a public file")
+    elif name in public or name == PUBLIC_SKILL_NAME:
+        errors.append(f"SKILL.md: `name` {name} shadows a public file or the public skill itself")
 
     description = fm.get("description")
     if not isinstance(description, str) or "cloud-finops" not in description:
@@ -274,7 +290,7 @@ def main(argv: list[str]) -> int:
                 if not isinstance(wanted, str) or not wanted.strip():
                     errors.append(f"SKILL.md: overlay_of {ref} has a blank section entry")
                     continue
-                if any(wanted.lower() in heading.lower() for heading in target.headings):
+                if any(heading_key(wanted) in heading_key(heading) for heading in target.headings):
                     cited_sections += 1
                 else:
                     available = "; ".join(target.headings)

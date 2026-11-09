@@ -94,6 +94,18 @@ async def test_e2e_get_reference(server_params: StdioServerParameters) -> None:
 
 
 @pytest.mark.asyncio
+async def test_e2e_finders_expose_query(server_params: StdioServerParameters) -> None:
+    """The optional ``query`` of both finders has to survive schema generation too."""
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            schema = {t.name: t.inputSchema for t in (await session.list_tools()).tools}
+            for tool in ("find_references", "find_playbooks"):
+                assert "query" in schema[tool]["properties"]
+                assert "query" not in schema[tool].get("required", [])
+
+
+@pytest.mark.asyncio
 async def test_e2e_get_reference_section(server_params: StdioServerParameters) -> None:
     """The section parameter has to survive the real transport, not just a unit call.
 
@@ -108,8 +120,6 @@ async def test_e2e_get_reference_section(server_params: StdioServerParameters) -
 
             schema = {t.name: t.inputSchema for t in (await session.list_tools()).tools}
             assert "section" in schema["get_reference"]["properties"]
-            assert "query" in schema["find_references"]["properties"]
-            assert "query" in schema["find_playbooks"]["properties"]
             assert "section" not in schema["get_reference"].get("required", [])
 
             whole = _payload(await session.call_tool("get_reference", {"name": "finops-azure-patterns"}))

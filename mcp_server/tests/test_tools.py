@@ -708,3 +708,58 @@ EXECUTIVE_WORDINGS = [
 def test_query_routes_executive_wordings(wording: str, expected: str) -> None:
     result = tools.find_references(query=wording)
     assert result["references"][0]["name"] == expected
+
+
+# --- query: follow-ups from the fresh review of PR 317 (2026-11-09) -----------
+
+
+def test_zero_result_query_log_carries_word_count_not_text(caplog) -> None:
+    """PRIVACY.md: the miss log holds facet values and a word count, never the sentence."""
+    import logging
+
+    with caplog.at_level(logging.INFO, logger="cloud_finops_mcp.tools"):
+        result = tools.find_references(query="zzzz qqqq xxxx")
+    assert result["total"] == 0
+    assert "zero-result query" in caplog.text
+    assert "zzzz" not in caplog.text
+    assert "'query_words': 3" in caplog.text
+
+
+def test_stopword_only_query_gets_its_own_hint() -> None:
+    result = tools.find_references(query="what should we do about it")
+    assert result["total"] == 0
+    assert "no content words" in result["hint"]
+
+
+def test_long_query_containing_a_declared_question_still_ranks_it_first() -> None:
+    """Coverage is taken over the lighter side, so a paragraph does not dilute its own question."""
+    padding = (
+        "We are a mid-sized retailer running most of our estate on AWS with a seasonal "
+        "peak in November and December, and our finance team has asked for a written "
+        "recommendation before the budget cycle closes next month. "
+    )
+    question = "Our AWS bill has NAT gateway charges but I do not think anything uses them."
+    result = tools.find_playbooks(query=padding + question)
+    assert result["total"] >= 1
+    assert result["playbooks"][0]["name"] == "aws-zombie-nat-gateway"
+    assert result["playbooks"][0]["match_score"] >= 1.0
+
+
+def test_distinctive_words_outweigh_provider_names() -> None:
+    """A file with no questions block is reachable through its title when the query's
+    distinctive word is in it: 'gcp' weighs more than 'spend' or 'high'."""
+    result = tools.find_references(query="our GCP spend is too high")
+    assert "finops-gcp" in [r["name"] for r in result["references"]]
+
+
+def test_es_plurals_fold_to_their_singular() -> None:
+    assert tools.query_tokens("processes indexes") == {"process", "index"}
+
+
+def test_a_named_provider_outranks_another_providers_file() -> None:
+    """'aws' weighs little on its own, so without the rule an Azure question wins on 'reduce' and 'cost'."""
+    result = tools.find_references(query="reduce AWS costs")
+    assert result["references"][0]["name"].startswith("finops-aws")
+    result = tools.find_playbooks(query="idle virtual machines we forgot to stop in Azure")
+    assert all(pb["scope"] != "aws" or pb["match_score"] < 0.5 for pb in result["playbooks"])
+
