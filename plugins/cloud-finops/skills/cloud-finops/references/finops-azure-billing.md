@@ -21,7 +21,7 @@ questions:
   - q: "Who pays for a reservation bought at the billing account under an MCA?"
     section: "MCA reservation ownership"
   - q: "Which Azure Policies help FinOps, and how do we roll them out safely?"
-    section: "Azure Policy"
+    section: "Azure Policy for FinOps - common policy library"
   - "Nous passons d'un EA à un MCA : qu'est-ce qui change pour le suivi des coûts ?"
 ---
 

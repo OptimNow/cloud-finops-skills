@@ -15,7 +15,7 @@ questions:
   - q: "How reliable are the carbon numbers AWS, Azure and Google give us?"
     section: "Critical reading"
   - q: "Which cloud region should we pick to cut carbon, and does it cost more?"
-    section: "Region selection"
+    section: "Region selection for carbon reduction"
   - q: "Can we move batch jobs to times when the grid is cleaner?"
     section: "Workload shifting"
   - q: "How does cloud cost optimisation connect to our CSRD or ESG reporting?"

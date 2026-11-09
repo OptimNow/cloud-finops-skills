@@ -17,7 +17,7 @@ questions:
   - q: "How do we split the network, logging and security bill between the teams that use it?"
     section: "Shared-services hard cases"
   - q: "What should a showback report contain, who receives it and how often?"
-    section: "Showback"
+    section: "Showback report design"
   - q: "Our team totals do not add up to the invoice. How do we reconcile?"
     section: "Reconcile to invoice"
   - "Un tiers de notre facture cloud n'est attribué à personne. Par où commence-t-on ?"

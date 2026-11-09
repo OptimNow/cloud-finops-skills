@@ -13,7 +13,9 @@ pattern each.
 from __future__ import annotations
 
 import difflib
+import functools
 import logging
+import math
 import re
 import unicodedata
 from typing import Any
@@ -67,6 +69,28 @@ QUERY_RESULT_LIMIT = 5
 QUERY_MIN_SCORE = 0.2
 
 _QUESTION_WEIGHT = 1.0
+# A query that names one provider ("reduce AWS costs") halves the score of a file
+# written for another provider. Provider names are common words, so frequency
+# weighting alone lets an Azure question win that query on "reduce" and "cost".
+# Cross-provider files (FinOps practice, allocation, contracts) are untouched.
+_OTHER_PROVIDER_FACTOR = 0.5
+_PROVIDER_WORDS = {
+    "aws": "aws",
+    "amazon": "aws",
+    "azure": "azure",
+    "gcp": "gcp",
+    "google": "gcp",
+    "oci": "oci",
+}
+_REFERENCE_PROVIDER_PREFIXES = (
+    ("finops-aws", "aws"),
+    ("finops-bedrock", "aws"),
+    ("finops-azure", "azure"),
+    ("finops-fabric", "azure"),
+    ("finops-gcp", "gcp"),
+    ("finops-vertexai", "gcp"),
+    ("finops-oci", "oci"),
+)
 _TITLE_WEIGHT = 0.5
 _HEADING_WEIGHT = 0.35
 
@@ -97,35 +121,87 @@ def _fold(text: str) -> str:
 
 
 def _stem(token: str) -> str:
-    """Crude plural folding: ``gateways`` to ``gateway``, ``policies`` to ``policy``."""
+    """Crude plural folding: ``gateways`` to ``gateway``, ``policies`` to ``policy``,
+    ``processes`` to ``process``."""
     if len(token) > 4 and token.endswith("ies"):
         return token[:-3] + "y"
+    if len(token) > 4 and token.endswith(("sses", "xes")):
+        return token[:-2]
     if len(token) > 3 and token.endswith("s") and not token.endswith("ss"):
         return token[:-1]
     return token
 
 
-def query_tokens(text: str) -> set[str]:
-    """The content words of ``text``: folded, stemmed, stopwords and single letters dropped."""
-    return {
+@functools.lru_cache(maxsize=8192)
+def query_tokens(text: str) -> frozenset[str]:
+    """The content words of ``text``: folded, stemmed, stopwords and single letters dropped.
+
+    Cached per string: the index's questions and headings are tokenised on
+    every query and never change between calls.
+    """
+    return frozenset(
         _stem(tok)
         for tok in _QUERY_TOKEN_RE.findall(_fold(text))
         if tok not in _STOPWORDS and len(tok) > 1
-    }
+    )
 
 
-def _coverage(query: set[str], text: str) -> float:
-    """Fraction of the query's content words that ``text`` carries."""
+def _weight(tokens, idf: dict[str, float]) -> float:
+    """Summed inverse document frequency of ``tokens``; a word the index never saw weighs 1.0."""
+    return sum(idf.get(tok, 1.0) for tok in tokens)
+
+
+def _idf(corpus: list, title_text) -> dict[str, float]:
+    """Inverse document frequency of every content word over one index.
+
+    A word's document frequency is the number of files whose questions, title
+    text or headings carry it, so a provider name present in most files weighs
+    little and a service or symptom word weighs more. Smoothed: a word in every
+    file weighs just above 1.0, a word in a single file about 1 + ln(N / 2).
+    Computed per call over the whole index of the kind, not the facet-filtered
+    subset, so the weights describe the library and not the user's filter.
+    """
+    df: dict[str, int] = {}
+    for item in corpus:
+        bag: set[str] = set(query_tokens(title_text(item)))
+        for question in item.questions:
+            bag |= query_tokens(question.text)
+        for heading in item.headings:
+            bag |= query_tokens(heading)
+        for tok in bag:
+            df[tok] = df.get(tok, 0) + 1
+    n = len(corpus)
+    return {tok: 1.0 + math.log((n + 1) / (count + 1)) for tok, count in df.items()}
+
+
+def _coverage(query: frozenset[str], text: str, idf: dict[str, float]) -> float:
+    """Share of the lighter side's weight that ``query`` and ``text`` have in common.
+
+    Each content word weighs its inverse document frequency, so ``nat`` or
+    ``gcp`` counts for more than ``cost`` or ``aws``. The shared weight is
+    divided by the lighter of the two sides: a long query that contains a
+    whole declared question scores it 1.0 instead of being diluted by its own
+    extra words. A one-word text is divided by the query side, so a lone
+    ``Timing`` heading cannot score 1.0 from a paragraph.
+    """
     if not query:
         return 0.0
-    return len(query & query_tokens(text)) / len(query)
+    text_tokens = query_tokens(text)
+    shared = query & text_tokens
+    if not shared:
+        return 0.0
+    denominator = _weight(query, idf)
+    if len(text_tokens) > 1:
+        denominator = min(denominator, _weight(text_tokens, idf))
+    return _weight(shared, idf) / denominator
 
 
 def _score_against_query(
-    query: set[str],
+    query: frozenset[str],
     questions: list[Question],
     title_text: str,
     headings: list[str],
+    idf: dict[str, float],
 ) -> tuple[float, Question | None]:
     """Score one indexed file against a tokenised query.
 
@@ -139,11 +215,11 @@ def _score_against_query(
     best_question: Question | None = None
     best_coverage = 0.0
     for question in questions:
-        coverage = _coverage(query, question.text)
+        coverage = _coverage(query, question.text, idf)
         if coverage > best_coverage:
             best_question, best_coverage = question, coverage
-    title_coverage = _coverage(query, title_text)
-    heading_coverage = max((_coverage(query, h) for h in headings), default=0.0)
+    title_coverage = _coverage(query, title_text, idf)
+    heading_coverage = max((_coverage(query, h, idf) for h in headings), default=0.0)
     score = (
         _QUESTION_WEIGHT * best_coverage
         + _TITLE_WEIGHT * title_coverage
@@ -152,19 +228,46 @@ def _score_against_query(
     return score, best_question
 
 
-def _rank_by_query(items: list, query: str, title_text) -> list[tuple[Any, float, Question | None]]:
+def _provider_of(item) -> str | None:
+    """The provider a file is written for: a playbook's scope, a reference's name prefix."""
+    scope = getattr(item, "scope", None)
+    if scope in {"aws", "azure", "gcp", "oci"}:
+        return scope
+    for prefix, provider in _REFERENCE_PROVIDER_PREFIXES:
+        if item.name.startswith(prefix):
+            return provider
+    return None
+
+
+def _query_provider(tokens: frozenset[str]) -> str | None:
+    """The one provider a query names, or None when it names none or several."""
+    named = {_PROVIDER_WORDS[tok] for tok in tokens if tok in _PROVIDER_WORDS}
+    return next(iter(named)) if len(named) == 1 else None
+
+
+def _rank_by_query(
+    items: list, query: str, title_text, corpus: list
+) -> list[tuple[Any, float, Question | None]]:
     """``(item, score, matched_question)`` for the items worth returning, best first.
 
     ``title_text`` maps an item to the text scored at title weight: title plus
-    description for a reference, title plus service for a playbook. Ties break
-    on name so the order is stable from one call to the next.
+    description for a reference, title plus service for a playbook. ``corpus``
+    is the whole index of that kind, which sets the word weights; ``items`` is
+    the facet-filtered subset actually ranked. Ties break on name so the order
+    is stable from one call to the next.
     """
     tokens = query_tokens(query)
     if not tokens:
         return []
+    idf = _idf(corpus, title_text)
+    named = _query_provider(tokens)
     ranked: list[tuple[Any, float, Question | None]] = []
     for item in items:
-        score, question = _score_against_query(tokens, item.questions, title_text(item), item.headings)
+        score, question = _score_against_query(
+            tokens, item.questions, title_text(item), item.headings, idf
+        )
+        if named and _provider_of(item) not in (None, named):
+            score *= _OTHER_PROVIDER_FACTOR
         if score >= QUERY_MIN_SCORE:
             ranked.append((item, score, question))
     ranked.sort(key=lambda entry: (-entry[1], entry[0].name))
@@ -180,8 +283,16 @@ def _query_entry(item, score: float, question: Question | None) -> dict[str, Any
     return entry
 
 
-def _query_miss_help(kind: str) -> dict[str, Any]:
+def _query_miss_help(kind: str, query_text: str) -> dict[str, Any]:
     """Explain a ``query`` that matched nothing, in place of a bare ``total: 0``."""
+    if not query_tokens(query_text):
+        return {
+            "hint": (
+                f"The query has no content words once common words are set aside, so no "
+                f"{kind} was compared. Name the service, the resource or the symptom, for "
+                "example 'NAT gateway', 'expiring reservations' or 'PTU utilisation'."
+            )
+        }
     return {
         "hint": (
             f"No {kind} shares a content word with the query - its questions, title "
@@ -543,7 +654,9 @@ def find_references(
     query_text = query.strip() if isinstance(query, str) else ""
     if query_text:
         reported_filters["query"] = query_text
-        ranked = _rank_by_query(matches, query_text, lambda r: f"{r.title} {r.description}")
+        ranked = _rank_by_query(
+            matches, query_text, lambda r: f"{r.title} {r.description}", get_index()
+        )
         result: dict[str, Any] = {
             "filters": reported_filters,
             "references": [_query_entry(r, score, q) for r, score, q in ranked],
@@ -553,7 +666,7 @@ def find_references(
             result.update(
                 _empty_result_help(active, reference_vocabulary())
                 if active and not matches
-                else _query_miss_help("reference")
+                else _query_miss_help("reference", query_text)
             )
             _log_zero_result("find_references", _loggable(reported_filters, query_text))
         return result
@@ -686,7 +799,7 @@ def find_playbooks(
     if query_text:
         reported_filters["query"] = query_text
         ranked = _rank_by_query(
-            matches, query_text, lambda pb: f"{pb.title} {pb.service or ''}"
+            matches, query_text, lambda pb: f"{pb.title} {pb.service or ''}", get_playbook_index()
         )
         result: dict[str, Any] = {
             "filters": reported_filters,
@@ -697,7 +810,7 @@ def find_playbooks(
             result.update(
                 _empty_result_help(active, playbook_vocabulary())
                 if active and not matches
-                else _query_miss_help("playbook")
+                else _query_miss_help("playbook", query_text)
             )
             _log_zero_result("find_playbooks", _loggable(reported_filters, query_text))
         return result

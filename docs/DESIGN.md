@@ -573,7 +573,7 @@ field too. The YAML block
 form is deliberate here, unlike `business_coverage`: the coverage scripts read their
 own keys by prefix and ignore the rest of the block, and `check-style.sh` strips the
 frontmatter, so the block costs nothing in CI; the MCP loader reads it with
-`yaml.safe_load`. Applies to the 27 most-asked files since phase 1; a new file should
+`yaml.safe_load`. Applies to the 30 most-asked files since phase 1; a new file should
 carry it from its first PR.
 
 `fcp_phases` is deliberately independent of `fcp_domain`: a file whose primary
@@ -714,7 +714,8 @@ routing (last row always "any mechanic: not here"), how to use it, handling rule
 (dated and rounded figures, identifiers stripped, confidence levels internal).
 
 `scripts/check-overlay.py <folder>` is the mechanical half of the rule: cited files and
-headings exist (the `get_reference(section=)` partial match), `questions` valid and not
+headings exist (matched the way the first tier of `get_reference(section=)` does: lower-case,
+punctuation set aside, substring), `questions` valid and not
 duplicating a public question, no sentence of ten words or more copied from a public
 reference or playbook, no em dash. CI runs it on `docs/overlay-template/`, so a public
 heading cannot be renamed without the template and `docs/OVERLAYS.md` moving with it.

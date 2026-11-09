@@ -339,7 +339,12 @@ frontmatter field on every reference and playbook (spec and writing rules in
   an eighth tool, so the directory listing's tool list does not change. Then a probe
   cycle: fresh chats, tool-call-visible
   discipline, Sonnet; success is the P03 / P31 pair passing and P25 converting; P12 is
-  structural and not expected to move. Three French probes join the battery.
+  structural and not expected to move. Three French probes join the battery. A fresh review of the merged PR
+  (2026-11-09) led to a follow-up on the ranking: word weights by rarity across the
+  index, coverage taken over the lighter side so a long query is not diluted by its
+  own words, a named provider halving the files written for another provider, `-es`
+  plurals folded, a distinct hint for a stopword-only query, and the model-facing
+  claim that every file carries `questions:` corrected to the most-asked files.
 - **Phase 3, generation and guards.** README "What you can ask, by role" generated
   between markers from the `persona` entries with `--check` in CI (the
   `business-coverage.sh` pattern); a guard for count (4 to 8), repository vocabulary,

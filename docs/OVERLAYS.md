@@ -39,9 +39,9 @@ acceptable on each check, and the decisions already taken.
 
 The rule has two consequences worth stating. When you find a mechanic missing from the
 public file, fix it in public with a pull request rather than in your overlay: the
-overlay stays thin and the base improves for everyone. And copied text carries the
-public licence with it (CC BY-SA 4.0), so an overlay that copies nothing has no licence
-question to answer.
+overlay stays thin and the base improves for everyone. And copied or closely paraphrased
+text carries the public licence with it (CC BY-SA 4.0, ShareAlike), so an overlay that
+cites and calibrates rather than restates keeps the licence question simple.
 
 ## Anatomy
 
@@ -116,7 +116,10 @@ another one:
 
 Cite a public section by its heading, verbatim, in quotation marks. The heading is the
 stable handle: the connector's `get_reference(name=, section=)` returns that section and
-nothing else, and the check confirms the heading still exists. Do not cite by line
+nothing else, and the check confirms the heading still exists. The check matches the way
+the connector's first tier does, case-insensitive with punctuation set aside, so a
+citation written without the heading's dash still passes; the connector is more tolerant
+still, so a citation that passes the check always resolves there. Do not cite by line
 number or by paraphrase.
 
 When the heading you need does not exist, the content you want to anchor to is
@@ -165,7 +168,7 @@ python scripts/check-overlay.py ~/.claude/skills/{org}-{domain}-advisory
 The check reads the overlay's `SKILL.md` and every `.md` beside it, and reports:
 
 - a `description` that does not name the cloud-finops skill, or a `name` that shadows
-  a public file;
+  a public file or the public skill itself (`cloud-finops`);
 - a cited public file that does not exist, or a cited heading that no longer matches an
   H2 or H3 of that file (it prints the headings available);
 - a missing or malformed `questions` list, a question in repository vocabulary, or a

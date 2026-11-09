@@ -382,3 +382,20 @@ def test_executive_persona_is_declared_across_the_index() -> None:
     }
     assert {"finops-kpis-benchmarking", "finops-ai-value-management", "optimnow-methodology"} <= files
     assert len(files) >= 8
+
+
+def test_every_bundled_question_entry_is_parsed() -> None:
+    """A malformed entry is skipped with a warning at load time; the bundle may hold none."""
+    import yaml
+
+    def declared(path) -> int:
+        raw = path.read_text(encoding="utf-8")
+        fm = yaml.safe_load(raw.split("\n---\n", 1)[0][4:]) or {}
+        value = fm.get("questions")
+        return len(value) if isinstance(value, list) else (1 if value else 0)
+
+    for ref in metadata.get_index():
+        assert len(ref.questions) == declared(metadata.DATA_DIR / f"{ref.name}.md"), ref.name
+    for pb in metadata.get_playbook_index():
+        assert len(pb.questions) == declared(metadata.PLAYBOOKS_DIR / f"{pb.name}.md"), pb.name
+

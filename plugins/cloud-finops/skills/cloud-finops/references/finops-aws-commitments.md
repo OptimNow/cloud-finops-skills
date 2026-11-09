@@ -10,7 +10,6 @@ fcp_maturity_entry: "Walk"
 business_coverage: ["aws:commitments:deep", "aws:contracts:partial"]
 questions:
   - q: "How should we size our first Savings Plan when our usage is seasonal?"
-    persona: "FinOps lead"
     section: "Phased purchasing"
   - "Compute Savings Plan or EC2 Instance Savings Plan: which one, and what does the flexibility cost us?"
   - "Our Savings Plans expire in 90 days. Do we renew the same shape, change instrument or let them lapse?"

@@ -10,7 +10,7 @@ fcp_maturity_entry: "Walk"
 business_coverage: ["azure:waste:deep"]
 questions:
   - q: "Azure Advisor says our VMs are fine, but they look oversized. What does Advisor miss?"
-    section: "Advisor"
+    section: "Advisor mechanics and the band Advisor misses"
   - q: "Which Azure VMs can we stop at night and at weekends, and how do we automate it?"
     section: "Automated start/stop"
   - q: "Our Azure backup and snapshot bill keeps growing. Where does the waste sit?"
@@ -18,7 +18,7 @@ questions:
   - q: "How do we cut Azure Log Analytics cost without losing the logs we need?"
     section: "Log Analytics cost control"
   - q: "How do we reduce AKS cost without hurting the apps running on it?"
-    section: "AKS"
+    section: "AKS optimisation in depth"
   - "Nos VM Azure sont surdimensionnées mais Advisor ne dit rien : que vérifier ?"
 ---
 
