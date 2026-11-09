@@ -1,0 +1,55 @@
+{
+ "live_value": 0.005,
+ "method": "price-list",
+ "price": "aws-public-ipv4-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-PublicIPv4:InUseAddress"
+  },
+  "service_code": "AmazonVPC"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "group": "VPCPublicIPv4Address",
+     "groupDescription": "Hourly charge for In-use Public IPv4 Addresses",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonVPC",
+     "servicename": "Amazon Virtual Private Cloud",
+     "usagetype": "USE1-PublicIPv4:InUseAddress"
+    },
+    "sku": "4GQUNXTFWVSGPUZK"
+   },
+   "terms": {
+    "OnDemand": {
+     "4GQUNXTFWVSGPUZK.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "4GQUNXTFWVSGPUZK.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.005 per In-use public IPv4 address per hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0050000000"
+        },
+        "rateCode": "4GQUNXTFWVSGPUZK.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "4GQUNXTFWVSGPUZK",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,89 @@
+{
+ "live_value": 24.48,
+ "method": "price-list",
+ "price": "aws-ec2-p3-16xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "capacitystatus": "Used",
+   "instanceType": "p3.16xlarge",
+   "location": "US East (N. Virginia)",
+   "operatingSystem": "Linux",
+   "operation": "RunInstances",
+   "preInstalledSw": "NA",
+   "tenancy": "Shared"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availabilityzone": "NA",
+     "capacitystatus": "Used",
+     "classicnetworkingsupport": "false",
+     "clockSpeed": "2.3 GHz",
+     "currentGeneration": "Yes",
+     "dedicatedEbsThroughput": "14000 Mbps",
+     "dedicatedEbsThroughputDescription": "14000 Mbps",
+     "ecu": "201",
+     "enhancedNetworkingSupported": "Yes",
+     "gpu": "8",
+     "gpuMemory": "128 GiB",
+     "instanceFamily": "GPU instance",
+     "instanceFamilyCategory": "Accelerated Computing",
+     "instanceType": "p3.16xlarge",
+     "intelAvx2Available": "Yes",
+     "intelAvxAvailable": "Yes",
+     "intelTurboAvailable": "Yes",
+     "licenseModel": "No License required",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "marketoption": "OnDemand",
+     "memory": "488 GiB",
+     "networkPerformance": "25 Gigabit",
+     "normalizationSizeFactor": "128",
+     "operatingSystem": "Linux",
+     "operation": "RunInstances",
+     "physicalProcessor": "Intel Xeon E5-2686 v4 (Broadwell)",
+     "preInstalledSw": "NA",
+     "processorArchitecture": "64-bit",
+     "processorFeatures": "Intel AVX; Intel AVX2; Intel Turbo",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storage": "EBS only",
+     "tenancy": "Shared",
+     "usagetype": "BoxUsage:p3.16xlarge",
+     "vcpu": "64",
+     "vpcnetworkingsupport": "true"
+    },
+    "sku": "XES86TS9BX33Y86Y"
+   },
+   "terms": {
+    "OnDemand": {
+     "XES86TS9BX33Y86Y.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "XES86TS9BX33Y86Y.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$24.48 per On Demand Linux p3.16xlarge Instance Hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "24.4800000000"
+        },
+        "rateCode": "XES86TS9BX33Y86Y.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "XES86TS9BX33Y86Y",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

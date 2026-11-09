@@ -1,0 +1,624 @@
+# price-manifest.yaml - every static list price the skill carries, and where it is written.
+#
+# Read by scripts/check-prices.py: live every Saturday in .github/workflows/price-drift.yml,
+# and with --offline in CI against the recorded fixtures in scripts/fixtures/prices/. The
+# rule behind it is "Write mechanics, not price figures" (docs/DESIGN.md, "Content rules");
+# how to maintain it is under "Price drift check" in the "Content update pipeline" section.
+#
+# Two sections.
+#
+# prices:  one entry per provider SKU, named <provider>-<what>-<unit>. `query` is what the
+#          script sends to the provider's own price list:
+#            aws    service_code and filters (TERM_MATCH on Price List attributes); optional
+#                   begin_range (the tier to read when a price has several, default "0") and
+#                   term (OnDemand by default, FlatRate for the CloudFront plans)
+#            azure  filter, the OData $filter of the Retail Prices API; optional
+#                   reservation_term ("1 Year", "3 Years") when priceType is Reservation
+#            gcp    catalog (service, description, optional region and start_usage_amount),
+#                   read with GOOGLE_API_KEY, and/or page (url, regex with one capturing
+#                   group), read without a key; each block takes an optional unit_factor
+#                   that brings the fetched value to the unit named here
+#          Several matching rows are fine when they carry one price (the 29 RDS backup rows,
+#          the two peering directions); zero-priced rows are dropped when a priced row exists
+#          (a free first tier, a Capacity Block placeholder); several distinct prices fail the
+#          query, which tells the author to tighten it.
+#
+# figures: one entry per place a number is written. `file` is the repository path, `anchor` a
+#          substring found on exactly one line of that file, `figure` the number as written
+#          after the $ sign ("4,140", not 4140), `price` the entry it comes from, `derivation`
+#          the arithmetic from the live rate when the text carries a monthly or per-TB figure
+#          (`rate`, `other` for a second price named in `other:`, digits and + - * / only; 730
+#          hours a month, 1,000 GB a TB), `tolerance` the relative gap accepted (0.02 by
+#          default, raised only where the text rounds harder and says so with "~" or
+#          "roughly"). A figure edited in a file without its entry here fails the CI run.
+#
+# Left out on purpose: scale examples that are not prices (the "$50/month" instance of the
+# schedule-blindness arithmetic, "a $50K/month anomaly"), ranges ("$5-15/month per warm
+# instance", Azure SQL serverless "~$15/month"), seat and token prices (routed to the AI
+# Pricing Hub), Snowflake and Cloudflare list prices (no provider price API), EFS throughput
+# read and write rates quoted beside the S3 Files rates, and figures that are policy rather
+# than price (the Azure reservation refund cap).
+
+prices:
+
+  # ---- AWS: Price List API, us-east-1 ------------------------------------------------------
+
+  aws-nat-gateway-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {usagetype: NatGateway-Hours, location: US East (N. Virginia)}
+  aws-nat-gateway-gb:
+    provider: aws
+    unit: USD per GB processed
+    query:
+      service_code: AmazonEC2
+      filters: {usagetype: NatGateway-Bytes, location: US East (N. Virginia)}
+  aws-vpc-interface-endpoint-hour:
+    provider: aws
+    unit: USD per endpoint-hour per AZ
+    query:
+      service_code: AmazonVPC
+      filters: {usagetype: USE1-VpcEndpoint-Hours, location: US East (N. Virginia)}
+  aws-public-ipv4-hour:
+    provider: aws
+    unit: USD per address-hour
+    query:
+      service_code: AmazonVPC
+      filters: {usagetype: 'USE1-PublicIPv4:InUseAddress', location: US East (N. Virginia)}
+  aws-alb-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AWSELB
+      filters: {usagetype: LoadBalancerUsage, operation: 'LoadBalancing:Application', location: US East (N. Virginia)}
+  aws-ec2-cross-az-gb:
+    provider: aws
+    unit: USD per GB, each direction
+    query:
+      service_code: AWSDataTransfer
+      filters: {usagetype: DataTransfer-Regional-Bytes, fromLocation: US East (N. Virginia)}
+  aws-ec2-transfer-out-internet-gb:
+    provider: aws
+    unit: USD per GB, first 10 TB tier
+    note: The first tier after the free 100 GB; begin_range "0" reads the 0-10240 GB dimension.
+    query:
+      service_code: AWSDataTransfer
+      filters: {usagetype: DataTransfer-Out-Bytes, fromLocation: US East (N. Virginia), toLocation: External}
+      begin_range: "0"
+  aws-cloudfront-us-transfer-out-gb:
+    provider: aws
+    unit: USD per GB, first 10 TB tier, North America
+    query:
+      service_code: AmazonCloudFront
+      filters: {usagetype: US-DataTransfer-Out-Bytes}
+      begin_range: "0"
+  aws-cloudfront-plan-pro-month:
+    provider: aws
+    unit: USD per month
+    query:
+      service_code: CloudFrontPlans
+      filters: {usagetype: Global-CloudFrontPlan-Pro}
+      term: FlatRate
+  aws-cloudfront-plan-business-month:
+    provider: aws
+    unit: USD per month
+    query:
+      service_code: CloudFrontPlans
+      filters: {usagetype: Global-CloudFrontPlan-Business}
+      term: FlatRate
+  aws-cloudfront-plan-premium-month:
+    provider: aws
+    unit: USD per month
+    query:
+      service_code: CloudFrontPlans
+      filters: {usagetype: Global-CloudFrontPlan-Premium}
+      term: FlatRate
+  aws-waf-rule-month:
+    provider: aws
+    unit: USD per rule-month
+    query:
+      service_code: awswaf
+      filters: {usagetype: USE1-Rule, location: US East (N. Virginia)}
+  aws-cost-explorer-api-request:
+    provider: aws
+    unit: USD per API request
+    query:
+      service_code: AWSCostExplorer
+      filters: {usagetype: USE1-APIRequest}
+  aws-ebs-gp3-gb-month:
+    provider: aws
+    unit: USD per GB-month
+    query:
+      service_code: AmazonEC2
+      filters: {usagetype: 'EBS:VolumeUsage.gp3', location: US East (N. Virginia)}
+  aws-ebs-gp2-gb-month:
+    provider: aws
+    unit: USD per GB-month
+    query:
+      service_code: AmazonEC2
+      filters: {usagetype: 'EBS:VolumeUsage.gp2', location: US East (N. Virginia)}
+  aws-ebs-io2-gb-month:
+    provider: aws
+    unit: USD per GB-month
+    query:
+      service_code: AmazonEC2
+      filters: {usagetype: 'EBS:VolumeUsage.io2', location: US East (N. Virginia)}
+  aws-ebs-snapshot-gb-month:
+    provider: aws
+    unit: USD per GB-month, Standard tier
+    query:
+      service_code: AmazonEC2
+      filters: {usagetype: 'EBS:SnapshotUsage', location: US East (N. Virginia)}
+  aws-rds-backup-storage-gb-month:
+    provider: aws
+    unit: USD per GB-month above the free allowance
+    note: One row per engine, all at the same rate; the script accepts that.
+    query:
+      service_code: AmazonRDS
+      filters: {usagetype: 'RDS:ChargedBackupUsage', location: US East (N. Virginia)}
+
+  # EC2 on-demand, Linux, shared tenancy. operation RunInstances keeps the Capacity Block
+  # placeholder rows ($0.00) out of the P-family results.
+  aws-ec2-g4dn-xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: &ec2 {instanceType: g4dn.xlarge, operatingSystem: Linux, tenancy: Shared, preInstalledSw: NA, capacitystatus: Used, operation: RunInstances, location: US East (N. Virginia)}
+  aws-ec2-c7i-xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {<<: *ec2, instanceType: c7i.xlarge}
+  aws-ec2-g5-4xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {<<: *ec2, instanceType: g5.4xlarge}
+  aws-ec2-c7i-4xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {<<: *ec2, instanceType: c7i.4xlarge}
+  aws-ec2-g5-xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {<<: *ec2, instanceType: g5.xlarge}
+  aws-ec2-g5-12xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {<<: *ec2, instanceType: g5.12xlarge}
+  aws-ec2-p4d-24xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {<<: *ec2, instanceType: p4d.24xlarge}
+  aws-ec2-p5-48xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {<<: *ec2, instanceType: p5.48xlarge}
+  aws-ec2-g5-48xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {<<: *ec2, instanceType: g5.48xlarge}
+  aws-ec2-p3-16xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonEC2
+      filters: {<<: *ec2, instanceType: p3.16xlarge}
+
+  aws-sagemaker-host-ml-m5-xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonSageMaker
+      filters: {usagetype: 'USE1-Host:ml.m5.xlarge', location: US East (N. Virginia)}
+  aws-sagemaker-host-ml-g4dn-xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonSageMaker
+      filters: {usagetype: 'USE1-Host:ml.g4dn.xlarge', location: US East (N. Virginia)}
+  aws-sagemaker-host-ml-p4d-24xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonSageMaker
+      filters: {usagetype: 'USE1-Host:ml.p4d.24xlarge', location: US East (N. Virginia)}
+  aws-sagemaker-notebook-ml-t3-medium-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonSageMaker
+      filters: {usagetype: 'USE1-Notebk:ml.t3.medium', location: US East (N. Virginia)}
+  aws-sagemaker-notebook-ml-t3-xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonSageMaker
+      filters: {usagetype: 'USE1-Notebk:ml.t3.xlarge', location: US East (N. Virginia)}
+  aws-sagemaker-notebook-ml-g4dn-xlarge-hour:
+    provider: aws
+    unit: USD per hour
+    query:
+      service_code: AmazonSageMaker
+      filters: {usagetype: 'USE1-Notebk:ml.g4dn.xlarge', location: US East (N. Virginia)}
+  aws-sagemaker-notebook-storage-gb-month:
+    provider: aws
+    unit: USD per GB-month
+    query:
+      service_code: AmazonSageMaker
+      filters: {usagetype: 'USE1-Notebk:VolumeUsage.gp2', location: US East (N. Virginia)}
+
+  aws-s3-standard-gb-month:
+    provider: aws
+    unit: USD per GB-month, first 50 TB tier
+    query:
+      service_code: AmazonS3
+      filters: {usagetype: TimedStorage-ByteHrs, location: US East (N. Virginia)}
+      begin_range: "0"
+  aws-s3-standard-ia-gb-month:
+    provider: aws
+    unit: USD per GB-month
+    query:
+      service_code: AmazonS3
+      filters: {usagetype: TimedStorage-SIA-ByteHrs, location: US East (N. Virginia)}
+  aws-s3-standard-ia-retrieval-gb:
+    provider: aws
+    unit: USD per GB retrieved
+    query:
+      service_code: AmazonS3
+      filters: {usagetype: Retrieval-SIA, location: US East (N. Virginia)}
+  aws-s3-intelligent-tiering-infrequent-gb-month:
+    provider: aws
+    unit: USD per GB-month
+    query:
+      service_code: AmazonS3
+      filters: {usagetype: TimedStorage-INT-IA-ByteHrs, location: US East (N. Virginia)}
+  aws-s3-files-storage-gb-month:
+    provider: aws
+    unit: USD per GB-month, hot tier
+    query:
+      service_code: AmazonS3
+      filters: {usagetype: USE1-Files-TimedStorage-ByteHrs, location: US East (N. Virginia)}
+  aws-s3-files-read-gb:
+    provider: aws
+    unit: USD per GB read
+    query:
+      service_code: AmazonS3
+      filters: {usagetype: USE1-Files-Read, location: US East (N. Virginia)}
+  aws-s3-files-write-gb:
+    provider: aws
+    unit: USD per GB written
+    query:
+      service_code: AmazonS3
+      filters: {usagetype: USE1-Files-Write, location: US East (N. Virginia)}
+  aws-efs-standard-gb-month:
+    provider: aws
+    unit: USD per GB-month
+    query:
+      service_code: AmazonEFS
+      filters: {usagetype: USE1-TimedStorage-ByteHrs, location: US East (N. Virginia)}
+  aws-efs-ia-gb-month:
+    provider: aws
+    unit: USD per GB-month
+    query:
+      service_code: AmazonEFS
+      filters: {usagetype: USE1-IATimedStorage-ByteHrs, location: US East (N. Virginia)}
+  aws-efs-archive-gb-month:
+    provider: aws
+    unit: USD per GB-month
+    query:
+      service_code: AmazonEFS
+      filters: {usagetype: USE1-ArchiveTimedStorage-ByteHrs, location: US East (N. Virginia)}
+
+  # ---- Azure: Retail Prices API, East US unless the text says otherwise -------------------
+
+  azure-app-service-p1v3-linux-hour:
+    provider: azure
+    unit: USD per hour
+    query:
+      filter: serviceName eq 'Azure App Service' and armRegionName eq 'eastus' and priceType eq 'Consumption' and skuName eq 'P1 v3' and productName eq 'Azure App Service Premium v3 Plan - Linux'
+  azure-app-service-p1v3-windows-hour:
+    provider: azure
+    unit: USD per hour
+    query:
+      filter: serviceName eq 'Azure App Service' and armRegionName eq 'eastus' and priceType eq 'Consumption' and skuName eq 'P1 v3' and productName eq 'Azure App Service Premium v3 Plan'
+  azure-app-service-s1-linux-hour:
+    provider: azure
+    unit: USD per hour
+    query:
+      filter: serviceName eq 'Azure App Service' and armRegionName eq 'eastus' and priceType eq 'Consumption' and skuName eq 'S1' and productName eq 'Azure App Service Standard Plan - Linux'
+  azure-app-service-s1-windows-hour:
+    provider: azure
+    unit: USD per hour
+    query:
+      filter: serviceName eq 'Azure App Service' and armRegionName eq 'eastus' and priceType eq 'Consumption' and skuName eq 'S1' and productName eq 'Azure App Service Standard Plan'
+  azure-app-service-p0v3-linux-hour:
+    provider: azure
+    unit: USD per hour
+    note: The SKU is spelt P0v3 in the API, P1 v3 with a space; both spellings are the API's.
+    query:
+      filter: serviceName eq 'Azure App Service' and armRegionName eq 'eastus' and priceType eq 'Consumption' and skuName eq 'P0v3' and productName eq 'Azure App Service Premium v3 Plan - Linux'
+  azure-app-service-p0v3-windows-hour:
+    provider: azure
+    unit: USD per hour
+    query:
+      filter: serviceName eq 'Azure App Service' and armRegionName eq 'eastus' and priceType eq 'Consumption' and skuName eq 'P0v3' and productName eq 'Azure App Service Premium v3 Plan'
+  azure-log-analytics-ingestion-gb:
+    provider: azure
+    unit: USD per GB ingested, pay-as-you-go
+    note: Two rows come back, the free first 5 GB at 0 and the paid rate; the zero row is dropped.
+    query:
+      filter: serviceName eq 'Log Analytics' and armRegionName eq 'eastus' and priceType eq 'Consumption' and meterName eq 'Analytics Logs Data Ingestion'
+  azure-blob-archive-lrs-gb-month:
+    provider: azure
+    unit: USD per GB-month
+    query:
+      filter: serviceName eq 'Storage' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'General Block Blob v2' and meterName eq 'Archive LRS Data Stored'
+  azure-disk-p30-month:
+    provider: azure
+    unit: USD per disk-month (1 TiB Premium SSD)
+    query:
+      filter: serviceName eq 'Storage' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Premium SSD Managed Disks' and meterName eq 'P30 LRS Disk'
+  azure-disk-e30-month:
+    provider: azure
+    unit: USD per disk-month (1 TiB Standard SSD)
+    query:
+      filter: serviceName eq 'Storage' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Standard SSD Managed Disks' and meterName eq 'E30 LRS Disk'
+  azure-public-ip-standard-hour:
+    provider: azure
+    unit: USD per address-hour
+    query:
+      filter: serviceName eq 'Virtual Network' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'IP Addresses' and meterName eq 'Standard IPv4 Static Public IP'
+  azure-nat-gateway-hour:
+    provider: azure
+    unit: USD per hour
+    note: NAT Gateway, VNet peering and Private Link are priced once for every public region, under armRegionName Global.
+    query:
+      filter: serviceName eq 'NAT Gateway' and armRegionName eq 'Global' and priceType eq 'Consumption' and skuName eq 'Standard' and meterName eq 'Standard Gateway'
+  azure-nat-gateway-gb:
+    provider: azure
+    unit: USD per GB processed
+    query:
+      filter: serviceName eq 'NAT Gateway' and armRegionName eq 'Global' and priceType eq 'Consumption' and skuName eq 'Standard' and meterName eq 'Standard Data Processed'
+  azure-vnet-peering-intra-region-gb:
+    provider: azure
+    unit: USD per GB, each side
+    note: Ingress and egress rows, one rate.
+    query:
+      filter: serviceName eq 'Virtual Network' and armRegionName eq 'Global' and priceType eq 'Consumption' and productName eq 'Virtual Network Peering'
+  azure-private-endpoint-hour:
+    provider: azure
+    unit: USD per endpoint-hour
+    query:
+      filter: serviceName eq 'Virtual Network' and armRegionName eq 'Global' and priceType eq 'Consumption' and productName eq 'Virtual Network Private Link' and meterName eq 'Standard Private Endpoint'
+  azure-inter-region-transfer-gb:
+    provider: azure
+    unit: USD per GB out of the source region
+    query:
+      filter: serviceName eq 'Bandwidth' and armRegionName eq 'eastus' and priceType eq 'Consumption' and meterName eq 'Standard Inter-Region Data Transfer'
+  azure-sql-basic-day:
+    provider: azure
+    unit: USD per database-day (Basic, 5 DTU)
+    query:
+      filter: serviceName eq 'SQL Database' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'SQL Database Single Basic' and skuName eq 'B' and meterName eq 'B DTU'
+  azure-fabric-cu-hour-westeurope:
+    provider: azure
+    unit: USD per CU-hour, pay-as-you-go, West Europe
+    note: The API prices the F SKU per workload meter and every "Capacity Usage" meter carries the same CU-hour rate; Data Warehouse stands for the capacity.
+    query:
+      filter: serviceName eq 'Microsoft Fabric' and armRegionName eq 'westeurope' and priceType eq 'Consumption' and productName eq 'Fabric Capacity' and skuName eq 'Data Warehouse Capacity Usage'
+  azure-fabric-reservation-1y-westeurope:
+    provider: azure
+    unit: USD per CU per year, 1-year reservation, West Europe
+    query:
+      filter: serviceName eq 'Microsoft Fabric' and armRegionName eq 'westeurope' and priceType eq 'Reservation' and skuName eq 'Fabric Capacity'
+      reservation_term: 1 Year
+  azure-fabric-reservation-3y-westeurope:
+    provider: azure
+    unit: USD per CU for the term, 3-year reservation, West Europe
+    query:
+      filter: serviceName eq 'Microsoft Fabric' and armRegionName eq 'westeurope' and priceType eq 'Reservation' and skuName eq 'Fabric Capacity'
+      reservation_term: 3 Years
+
+  # ---- Google Cloud: Billing Catalog API with a key, the pricing page without -------------
+
+  gcp-gke-cluster-hour:
+    provider: gcp
+    unit: USD per cluster-hour
+    note: The catalog SKU description is the one documented for the cluster management fee; it is read only when GOOGLE_API_KEY is set and has not yet been exercised. The page regex is.
+    query:
+      catalog: {service: services/CCD8-9BF1-090E, description: Regional Kubernetes Clusters}
+      page: {url: 'https://cloud.google.com/kubernetes-engine/pricing', regex: 'cluster management fee of \$([0-9.]+) per cluster per hour'}
+  gcp-gke-free-tier-month:
+    provider: gcp
+    unit: USD of credit per billing account per month
+    note: A credit, not a SKU; the pricing page is its only source.
+    query:
+      page: {url: 'https://cloud.google.com/kubernetes-engine/pricing', regex: 'free tier provides \$([0-9.]+) in monthly credits'}
+  gcp-pd-ssd-gib-month-us-central1:
+    provider: gcp
+    unit: USD per GiB-month, us-central1
+    note: The page shows the default region (Iowa, us-central1) by the hour; 730 brings it to the month the catalog quotes.
+    query:
+      catalog: {service: services/6F81-5844-456A, description: SSD backed PD Capacity, region: us-central1}
+      page: {url: 'https://cloud.google.com/compute/disks-image-pricing', regex: 'SSD provisioned space</p></td><td[^>]*>\$([0-9.]+) / 1 gibibyte hour', unit_factor: 730}
+
+figures:
+
+  # ---- playbooks ----------------------------------------------------------------------------
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-cross-az-egress.md, anchor: '$0.01/GB outbound plus', figure: '0.01', price: aws-ec2-cross-az-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-cross-az-egress.md, anchor: 'so $0.02/GB for a', figure: '0.02', price: aws-ec2-cross-az-gb, derivation: rate * 2}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gp2-to-gp3.md, anchor: 'per-GB rate ($0.08 vs', figure: '0.08', price: aws-ebs-gp3-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gp2-to-gp3.md, anchor: '$0.10/GB-month in us-east-1', figure: '0.10', price: aws-ebs-gp2-gb-month}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-for-cpu-bound-workload.md, anchor: 'a `g4dn.xlarge` is ~$0.53/hour', figure: '0.53', price: aws-ec2-g4dn-xlarge-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-for-cpu-bound-workload.md, anchor: '~= $385/month; the equivalent', figure: '385', price: aws-ec2-g4dn-xlarge-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-for-cpu-bound-workload.md, anchor: '`c7i.xlarge` is ~$0.18/hour', figure: '0.18', price: aws-ec2-c7i-xlarge-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-for-cpu-bound-workload.md, anchor: '$130/month. For larger instances', figure: '130', price: aws-ec2-c7i-xlarge-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-for-cpu-bound-workload.md, anchor: '~$1.62/hour vs `c7i.4xlarge`', figure: '1.62', price: aws-ec2-g5-4xlarge-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-for-cpu-bound-workload.md, anchor: '`c7i.4xlarge` at ~$0.71/hour', figure: '0.71', price: aws-ec2-c7i-4xlarge-hour}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-instance-oversized.md, anchor: '~$1.00/hour ~= $730/month', figure: '1.00', price: aws-ec2-g5-xlarge-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-instance-oversized.md, anchor: '~$1.00/hour ~= $730/month', figure: '730', price: aws-ec2-g5-xlarge-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-instance-oversized.md, anchor: '(4 x A10G) is ~$5.67/hour', figure: '5.67', price: aws-ec2-g5-12xlarge-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-instance-oversized.md, anchor: '$4,140/month; a `p4d.24xlarge`', figure: '4,140', price: aws-ec2-g5-12xlarge-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-instance-oversized.md, anchor: '(8 x A100 40 GB) is ~$21.96/hour', figure: '21.96', price: aws-ec2-p4d-24xlarge-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-gpu-instance-oversized.md, anchor: '$16,030/month. Picking an instance', figure: '16,030', price: aws-ec2-p4d-24xlarge-hour, derivation: rate * 730}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-idle-load-balancer.md, anchor: '$0.0225/hr for an', figure: '0.0225', price: aws-alb-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-idle-load-balancer.md, anchor: 'ALB, about $16.43/month)', figure: '16.43', price: aws-alb-hour, derivation: rate * 730}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-mig-candidate.md, anchor: '`p4d.24xlarge` at ~$22/hour', figure: '22', price: aws-ec2-p4d-24xlarge-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-mig-candidate.md, anchor: '`p5.48xlarge` at ~$55/hour (8 x', figure: '55', price: aws-ec2-p5-48xlarge-hour}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-multi-gpu-underutilized.md, anchor: '~$16/hour for', figure: '16', price: aws-ec2-g5-48xlarge-hour, tolerance: 0.03, note: rounded to the dollar from 16.288}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-multi-gpu-underutilized.md, anchor: '~$22/hour for `p4d.24xlarge`', figure: '22', price: aws-ec2-p4d-24xlarge-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-multi-gpu-underutilized.md, anchor: '~$55/hour for `p5.48xlarge`', figure: '55', price: aws-ec2-p5-48xlarge-hour}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-nat-gateway-endpoint-substitution.md, anchor: 'data-processing fee (~$0.045/GB in', figure: '0.045', price: aws-nat-gateway-gb}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-orphaned-ebs-volumes.md, anchor: '$0.08/GB-month for gp3', figure: '0.08', price: aws-ebs-gp3-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-orphaned-ebs-volumes.md, anchor: '$0.10 for gp2 and', figure: '0.10', price: aws-ebs-gp2-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-orphaned-ebs-volumes.md, anchor: 'for gp2 and $0.125', figure: '0.125', price: aws-ebs-io2-gb-month}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-outdated-gpu-generation.md, anchor: '(~$55/hour after the June', figure: '55', price: aws-ec2-p5-48xlarge-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-outdated-gpu-generation.md, anchor: '($24.48/hour) - but on the right', figure: '24.48', price: aws-ec2-p3-16xlarge-hour}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-s3-cold-data-in-standard.md, anchor: '$0.023, Standard-IA $0.0125', figure: '0.023', price: aws-s3-standard-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-s3-cold-data-in-standard.md, anchor: 'Standard-IA $0.0125, retrieval', figure: '0.0125', price: aws-s3-standard-ia-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-s3-cold-data-in-standard.md, anchor: 'retrieval $0.01 per GB)', figure: '0.01', price: aws-s3-standard-ia-retrieval-gb}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-idle-endpoint.md, anchor: 'endpoint costs ~$170/month', figure: '170', price: aws-sagemaker-host-ml-m5-xlarge-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-idle-endpoint.md, anchor: 'endpoint costs ~$540/month', figure: '540', price: aws-sagemaker-host-ml-g4dn-xlarge-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-idle-endpoint.md, anchor: '~$18,400/month. Forgotten', figure: '18,400', price: aws-sagemaker-host-ml-p4d-24xlarge-hour, derivation: rate * 730}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-mme-consolidation.md, anchor: 'cost ~$510/month combined', figure: '510', price: aws-sagemaker-host-ml-m5-xlarge-hour, derivation: rate * 730 * 3}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-mme-consolidation.md, anchor: '~$1,020/month; nine cost', figure: '1,020', price: aws-sagemaker-host-ml-m5-xlarge-hour, derivation: rate * 730 * 6}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-mme-consolidation.md, anchor: 'nine cost ~$1,530/month', figure: '1,530', price: aws-sagemaker-host-ml-m5-xlarge-hour, derivation: rate * 730 * 9}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-notebook-always-on.md, anchor: 'notebook costs ~$36/month', figure: '36', price: aws-sagemaker-notebook-ml-t3-medium-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-notebook-always-on.md, anchor: '`ml.t3.xlarge` is ~$146/month', figure: '146', price: aws-sagemaker-notebook-ml-t3-xlarge-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-notebook-always-on.md, anchor: 'is ~$540/month. Data-science', figure: '540', price: aws-sagemaker-notebook-ml-g4dn-xlarge-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-sagemaker-notebook-always-on.md, anchor: 'storage volume (~$0.14/GB/month', figure: '0.14', price: aws-sagemaker-notebook-storage-gb-month}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-snapshot-sprawl.md, anchor: '$0.05/GB-month in the Standard tier', figure: '0.05', price: aws-ebs-snapshot-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-snapshot-sprawl.md, anchor: 'and $0.095/GB-month above that', figure: '0.095', price: aws-rds-backup-storage-gb-month}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md, anchor: 'at $0.045/hr per gateway', figure: '0.045', price: aws-nat-gateway-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md, anchor: 'plus $0.045/GB of data processed', figure: '0.045', price: aws-nat-gateway-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md, anchor: 'is about $33/month per gateway', figure: '33', price: aws-nat-gateway-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md, anchor: '$0.005/hr (~$3.65/month at the us-east-1', figure: '0.005', price: aws-public-ipv4-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md, anchor: '$0.005/hr (~$3.65/month at the us-east-1', figure: '3.65', price: aws-public-ipv4-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md, anchor: 'per endpoint per AZ (~$0.01/hr', figure: '0.01', price: aws-vpc-interface-endpoint-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md, anchor: '~$7.30/month/AZ', figure: '7.30', price: aws-vpc-interface-endpoint-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md, anchor: 'cross-AZ data transfer ($0.01/GB each direction', figure: '0.01', price: aws-ec2-cross-az-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md, anchor: 'so $0.02/GB round-trip)', figure: '0.02', price: aws-ec2-cross-az-gb, derivation: rate * 2}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: '$113/month on Linux and $230/month', figure: '113', price: azure-app-service-p1v3-linux-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: '$113/month on Linux and $230/month', figure: '230', price: azure-app-service-p1v3-windows-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: 'versus roughly $69/month', figure: '69', price: azure-app-service-s1-linux-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: 'or $73/month (Windows) for S1', figure: '73', price: azure-app-service-s1-windows-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: 'gap of roughly $45/month on Linux and $155/month', figure: '45', price: azure-app-service-p1v3-linux-hour, other: azure-app-service-s1-linux-hour, derivation: (rate - other) * 730, tolerance: 0.05, note: '"roughly": the exact gap is 43.80'}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: 'gap of roughly $45/month on Linux and $155/month', figure: '155', price: azure-app-service-p1v3-windows-hour, other: azure-app-service-s1-windows-hour, derivation: (rate - other) * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: 'P1v3 -> S1 saves roughly $45/month per instance on Linux and $155/month', figure: '45', price: azure-app-service-p1v3-linux-hour, other: azure-app-service-s1-linux-hour, derivation: (rate - other) * 730, tolerance: 0.05, note: '"roughly": the exact gap is 43.80'}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: 'P1v3 -> S1 saves roughly $45/month per instance on Linux and $155/month', figure: '155', price: azure-app-service-p1v3-windows-hour, other: azure-app-service-s1-windows-hour, derivation: (rate - other) * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: 'saves roughly $57/month per instance on Linux, $115/month on', figure: '57', price: azure-app-service-p1v3-linux-hour, other: azure-app-service-p0v3-linux-hour, derivation: (rate - other) * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-app-service-overprovisioned.md, anchor: 'saves roughly $57/month per instance on Linux, $115/month on', figure: '115', price: azure-app-service-p1v3-windows-hour, other: azure-app-service-p0v3-windows-hour, derivation: (rate - other) * 730}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-idle-sql-database.md, anchor: 'is ~$5/month per DB', figure: '5', price: azure-sql-basic-day, derivation: rate * 365 / 12, tolerance: 0.05, note: '"~$5" for 4.90; the API prices Basic per day'}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-log-analytics-sprawl.md, anchor: '$2.30/GB Pay-As-You-Go', figure: '2.30', price: azure-log-analytics-ingestion-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-log-analytics-sprawl.md, anchor: 'Archive tier (about $0.001/GB-month', figure: '0.001', price: azure-blob-archive-lrs-gb-month}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-orphan-disks.md, anchor: '(E30) is ~$77/month', figure: '77', price: azure-disk-e30-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-orphan-disks.md, anchor: 'about $0.075/GB-month, and a 1 TiB', figure: '0.075', price: azure-disk-e30-month, derivation: rate / 1024}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-orphan-disks.md, anchor: '(P30) is ~$135/month', figure: '135', price: azure-disk-p30-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-orphan-disks.md, anchor: 'about $0.13/GB-month, with Ultra', figure: '0.13', price: azure-disk-p30-month, derivation: rate / 1024}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-orphan-disks.md, anchor: 'orphan accrues that ~$135/month', figure: '135', price: azure-disk-p30-month}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-orphaned-public-ips-and-nics.md, anchor: 'bills every hour it exists (~$0.005/hr', figure: '0.005', price: azure-public-ip-standard-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/azure-orphaned-public-ips-and-nics.md, anchor: 'roughly $3.65/month; East US list rate', figure: '3.65', price: azure-public-ip-standard-hour, derivation: rate * 730}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/gcp-idle-gke-autopilot.md, anchor: 'of $0.10 per cluster per hour', figure: '0.10', price: gcp-gke-cluster-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/gcp-idle-gke-autopilot.md, anchor: 'about $73/month per cluster) regardless', figure: '73', price: gcp-gke-cluster-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/gcp-idle-gke-autopilot.md, anchor: 'free tier credits $74.40 per billing account', figure: '74.40', price: gcp-gke-free-tier-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/gcp-idle-gke-autopilot.md, anchor: '$73/month at the November 2026 list rate', figure: '73', price: gcp-gke-cluster-hour, derivation: rate * 730}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/playbooks/gcp-orphan-persistent-disks.md, anchor: 'SSD persistent disk accrues ~$170/month', figure: '170', price: gcp-pd-ssd-gib-month-us-central1, derivation: rate * 1000}
+
+  # ---- references ---------------------------------------------------------------------------
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'charged separately at ~$0.02/GB outbound', figure: '0.02', price: azure-inter-region-transfer-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'VNet peering charges **$0.01/GB on each side**', figure: '0.01', price: azure-vnet-peering-intra-region-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '**per-hour** (~$0.045/hr)', figure: '0.045', price: azure-nat-gateway-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '(~$0.045/GB). On AKS clusters', figure: '0.045', price: azure-nat-gateway-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: 'NAT Gateway costs ~$33/month idle', figure: '33', price: azure-nat-gateway-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md, anchor: '| Cost | ~$0.01/hour per endpoint', figure: '0.01', price: azure-private-endpoint-hour}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Pro | $15 | 50 TB |', figure: '15', price: aws-cloudfront-plan-pro-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Business | $200 |', figure: '200', price: aws-cloudfront-plan-business-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Premium | $1,000 |', figure: '1,000', price: aws-cloudfront-plan-premium-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at $0.085/GB. The Pro plan', figure: '0.085', price: aws-cloudfront-us-transfer-out-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at $0.085/GB. The Pro plan', figure: '4,250', price: aws-cloudfront-us-transfer-out-gb, derivation: rate * 50000, note: 50 TB at the first-tier rate, as the text says}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'the same 50 TB for $15. For', figure: '15', price: aws-cloudfront-plan-pro-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '25 WAF rules at $1/rule/month', figure: '1', price: aws-waf-rule-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'is $25/month of standalone WAF value', figure: '25', price: aws-waf-rule-month, derivation: rate * 25}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'exceeds the $15 Pro price', figure: '15', price: aws-cloudfront-plan-pro-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'Premium at $1,000/month or staying', figure: '1,000', price: aws-cloudfront-plan-premium-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'offer 50 TB for $15 because', figure: '15', price: aws-cloudfront-plan-pro-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at roughly $0.09/GB - 50 TB/month becomes $4,500', figure: '0.09', price: aws-ec2-transfer-out-internet-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'at roughly $0.09/GB - 50 TB/month becomes $4,500', figure: '4,500', price: aws-ec2-transfer-out-internet-gb, derivation: rate * 50000}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'CloudFront Pro is $15 plus', figure: '15', price: aws-cloudfront-plan-pro-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Filesystem storage (hot tier) | $0.30/GB-month |', figure: '0.30', price: aws-s3-files-storage-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Reads | $0.03/GB |', figure: '0.03', price: aws-s3-files-read-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Writes | $0.06/GB |', figure: '0.06', price: aws-s3-files-write-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'standard S3 pricing ($0.023/GB-month Standard', figure: '0.023', price: aws-s3-standard-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '**First-read cost for small files:** $0.06/GB', figure: '0.06', price: aws-s3-files-write-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '(the import write), not $0.03/GB.', figure: '0.03', price: aws-s3-files-read-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'cached file are $0.03/GB', figure: '0.03', price: aws-s3-files-read-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '$0.0125/GB-month in the infrequent tier', figure: '0.0125', price: aws-s3-intelligent-tiering-infrequent-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$225 ($0.025/GB IA)', figure: '0.025', price: aws-efs-ia-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$225 ($0.025/GB IA)', figure: '225', price: aws-efs-ia-gb-month, derivation: rate * 9000}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$72 ($0.008/GB Archive)', figure: '0.008', price: aws-efs-archive-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$72 ($0.008/GB Archive)', figure: '72', price: aws-efs-archive-gb-month, derivation: rate * 9000}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$115 ($0.0125/GB IT infrequent)', figure: '0.0125', price: aws-s3-intelligent-tiering-infrequent-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$115 ($0.0125/GB IT infrequent)', figure: '115', price: aws-s3-intelligent-tiering-infrequent-gb-month, derivation: rate * 9000, tolerance: 0.03, note: '"~$115" for 112.50'}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Hot working set (500 GB) | $150 ($0.30/GB Std)', figure: '0.30', price: aws-efs-standard-gb-month}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '| Hot working set (500 GB) | $150 ($0.30/GB Std)', figure: '150', price: aws-efs-standard-gb-month, derivation: rate * 500}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$3 ($0.06/GB first read)', figure: '0.06', price: aws-s3-files-write-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '~$3 ($0.06/GB first read)', figure: '3', price: aws-s3-files-write-gb, derivation: rate * 50}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '$6 ($0.06/GB via Files)', figure: '0.06', price: aws-s3-files-write-gb}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: '$6 ($0.06/GB via Files)', figure: '6', price: aws-s3-files-write-gb, derivation: rate * 100}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws.md, anchor: 'where the $0.06/GB first-read import', figure: '0.06', price: aws-s3-files-write-gb}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-billing.md, anchor: 'API queries are charged ($0.01 per request)', figure: '0.01', price: aws-cost-explorer-api-request}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-patterns-networking.md, anchor: 'AWS charges $0.005/hr (~$3.60/month)', figure: '0.005', price: aws-public-ipv4-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-patterns-networking.md, anchor: 'AWS charges $0.005/hr (~$3.60/month)', figure: '3.60', price: aws-public-ipv4-hour, derivation: rate * 730}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-waste-detection-playbooks.md, anchor: '~$3.60/month each (illustrative', figure: '3.60', price: aws-public-ipv4-hour, derivation: rate * 730}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-onboarding-workloads.md, anchor: 'every cross-zone byte costs $0.01/GB', figure: '0.01', price: aws-ec2-cross-az-gb, note: a generic sentence; the AWS rate is the one it matches}
+
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-fabric.md, anchor: 'pay-as-you-go $0.22 per CU-hour', figure: '0.22', price: azure-fabric-cu-hour-westeurope}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-fabric.md, anchor: '1-year reservation $1,146 per CU per year', figure: '1,146', price: azure-fabric-reservation-1y-westeurope}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-fabric.md, anchor: '3-year reservation $3,438 per CU', figure: '3,438', price: azure-fabric-reservation-3y-westeurope}

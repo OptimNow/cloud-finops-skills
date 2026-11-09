@@ -1,0 +1,70 @@
+{
+ "live_value": 0.05,
+ "method": "price-list",
+ "price": "aws-sagemaker-notebook-ml-t3-medium-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-Notebk:ml.t3.medium"
+  },
+  "service_code": "AmazonSageMaker"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "clockSpeed": "2.5 GHz",
+     "component": "Notebook",
+     "computeType": "Standard Instances",
+     "currentGeneration": "Yes",
+     "gpu": "0",
+     "gpuMemory": "0",
+     "instanceName": "ml.t3.medium",
+     "instanceType": "ml.t3.medium-Notebook",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "memory": "4 GiB",
+     "networkPerformance": "Low to Moderate",
+     "operation": "RunInstance",
+     "physicalCpu": "Intel Skylake E5 2686 v5",
+     "physicalGpu": "None",
+     "platoinstancename": "t3",
+     "platoinstancetype": "Notebook",
+     "processorArchitecture": "64-bit",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonSageMaker",
+     "servicename": "Amazon SageMaker",
+     "storage": "EBS only",
+     "usagetype": "USE1-Notebk:ml.t3.medium",
+     "vCpu": "2"
+    },
+    "sku": "3TQK9JP4RR8T8UMP"
+   },
+   "terms": {
+    "OnDemand": {
+     "3TQK9JP4RR8T8UMP.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "3TQK9JP4RR8T8UMP.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.05 per Notebook ml.t3.medium hour in US East (N. Virginia)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0500000000"
+        },
+        "rateCode": "3TQK9JP4RR8T8UMP.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "3TQK9JP4RR8T8UMP",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

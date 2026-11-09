@@ -1,0 +1,102 @@
+{
+ "live_value": 15.0,
+ "method": "price-list",
+ "price": "aws-cloudfront-plan-pro-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "usagetype": "Global-CloudFrontPlan-Pro"
+  },
+  "service_code": "CloudFrontPlans",
+  "term": "FlatRate"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "Any",
+     "locationType": "AWS Region",
+     "operation": "CloudFrontPlan",
+     "plancode": "Pro",
+     "planfamilycode": "CloudFrontPlan",
+     "planfamilyname": "CloudFrontPlan",
+     "planname": "Pro",
+     "regionCode": "",
+     "servicecode": "CloudFrontPlans",
+     "servicename": "CloudFront Flat-Rate Plans",
+     "usagetype": "Global-CloudFrontPlan-Pro"
+    },
+    "sku": "ZV6NSURPZJGXK373"
+   },
+   "terms": {
+    "FlatRate": {
+     "plans": [
+      {
+       "eligibleDowngradePlans": [
+        "62NKXBU85SAM2UCH"
+       ],
+       "eligibleUpgradePlans": [
+        "YFCX9S4GTPBAUPRE",
+        "3PB5CKFAYPQWYGPT",
+        "V2KJXMNUN5F48RNT",
+        "SB2DYFW4NDQBJPB3",
+        "QJTPJUUGJJECY7ED",
+        "5CRDCHZR9BJGZJMC",
+        "T976739Z7Z34RKE8"
+       ],
+       "features": [
+        {
+         "featureCode": "Requests",
+         "featureName": "Requests",
+         "featureSku": "72M4J5MT2V9NDTFR",
+         "overagePolicy": "NO_OVERAGE_THROTTLE",
+         "usageQuota": {
+          "unit": "Requests",
+          "usagePoolingPolicy": "ACCOUNT",
+          "value": "10000000"
+         },
+         "usageType": "Global-CloudFrontPlan-Requests"
+        },
+        {
+         "featureCode": "DataTransfer",
+         "featureName": "Data Transfer",
+         "featureSku": "ZH4CF2VT9RGDWARF",
+         "overagePolicy": "NO_OVERAGE_THROTTLE",
+         "usageQuota": {
+          "unit": "GB",
+          "usagePoolingPolicy": "ACCOUNT",
+          "value": "51200"
+         },
+         "usageType": "Global-CloudFrontPlan-DataTransfer"
+        },
+        {
+         "featureCode": "S3Storage",
+         "featureName": "Included S3 Storage",
+         "featureSku": "HG7Z3KSQ5EHU93M6",
+         "overagePolicy": "NO_OVERAGE_THROTTLE",
+         "usageQuota": {
+          "unit": "GB",
+          "usagePoolingPolicy": "ACCOUNT",
+          "value": "50"
+         },
+         "usageType": "Global-CloudFrontPlan-S3Storage"
+        }
+       ],
+       "planCode": "Pro",
+       "planFamilyCode": "CloudFrontPlan",
+       "sku": "ZV6NSURPZJGXK373",
+       "subscriptionPrice": {
+        "description": "$15.00 per Pro plan",
+        "pricePerUnit": {
+         "USD": "15.0000000000"
+        },
+        "rateCode": "ZV6NSURPZJGXK373.JRTCKXETXF.6YS6EN2CT7"
+       }
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

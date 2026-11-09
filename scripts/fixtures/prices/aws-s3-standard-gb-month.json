@@ -1,0 +1,80 @@
+{
+ "live_value": 0.023,
+ "method": "price-list",
+ "price": "aws-s3-standard-gb-month",
+ "provider": "aws",
+ "query": {
+  "begin_range": "0",
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "TimedStorage-ByteHrs"
+  },
+  "service_code": "AmazonS3"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availability": "99.99%",
+     "durability": "99.999999999%",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonS3",
+     "servicename": "Amazon Simple Storage Service",
+     "storageClass": "General Purpose",
+     "usagetype": "TimedStorage-ByteHrs",
+     "volumeType": "Standard"
+    },
+    "sku": "WP9ANXZGBYYSGJEA"
+   },
+   "terms": {
+    "OnDemand": {
+     "WP9ANXZGBYYSGJEA.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "WP9ANXZGBYYSGJEA.JRTCKXETXF.D42MF2PVJS": {
+        "appliesTo": [],
+        "beginRange": "51200",
+        "description": "$0.022 per GB - next 450 TB / month of storage used",
+        "endRange": "512000",
+        "pricePerUnit": {
+         "USD": "0.0220000000"
+        },
+        "rateCode": "WP9ANXZGBYYSGJEA.JRTCKXETXF.D42MF2PVJS",
+        "unit": "GB-Mo"
+       },
+       "WP9ANXZGBYYSGJEA.JRTCKXETXF.PGHJ3S3EYE": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.023 per GB - first 50 TB / month of storage used",
+        "endRange": "51200",
+        "pricePerUnit": {
+         "USD": "0.0230000000"
+        },
+        "rateCode": "WP9ANXZGBYYSGJEA.JRTCKXETXF.PGHJ3S3EYE",
+        "unit": "GB-Mo"
+       },
+       "WP9ANXZGBYYSGJEA.JRTCKXETXF.PXJDJ3YRG3": {
+        "appliesTo": [],
+        "beginRange": "512000",
+        "description": "$0.021 per GB - storage used / month over 500 TB",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0210000000"
+        },
+        "rateCode": "WP9ANXZGBYYSGJEA.JRTCKXETXF.PXJDJ3YRG3",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "WP9ANXZGBYYSGJEA",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

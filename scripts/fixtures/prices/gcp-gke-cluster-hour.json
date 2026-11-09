@@ -1,0 +1,22 @@
+{
+ "live_value": 0.1,
+ "method": "page",
+ "price": "gcp-gke-cluster-hour",
+ "provider": "gcp",
+ "query": {
+  "catalog": {
+   "description": "Regional Kubernetes Clusters",
+   "service": "services/CCD8-9BF1-090E"
+  },
+  "page": {
+   "regex": "cluster management fee of \\$([0-9.]+) per cluster per hour",
+   "url": "https://cloud.google.com/kubernetes-engine/pricing"
+  }
+ },
+ "raw": {
+  "method": "page",
+  "snippet": "b\" data-is-cws-richtext=\"true\" class=\" \">Cluster management fee</div></h2><div class=\"z5liZ giuCWe\"><div jsaction=\"rcuQ6b:npT2md\" jscontroller=\"M0Q3Qb\" data-is-cws-richtext=\"true\" class=\" \"><p>A flat cluster management fee of $0.10 per cluster per hour (charged in 1 second increments) applies to all GKE clusters irrespective of the mode of operation, cluster size, or topology. Whether it is a single-zone cluster, multi-zonal cluster, regional or Au",
+  "url": "https://cloud.google.com/kubernetes-engine/pricing"
+ },
+ "recorded": "2026-11-09"
+}

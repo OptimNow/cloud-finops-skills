@@ -1,0 +1,57 @@
+{
+ "live_value": 0.0125,
+ "method": "price-list",
+ "price": "aws-s3-standard-ia-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "TimedStorage-SIA-ByteHrs"
+  },
+  "service_code": "AmazonS3"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availability": "99.9%",
+     "durability": "99.999999999%",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonS3",
+     "servicename": "Amazon Simple Storage Service",
+     "storageClass": "Infrequent Access",
+     "usagetype": "TimedStorage-SIA-ByteHrs",
+     "volumeType": "Standard - Infrequent Access"
+    },
+    "sku": "379GYJUQ5WFBUYGM"
+   },
+   "terms": {
+    "OnDemand": {
+     "379GYJUQ5WFBUYGM.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "379GYJUQ5WFBUYGM.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.0125 per GB-Month of storage used in Standard-Infrequent Access",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0125000000"
+        },
+        "rateCode": "379GYJUQ5WFBUYGM.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "379GYJUQ5WFBUYGM",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

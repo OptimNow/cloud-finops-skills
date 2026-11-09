@@ -1,0 +1,89 @@
+{
+ "live_value": 5.672,
+ "method": "price-list",
+ "price": "aws-ec2-g5-12xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "capacitystatus": "Used",
+   "instanceType": "g5.12xlarge",
+   "location": "US East (N. Virginia)",
+   "operatingSystem": "Linux",
+   "operation": "RunInstances",
+   "preInstalledSw": "NA",
+   "tenancy": "Shared"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availabilityzone": "NA",
+     "capacitystatus": "Used",
+     "classicnetworkingsupport": "false",
+     "clockSpeed": "2.8 GHz",
+     "currentGeneration": "Yes",
+     "dedicatedEbsThroughput": "16000 Mbps",
+     "dedicatedEbsThroughputDescription": "16000 Mbps",
+     "ecu": "NA",
+     "enhancedNetworkingSupported": "Yes",
+     "gpu": "4",
+     "gpuMemory": "96 GB",
+     "instanceFamily": "GPU instance",
+     "instanceFamilyCategory": "Accelerated Computing",
+     "instanceType": "g5.12xlarge",
+     "intelAvx2Available": "No",
+     "intelAvxAvailable": "No",
+     "intelTurboAvailable": "No",
+     "licenseModel": "No License required",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "marketoption": "OnDemand",
+     "memory": "192 GiB",
+     "networkPerformance": "40 Gigabit",
+     "normalizationSizeFactor": "5.638170974",
+     "operatingSystem": "Linux",
+     "operation": "RunInstances",
+     "physicalProcessor": "AMD EPYC 7R32",
+     "preInstalledSw": "NA",
+     "processorArchitecture": "64-bit",
+     "processorFeatures": "AMD Turbo; AVX; AVX2",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storage": "1 x 3800 GB NVMe SSD",
+     "tenancy": "Shared",
+     "usagetype": "BoxUsage:g5.12xlarge",
+     "vcpu": "48",
+     "vpcnetworkingsupport": "true"
+    },
+    "sku": "UH59G55UJ94HZTJJ"
+   },
+   "terms": {
+    "OnDemand": {
+     "UH59G55UJ94HZTJJ.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "UH59G55UJ94HZTJJ.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$5.672 per On Demand Linux g5.12xlarge Instance Hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "5.6720000000"
+        },
+        "rateCode": "UH59G55UJ94HZTJJ.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "UH59G55UJ94HZTJJ",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

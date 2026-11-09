@@ -1,0 +1,59 @@
+{
+ "live_value": 0.08,
+ "method": "price-list",
+ "price": "aws-ebs-gp3-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "EBS:VolumeUsage.gp3"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "maxIopsvolume": "80000",
+     "maxThroughputvolume": "2000 MiB/s",
+     "maxVolumeSize": "64 TiB",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storageMedia": "SSD-backed",
+     "usagetype": "EBS:VolumeUsage.gp3",
+     "volumeApiName": "gp3",
+     "volumeType": "General Purpose"
+    },
+    "sku": "JG3KUJMBRGHV3N8G"
+   },
+   "terms": {
+    "OnDemand": {
+     "JG3KUJMBRGHV3N8G.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "JG3KUJMBRGHV3N8G.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.08 per GB-month of General Purpose (gp3) provisioned storage - US East (N. Virginia)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0800000000"
+        },
+        "rateCode": "JG3KUJMBRGHV3N8G.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "JG3KUJMBRGHV3N8G",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

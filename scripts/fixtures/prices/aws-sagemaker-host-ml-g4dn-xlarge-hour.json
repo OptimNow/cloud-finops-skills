@@ -1,0 +1,70 @@
+{
+ "live_value": 0.736,
+ "method": "price-list",
+ "price": "aws-sagemaker-host-ml-g4dn-xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-Host:ml.g4dn.xlarge"
+  },
+  "service_code": "AmazonSageMaker"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "clockSpeed": "2.5 GHz",
+     "component": "Hosting",
+     "computeType": "Accelerated Computing Instances",
+     "currentGeneration": "Yes",
+     "gpu": "1",
+     "gpuMemory": "0",
+     "instanceName": "ml.g4dn.xlarge",
+     "instanceType": "ml.g4dn.xlarge-Hosting",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "memory": "16 GiB",
+     "networkPerformance": "Up to 25 Gigabit",
+     "operation": "RunInstance",
+     "physicalCpu": "Intel Xeon Family",
+     "physicalGpu": "NVIDIA T4 GPU",
+     "platoinstancename": "g4dn",
+     "platoinstancetype": "Hosting",
+     "processorArchitecture": "64-bit",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonSageMaker",
+     "servicename": "Amazon SageMaker",
+     "storage": "125 GB NVMe SSD",
+     "usagetype": "USE1-Host:ml.g4dn.xlarge",
+     "vCpu": "4"
+    },
+    "sku": "RJMA4EBYTS3MN855"
+   },
+   "terms": {
+    "OnDemand": {
+     "RJMA4EBYTS3MN855.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "RJMA4EBYTS3MN855.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.736 for Endpoint ml.g4dn.xlarge",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.7360000000"
+        },
+        "rateCode": "RJMA4EBYTS3MN855.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "RJMA4EBYTS3MN855",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

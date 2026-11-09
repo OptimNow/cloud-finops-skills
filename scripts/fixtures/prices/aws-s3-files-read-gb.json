@@ -1,0 +1,55 @@
+{
+ "live_value": 0.03,
+ "method": "price-list",
+ "price": "aws-s3-files-read-gb",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-Files-Read"
+  },
+  "service_code": "AmazonS3"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "group": "S3-API-Files-Read",
+     "groupDescription": "Files data reads",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "Read",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonS3",
+     "servicename": "Amazon Simple Storage Service",
+     "usagetype": "USE1-Files-Read"
+    },
+    "sku": "5EQEX3JGMHP6ANKD"
+   },
+   "terms": {
+    "OnDemand": {
+     "5EQEX3JGMHP6ANKD.JRTCKXETXF": {
+      "effectiveDate": "2026-10-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "5EQEX3JGMHP6ANKD.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD 0.03 per GB for USE1-Files-Read in US East (N. Virginia)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0300000000"
+        },
+        "rateCode": "5EQEX3JGMHP6ANKD.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB"
+       }
+      },
+      "sku": "5EQEX3JGMHP6ANKD",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}
