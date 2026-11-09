@@ -57,6 +57,19 @@ they document an operating discipline that depends on credentials, file
 paths, and infrastructure specific to the maintainer's setup, none of
 which belong in the public repo.
 
+**User reports (since 2026-11-09).** Two GitHub issue forms in
+`.github/ISSUE_TEMPLATE/` take an answer that was wrong or incomplete (label
+`answer-report`) and a question the library did not cover (label `coverage-gap`);
+`config.yml` keeps blank issues open and links the troubleshooting, contributing and
+privacy pages. They exist because the connector's zero-result log deliberately drops
+the free-text `query` (PRIVACY.md), so apart from client engagements the forms are
+the only source of real wordings. Triage, in order: reproduce on the surface the
+report names, verify on the provider's own page, fix in a content PR whose
+CHANGELOG line credits the issue, then add the wording as a probe in the
+maintainer-local coverage battery (`pipeline/coverage-probes.md`) so it is re-run
+before every release. A report that is right but out of scope goes to
+`docs/ROADMAP.md` with the issue number, not to a silent close.
+
 ---
 
 ## Lessons learned

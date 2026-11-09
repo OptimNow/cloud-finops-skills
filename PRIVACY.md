@@ -59,8 +59,11 @@ Two logs exist:
   path, status code and request type, never the arguments. When a lookup matches
   nothing, it also writes the tool name and the arguments that missed: the facet
   filters, the reference name and section phrase, or a guide slug that OptimToken
-  did not recognise or could not serve. OptimNow reads these lines to find coverage gaps in the
-  library.
+  did not recognise or could not serve. A free-text `query` passed to a finder is
+  the exception: the line carries its word count, never its words, because that
+  text is your sentence. OptimNow reads these lines to find coverage gaps in the
+  library; to tell us the question itself, use the report forms at
+  <https://github.com/OptimNow/cloud-finops-skills/issues/new/choose>.
 - **Web server access log.** The hosting platform keeps the standard HTTP access log
   (client IP address, timestamp, method, path, status code). The path is always
   `/mcp`, so the access log records that a call happened, not what it asked.

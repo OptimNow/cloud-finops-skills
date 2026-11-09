@@ -11,6 +11,25 @@ tool - an MCP tool name, an endpoint URL, a provenance field - check
 and tells you which ones a change ripples into. Most cross-repo breakage here is
 documentation drift that no CI check catches.
 
+## Report a wrong answer or a gap
+
+You do not need to contribute content to help. Two issue forms take two minutes each,
+from [https://github.com/OptimNow/cloud-finops-skills/issues/new/choose](https://github.com/OptimNow/cloud-finops-skills/issues/new/choose):
+
+- **Wrong or incomplete answer**: the skill or the connector answered, and the answer
+  was wrong, outdated or missed the point. Paste the question as you asked it, the
+  answer as you got it, and if you have it the provider page that says otherwise.
+- **Question not covered**: you asked, and the library found nothing or answered in
+  generalities. The exact wording is the valuable part: the connector never records
+  what you typed (see [PRIVACY.md](./PRIVACY.md)), so these reports and client
+  engagements are the only places real wordings come from.
+
+What happens next: the report is reproduced on the surface you named, checked against
+the provider's own documentation, fixed in a content pull request that credits the
+issue in `CHANGELOG.md`, and its wording joins the battery of test questions run before
+every release, so the same gap does not reopen. Both forms are public: remove account
+identifiers, negotiated rates, invoice amounts and client names before you paste.
+
 ## Process and credit
 
 Open an issue first for anything larger than a typo or single fact correction, so we

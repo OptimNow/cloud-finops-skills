@@ -1,0 +1,85 @@
+name: Wrong or incomplete answer
+description: The skill or the connector answered your question, and the answer was wrong, outdated or missed the point.
+title: "Wrong answer: "
+labels: ["answer-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. A report with the question as you asked it and the answer as you got it is the fastest way to fix the library: each confirmed report is corrected on the provider's own documentation and becomes a test question we run before every release.
+
+        Before you paste anything, remove account identifiers, negotiated rates, invoice amounts and anything else your company would not publish. This form is public.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where did you ask?
+      options:
+        - Claude plugin (Claude directory or Claude Code marketplace)
+        - Hosted MCP connector (mcp.optimnow.io)
+        - cloud-finops-mcp package (PyPI, local server)
+        - Another tool through install.sh (Cursor, Windsurf, Codex, Aider, Kiro, ...)
+        - ChatGPT or Gemini bundle
+        - llms-full.txt or the raw files
+        - I do not know
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: The question, as you asked it
+      description: Paste your exact wording, in English or in French. Do not clean it up.
+    validations:
+      required: true
+  - type: textarea
+    id: answer
+    attributes:
+      label: The answer you got
+      description: The part that is wrong or incomplete is enough. If the assistant named a guide or a runbook, keep that line.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or missing
+      description: In your words. A wrong mechanic, an outdated rule, a missing precondition, a recommendation you disagree with, a figure quoted without its date.
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: The correct mechanic and where it is documented
+      description: Optional, but it turns a report into a fix. A link to the provider's documentation page, a line from your own bill with the amounts removed, an enrolment term. "I believe X" without a source is still welcome; say so.
+  - type: input
+    id: location
+    attributes:
+      label: Guide or runbook concerned, if you know it
+      placeholder: finops-aws-commitments.md, "Savings Plan sizing"; or aws-zombie-nat-gateway
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider or domain
+      multiple: true
+      options:
+        - AWS
+        - Azure
+        - GCP
+        - OCI
+        - AI platforms (Bedrock, Azure OpenAI, Vertex AI, Anthropic, open-weight vendors)
+        - Data platforms (Databricks, Fabric, Snowflake)
+        - SaaS, licences, ITAM
+        - Kubernetes
+        - Cross-provider (allocation, chargeback, forecasting, KPIs, contracts, the practice)
+        - Other
+  - type: input
+    id: when
+    attributes:
+      label: When, and which version if you know it
+      description: The date you asked is enough. The plugin version is shown in the Claude directory; the package version is the output of `pip show cloud-finops-mcp`.
+      placeholder: 2026-11-09, plugin 1.49.1
+  - type: checkboxes
+    id: confidentiality
+    attributes:
+      label: Confidentiality
+      options:
+        - label: This report contains no account identifier, negotiated rate, invoice amount or client name.
+          required: true

@@ -80,6 +80,11 @@ link.
 Content is updated weekly from primary provider sources. Every merge to the `main`
 branch of the repository is a new plugin version.
 
+If an answer was wrong or incomplete, or a question found nothing, report it at
+<https://github.com/OptimNow/cloud-finops-skills/issues/new/choose> with the
+wording you used. Each confirmed report is checked against the provider's own
+documentation, fixed, and becomes a test question run before every release.
+
 ## License and source
 
 Licensed under CC BY-SA 4.0 (see `LICENSE`). Credit OptimNow when you reuse the

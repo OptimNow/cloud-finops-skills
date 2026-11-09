@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Installation or tool problem
+    url: https://github.com/OptimNow/cloud-finops-skills/blob/main/INSTALLATION.md#troubleshooting
+    about: Read the troubleshooting section first; if it does not cover your case, open a blank issue with the exact command and its output.
+  - name: Contribute content
+    url: https://github.com/OptimNow/cloud-finops-skills/blob/main/CONTRIBUTING.md
+    about: Corrections, new runbooks, counter-examples and adversarial review, with the conventions they follow.
+  - name: Privacy
+    url: https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md
+    about: What the skill, the hosted connector and the package collect, and what they never record.

@@ -60,6 +60,9 @@ cloud-finops-skills/
 ├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
 │                             publish-mcp, publish-registry, mcp-install-smoke,
 │                             release, dependabot-automerge
+├── .github/ISSUE_TEMPLATE/ <- Two issue forms (wrong or incomplete answer,
+│                             question not covered) plus the chooser config; each
+│                             confirmed report becomes a coverage probe
 ├── assets/                <- Installation-guide screenshots (embedded in
 │                             INSTALLATION.md), the GitHub social preview, the
 │                             directory listing icon (icon.png), the OptimNow
