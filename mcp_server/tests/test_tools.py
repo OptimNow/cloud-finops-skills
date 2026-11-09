@@ -552,9 +552,10 @@ def test_query_tokens_fold_accents_stopwords_and_plurals() -> None:
         "servent",
         "rien",
     }
-    # Three-letter tokens are not plural-stemmed ("ris" stays "ris", "aws" stays "aws");
-    # both sides of a comparison pass through the same tokeniser, so they still match.
-    assert tools.query_tokens("Which of my RIs are about to expire?") == {"ris", "expire"}
+    # An acronym plural folds before lowercasing ("RIs" to "ri", "VMs" to "vm"); an
+    # all-caps word keeps its "s" ("AWS" stays "aws").
+    assert tools.query_tokens("Which of my RIs are about to expire?") == {"ri", "expire"}
+    assert tools.query_tokens("AWS VMs and GPUs") == {"aws", "vm", "gpu"}
     assert tools.query_tokens("   ") == set()
 
 
@@ -827,3 +828,47 @@ def test_every_declared_question_routes_to_its_own_file() -> None:
                 misses.append((pb.name, question.text, top[0]["name"] if top else None))
     assert not misses, "\n".join(f"{name}: {text!r} -> {got}" for name, text, got in misses)
 
+
+# --- ranking fixes from the 9 November 2026 review ---------------------------
+
+
+def test_documented_example_routes_to_the_idle_vm_runbook() -> None:
+    """server.py documents this wording; "VMs" did not fold to "VM" before."""
+    result = tools.find_playbooks(query="which of our VMs run for nothing")
+    assert result["playbooks"][0]["name"] == "azure-idle-vm"
+    assert tools.find_playbooks(query="idle VMs")["playbooks"][0]["name"] == "azure-idle-vm"
+
+
+def test_us_spelling_and_word_families_rank_like_the_british_form() -> None:
+    def names(q: str) -> list[str]:
+        return [r["name"] for r in tools.find_references(query=q)["references"]]
+
+    assert names("license optimization") == names("licence optimisation")
+    assert tools.query_tokens("tagging tagged tags") == {"tag"}
+    assert tools.query_tokens("allocate allocated allocations") == {"allocation"}
+
+
+def test_a_service_name_counts_as_naming_its_provider() -> None:
+    top = tools.find_playbooks(query="idle RDS database")["playbooks"][0]
+    assert top["name"].startswith("aws-")
+    names = [p["name"] for p in tools.find_playbooks(query="EC2 instances idle at night")["playbooks"]]
+    assert not names[0].startswith("azure-")
+
+
+def test_a_tie_goes_to_the_file_named_after_the_query() -> None:
+    assert tools.find_references(query="FOCUS")["references"][0]["name"] == "finops-focus"
+
+
+def test_stopword_query_beside_a_facet_falls_back_to_the_facet() -> None:
+    facet_only = tools.find_playbooks(scope="aws")
+    result = tools.find_playbooks(scope="aws", query="what should we do")
+    assert result["total"] == facet_only["total"] > 0
+    assert "facets alone decided" in result["note"]
+    refs = tools.find_references(phase="Optimize", query="the")
+    assert refs["total"] == tools.find_references(phase="Optimize")["total"] > 0
+
+
+def test_stopword_query_without_a_facet_still_gets_the_hint() -> None:
+    result = tools.find_playbooks(query="what should we do")
+    assert result["total"] == 0
+    assert "no content words" in result["hint"]

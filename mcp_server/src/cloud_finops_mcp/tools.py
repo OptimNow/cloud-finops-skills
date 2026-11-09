@@ -82,6 +82,8 @@ _QUESTION_WEIGHT = 1.0
 # weighting alone lets an Azure question win that query on "reduce" and "cost".
 # Cross-provider files (FinOps practice, allocation, contracts) are untouched.
 _OTHER_PROVIDER_FACTOR = 0.5
+# Service names that belong to one provider name it too: "idle RDS database" is
+# an AWS question even without the word AWS. Only names no other provider uses.
 _PROVIDER_WORDS = {
     "aws": "aws",
     "amazon": "aws",
@@ -89,6 +91,13 @@ _PROVIDER_WORDS = {
     "gcp": "gcp",
     "google": "gcp",
     "oci": "oci",
+    **dict.fromkeys(
+        "ec2 rds s3 ebs efs lambda cloudfront sagemaker bedrock dynamodb redshift "
+        "aurora eks ecs fargate elasticache opensearch athena cur".split(),
+        "aws",
+    ),
+    **dict.fromkeys("aks cosmos ptu entra vnet".split(), "azure"),
+    **dict.fromkeys("gke bigquery gcs vertex cud".split(), "gcp"),
 }
 _REFERENCE_PROVIDER_PREFIXES = (
     ("finops-aws", "aws"),
@@ -117,13 +126,40 @@ _STOPWORDS = frozenset(
     le la les l un une des de du d et ou au aux en dans sur pour par que qui
     quoi qu ne pas est sont nous notre nos vos votre ce cet cette ces il elle
     ils elles se sa son ses y comment pourquoi quand quel quelle quels quelles
-    faut plus sans avec dont encore
+    faut plus sans avec dont encore fait faire ca combien
     """.split()
 )
 
 
+# An uppercase acronym with a lowercase plural "s" (VMs, RIs, IPs, AZs, GPUs, PTUs)
+# loses the "s" before lowercasing: once lowercased, "vms" is too short for the
+# plural rule and "aws" must keep its "s". All-caps words (AWS, EBS) are untouched.
+_ACRONYM_PLURAL_RE = re.compile(r"\b([A-Z]{2,6})s\b")
+
+# Word families and US spellings onto one form, applied after the plural rule. The
+# index is written in British English and users write both; "tagging" has to meet
+# "tag" and "optimization" "optimisation". Kept to the FinOps vocabulary the
+# 9 November 2026 review found split; the self-routing test guards the index.
+_CANONICAL = {
+    **dict.fromkeys("tagging tagged".split(), "tag"),
+    **dict.fromkeys("allocate allocated allocating".split(), "allocation"),
+    **dict.fromkeys(
+        "optimization optimize optimise optimized optimised optimizing optimising".split(),
+        "optimisation",
+    ),
+    **dict.fromkeys("license licensing licenced licensed".split(), "licence"),
+    "organization": "organisation",
+    **dict.fromkeys("utilization utilize utilise utilized utilised".split(), "utilisation"),
+    **dict.fromkeys("forecasting forecasted".split(), "forecast"),
+    **dict.fromkeys("budgeting budgeted".split(), "budget"),
+    "categorie": "category",
+    "behavior": "behaviour",
+}
+
+
 def _fold(text: str) -> str:
     """Lowercase ASCII fold, so ``Coûte`` matches ``coute`` and ``Réservation`` ``reservation``."""
+    text = _ACRONYM_PLURAL_RE.sub(r"\1", text)
     decomposed = unicodedata.normalize("NFKD", text)
     return "".join(ch for ch in decomposed if not unicodedata.combining(ch)).lower()
 
@@ -136,8 +172,8 @@ def _stem(token: str) -> str:
     if len(token) > 4 and token.endswith(("sses", "xes")):
         return token[:-2]
     if len(token) > 3 and token.endswith("s") and not token.endswith("ss"):
-        return token[:-1]
-    return token
+        token = token[:-1]
+    return _CANONICAL.get(token, token)
 
 
 def _tokenise(text: str) -> frozenset[str]:
@@ -282,8 +318,9 @@ def _rank_by_query(
     ``title_text`` maps an item to the text scored at title weight: title plus
     description for a reference, title plus service for a playbook. ``corpus``
     is the whole index of that kind, which sets the word weights; ``items`` is
-    the facet-filtered subset actually ranked. Ties break on name so the order
-    is stable from one call to the next.
+    the facet-filtered subset actually ranked. Ties break first on the query
+    words the file's name carries ("FOCUS" puts `finops-focus` first), then on
+    name, so the order is stable from one call to the next.
     """
     tokens = _tokenise(query)
     if not tokens:
@@ -299,7 +336,13 @@ def _rank_by_query(
             score *= _OTHER_PROVIDER_FACTOR
         if score >= QUERY_MIN_SCORE:
             ranked.append((item, score, question))
-    ranked.sort(key=lambda entry: (-entry[1], entry[0].name))
+    ranked.sort(
+        key=lambda entry: (
+            -entry[1],
+            -len(tokens & query_tokens(entry[0].name.replace("-", " "))),
+            entry[0].name,
+        )
+    )
     return ranked[:QUERY_RESULT_LIMIT]
 
 
@@ -310,6 +353,26 @@ def _query_entry(item, score: float, question: Question | None) -> dict[str, Any
     entry["matched_question"] = question.text if question else None
     entry["suggested_section"] = question.section if question is not None else None
     return entry
+
+
+def _drop_empty_query(query: str | None, active: dict[str, Any]) -> tuple[str | None, bool]:
+    """``(query, dropped)``: a query with no content words is dropped when a facet is set.
+
+    "facets narrow first, query ranks what is left" would otherwise return
+    nothing for ``find_playbooks(scope="aws", query="what should we do")``.
+    Without a facet the query is kept, so the caller still gets the
+    stopword hint. The text is not tokenised through the cache.
+    """
+    if not active or not isinstance(query, str) or not query.strip():
+        return query, False
+    words = [t for t in _QUERY_TOKEN_RE.findall(_fold(query)) if t not in _STOPWORDS and len(t) > 1]
+    return (None, True) if not words else (query, False)
+
+
+_QUERY_DROPPED_NOTE = (
+    "The query has no content words once common words are set aside, so the "
+    "facets alone decided this list."
+)
 
 
 def _query_miss_help(kind: str, query_text: str) -> dict[str, Any]:
@@ -679,6 +742,8 @@ def find_references(
             continue
         matches.append(ref)
 
+    query, query_dropped = _drop_empty_query(query, active)
+
     reported_filters: dict[str, Any] = dict(active)
     if persona_primary_only and "persona" in active:
         reported_filters["persona_primary_only"] = True
@@ -710,6 +775,8 @@ def find_references(
         "references": [r.to_dict() for r in matches],
         "total": len(matches),
     }
+    if query_dropped:
+        result["note"] = _QUERY_DROPPED_NOTE
     if not matches and active:
         result.update(_empty_result_help(active, reference_vocabulary()))
         _log_zero_result("find_references", reported_filters)
@@ -829,6 +896,8 @@ def find_playbooks(
             continue
         matches.append(pb)
 
+    query, query_dropped = _drop_empty_query(query, active)
+
     reported_filters: dict[str, Any] = dict(active)
     query_text, query_cut = capped_query(query) if isinstance(query, str) else ("", False)
     if query_text:
@@ -857,6 +926,8 @@ def find_playbooks(
         "playbooks": [pb.to_dict() for pb in matches],
         "total": len(matches),
     }
+    if query_dropped:
+        result["note"] = _QUERY_DROPPED_NOTE
     if not matches and active:
         result.update(_empty_result_help(active, playbook_vocabulary()))
         _log_zero_result("find_playbooks", active)
