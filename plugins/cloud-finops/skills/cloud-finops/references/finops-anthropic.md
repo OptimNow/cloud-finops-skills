@@ -13,7 +13,9 @@ questions:
     section: "Fast mode pricing"
   - q: "How is Claude API usage billed beyond input and output tokens?"
     section: "Rate structure"
-  - q: "Does prompt caching or the Batch API cut our Anthropic bill, and when?"
+  - q: "Does prompt caching cut our Anthropic bill, and after how many reuses does it pay?"
+    section: "Modifiers"
+  - q: "When is the Claude Batch API worth it, given results can take up to 24 hours?"
     section: "Batch API pricing"
   - q: "What controls can an admin set on Claude usage and spend?"
     section: "Governance controls"
@@ -492,8 +494,10 @@ Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](htt
 - [ ] Monitor Fast mode activation per user or team
 - [ ] Treat web search and code execution as separate cost centres with their own budgets
 - [ ] Detect Fast mode usage in CI/CD or batch jobs (anomaly detection)
-- [ ] Track Managed Agent runtime hours and resource utilisation
-- [ ] Monitor agent session persistence costs
+- [ ] Track Managed Agent session-runtime hours and the tokens each session consumes
+      (the only two billing dimensions)
+- [ ] Find sessions left `running` rather than `idle`: runtime bills only while running,
+      and idle time is free
 - [ ] Use Anthropic's native spend dashboard for organisation-level spend visibility (as of July 2026)
 - [ ] Configure native threshold alerts for spend limits per team or workload
 - [ ] Apply model entitlements to restrict access to premium models/tiers where appropriate
@@ -563,7 +567,7 @@ dimensions:
 | Tool usage (web search, code execution) | Function / use case |
 | Batch API usage | Workload type |
 | Managed Agent runtime | Agent owner / business process |
-| Agent session persistence | Long-running workflow / department |
+| Managed Agent session tokens | Agent owner / business process, beside the runtime meter |
 
 ### Enterprise billing context
 

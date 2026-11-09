@@ -42,7 +42,7 @@ vary by region; verify against live pricing before sizing a business case.
 -- Athena over CUR 2.0: cross-AZ data transfer cost by account, last 30 days
 SELECT
   line_item_usage_account_id      AS account,
-  product_region                  AS region,
+  product_region_code             AS region,
   SUM(line_item_usage_amount)     AS gb_cross_az,
   SUM(line_item_unblended_cost)   AS cost_30d
 FROM cur2

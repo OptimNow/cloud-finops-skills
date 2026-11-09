@@ -562,8 +562,9 @@ harness is worth building.
 **Pull the live rate card before building routing economics on a remembered ratio.**
 Call a pricing tool if one is available, or check <https://optimtoken.optimnow.io>. The
 payoff from tiered routing depends directly on the current spread. For the Claude
-per-model rate structure, see `finops-anthropic.md` - and treat the figures there as
-illustrative, not as a quotable rate card. For the open-weight vendors' own hosted
+tier structure and the ratios between models, see `finops-anthropic.md`, which carries no
+absolute rate: the rates of the day are in the AI Pricing Hub
+(<https://optimtoken.optimnow.io>). For the open-weight vendors' own hosted
 APIs (DeepSeek, Qwen, Kimi, GLM) and their distinct discount mechanics, see
 `finops-open-weight-vendors.md`.
 
@@ -603,15 +604,20 @@ September 2026).
 - Check whether the provider bills cache **writes** before treating caching as free.
   Anthropic always has. OpenAI direct and Azure OpenAI do from the GPT-5.6 family onwards
   (1.25x the input rate, and on OpenAI direct that includes the Batch and Flex tiers, at
-  1.25x their discounted input rate; GPT-5.5 and earlier carry no write charge). On the
-  Responses API, GPT-5.6 and later can also take a 12-hour lifetime
+  1.25x their discounted input rate; GPT-5.5 and earlier carry no write charge). On
+  OpenAI direct's Responses API, GPT-5.6 and later can also take a 12-hour lifetime
   (`prompt_cache_options.ttl: "12h"`) at 2.5x input per write, with the same read rate
-  (20 October 2026). One 12-hour write costs two 30-minute writes, so it pays only where
-  the prefix would otherwise be written three or more times in 12 hours, and upgrading
-  live 30-minute coverage bills a new write with no credit. Bedrock
+  (20 October 2026); Azure OpenAI supports only the 30-minute `ttl`
+  (`finops-azure-openai.md`). One 12-hour write costs two 30-minute writes, so it pays
+  only where the prefix would otherwise be written three or more times in 12 hours, and
+  upgrading live 30-minute coverage bills a new write with no credit. Bedrock
   depends on the model: Claude writes at 1.25x or 2x by TTL, recent OpenAI models and
-  Kimi K3 at 1.25x, older OpenAI models at no premium. Vertex AI writes at the standard
-  input rate. Read rates vary too: 0.1x on most models, 0.05x on GPT-6.1 Sol and Claude
+  Kimi K3 at 1.25x, older OpenAI models at no premium. Vertex AI writes Gemini caches at
+  the standard input rate (explicit caches add a storage charge, see
+  `finops-vertexai.md`), but Claude on Vertex AI bills Anthropic's write premium, 1.25x
+  for a 5-minute and 2x for a 1-hour lifetime
+  ([Claude prompt caching on Vertex AI](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/partner-models/claude/prompt-caching),
+  read 9 November 2026), so the Gemini break-even does not carry over. Read rates vary too: 0.1x on most models, 0.05x on GPT-6.1 Sol and Claude
   Opus 5.5 and Sonnet 5.5, 0.025x on Claude Fable 5.1 and Mythos 5.1 (as of 2 October
   2026; Claude rates re-checked on the Anthropic prompt caching page, 27 October 2026).
   On OpenAI GPT-5.6 and later, implicit mode (the default) places a breakpoint at the latest

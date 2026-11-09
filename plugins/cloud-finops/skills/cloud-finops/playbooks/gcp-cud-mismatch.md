@@ -105,8 +105,9 @@ is Billing > Reports > **CUD analysis**.
 ## Anti-pattern
 
 - Buying 3-year resource-based CUDs during an active modernisation
-  programme. The migration that saves 20% on compute can strand a 57%
-  discount instrument worth more than the saving.
+  programme. The migration that saves 20% on compute can strand an
+  instrument discounted up to 55% (70% on memory-optimised series, per
+  Google's CUD overview) that is worth more than the saving.
 - Forcing workloads back onto old machine series *solely* to consume CUD
   credits when the migration was performance- or cost-justified -
   metric-fixing (distinct from step 3, which moves only shape-agnostic

@@ -146,7 +146,7 @@ Typical sources:
 |---|---|---|
 | Unattached EBS volumes (or equivalents) | `Attachment State = available`, `LastAttached > 14 days` | Inventory across regions; cross-reference with snapshot history |
 | Orphaned EBS snapshots | Source volume ID does not exist; AMI reference does not exist | Snapshot age + parent-volume status query |
-| Unassociated Elastic IPs | EIP allocated, no association to running resource | Direct inventory; ~$3.60/month each (illustrative us-east-1 list rate as at August 2026; all public IPv4 has been charged since February 2024, attached or not - see Category 8) |
+| Unassociated Elastic IPs | EIP allocated, no association to running resource | Direct inventory; ~$3.65/month each (illustrative us-east-1 list rate read in November 2026, $0.005/hr x 730 hours; all public IPv4 has been charged since February 2024, attached or not - see Category 8) |
 | Empty S3 buckets without lifecycle | Object count = 0, no lifecycle policy, age > 90 days | List buckets, filter by metadata - never enumerate objects |
 | Security groups with no attached interfaces | No ENI references, no ALB/NLB reference, no Lambda VPC config reference | Reverse-lookup query |
 | AMIs with no running instances | AMI ID not referenced by any instance, launch template, or ASG | Cross-reference inventory |
@@ -314,7 +314,8 @@ Right-sizing reduces cost without functional change.
 SELECT
   ResourceId,
   Region,
-  Tags['team'] AS team,
+  -- element_at returns NULL when the tag is absent; Tags['team'] fails
+  element_at(Tags, 'team') AS team,
   EffectiveCost AS gp2_monthly_cost,
   -- gp3 base price + IOPS + throughput vs gp2 base price
   -- gp3 is ~20% cheaper than gp2 for equivalent specs in most regions
@@ -323,7 +324,9 @@ SELECT
 FROM focus_data
 WHERE ServiceCategory = 'Storage'
   AND ResourceType = 'EBS Volume'
-  AND Tags['volume_type'] = 'gp2'  -- mapping from provider tag
+  -- FOCUS has no volume-type column and the type is not a tag: AWS carries
+  -- it in the charge description ("... General Purpose SSD (gp2) ...")
+  AND ChargeDescription LIKE '%(gp2)%'
   AND ChargeClass IS NULL
   AND ChargePeriodStart >= current_date - interval '30' day
 ORDER BY estimated_monthly_savings DESC;

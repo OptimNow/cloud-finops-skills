@@ -10,7 +10,7 @@ fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:budget:deep", "azure:budget:deep", "gcp:budget:deep", "ai-platforms:budget:partial"]
 questions:
   - q: "How do we catch a cloud cost spike before the invoice arrives?"
-    section: "Why anomaly management comes first"
+    section: "Crawl"
   - q: "Which alert thresholds should we set so we are not flooded with false alarms?"
     section: "Threshold philosophy"
   - q: "Which anomaly detection tools do AWS, Azure and GCP include, and are they enough?"
@@ -220,7 +220,7 @@ WITH baseline AS (
     ServiceName,
     Region,
     BillingAccountId,
-    ResourceTags['team'] AS team,
+    element_at(Tags, 'team') AS team,  -- NULL, not an error, when untagged
     AVG(EffectiveCost) AS mean_cost,
     STDDEV(EffectiveCost) AS std_cost
   FROM focus_daily_cost
@@ -231,7 +231,7 @@ WITH baseline AS (
   GROUP BY 1, 2, 3, 4
 ),
 recent AS (
-  SELECT ServiceName, Region, BillingAccountId, ResourceTags['team'] AS team,
+  SELECT ServiceName, Region, BillingAccountId, element_at(Tags, 'team') AS team,
          AVG(EffectiveCost) AS recent_cost
   FROM focus_daily_cost
   WHERE ChargePeriodStart >= current_date - interval '30' day

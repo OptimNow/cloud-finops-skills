@@ -46,9 +46,16 @@ pricing before quoting.
 ```promql
 # DCGM telemetry signature for MIG candidate
 avg_over_time(DCGM_FI_PROF_GR_ENGINE_ACTIVE{gpu="0"}[14d]) < 0.14
-  AND avg_over_time(DCGM_FI_DEV_FB_USED{gpu="0"}[14d]) < 10737418240  # bytes = 10 GB
+  AND avg_over_time(DCGM_FI_DEV_FB_USED{gpu="0"}[14d]) < 10240  # MB (the DCGM unit) = 10 GB
   AND avg_over_time(DCGM_FI_PROF_PIPE_TENSOR_ACTIVE{gpu="0"}[14d]) < 0.10
 ```
+
+DCGM reports `DCGM_FI_DEV_FB_USED` in MB, not bytes
+([DCGM field identifiers](https://docs.nvidia.com/datacenter/dcgm/latest/dcgm-api/dcgm-api-field-ids.html),
+read 9 November 2026), so the memory threshold is 10240. The default counter
+file on dcgm-exporter's main branch (read the same day) renames the field
+`DCGM_FI_DEV_FB_USED_BYTES`, in bytes: if your exporter emits that name,
+the threshold is 10737418240.
 
 The 14% threshold is intentional: it is the inverse of 7 (max MIG slices
 per A100), so a workload below that usage fits in one slice. For

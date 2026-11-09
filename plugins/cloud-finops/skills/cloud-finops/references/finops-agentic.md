@@ -17,7 +17,8 @@ questions:
     section: "Workflow, pipeline, agent - three cost problems under one word"
   - q: "Can an AI agent pay for things on its own, and how do we keep control of that spend?"
     section: "Agents as cost actors: agent-initiated payments (x402 / MPP)"
-  - "What should we monitor so an agent stuck in a loop does not burn money for hours?"
+  - q: "Per-token price keeps falling, so why does each agent task cost us more every quarter?"
+    section: "Agentic cost anatomy - where the tokens go"
   - "Combien va nous coûter un agent IA en tokens, et comment l'estimer avant de le construire ?"
 ---
 
@@ -42,7 +43,7 @@ as "agents":
 |---|---|---|---|
 | **Workflow** | Traditional software with GenAI bolted into one or more steps | Bounded per invocation | Standard test set |
 | **Pipeline** | Predetermined steps, LLM called at one or more of them (most chatbots) | Bounded: per-call cost × known number of calls | LLM-as-judge works (fixed trajectory) |
-| **True agent** | Broad objective, tools available, decides at run time what to call, in what order, for how long | **Unbounded per task** - up to ~30x token variance on the same prompt (Bai et al. 2026, cited below) | LLM-as-judge breaks: the agent constructs its own prompts, signal lives in the trajectory, not the final output |
+| **True agent** | Broad objective, tools available, decides at run time what to call, in what order, for how long | **Unbounded per task** - runs on the same task differ by up to 30x in total tokens (Bai et al. 2026, cited in "Agentic cost anatomy" below) | LLM-as-judge breaks: the agent constructs its own prompts, signal lives in the trajectory, not the final output |
 
 **FinOps implications:**
 
@@ -126,8 +127,9 @@ cite the classification, not the ecosystem.
   framework across design, coding, completion, review, testing and documentation
   stages. The mechanism generalises; exact ratios vary by workload.
 - **Agentic tasks consume ~1,000x the tokens** of comparable single-turn or chat
-  interactions, with input rather than output tokens driving the cost. Source:
-  *How Do AI Agents Spend Your Money? Analyzing and Predicting Token Consumption in
+  interactions, with input rather than output tokens driving the cost, and runs on the
+  same task differ by up to 30x in total tokens. Source: Bai, Huang, Wang, Sun, Mihalcea,
+  Brynjolfsson, Pentland and Pei, *How Do AI Agents Spend Your Money? Analyzing and Predicting Token Consumption in
   Agentic Coding Tasks*, [arXiv:2604.22750](https://arxiv.org/abs/2604.22750) -
   eight frontier models on SWE-bench Verified; consistent with Anthropic's
   multi-agent research system write-up. Long-lived context is an operating asset

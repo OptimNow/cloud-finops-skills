@@ -436,12 +436,16 @@ proportionally. Size the two together, because a change on one side moves the ot
 The first query on any LA cost engagement:
 
 ```kql
+// Quantity is in MB; Microsoft's own usage queries divide by 1000 for GB
 Usage
 | where TimeGenerated > ago(30d)
 | where IsBillable == true
-| summarize GBIngested = round(sum(Quantity) / 1024, 2) by DataType
+| summarize GBIngested = round(sum(Quantity) / 1000, 2) by DataType
 | order by GBIngested desc
 ```
+
+Source for the conversion: [Analyze usage in a Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/analyze-usage),
+read 9 November 2026.
 
 The distribution is skewed: a handful of tables, often 3-5, drive most of the
 bill (70-80% is indicative, not a benchmark).
@@ -453,7 +457,7 @@ Address those first.
 Usage
 | where TimeGenerated > ago(90d)
 | where IsBillable == true
-| summarize GBIngested = round(sum(Quantity) / 1024, 2)
+| summarize GBIngested = round(sum(Quantity) / 1000, 2)
             by Solution, bin(TimeGenerated, 1d)
 | render timechart
 ```
@@ -1151,8 +1155,8 @@ Networking is a commonly underestimated cost line on multi-region or hub-spoke
 architectures. The egress and peering charges are small per GB but
 compound to material amounts on busy workloads.
 
-> *Every rate in this section is an approximate list rate for a common region, as of
-> August 2026, and varies by region. They are here to show the relative weight of each
+> *Every rate in this section is an approximate list rate for a common region (eastus),
+> read on the Azure Retail Prices API on 9 November 2026, and varies by region. They are here to show the relative weight of each
 > charge - the per-GB peering charge landing on both sides, the NAT Gateway hourly floor -
 > which is the part that stays true. Pull current rates from the Azure Retail Prices API
 > before putting a number in a client model.*

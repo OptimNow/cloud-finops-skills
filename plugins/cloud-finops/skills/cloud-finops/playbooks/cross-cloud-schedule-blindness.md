@@ -18,14 +18,14 @@ questions:
 
 Non-production environments (dev, test, QA, staging, sandbox) are
 typically used during business hours - say 12 hours/day, 5 days/week,
-which is ~30% of a full week. Yet most non-prod compute runs 24/7
-because nobody automated the off-hours shutdown. The 70% of unused time
-is pure waste, and it scales linearly with the number of dev / test
-environments. A team running 30 non-prod EC2 instances at $50/month
-each pays $1,500/month for ~$450/month of actual use. The $50/month
-instance is a round illustrative figure used to make the arithmetic
-legible (written May 2026), not a quoted rate - the 70% ratio is the
-durable part.
+which is 60 of the week's 168 hours, about 36%. Yet most non-prod compute
+runs 24/7 because nobody automated the off-hours shutdown. The other ~64%
+of the time is pure waste, and it scales linearly with the number of
+dev / test environments. A team running 30 non-prod EC2 instances at
+$50/month each pays $1,500/month for ~$536/month of actual use. The
+$50/month instance is a round illustrative figure used to make the
+arithmetic legible (written May 2026), not a quoted rate - the ~64% ratio
+is the durable part.
 
 This is one of the highest-return, lowest-risk optimisations in
 cloud cost work. It sits in the "obvious" tier because the business case
@@ -97,7 +97,7 @@ ORDER BY cost_30d DESC;
 
 1. **AWS Instance Scheduler** (CloudFormation template provided by AWS)
    or **EventBridge + Lambda** for stop/start by tag. Common schedule:
-   M-F 8am-7pm local time, weekends off. Saves ~70%.
+   M-F 8am-7pm local time, weekends off. Saves ~67% (55 of 168 hours on).
 2. **Azure Automation Start/Stop VMs during off-hours** (Microsoft-
    provided runbook). Same logic: tag + schedule.
 3. **GCP Instance Schedules** (native feature) - attach a schedule to

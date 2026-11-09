@@ -45,20 +45,24 @@ endpoint, not today's bill; verify against live pricing before quoting.
 
 ```sql
 -- Athena over CUR 2.0: count of distinct SageMaker endpoints per account
--- and region, with average hours and cost (high counts at low cost-per-
--- endpoint = sprawl candidate)
+-- and region, with total hours and cost per endpoint (high counts at low
+-- cost-per-endpoint = sprawl candidate). Hosting usage types read
+-- <REGION>-Host:<instance>, e.g. USE1-Host:ml.m5.xlarge.
 SELECT
   line_item_usage_account_id      AS account_id,
-  product_region                  AS region,
+  product_region_code             AS region,
   COUNT(DISTINCT line_item_resource_id) AS endpoint_count,
   SUM(line_item_usage_amount)     AS total_instance_hours,
   SUM(line_item_unblended_cost)   AS total_cost_month,
-  AVG(line_item_unblended_cost)   AS avg_cost_per_endpoint
+  -- one row per endpoint per CUR time interval, so AVG() would give one
+  -- line item; divide the cost by the endpoint count instead
+  SUM(line_item_unblended_cost)
+    / COUNT(DISTINCT line_item_resource_id) AS avg_cost_per_endpoint
 FROM cur2
 WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '1' month)
   AND line_item_usage_start_date <  date_trunc('month', current_date)
   AND product_servicecode = 'AmazonSageMaker'
-  AND line_item_usage_type LIKE '%SageMaker:host-%'
+  AND line_item_usage_type LIKE '%Host:ml.%'
 GROUP BY 1, 2
 HAVING COUNT(DISTINCT line_item_resource_id) >= 3
 ORDER BY total_cost_month DESC;

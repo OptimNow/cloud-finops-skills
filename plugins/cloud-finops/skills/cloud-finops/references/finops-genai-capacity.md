@@ -56,8 +56,10 @@ The default model. You pay per token consumed, drawing from a shared provider po
 
 ### Provisioned capacity (reserved)
 
-You purchase a fixed block of throughput for a defined term (monthly or annual). You pay
-for that capacity 24/7 regardless of actual utilisation.
+You purchase a fixed block of throughput for a term that varies by provider and product,
+from hourly with no commitment through 1 week, 1 month and 6 months to 1 year (the options
+per provider are in `finops-bedrock.md`, `finops-vertexai.md` and `finops-azure-openai.md`).
+You pay for that capacity 24/7 for the term, regardless of actual utilisation.
 
 - Dedicated throughput - predictable latency
 - Workload isolation (training exclusion is not the differentiator - the hyperscalers
@@ -277,7 +279,7 @@ Observed result: paying for 2-3x the capacity needed (Pay-i-reported).
 |---|---|
 | High utilisation + break-even favourable | Provisioned - cost + performance |
 | Latency-sensitive regardless of economics | Provisioned - performance justifies premium |
-| Data privacy requirements | Provisioned - segmented by sensitivity |
+| Data privacy requirements | Not a reason on its own - training exclusion applies to shared capacity too; provisioned only where workload isolation is the actual requirement (see "Data privacy and traffic segmentation") |
 | Bursty traffic, no spillover available | PAYG or hybrid with manual failover |
 | Uncertain workload, early stage | PAYG until traffic patterns are established |
 | Demand spike under way (launch week, viral traffic, a migration wave) | PAYG until the spike settles; size any commitment on the post-spike baseline, never on the peak |

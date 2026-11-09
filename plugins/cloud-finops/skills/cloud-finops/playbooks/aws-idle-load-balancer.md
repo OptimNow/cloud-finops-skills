@@ -38,21 +38,40 @@ illustrative; verify against live pricing before sizing a business case.
 ## Detection
 
 ```sql
--- Athena over CUR 2.0: ELB hours billed by resource, no LCU pressure
-SELECT
-  line_item_resource_id           AS elb_arn,
-  line_item_usage_account_id      AS account,
-  SUM(CASE WHEN line_item_usage_type LIKE '%LoadBalancer%' AND line_item_usage_type LIKE '%Hours' THEN line_item_usage_amount END) AS hours,
-  COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%LCU%' THEN line_item_usage_amount END), 0) AS lcu_units,
-  SUM(line_item_unblended_cost)   AS cost_30d
-FROM cur2
-WHERE line_item_usage_start_date >= current_date - interval '30' day
-  AND product_servicecode = 'AWSELB'
-GROUP BY 1, 2
--- COALESCE matters: a load balancer with zero traffic produces no LCU
--- line items at all, so the bare SUM returns NULL and NULL < 1 filters
--- out exactly the idlest load balancers the query exists to find.
-HAVING COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%LCU%' THEN line_item_usage_amount END), 0) < 1
+-- Athena over CUR 2.0: load balancers billed for hours with almost no traffic.
+-- Every type bills its hourly charge as <REGION>-LoadBalancerUsage; the
+-- operation tells them apart (LoadBalancing:Application, :Network, :Gateway,
+-- and plain LoadBalancing for a Classic Load Balancer). ALB, NLB and GWLB
+-- bill traffic as LCUs (LCUUsage). A Classic Load Balancer bills no LCU: it
+-- bills GB processed (DataProcessing-Bytes), so it gets its own traffic test.
+WITH lb AS (
+  SELECT
+    line_item_resource_id         AS elb_arn,
+    line_item_usage_account_id    AS account,
+    MAX(CASE WHEN line_item_usage_type LIKE '%LoadBalancerUsage'
+             THEN line_item_operation END)           AS operation,
+    SUM(CASE WHEN line_item_usage_type LIKE '%LoadBalancerUsage'
+             THEN line_item_usage_amount END)        AS hours,
+    -- COALESCE matters: a load balancer with zero traffic produces no LCU
+    -- or data-processing line items at all, so the bare SUM returns NULL
+    -- and NULL < 1 filters out exactly the idlest load balancers.
+    COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%LCUUsage'
+                       AND line_item_usage_type NOT LIKE '%ReservedLCUUsage'
+                      THEN line_item_usage_amount END), 0) AS lcu_units,
+    COALESCE(SUM(CASE WHEN line_item_usage_type LIKE '%DataProcessing-Bytes'
+                      THEN line_item_usage_amount END), 0) AS gb_processed,
+    SUM(line_item_unblended_cost) AS cost_30d
+  FROM cur2
+  WHERE line_item_usage_start_date >= current_date - interval '30' day
+    AND product_servicecode = 'AWSELB'
+  GROUP BY 1, 2
+)
+SELECT *
+FROM lb
+WHERE hours > 0
+  AND CASE WHEN operation = 'LoadBalancing'   -- Classic Load Balancer
+           THEN gb_processed < 1
+           ELSE lcu_units < 1 END
 ORDER BY cost_30d DESC;
 ```
 
@@ -68,6 +87,11 @@ aws elbv2 describe-target-groups \
         --query 'length(TargetHealthDescriptions[?TargetHealth.State==`healthy`])')
       [[ "$health" == "0" ]] && echo "ZERO HEALTHY TARGETS: $tg"
     done
+
+# Classic Load Balancers have no target groups: list those with no instances
+aws elb describe-load-balancers \
+  --query 'LoadBalancerDescriptions[?length(Instances)==`0`].LoadBalancerName' \
+  --output text
 ```
 
 ## Fix

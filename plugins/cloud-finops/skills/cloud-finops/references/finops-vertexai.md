@@ -615,7 +615,7 @@ documentation does not mention it either way. Treat that as undocumented rather 
 an exclusion, and confirm with your account team before assuming AI Studio spend counts.
 
 **FinOps reading.** The discount is shallow next to compute CUDs (10-20% against up to
-57% on resource-based CUDs) and the term is long next to the pace at which model prices
+55% on resource-based CUDs, 70% on memory-optimised series) and the term is long next to the pace at which model prices
 move - Gemini SKU rates changed several times during 2026, and three of them are
 scheduled to double on 1 January 2027. The usual commitment discipline therefore applies
 with more force, not less:

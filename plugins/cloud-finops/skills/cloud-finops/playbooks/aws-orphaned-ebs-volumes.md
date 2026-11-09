@@ -56,7 +56,9 @@ aws ec2 describe-volumes \
 SELECT
   line_item_resource_id           AS volume_id,
   line_item_usage_account_id      AS account,
-  product_volume_type             AS volume_type,
+  -- volume type sits in the product map in CUR 2.0 (gp2, gp3, io2...);
+  -- element_at returns NULL rather than failing when the key is absent
+  element_at(product, 'volume_api_name') AS volume_type,
   SUM(line_item_usage_amount)     AS gb_month,
   SUM(line_item_unblended_cost)   AS cost_30d
 FROM cur2

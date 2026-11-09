@@ -79,14 +79,18 @@ resources
 | order by untagged_costctr desc
 ```
 
-**GCP** - resources with missing labels:
+**GCP** - resources with missing labels. `resource.name` exists only in the
+detailed (resource-level) export, table `gcp_billing_export_resource_v1_<account>`;
+the standard export has no such field
+([detailed usage cost data](https://docs.cloud.google.com/billing/docs/how-to/export-data-bigquery-tables/detailed-usage),
+read 9 November 2026):
 
 ```sql
 SELECT
   service.description     AS service,
   resource.name           AS resource,
   SUM(cost)               AS cost_30d
-FROM `<project>.<dataset>.gcp_billing_export_v1_<account>`
+FROM `<project>.<dataset>.gcp_billing_export_resource_v1_<account>`
 WHERE _PARTITIONTIME >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)
   AND ARRAY_LENGTH(labels) = 0
   AND cost > 0

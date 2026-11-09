@@ -11,7 +11,7 @@ business_coverage: ["aws:bill:partial", "azure:bill:partial", "gcp:bill:partial"
 questions:
   - q: "How do we split the cost of a shared Kubernetes cluster between teams?"
     persona: "Engineering and platform"
-    section: "Why K8s allocation is hard"
+    section: "Cloud-native K8s cost allocation"
   - q: "OpenCost, Kubecost or the cloud provider's own cost allocation: which one do we pick?"
     section: "Tooling"
   - q: "Our pods request far more CPU and memory than they use. How do we rightsize safely?"

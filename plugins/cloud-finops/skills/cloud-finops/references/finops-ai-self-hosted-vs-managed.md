@@ -54,12 +54,14 @@ workloads, and has compliance or cost arbitrage reasons that managed APIs cannot
 
 Three drivers make this conversation more common in 2026:
 
-1. **Frontier model pricing has stabilised.** Mid-tier rates have held roughly flat across
-   several model generations on both the Claude and GPT sides, so a rate assumed today is
-   unlikely to be invalidated mid-project. Clients with predictable workloads can now build
-   credible TCO models comparing managed APIs to renting their own GPUs. Pull the current
-   rates from a live source (<https://optimtoken.optimnow.io>) when you build the model -
-   stability is not the same as permanence.
+1. **Managed model pricing moves, in both directions.** Rates changed several times during
+   2026: Opus 5.5 launched below the Opus 5 rate (`finops-anthropic.md`), Gemini SKU rates
+   changed several times and three are scheduled to double on 1 January 2027
+   (`finops-vertexai.md`), and DeepSeek's August 2026 repricing raised its rate card
+   (`finops-open-weight-vendors.md`). A per-token rate assumed at the start of a project can
+   be wrong by its end, which is one reason clients ask whether owning capacity would fix the
+   unit cost. Pull the current rates from a live source (<https://optimtoken.optimnow.io>)
+   when you build the TCO model, and test the break-even across a range of rates, not one.
 2. **Open-weight models have closed the quality gap** for many use cases. Qwen3.6, Llama 4,
    GLM-5.1, Gemma 4 deliver production-grade quality across reasoning, coding, multimodal.
    Self-hosting a capable model is now a production option.
@@ -76,7 +78,7 @@ benchmark on per-token cost without weighing operational reality.
 
 | Vendor | Pricing dimension | Optimisation levers |
 |---|---|---|
-| Anthropic API | Input/output tokens, separate caches, separate batch | Prompt caching (1h TTL, 90% off reads), Batch API (50% off), model selection (Haiku/Sonnet/Opus). Note: Fast mode is a speed *premium* (2x, Opus-tier only; out of research preview on Opus 5.5 since 15 October 2026), not a cost lever |
+| Anthropic API | Input/output tokens, separate caches, separate batch | Prompt caching (5-minute or 1-hour TTL; reads at 0.1x input, 0.05x or 0.025x on the newest models, see `finops-anthropic.md`), Batch API (50% off), model selection (Haiku/Sonnet/Opus). Note: Fast mode is a speed *premium* (2x, Opus-tier only; out of research preview on Opus 5.5 since 15 October 2026), not a cost lever |
 | OpenAI API | Input/output tokens, cached tokens, cache writes (GPT-5.6+), batch, fine-tuned variants | Prompt caching (implicit by default; writes billed at 1.25x input from GPT-5.6, reads discounted), Batch and Flex (50% off), model selection, fine-tuning vs prompting tradeoff. Note: Fast (2x) and Ultrafast (6x, on GPT-6 Astra and GPT-6.1 Sol as of October 2026) are speed *premiums*, not cost levers |
 | AWS Bedrock | Input/output tokens, provisioned throughput (model units), batch | On-demand vs PT, Application Inference Profiles for cost allocation, prompt caching, batch inference |
 | Azure OpenAI | Input/output tokens, PTU reservations, batch | PTU reservations with locality constraint, AOAI spillover, regional placement, fine-tuning costs |
@@ -254,9 +256,11 @@ When the conditions align, self-hosted is meaningfully cheaper and operationally
 The conditions are stricter than GPU vendors' marketing suggests.
 
 1. **High-volume, predictable workloads.** A workload that consistently consumes
-   100M+ tokens per day, 24/7, with low variance, justifies dedicated GPU capacity. The
-   per-token math tips around 200-500M tokens/day depending on model size and quant (a
-   working estimate; run the model with the estate's own rates).
+   hundreds of millions of tokens per day per model, 24/7, with low variance. One working
+   band, used throughout this file (a working estimate, not a benchmark; run the model with
+   the estate's own rates): under about 50M tokens/day per model, managed wins; from 50M to
+   200M the answer depends on model size, quantisation and utilisation, so run the TCO
+   model; the per-token math tips toward dedicated capacity around 200-500M tokens/day.
 2. **Strict latency SLOs.** Sub-100ms TTFT requirements that cross-region API calls cannot
    meet. Dedicated GPU close to your application stack wins on tail latency.
 3. **Compliance requirements that managed APIs do not satisfy.** Air-gapped environments,
@@ -324,10 +328,11 @@ If any of the above is missing, default to managed APIs. Revisit in 12-18 months
 
 - The client is at FinOps Crawl or Walk maturity on AI workloads
 - The team is small (<10 engineers total, <2 dedicated to AI)
-- Workload is variable, exploratory, or under 50M tokens/day per model
+- Workload is variable, exploratory, or under 50M tokens/day per model (the lower edge of
+  the working band in "Where self-hosted wins")
 - Compliance is met by Bedrock, Azure OpenAI, Vertex AI, or Anthropic Enterprise
 - Speed-to-market matters more than per-token cost optimisation
-- The client wants frontier model access (Opus, GPT-5, Gemini Ultra)
+- The client wants frontier model access (Opus, GPT-5, Gemini Pro)
 
 ### Consider hybrid when:
 
@@ -375,11 +380,14 @@ from those cases, not a benchmark:
   preemption causes a P1 incident and a panicked email to the FinOps team about "why is
   managed API so expensive in this report?"
 - **Decision driven by data residency theatre.** "We must self-host because EU." Bedrock has
-  EU regions. Azure OpenAI has EU regions. Anthropic offers EU data residency. Verify the
-  actual requirement before assuming managed APIs cannot meet it.
+  EU regions. Azure OpenAI has EU regions. Claude is served from EU Regions on Bedrock,
+  although Anthropic's own API offers only US-only or global inference, with no EU option
+  ([Anthropic data residency](https://platform.claude.com/docs/en/manage-claude/data-residency),
+  read 9 November 2026). Verify the actual requirement before assuming managed APIs cannot
+  meet it.
 - **Custom model when off-the-shelf would do.** Self-hosting a fine-tuned model that
   marginally beats Claude Sonnet on a narrow benchmark, while costing 3x more all-in.
-- **Self-hosting frontier alternatives.** "We will run Llama 4 405B instead of Claude
+- **Self-hosting frontier alternatives.** "We will run Llama 3.1 405B instead of Claude
   Opus." The infrastructure cost of running a 405B model in production is high, and
   clients who attempt it have underestimated it by an order of magnitude.
 
