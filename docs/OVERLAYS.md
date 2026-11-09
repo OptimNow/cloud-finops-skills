@@ -14,7 +14,7 @@ the structure, not their content.
 ## Why an overlay rather than a fork
 
 A fork gives you a copy of the public files to edit. It also gives you a merge every
-time the public files change, and they change on a fortnightly rhythm. Forks drift, and
+time the public files change, and they change on a weekly rhythm. Forks drift, and
 a fork that has drifted stops receiving corrections to the mechanics it depends on.
 
 An overlay copies nothing. It names the public sections it builds on, by heading, and
@@ -79,6 +79,8 @@ overlay_of:
       - "Commitment portfolio liquidity"
 questions:
   - "What coverage target do we hold for compute, and who approved it?"
+  - "Which commitment exceptions have we granted, and until when?"
+  - "Who signs off a commitment above our purchase threshold?"
   - "Quel taux de couverture visons-nous sur le compute, et qui l'a validé ?"
 ---
 ```

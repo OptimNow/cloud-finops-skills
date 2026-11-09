@@ -68,6 +68,14 @@ QUERY_RESULT_LIMIT = 5
 # fractions weighted by surface; see _score_against_query.
 QUERY_MIN_SCORE = 0.2
 
+# A user question is a sentence or a paragraph. Ranking cost grows with the
+# number of distinct words in the query times the number of indexed texts,
+# and the finders run on the server's event loop, so an unbounded query
+# (0.8 MB took 33 seconds on 9 November 2026) would stall every other caller
+# of the hosted connector. Longer text is cut at the last word boundary
+# before the limit and the response says so.
+QUERY_MAX_CHARS = 1000
+
 _QUESTION_WEIGHT = 1.0
 # A query that names one provider ("reduce AWS costs") halves the score of a file
 # written for another provider. Provider names are common words, so frequency
@@ -132,18 +140,34 @@ def _stem(token: str) -> str:
     return token
 
 
-@functools.lru_cache(maxsize=8192)
-def query_tokens(text: str) -> frozenset[str]:
-    """The content words of ``text``: folded, stemmed, stopwords and single letters dropped.
-
-    Cached per string: the index's questions and headings are tokenised on
-    every query and never change between calls.
-    """
+def _tokenise(text: str) -> frozenset[str]:
+    """The content words of ``text``: folded, stemmed, stopwords and single letters dropped."""
     return frozenset(
         _stem(tok)
         for tok in _QUERY_TOKEN_RE.findall(_fold(text))
         if tok not in _STOPWORDS and len(tok) > 1
     )
+
+
+@functools.lru_cache(maxsize=8192)
+def query_tokens(text: str) -> frozenset[str]:
+    """``_tokenise`` with a cache, for the index's own questions, titles and headings.
+
+    Those texts are tokenised on every query and never change between calls.
+    The user's ``query`` never goes through this function: PRIVACY.md says
+    the server keeps no copy of a request, and a cache entry is a copy.
+    """
+    return _tokenise(text)
+
+
+def capped_query(query: str) -> tuple[str, bool]:
+    """``(text, was_cut)``: the stripped query, cut to ``QUERY_MAX_CHARS`` on a word boundary."""
+    text = query.strip()
+    if len(text) <= QUERY_MAX_CHARS:
+        return text, False
+    cut = text[:QUERY_MAX_CHARS]
+    space = cut.rfind(" ")
+    return (cut[:space] if space > 0 else cut).rstrip(), True
 
 
 def _weight(tokens, idf: dict[str, float]) -> float:
@@ -174,7 +198,9 @@ def _idf(corpus: list, title_text) -> dict[str, float]:
     return {tok: 1.0 + math.log((n + 1) / (count + 1)) for tok, count in df.items()}
 
 
-def _coverage(query: frozenset[str], text: str, idf: dict[str, float]) -> float:
+def _coverage(
+    query: frozenset[str], text: str, idf: dict[str, float], query_weight: float | None = None
+) -> float:
     """Share of the lighter side's weight that ``query`` and ``text`` have in common.
 
     Each content word weighs its inverse document frequency, so ``nat`` or
@@ -190,7 +216,7 @@ def _coverage(query: frozenset[str], text: str, idf: dict[str, float]) -> float:
     shared = query & text_tokens
     if not shared:
         return 0.0
-    denominator = _weight(query, idf)
+    denominator = query_weight if query_weight is not None else _weight(query, idf)
     if len(text_tokens) > 1:
         denominator = min(denominator, _weight(text_tokens, idf))
     return _weight(shared, idf) / denominator
@@ -214,12 +240,15 @@ def _score_against_query(
     """
     best_question: Question | None = None
     best_coverage = 0.0
+    query_weight = _weight(query, idf)
     for question in questions:
-        coverage = _coverage(query, question.text, idf)
+        coverage = _coverage(query, question.text, idf, query_weight)
         if coverage > best_coverage:
             best_question, best_coverage = question, coverage
-    title_coverage = _coverage(query, title_text, idf)
-    heading_coverage = max((_coverage(query, h, idf) for h in headings), default=0.0)
+    title_coverage = _coverage(query, title_text, idf, query_weight)
+    heading_coverage = max(
+        (_coverage(query, h, idf, query_weight) for h in headings), default=0.0
+    )
     score = (
         _QUESTION_WEIGHT * best_coverage
         + _TITLE_WEIGHT * title_coverage
@@ -256,7 +285,7 @@ def _rank_by_query(
     the facet-filtered subset actually ranked. Ties break on name so the order
     is stable from one call to the next.
     """
-    tokens = query_tokens(query)
+    tokens = _tokenise(query)
     if not tokens:
         return []
     idf = _idf(corpus, title_text)
@@ -285,7 +314,7 @@ def _query_entry(item, score: float, question: Question | None) -> dict[str, Any
 
 def _query_miss_help(kind: str, query_text: str) -> dict[str, Any]:
     """Explain a ``query`` that matched nothing, in place of a bare ``total: 0``."""
-    if not query_tokens(query_text):
+    if not _tokenise(query_text):
         return {
             "hint": (
                 f"The query has no content words once common words are set aside, so no "
@@ -313,7 +342,7 @@ def _loggable(filters: dict[str, Any], query_text: str) -> dict[str, Any]:
     exists for (how often users phrase questions the library does not catch).
     """
     kept = {k: v for k, v in filters.items() if k != "query"}
-    kept["query_words"] = len(query_tokens(query_text))
+    kept["query_words"] = len(_tokenise(query_text))
     return kept
 
 
@@ -605,7 +634,8 @@ def find_references(
     the listing shape is trimmed for tokens, the filtering is not.
 
     Args:
-        query: the user's question or symptom, any length, English or
+        query: the user's question or symptom, up to 1,000 characters (longer
+            text is cut at a word boundary), English or
             French; blank is treated as absent.
         domain: one of the four FinOps Framework domains, e.g.
             ``"Optimize Usage & Cost"``.
@@ -653,9 +683,11 @@ def find_references(
     if persona_primary_only and "persona" in active:
         reported_filters["persona_primary_only"] = True
 
-    query_text = query.strip() if isinstance(query, str) else ""
+    query_text, query_cut = capped_query(query) if isinstance(query, str) else ("", False)
     if query_text:
         reported_filters["query"] = query_text
+        if query_cut:
+            reported_filters["query_truncated_to_chars"] = QUERY_MAX_CHARS
         ranked = _rank_by_query(
             matches, query_text, lambda r: f"{r.title} {r.description}", get_index()
         )
@@ -758,7 +790,8 @@ def find_playbooks(
     `tests/test_conformance.py` - keep them in step when content changes.
 
     Args:
-        query: the user's symptom or question, any length, English or
+        query: the user's symptom or question, up to 1,000 characters (longer
+            text is cut at a word boundary), English or
             French; blank is treated as absent.
         scope: ``aws``, ``azure``, ``gcp``, or ``cross-cloud``.
         service: provider service name (e.g. ``"AWS NAT Gateway"``,
@@ -797,9 +830,11 @@ def find_playbooks(
         matches.append(pb)
 
     reported_filters: dict[str, Any] = dict(active)
-    query_text = query.strip() if isinstance(query, str) else ""
+    query_text, query_cut = capped_query(query) if isinstance(query, str) else ("", False)
     if query_text:
         reported_filters["query"] = query_text
+        if query_cut:
+            reported_filters["query_truncated_to_chars"] = QUERY_MAX_CHARS
         ranked = _rank_by_query(
             matches, query_text, lambda pb: f"{pb.title} {pb.service or ''}", get_playbook_index()
         )

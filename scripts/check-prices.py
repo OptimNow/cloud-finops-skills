@@ -4,7 +4,7 @@ check-prices.py - Compare the static list prices written in the skill with the
 providers' current price lists.
 
 Why: the references and playbooks carry mechanics, not prices, but a worked example
-needs a number to be legible, so about fifty infrastructure list prices (a NAT
+needs a number to be legible, so about a hundred infrastructure list prices (a NAT
 gateway hour, a gp3 GB-month, an App Service plan, the GKE cluster fee) sit in the
 text as dated illustrative figures. AI token rates are routed to the AI Pricing Hub
 and the OptimToken guide figures are served live by the connector, so neither is
@@ -22,8 +22,9 @@ the maintainer gets a reminder instead of silence. Exit codes:
 
   0  every figure within tolerance and no page-only figure past its age
   1  at least one figure drifted, or a page-only figure is due for a re-read
-  2  a query failed, a manifest anchor no longer matches its file, or nothing
-     could be checked, so a broken query is never read as "no drift"
+  2  a query failed, a manifest anchor no longer matches its file, or, on a
+     live run, a provider was skipped for want of a credential, so neither a
+     broken query nor an unchecked provider is ever read as "no drift"
 
 What it never does: edit a content file. A drift is a proposal for the maintainer
 (docs/DESIGN.md, "Content update pipeline", "Price drift check").
@@ -43,8 +44,11 @@ Sources and credentials, all optional:
   azure  Azure Retail Prices API, public, no credential
   gcp    Cloud Billing Catalog API with GOOGLE_API_KEY (Cloud Billing API enabled),
          or, without a key, the pricing page the manifest names, parsed by regex
-A provider whose credential is missing is reported as skipped, not failed; the run
-exits 2 for that reason only when nothing at all could be checked.
+A provider whose credential is missing is reported as skipped. A live run with any
+skipped price exits 2, because the weekly job would otherwise go green with part of
+the library unchecked (the 9 November 2026 review found every AWS figure would be).
+Error text from a provider is redacted of account IDs and ARNs before it reaches
+the report, which the workflow posts to a public issue.
 
 Wired into .github/workflows/price-drift.yml (weekly, live) and ci.yml (--offline).
 """
@@ -77,6 +81,14 @@ HTTP_TIMEOUT = 60
 USER_AGENT = "cloud-finops-skills price-drift check (+https://github.com/OptimNow/cloud-finops-skills)"
 
 EXIT_OK, EXIT_DRIFT, EXIT_FAILED = 0, 1, 2
+
+_ARN_RE = re.compile(r"arn:aws[\w-]*:[^\s'\"]+")
+_ACCOUNT_RE = re.compile(r"(?<!\d)\d{12}(?!\d)")
+
+
+def redact(text: str) -> str:
+    """Provider error text without account IDs or ARNs: the report becomes a public issue."""
+    return _ACCOUNT_RE.sub("<account-id>", _ARN_RE.sub("<arn>", text))
 
 
 # --------------------------------------------------------------------------- manifest
@@ -548,9 +560,9 @@ def read_price(price: Price, *, offline: bool, aws_ok: bool, gcp_key: str | None
         fetched.value = gcp_extract(fetched.raw, price.query)
         return fetched
     except LookupError as exc:
-        return Fetch(status="failed", detail=str(exc))
+        return Fetch(status="failed", detail=redact(str(exc)))
     except Exception as exc:  # network, auth, JSON shape: anything that is not a price
-        return Fetch(status="failed", detail=f"{type(exc).__name__}: {str(exc)[:200]}")
+        return Fetch(status="failed", detail=f"{type(exc).__name__}: {redact(str(exc))[:200]}")
 
 
 def extract(price: Price, raw: Any) -> float:
@@ -732,6 +744,15 @@ def build_report(
 
     if anchor_errors or failed:
         code = EXIT_FAILED
+    elif skipped and not offline:
+        code = EXIT_FAILED
+        providers = sorted({prices[n].provider for n, _ in skipped})
+        lines.append(
+            f"Incomplete run: {len(skipped)} price(s) skipped for want of a credential "
+            f"({', '.join(providers)}). Add the repository secrets named in "
+            "`.github/workflows/price-drift.yml`; until then those figures are unverified."
+        )
+        lines.append("")
     elif not ok_prices:
         code = EXIT_FAILED
         lines.append("Nothing could be checked: every provider was skipped. Add at least one credential, or check that the Azure Retail Prices API is reachable.")
@@ -757,11 +778,18 @@ def main(argv: list[str] | None = None) -> int:
     today = dt.datetime.now(dt.timezone.utc).date()
     try:
         prices, figures = load_manifest(args.manifest)
-    except ManifestError as exc:
-        print(f"FAIL: manifest: {exc}", file=sys.stderr)
-        return EXIT_FAILED
-    except yaml.YAMLError as exc:
-        print(f"FAIL: manifest is not valid YAML: {exc}", file=sys.stderr)
+    except (ManifestError, yaml.YAMLError) as exc:
+        kind = "manifest" if isinstance(exc, ManifestError) else "manifest is not valid YAML"
+        print(f"FAIL: {kind}: {exc}", file=sys.stderr)
+        if args.output:
+            args.output.write_text(
+                f"# Price drift check, {today.isoformat()}\n\n"
+                f"The check could not start: {kind}: {exc}\n\n"
+                "Fix `scripts/price-manifest.yaml`; `python scripts/check-prices.py --offline` "
+                "reproduces the error locally.\n",
+                encoding="utf-8",
+                newline="\n",
+            )
         return EXIT_FAILED
 
     if args.provider:

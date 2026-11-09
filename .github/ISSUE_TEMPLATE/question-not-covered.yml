@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        A question the library could not answer is the most useful thing you can send us: it is demand evidence, and the connector never records what you typed, so this form is the only way we learn it. Each gap we confirm becomes a test question we run before every release, and the content that closes it credits the report.
+        A question the library could not answer is the most useful thing you can send us: it is demand evidence, and the connector never records the text of your question, so this form is the only way we learn it. Each gap we confirm becomes a test question we run before every release, and the content that closes it credits the report.
 
         Before you paste anything, remove account identifiers, negotiated rates, invoice amounts and anything else your company would not publish. This form is public.
   - type: dropdown

@@ -27,8 +27,8 @@ lists offer; these are human submissions.
 | Install command | `uvx cloud-finops-mcp` (stdio); `pip install cloud-finops-mcp` | `mcp_server/README.md` lines 112 and 118 |
 | Transports | stdio (default) and streamable HTTP | `mcp_server/README.md` "Streamable HTTP" |
 | Hosted endpoint | `https://mcp.optimnow.io/mcp` answers `initialize`, serverInfo 1.37.0 (custom domain since 2026-09-30; the former `cloud-finops-mcp.fly.dev` host still answers) | POST with an `initialize` request |
-| Auth | none; the server reads bundled files, no credentials, no outbound HTTP client | `server.py` grep |
-| Tools | `list_references`, `find_references`, `get_reference`, `list_playbooks`, `find_playbooks`, `get_playbook`, all `readOnlyHint: true` | `server.py` |
+| Auth | none; the server reads bundled files and needs no credentials. One outbound call: `get_live_figures` fetches an OptimToken guide's public `figures.json` from `optimtoken.optimnow.io` | `server.py`, `live_figures.py` |
+| Tools | `list_references`, `find_references`, `get_reference`, `list_playbooks`, `find_playbooks`, `get_playbook`, `get_live_figures`, all `readOnlyHint: true`; `get_live_figures` is also `openWorldHint: true` | `server.py` |
 | Licence | CC BY-SA 4.0 (`LICENSE.md`; GitHub shows "Other") | repo API `license.spdx_id = NOASSERTION` |
 | Glama server page and badge | `https://glama.ai/mcp/servers/OptimNow/cloud-finops-skills` (badge SVG returns 200) | curl |
 | Glama connector | `io.github.OptimNow/cloud-finops` (badge SVG returns 200) | curl |
@@ -100,7 +100,7 @@ PR body:
 
 One line under Cloud Platforms, next to the other cost and FinOps servers already listed there (cloudscope-mcp, cloudprice-mcp, finopsmcp, cloud-cost-mcp).
 
-`cloud-finops-mcp` is a Python MCP server published on PyPI. It exposes a markdown FinOps reference library as six read-only tools: `list_references`, `find_references`, `get_reference`, `list_playbooks`, `find_playbooks`, `get_playbook`. The content ships inside the wheel, so the server needs no cloud credentials and has no outbound HTTP client. Default transport is stdio (`uvx cloud-finops-mcp`); streamable HTTP is available for hosted deployments.
+`cloud-finops-mcp` is a Python MCP server published on PyPI. It exposes a markdown FinOps reference library as seven read-only tools: `list_references`, `find_references`, `get_reference`, `list_playbooks`, `find_playbooks`, `get_playbook`, and `get_live_figures`, which returns the current figures of a public OptimToken pricing guide. The content ships inside the wheel, so the server needs no cloud credentials; `get_live_figures` is its only outbound call. Default transport is stdio (`uvx cloud-finops-mcp`); streamable HTTP is available for hosted deployments.
 
 ## Checks
 
@@ -172,7 +172,7 @@ repository, zero hits). Form answers:
 | Server name | `OptimNow/cloud-finops-skills` |
 | Project URL | `https://github.com/OptimNow/cloud-finops-skills` |
 | Best category | `Knowledge Management & Memory` (alternative: `Cloud Platforms & Services`; they adjust during triage) |
-| What can an agent do with this server? | An agent can list, filter and read FinOps reference guides on cloud and AI billing mechanics, commitments, allocation and chargeback, and fetch named waste-pattern playbooks that carry a detection query to run in the user's own account. Six read-only tools over content bundled with the package; nothing to connect to a cloud account. |
+| What can an agent do with this server? | An agent can list, filter and read FinOps reference guides on cloud and AI billing mechanics, commitments, allocation and chargeback, and fetch named waste-pattern playbooks that carry a detection query to run in the user's own account. Seven read-only tools, six over content bundled with the package and one that reads a public pricing guide; nothing to connect to a cloud account. |
 | Install or connection instructions | `Install: uvx cloud-finops-mcp` (stdio, PyPI package cloud-finops-mcp). `Alternative: pip install cloud-finops-mcp` then run `cloud-finops-mcp`. `Hosted: https://mcp.optimnow.io/mcp` (streamable HTTP). `Env: none`. |
 | Transport | `multiple` |
 | Auth requirements | `no auth` |
@@ -225,7 +225,7 @@ PR body:
 ```markdown
 Adds the hosted endpoint of the OptimNow Cloud FinOps server under Knowledge & Memory.
 
-The endpoint is a public streamable-HTTP deployment on Fly.io of the `cloud-finops-mcp` package. It serves the same six read-only retrieval tools as the package (reference guides on cloud and AI billing, commitments, allocation and chargeback; runbooks for named waste patterns) and requires no authentication. Glama connector: io.github.OptimNow/cloud-finops. The repository behind it is already submitted to awesome-mcp-servers as an installable server.
+The endpoint is a public streamable-HTTP deployment on Fly.io of the `cloud-finops-mcp` package. It serves the same seven read-only tools as the package (reference guides on cloud and AI billing, commitments, allocation and chargeback; runbooks for named waste patterns) and requires no authentication. Glama connector: io.github.OptimNow/cloud-finops. The repository behind it is already submitted to awesome-mcp-servers as an installable server.
 
 The repository has been starred from this account as the guidelines require.
 

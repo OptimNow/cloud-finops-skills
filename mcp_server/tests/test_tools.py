@@ -743,6 +743,35 @@ def test_query_miss_hint_names_the_report_form() -> None:
     assert "does not log" in result["hint"]
 
 
+def test_long_query_is_capped_and_stays_fast() -> None:
+    """An unbounded query once took 33 s on the shared machine; the cap keeps it bounded."""
+    import time
+
+    padding = " ".join(f"word{i}" for i in range(200_000))
+    started = time.perf_counter()
+    result = tools.find_references(query="NAT gateway idle " + padding)
+    elapsed = time.perf_counter() - started
+    assert elapsed < 2.0
+    assert result["filters"]["query_truncated_to_chars"] == tools.QUERY_MAX_CHARS
+    assert len(result["filters"]["query"]) <= tools.QUERY_MAX_CHARS
+    assert not result["filters"]["query"].endswith("wor")  # cut on a word boundary
+
+
+def test_short_query_reports_no_truncation() -> None:
+    result = tools.find_playbooks(query="idle NAT gateway")
+    assert "query_truncated_to_chars" not in result["filters"]
+
+
+def test_user_query_is_not_kept_in_the_tokeniser_cache() -> None:
+    """PRIVACY.md: the server keeps no copy of a request. A cache entry would be one."""
+    tools.find_references(query="warm the index cache")
+    tools.find_playbooks(query="warm the index cache")
+    before = tools.query_tokens.cache_info().currsize
+    tools.find_references(query="zqxjv distinctive phrase nobody indexes 4711")
+    tools.find_playbooks(query="another zqxjv phrase 4712")
+    assert tools.query_tokens.cache_info().currsize == before
+
+
 def test_stopword_only_query_gets_its_own_hint() -> None:
     result = tools.find_references(query="what should we do about it")
     assert result["total"] == 0

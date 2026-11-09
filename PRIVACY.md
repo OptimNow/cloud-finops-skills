@@ -1,6 +1,6 @@
 # Privacy policy - Cloud FinOps Skill & MCP
 
-Last updated: 25 October 2026. Publisher: OptimNow (<https://optimnow.io>).
+Last updated: 9 November 2026. Publisher: OptimNow (<https://optimnow.io>).
 
 This policy covers the three ways the Cloud FinOps library reaches you:
 
@@ -38,8 +38,11 @@ platform default, and OptimNow does not export, sell or share it.
 **Hosted connector: the tool calls your AI client sends.** Each call carries the tool
 name and its arguments: a reference or playbook name, an optional section phrase,
 facet filters such as FinOps domain, phase, persona, maturity, cloud scope, service or
-waste category, or an OptimToken guide slug. The server answers from the bundled
-library and keeps no copy of the request, with one exception: `get_live_figures`, and
+waste category, an OptimToken guide slug, or, for the two finders, an optional `query`:
+the question as the model words it, often your own sentence, up to 1,000 characters.
+The server answers from the bundled library and keeps no copy of the request: a
+`query` is compared with the library in memory for the length of the call and then
+discarded, with nothing cached, logged or stored. The one exception is `get_live_figures`, and
 only that tool, forwards the guide slug in one HTTPS request from the server to
 `optimtoken.optimnow.io` (two when the slug is not found), as described for the local
 package above. That request comes from the connector's server, not from your device,
@@ -48,10 +51,12 @@ and carries nothing from the conversation. Specifically, the hosted connector ha
 - no user accounts and no authentication;
 - no cookies and no per-user identifier;
 - no database and no per-user state;
-- no conversation text by design: the tools take names, filter values, guide slugs
-  and short phrases the model writes, such as a section heading or a service name. A model can
-  copy a word from your question into one of those phrases, so keep confidential
-  names out of questions you route through the connector if that matters to you.
+- no stored conversation text: apart from the optional `query`, the tools take names,
+  filter values, guide slugs and short phrases the model writes, such as a section
+  heading or a service name. A `query`, and sometimes one of those phrases, can carry
+  words from your question to the server for the length of the call, so keep
+  confidential names out of questions you route through the connector if that
+  matters to you.
 
 Two logs exist:
 

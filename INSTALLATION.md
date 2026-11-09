@@ -51,7 +51,8 @@ below.
 Copies the skill folder to `<project>/.claude/skills/cloud-finops/`. Restart Claude Code
 or run `/reload-plugins` to pick up.
 
-For auto-updating installs, prefer the plugin marketplace path:
+For an install that follows the releases, prefer the plugin marketplace path (it
+moves when the version in `plugin.json` changes, at each tagged release):
 
 ```
 /plugin marketplace add https://github.com/OptimNow/cloud-finops-skills.git
