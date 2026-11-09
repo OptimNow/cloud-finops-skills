@@ -8,6 +8,20 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Finance", "Procurement"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["gcp:bill:deep", "gcp:budget:deep", "gcp:commitments:deep", "gcp:waste:deep", "gcp:carbon:partial", "gcp:data:partial"]
+questions:
+  - q: "How do we get our GCP billing data into BigQuery, and why is that the starting point?"
+    section: "BigQuery billing export - the canonical GCP cost data path"
+  - q: "Committed use discounts on GCP: resource-based or spend-based, and how much should we commit?"
+    section: "Committed Use Discounts (CUDs) - resource-based vs spend-based"
+  - q: "Are we getting the sustained use discount automatically, or are we missing it?"
+    section: "Sustained Use Discounts (SUDs) - free, automatic, often missed"
+  - q: "Our GCP spend is too high. Where do we start cutting?"
+    section: "Inefficiency patterns catalogue"
+  - q: "How do we split GKE cluster costs between teams?"
+    section: "Kubernetes cost attribution on GKE"
+  - q: "Where do we see our GCP carbon footprint?"
+    section: "Cloud Carbon Footprint"
+  - "Notre facture GCP est trop élevée : par où commencer, et quels engagements prendre ?"
 ---
 
 # FinOps on GCP

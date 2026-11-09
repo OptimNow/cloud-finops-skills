@@ -7,6 +7,17 @@ fcp_phases: ["Inform", "Optimize", "Operate"]
 fcp_personas_primary: ["FinOps Practitioner"]
 fcp_personas_collaborating: ["Engineering", "Finance", "Product", "Procurement", "Leadership"]
 fcp_maturity_entry: "Crawl"
+questions:
+  - "What is FinOps, in one page?"
+  - q: "What are the FinOps principles, phases, domains and capabilities?"
+    section: "The 4 Domains and 22 Capabilities (2026 update)"
+  - q: "Crawl, Walk, Run: how do we know our FinOps maturity level?"
+    section: "Maturity Model - Detailed"
+  - q: "Where should a FinOps team sit in the organisation: Finance, IT or a cloud centre of excellence?"
+    section: "FinOps organisational placement"
+  - q: "Which mistakes do most companies make when they start FinOps?"
+    section: "Common FinOps implementation mistakes"
+  - "Qu'est-ce que le FinOps, et comment savoir à quel niveau de maturité nous sommes ?"
 ---
 
 # FinOps Framework Reference

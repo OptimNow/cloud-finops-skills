@@ -185,6 +185,9 @@ cloud-finops-skills/
 │                             2026), the heat-map renderers
 │                             `render-coverage-heatmap.py` and
 │                             `render-fcp-heatmap.py` (emit the README SVGs,
+│                             --check gated in CI), `render-questions-readme.py`
+│                             (rewrites the README "What you can ask, by role"
+│                             block from the persona-tagged `questions:`;
 │                             --check gated in CI), `build-llms-full.sh`
 │                             (inlines the whole library into llms-full.txt
 │                             at release time; --smoke gated in CI, the file
@@ -198,6 +201,10 @@ cloud-finops-skills/
 │                             overlay cites public headings that exist, its
 │                             questions follow the public rules and it copies
 │                             no public sentence; CI runs it on the template),
+│                             check-questions.py (every reference and playbook
+│                             carries 4 to 8 `questions:` in the user's words,
+│                             no duplicate across files, every `section`
+│                             resolves; PyYAML, so after the install),
 │                             check-plugin-file-limits (no
 │                             tracked non-image file over 256 KiB, at most
 │                             480 files: both are Claude directory holds),
@@ -219,7 +226,7 @@ cloud-finops-skills/
 │                             "percent", dash residue or "the single most";
 │                             allowlist in check-style-allow.txt) and
 │                             check-marketplace-version
-│                             - all twenty run by the `CI` workflow, and
+│                             - all twenty-two run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow

@@ -11,6 +11,7 @@ business_coverage: ["ai-platforms:commitments:deep", "ai-platforms:waste:deep"]
 questions:
   - q: "Should we buy provisioned throughput or stay pay-as-you-go for 500K requests a day?"
     persona: "AI product owner"
+    also: ["finops-azure-openai"]
     section: "Decision framework"
   - q: "Our traffic has a daily peak and is quiet at night. Does provisioned capacity still pay off?"
     section: "Traffic shape"

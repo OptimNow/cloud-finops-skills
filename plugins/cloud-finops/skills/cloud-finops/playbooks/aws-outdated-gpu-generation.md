@@ -4,6 +4,12 @@ scope: aws
 service: AWS EC2
 waste_category: modernization
 confidence: possible
+questions:
+  - "We still run P3 and G4dn instances. Would newer GPUs be cheaper per job?"
+  - "How do we know if our GPU generation is costing us more than a current one would?"
+  - "Which GPU instance should replace our old V100 or T4 fleet?"
+  - "Is moving to a newer GPU generation worth the migration effort?"
+  - "Nos GPU P3 et G4dn sont anciens : une génération plus récente coûterait-elle moins par tâche ?"
 ---
 
 # AWS Outdated GPU Generation

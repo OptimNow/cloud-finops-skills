@@ -4,6 +4,12 @@ scope: gcp
 service: GCP Cloud Functions
 waste_category: overprovisioned
 confidence: possible
+questions:
+  - "Our Cloud Functions are slow on the first call and expensive. Are cold starts the cause?"
+  - "Should we keep minimum instances on Cloud Functions, and what does it cost?"
+  - "Why does a VPC connector make our functions slower and pricier?"
+  - "How do we find functions whose p95 latency is dominated by cold starts?"
+  - "Nos Cloud Functions sont lentes au premier appel et coûteuses : les démarrages à froid sont-ils en cause ?"
 ---
 
 # GCP Cloud Functions Cold Starts

@@ -4,6 +4,12 @@ scope: aws
 service: AWS SageMaker
 waste_category: idle
 confidence: obvious
+questions:
+  - "Which SageMaker endpoints have had no invocations for a month?"
+  - "We pay for SageMaker endpoints from an old proof of concept. How do we find and remove them?"
+  - "Is it safe to delete a SageMaker endpoint nobody calls?"
+  - "Why does a SageMaker endpoint cost money when no model is being used?"
+  - "Quels endpoints SageMaker ne reçoivent plus d'appels, et peut-on les supprimer ?"
 ---
 
 # AWS SageMaker Idle Endpoint

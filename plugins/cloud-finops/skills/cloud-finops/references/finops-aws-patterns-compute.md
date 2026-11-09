@@ -8,6 +8,12 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["SRE", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:waste:deep"]
+questions:
+  - "What are the common ways we waste money on EC2, Lambda, EKS and EMR?"
+  - "Which AWS compute inefficiencies should we look for first in a new account?"
+  - "Our EMR clusters sit idle between jobs. What is the pattern and the fix?"
+  - "Where does Lambda spend go wrong, and what do we check?"
+  - "Quels sont les gaspillages classiques sur EC2, Lambda et EKS, et comment les repérer ?"
 ---
 
 # AWS Optimization Patterns: Compute

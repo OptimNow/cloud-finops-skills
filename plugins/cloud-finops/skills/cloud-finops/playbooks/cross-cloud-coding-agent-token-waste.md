@@ -4,6 +4,12 @@ scope: cross-cloud
 service: AI coding agents (Claude Code / Cursor / GitHub Copilot / Codex)
 waste_category: ai-ml-inefficiency
 confidence: likely
+questions:
+  - "Our Claude Code and Cursor spend grows faster than our team. Where do the tokens go?"
+  - "Why does a long coding session cost so much more than a short one?"
+  - "How do we tell whether prompt caching is working in our coding tools?"
+  - "What should developers change so coding agents use fewer tokens per task?"
+  - "Nos dépenses Claude Code et Cursor grimpent plus vite que l'équipe : où partent les tokens ?"
 ---
 
 # Coding-Agent Token Waste

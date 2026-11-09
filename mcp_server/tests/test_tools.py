@@ -650,9 +650,15 @@ def test_query_in_french_reaches_a_nat_playbook() -> None:
 
 
 def test_query_reaches_a_file_with_no_questions_block_through_its_title() -> None:
-    result = tools.find_playbooks(query="orphaned EBS volumes")
-    assert result["playbooks"][0]["name"] == "aws-orphaned-ebs-volumes"
-    assert result["playbooks"][0]["matched_question"] is None
+    """Every bundled file carries questions since phase 3, so the title-only path is
+    exercised on a synthetic item: it must still be reachable and report no match."""
+    from types import SimpleNamespace
+
+    item = SimpleNamespace(name="synthetic-orphaned-volumes", title="Orphaned EBS Volumes",
+                           questions=[], headings=["Detection", "Fix"])
+    ranked = tools._rank_by_query([item], "orphaned EBS volumes", lambda i: i.title, [item])
+    assert ranked and ranked[0][0] is item
+    assert ranked[0][2] is None
 
 
 def test_query_combines_with_facets() -> None:
@@ -762,4 +768,21 @@ def test_a_named_provider_outranks_another_providers_file() -> None:
     assert result["references"][0]["name"].startswith("finops-aws")
     result = tools.find_playbooks(query="idle virtual machines we forgot to stop in Azure")
     assert all(pb["scope"] != "aws" or pb["match_score"] < 0.5 for pb in result["playbooks"])
+
+
+def test_every_declared_question_routes_to_its_own_file() -> None:
+    """The index is a routing surface only if each question, asked verbatim, lands on
+    the file that declares it. A miss is a cross-file ambiguity to fix in the frontmatter."""
+    misses: list[tuple[str, str, str | None]] = []
+    for ref in metadata.get_index():
+        for question in ref.questions:
+            top = tools.find_references(query=question.text)["references"]
+            if not top or top[0]["name"] != ref.name:
+                misses.append((ref.name, question.text, top[0]["name"] if top else None))
+    for pb in metadata.get_playbook_index():
+        for question in pb.questions:
+            top = tools.find_playbooks(query=question.text)["playbooks"]
+            if not top or top[0]["name"] != pb.name:
+                misses.append((pb.name, question.text, top[0]["name"] if top else None))
+    assert not misses, "\n".join(f"{name}: {text!r} -> {got}" for name, text, got in misses)
 

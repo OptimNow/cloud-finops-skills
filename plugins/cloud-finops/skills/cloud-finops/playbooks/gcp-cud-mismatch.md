@@ -4,6 +4,12 @@ scope: gcp
 service: GCP Committed Use Discounts
 waste_category: commitment-mismatch
 confidence: likely
+questions:
+  - "We pay for committed use discounts that no longer match our machines. What happened?"
+  - "Our CUD utilisation keeps dropping since we moved machine series. What do we do?"
+  - "How do we find GCP commitments with little or no matching usage?"
+  - "Can we exchange or resize a resource-based CUD on GCP?"
+  - "Nos engagements GCP ne correspondent plus à nos machines : comment le voir et que faire ?"
 ---
 
 # GCP Resource-Based CUD Mismatch

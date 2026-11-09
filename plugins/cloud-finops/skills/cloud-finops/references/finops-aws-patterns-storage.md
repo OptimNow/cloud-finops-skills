@@ -8,6 +8,12 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["SRE", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:waste:deep"]
+questions:
+  - "What are the common storage inefficiencies on S3, EBS and EFS?"
+  - "Which S3 settings should every bucket have to avoid paying for forgotten data?"
+  - "Our EBS bill keeps growing while our instance count does not. What should we check?"
+  - "Is EFS the right choice for our workload, or are we paying for its convenience?"
+  - "Quels gaspillages classiques sur S3, EBS et EFS, et par quoi commencer ?"
 ---
 
 # AWS Optimization Patterns: Storage

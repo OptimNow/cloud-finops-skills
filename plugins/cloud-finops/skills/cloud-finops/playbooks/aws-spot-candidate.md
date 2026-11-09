@@ -4,6 +4,12 @@ scope: aws
 service: Amazon EC2 / EC2 Auto Scaling / EKS / ECS on Fargate / EMR
 waste_category: commitment-mismatch
 confidence: possible
+questions:
+  - "Which of our workloads could run on Spot instances?"
+  - "Our CI and batch fleets run fully on demand. How do we move them to Spot?"
+  - "Does Spot usage count towards our Savings Plan commitment?"
+  - "How do we find on-demand capacity that no reservation covers and that tolerates interruption?"
+  - "Quelles charges pourraient tourner sur des instances Spot, et comment les repérer ?"
 ---
 
 # AWS Spot Candidate

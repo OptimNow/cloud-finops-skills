@@ -4,6 +4,12 @@ scope: cross-cloud
 service: All cost-bearing resources
 waste_category: orphaned
 confidence: likely
+questions:
+  - "Our unallocated bucket grows every month. How do we stop it?"
+  - "How do we find who owns the untagged resources in our bill?"
+  - "What is an intake gate, and how does it stop untagged resources from landing?"
+  - "How do we report tag compliance to the teams that own the gaps?"
+  - "La part non allouée de notre facture grossit chaque mois : comment l'arrêter ?"
 ---
 
 # Untagged Spend Drift

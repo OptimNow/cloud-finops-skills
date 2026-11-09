@@ -4,6 +4,12 @@ scope: aws
 service: Amazon EC2 / RDS / ElastiCache / OpenSearch / Lambda
 waste_category: modernization
 confidence: likely
+questions:
+  - "Should we move to Graviton instances, and which workloads qualify?"
+  - "How much cheaper is ARM than x86 on AWS, really?"
+  - "Can our RDS and ElastiCache instances move to Graviton?"
+  - "How do we test a workload on Graviton before switching the fleet?"
+  - "Faut-il passer nos instances AWS sur Graviton, et lesquelles d'abord ?"
 ---
 
 # AWS Graviton Candidate

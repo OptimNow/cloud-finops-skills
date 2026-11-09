@@ -34,29 +34,58 @@ from enterprise FinOps delivery, and aligned with the FinOps Foundation framewor
 
 Each question below is answered by a file that exists in this repository today.
 
+<!-- questions-by-role:start -->
+
 **FinOps lead**
 
 - "Which of our Savings Plans and reservations expire in the next 90 days, and what should we decide before they do?" ([aws-expiring-commitment-no-decision](plugins/cloud-finops/skills/cloud-finops/playbooks/aws-expiring-commitment-no-decision.md), [azure-unused-reservation](plugins/cloud-finops/skills/cloud-finops/playbooks/azure-unused-reservation.md), [finops-aws-commitments.md](plugins/cloud-finops/skills/cloud-finops/references/finops-aws-commitments.md))
 - "A third of our bill is unallocated. How do we reach a defensible allocation of shared costs?" ([finops-allocation-showback.md](plugins/cloud-finops/skills/cloud-finops/references/finops-allocation-showback.md))
+- "We run half our workloads in our own data centres. How do we give app teams a monthly bill for on-prem capacity they will accept?" ([finops-on-prem-hybrid.md](plugins/cloud-finops/skills/cloud-finops/references/finops-on-prem-hybrid.md))
 - "Who should own commitment purchases, and which meetings do we need to run the practice?" ([finops-practice-operations.md](plugins/cloud-finops/skills/cloud-finops/references/finops-practice-operations.md))
+- "We need to start reporting our cloud carbon emissions. Where do we begin?" ([greenops-cloud-carbon.md](plugins/cloud-finops/skills/cloud-finops/references/greenops-cloud-carbon.md))
 
 **Finance and procurement**
 
+- "Our client wants separate AWS invoices per business unit. Their AWS contact suggested Cost Categories. Is that right?" ([finops-aws-billing.md](plugins/cloud-finops/skills/cloud-finops/references/finops-aws-billing.md))
+- "We are migrating from EA to MCA. What FinOps work do we need to do before the switch?" ([finops-azure-billing.md](plugins/cloud-finops/skills/cloud-finops/references/finops-azure-billing.md))
+- "What has to be true in Finance and in the ERP before we move from showback to chargeback?" ([finops-chargeback.md](plugins/cloud-finops/skills/cloud-finops/references/finops-chargeback.md))
 - "Our AWS enterprise agreement renews in 6 months. What should we check on the term sheet before signing?" ([finops-cloud-contracts.md](plugins/cloud-finops/skills/cloud-finops/references/finops-cloud-contracts.md))
 - "Finance wants a 12-month cloud forecast with an accuracy target. Which measures do we report, and how tight should the band be at our maturity?" ([finops-forecasting.md](plugins/cloud-finops/skills/cloud-finops/references/finops-forecasting.md))
-- "What has to be true in Finance and in the ERP before we move from showback to chargeback?" ([finops-chargeback.md](plugins/cloud-finops/skills/cloud-finops/references/finops-chargeback.md))
 
 **Engineering and platform**
 
 - "Our NAT gateway bill is higher than the compute it serves. Where does it come from and what do we change?" ([aws-nat-gateway-endpoint-substitution](plugins/cloud-finops/skills/cloud-finops/playbooks/aws-nat-gateway-endpoint-substitution.md), [aws-zombie-nat-gateway](plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md))
-- "How do we split the cost of a shared Kubernetes cluster between teams?" ([finops-kubernetes.md](plugins/cloud-finops/skills/cloud-finops/references/finops-kubernetes.md))
 - "Our Log Analytics ingestion doubled. Which tables and which settings do we check first?" ([azure-log-analytics-sprawl](plugins/cloud-finops/skills/cloud-finops/playbooks/azure-log-analytics-sprawl.md), [finops-azure.md](plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md))
+- "Our monthly bill jumped from $12K to $38K after a developer enabled Fast mode in Claude Code. How do I get this under control?" ([finops-anthropic.md](plugins/cloud-finops/skills/cloud-finops/references/finops-anthropic.md))
+- "How do we split the cost of a shared Kubernetes cluster between teams?" ([finops-kubernetes.md](plugins/cloud-finops/skills/cloud-finops/references/finops-kubernetes.md))
+- "Our Snowflake bill doubled in a quarter. Is it the warehouses, storage or Cortex, and what do we check first?" ([finops-snowflake.md](plugins/cloud-finops/skills/cloud-finops/references/finops-snowflake.md))
 
 **AI product owner**
 
+- "Our AI coding tool spend tripled in 6 months. How do we control it without banning the tools?" ([finops-ai-dev-tools.md](plugins/cloud-finops/skills/cloud-finops/references/finops-ai-dev-tools.md))
+- "Should we self-host an open-weight model on rented H100s instead of paying per token, and what hidden costs do TCO calculators miss?" ([finops-ai-self-hosted-vs-managed.md](plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md))
 - "We spend $40K a month on Bedrock and do not know which features it goes to. Where do we start?" ([finops-bedrock.md](plugins/cloud-finops/skills/cloud-finops/references/finops-bedrock.md))
 - "Should we buy provisioned throughput or stay pay-as-you-go for 500K requests a day?" ([finops-genai-capacity.md](plugins/cloud-finops/skills/cloud-finops/references/finops-genai-capacity.md), [finops-azure-openai.md](plugins/cloud-finops/skills/cloud-finops/references/finops-azure-openai.md))
-- "Our AI coding tool spend tripled in 6 months. How do we control it without banning the tools?" ([finops-ai-dev-tools.md](plugins/cloud-finops/skills/cloud-finops/references/finops-ai-dev-tools.md))
+
+**Executive (CTO, CIO, CFO)**
+
+- "Our AI projects cost a lot. When do they pay back, and which ones should we stop?" ([finops-ai-value-management.md](plugins/cloud-finops/skills/cloud-finops/references/finops-ai-value-management.md))
+- "How do we decide which AI initiatives get funded next quarter?" ([finops-ai-value-management.md](plugins/cloud-finops/skills/cloud-finops/references/finops-ai-value-management.md))
+- "Is the AI value my teams report real, or a forecast dressed as a result?" ([finops-ai-value-management.md](plugins/cloud-finops/skills/cloud-finops/references/finops-ai-value-management.md))
+- "Why can nobody tell me what each product costs us to run in the cloud?" ([finops-allocation-showback.md](plugins/cloud-finops/skills/cloud-finops/references/finops-allocation-showback.md))
+- "How much of our cloud spend should sit under commitment, and what is the risk if the business changes?" ([finops-aws-commitments.md](plugins/cloud-finops/skills/cloud-finops/references/finops-aws-commitments.md))
+- "Should business units pay for the cloud they use, and what changes in the P&L if they do?" ([finops-chargeback.md](plugins/cloud-finops/skills/cloud-finops/references/finops-chargeback.md))
+- "Should we sign a three-year commitment with our cloud provider, and what do we give up if we do?" ([finops-cloud-contracts.md](plugins/cloud-finops/skills/cloud-finops/references/finops-cloud-contracts.md))
+- "Can I trust the cloud forecast Finance gives me, and how far off is normal at our stage?" ([finops-forecasting.md](plugins/cloud-finops/skills/cloud-finops/references/finops-forecasting.md))
+- "Are we spending the right amount on cloud for a company our size?" ([finops-kpis-benchmarking.md](plugins/cloud-finops/skills/cloud-finops/references/finops-kpis-benchmarking.md))
+- "How do I know whether my FinOps team is doing a good job?" ([finops-kpis-benchmarking.md](plugins/cloud-finops/skills/cloud-finops/references/finops-kpis-benchmarking.md))
+- "Which three numbers about cloud should the CFO and the CIO see every month?" ([finops-kpis-benchmarking.md](plugins/cloud-finops/skills/cloud-finops/references/finops-kpis-benchmarking.md))
+- "Who on my leadership team should sponsor FinOps, and what does the sponsor decide?" ([finops-practice-operations.md](plugins/cloud-finops/skills/cloud-finops/references/finops-practice-operations.md))
+- "What should I tell the board about our cloud carbon footprint, and which number is defensible?" ([greenops-cloud-carbon.md](plugins/cloud-finops/skills/cloud-finops/references/greenops-cloud-carbon.md))
+- "What would it take to cut our cloud bill by 20% without slowing delivery?" ([optimnow-methodology.md](plugins/cloud-finops/skills/cloud-finops/references/optimnow-methodology.md))
+- "Where should we start with FinOps, and what should we expect in the first six months?" ([optimnow-methodology.md](plugins/cloud-finops/skills/cloud-finops/references/optimnow-methodology.md))
+
+<!-- questions-by-role:end -->
 
 Neither the skill nor the connector can see your cloud account. For a question about
 your own resources, the answer is a detection query you run yourself, taken from the
@@ -268,15 +297,10 @@ prompt so answers stay structured and billing-grounded.
   </a>
 </div>
 
-More questions the library is written to answer, beyond the role list above:
-
-- "Our monthly bill jumped from $12K to $38K after a developer enabled Fast mode in Claude Code. How do I get this under control?"
-- "Should we self-host an open-weight model on rented H100s instead of paying per token, and what hidden costs do TCO calculators miss?"
-- "Our client wants separate AWS invoices per business unit. Their AWS contact suggested Cost Categories. Is that right?"
-- "We are migrating from EA to MCA. What FinOps work do we need to do before the switch?"
-- "We need to start reporting our cloud carbon emissions. Where do we begin?"
-- "Our Snowflake bill doubled in a quarter. Is it the warehouses, storage or Cortex, and what do we check first?"
-- "We run half our workloads in our own data centres. How do we give app teams a monthly bill for on-prem capacity they will accept?"
+Every reference and runbook declares the questions it answers in its frontmatter
+(`questions:`), in English and French. The role list above is generated from the ones
+tagged with a persona and checked in CI. Ask in your own words: the connector's `query`
+parameter and the skill's routing both search those lists.
 
 ---
 

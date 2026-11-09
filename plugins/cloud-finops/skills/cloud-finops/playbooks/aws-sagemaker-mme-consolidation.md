@@ -4,6 +4,12 @@ scope: aws
 service: AWS SageMaker
 waste_category: overprovisioned
 confidence: likely
+questions:
+  - "We have one SageMaker endpoint per model and each one is barely used. Can we merge them?"
+  - "What are multi-model endpoints and inference components, and when do they save money?"
+  - "How many lightly used SageMaker endpoints justify a consolidation?"
+  - "How do we move several small models onto one SageMaker endpoint safely?"
+  - "Un endpoint SageMaker par modèle, tous peu utilisés : peut-on les regrouper ?"
 ---
 
 # AWS SageMaker Endpoint Sprawl - MME / Inference Components Consolidation

@@ -8,6 +8,18 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering", "Product"]
 fcp_personas_collaborating: ["Finance", "Leadership"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["ai-platforms:ai:deep", "ai-platforms:bill:deep", "ai-platforms:waste:deep"]
+questions:
+  - q: "Where do we start with FinOps for our AI spend?"
+    section: "The four-phase AI FinOps implementation"
+  - q: "Why do our AI costs behave so differently from the rest of the cloud bill?"
+    section: "Why AI cost signals behave differently"
+  - q: "What are the classic ways companies waste money on AI, and are we doing them?"
+    section: "The five AI cost anti-patterns"
+  - q: "How do we measure the cost per request, per user or per feature for an AI product?"
+    section: "Phase 2: Establish unit economics"
+  - q: "Are we ready to manage AI costs, and what is missing?"
+    section: "AI cost readiness assessment"
+  - "Par où commencer le FinOps de nos dépenses IA, et quels gaspillages classiques éviter ?"
 ---
 
 # FinOps for AI

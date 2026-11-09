@@ -4,6 +4,12 @@ scope: aws
 service: AWS EC2
 waste_category: overprovisioned
 confidence: likely
+questions:
+  - "Our GPU utilisation is under 30%. Which smaller instance would do?"
+  - "Are we paying for an A100 when a smaller GPU would serve the model?"
+  - "How do we rightsize a GPU instance without breaking the latency SLA?"
+  - "Which GPU metrics tell us an instance is oversized?"
+  - "Nos GPU sont utilisés à moins de 30 % : quelle instance plus petite choisir ?"
 ---
 
 # AWS Oversized GPU Instance

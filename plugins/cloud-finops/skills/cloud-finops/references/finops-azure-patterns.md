@@ -8,6 +8,14 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["SRE", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["azure:waste:deep"]
+questions:
+  - "What are the common ways we waste money on Azure, service by service?"
+  - q: "Which Azure compute inefficiencies should we check first?"
+    section: "Compute Optimization Patterns"
+  - q: "Our Azure storage bill is growing. Which storage patterns are usually behind it?"
+    section: "Storage Optimization Patterns"
+  - "Is there a catalogue of Azure waste patterns like the AWS one?"
+  - "Quels sont les gaspillages classiques sur Azure, par type de service ?"
 ---
 
 # Azure Optimization Pattern Catalogue

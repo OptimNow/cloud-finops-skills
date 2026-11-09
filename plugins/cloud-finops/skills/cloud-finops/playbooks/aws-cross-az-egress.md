@@ -4,6 +4,12 @@ scope: aws
 service: AWS EC2 / VPC data transfer
 waste_category: egress
 confidence: likely
+questions:
+  - "Our biggest AWS line item is regional data transfer. Where does it come from?"
+  - "Does Kafka replication across availability zones cost us money?"
+  - "How do we cut cross-AZ traffic charges without putting everything in one zone?"
+  - "Is our service mesh sending traffic across AZs for no reason?"
+  - "Nos frais de transfert inter-AZ explosent sur AWS : d'où viennent-ils et comment les réduire ?"
 ---
 
 # AWS Cross-AZ Egress Chatterbox

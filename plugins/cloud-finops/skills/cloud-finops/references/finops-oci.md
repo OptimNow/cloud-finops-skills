@@ -8,6 +8,15 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Finance"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["oci:bill:partial", "oci:budget:partial", "oci:commitments:partial", "oci:waste:partial"]
+questions:
+  - q: "How do we get cost data out of Oracle Cloud, and how does it compare with AWS or Azure?"
+    section: "OCI cost data foundations"
+  - q: "What are Oracle Universal Credits, and how do we avoid losing them?"
+    section: "Universal Credits - Oracle's commercial commitment construct"
+  - q: "How do we allocate OCI costs to teams with cost-tracking tags?"
+    section: "Cost-tracking tags - first-class billing-attribution primitive"
+  - "Which OCI storage and compute inefficiencies should we check first?"
+  - "Comment lire la facturation Oracle Cloud et ne pas perdre nos Universal Credits ?"
 ---
 
 # FinOps on OCI

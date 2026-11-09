@@ -8,6 +8,18 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Finance", "Security", "Platform Engineering"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:bill:deep", "azure:bill:deep", "gcp:bill:deep", "oci:bill:partial", "on-prem:bill:partial", "saas:bill:partial", "data-platforms:bill:partial"]
+questions:
+  - q: "How do we put AWS, Azure and GCP billing data into one table?"
+    section: "What FOCUS normalises, and what it does not"
+  - q: "Is FOCUS enough to compare costs across clouds, or do we still need provider-specific exports?"
+    section: "What FOCUS is not the dataset for"
+  - q: "Why do our tags look different in the AWS, Azure and GCP FOCUS exports?"
+    section: "Tags: three physical shapes for one logical column"
+  - q: "When is a month's billing data final, and how do we reconcile it with the invoice?"
+    section: "Month-end finalisation and reconciliation"
+  - q: "Should we build our own cost data pipeline or buy a FinOps platform?"
+    section: "Build, borrow or buy the consolidation layer"
+  - "Comment unifier les données de facturation AWS, Azure et GCP dans un même modèle ?"
 ---
 
 # FOCUS: multi-cloud cost data normalisation and ingestion

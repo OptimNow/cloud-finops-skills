@@ -4,6 +4,12 @@ scope: azure
 service: Azure App Service
 waste_category: overprovisioned
 confidence: likely
+questions:
+  - "Our App Service plans run at 20% CPU on Premium. Can we downgrade them?"
+  - "Do we need Premium v3 for apps that use none of its features?"
+  - "How do we rightsize Azure App Service plans without downtime?"
+  - "Which App Service plans still carry the instance count from a one-off traffic peak?"
+  - "Nos plans App Service Premium tournent à 20 % : peut-on descendre de gamme ?"
 ---
 
 # Azure App Service Plan Overprovisioned

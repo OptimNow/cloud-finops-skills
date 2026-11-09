@@ -4,6 +4,12 @@ scope: azure
 service: Azure SQL Database / Managed Instance
 waste_category: idle
 confidence: likely
+questions:
+  - "Which Azure SQL databases have no connections, and why do they still cost money?"
+  - "Is it safe to delete or pause an Azure SQL database that nothing connects to?"
+  - "How do we find SQL databases left behind by retired applications?"
+  - "Why does an idle Azure SQL database in a production tier cost the full price?"
+  - "Quelles bases Azure SQL ne reçoivent plus de connexions, et peut-on les supprimer ?"
 ---
 
 # Azure Idle SQL Database

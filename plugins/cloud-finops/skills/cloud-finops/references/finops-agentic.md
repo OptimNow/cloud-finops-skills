@@ -8,6 +8,17 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance", "Leadership", "Security"]
 fcp_maturity_entry: "Run"
 business_coverage: ["ai-platforms:ai:deep"]
+questions:
+  - q: "Why does our AI agent cost ten times more than the chatbot it replaced?"
+    section: "Agentic cost anatomy - where the tokens go"
+  - q: "How do we estimate the token cost of an agent before we build it?"
+    section: "Token complexity classes - Big-T notation"
+  - q: "Is our use case a workflow, a pipeline or an agent, and why does it matter for the bill?"
+    section: "Workflow, pipeline, agent - three cost problems under one word"
+  - q: "Can an AI agent pay for things on its own, and how do we keep control of that spend?"
+    section: "Agents as cost actors: agent-initiated payments (x402 / MPP)"
+  - "What should we monitor so an agent stuck in a loop does not burn money for hours?"
+  - "Combien va nous coûter un agent IA en tokens, et comment l'estimer avant de le construire ?"
 ---
 
 # FinOps for Agentic Systems

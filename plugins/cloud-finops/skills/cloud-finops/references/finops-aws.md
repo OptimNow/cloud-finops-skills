@@ -8,6 +8,19 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Finance", "Procurement"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["aws:waste:deep", "aws:ai:deep"]
+questions:
+  - q: "How do we rightsize EC2 instances without breaking production?"
+    section: "EC2 rightsizing"
+  - q: "Our SageMaker bill is high even when nobody is training. Why?"
+    section: "The billed-while-idle trap"
+  - q: "How do we pick the right GPU instance size for inference?"
+    section: "GPU instance rightsizing"
+  - q: "Is a CloudFront flat-rate plan cheaper than pay-as-you-go for us?"
+    section: "CloudFront flat-rate pricing plans"
+  - q: "S3 Files or EFS: which filesystem access over S3 costs less for our workload?"
+    section: "S3 Files vs EFS comparison"
+  - "Where do we start to optimise our AWS usage once the billing data is clean?"
+  - "Comment optimiser l'usage AWS : EC2, conteneurs, GPU, SageMaker, bases de données ?"
 ---
 
 # FinOps on AWS

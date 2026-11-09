@@ -536,6 +536,7 @@ questions:                                           # optional - block list of 
   - q: "{a question the README lists by role}"
     persona: "{README role}"                          # optional - feeds the README "What you can ask, by role"
     section: "{H2 or H3 heading phrase}"              # optional - the section that answers it
+    also: ["{other file name}", ...]                 # optional - other files the README links beside the owner
 ---
 ```
 
@@ -558,10 +559,11 @@ at once: the SKILL.md / POWER.md routing fallback (grep the lists when no routin
 keyword matches), retrieval on the ChatGPT, Gemini and llms-full surfaces (the text
 travels with the knowledge file), and, since phase 2 (same day), the `query`
 parameter on the MCP finders, which rank by word overlap on the questions, then the
-title, then the headings, with no embedding and no network call; phase 3 adds the
-generated README "What you can ask, by role" section. Writing
-rules, enforced by the phase-1 insertion script and to be moved into a CI guard in
-phase 3: four to eight questions per file; the user's words, never the repository's
+title, then the headings, with no embedding and no network call; phase 3 (shipped
+2026-11-09) put the field on every file, generates the README "What you can ask, by
+role" block from the persona-tagged entries (`scripts/render-questions-readme.py`,
+`--check` in CI) and gates the rules below with `scripts/check-questions.py`. Writing
+rules: four to eight questions per file; the user's words, never the repository's
 (no "playbook", "reference", "runbook", no file slug); one decision or symptom per
 question; at least one question in French; no question repeated in two files (a
 duplicate is a routing ambiguity); a probe the skill answered badly goes in verbatim,
@@ -573,7 +575,7 @@ field too. The YAML block
 form is deliberate here, unlike `business_coverage`: the coverage scripts read their
 own keys by prefix and ignore the rest of the block, and `check-style.sh` strips the
 frontmatter, so the block costs nothing in CI; the MCP loader reads it with
-`yaml.safe_load`. Applies to the 30 most-asked files since phase 1; a new file should
+`yaml.safe_load`. Applies to every reference and playbook since phase 3; a new file should
 carry it from its first PR.
 
 `fcp_phases` is deliberately independent of `fcp_domain`: a file whose primary

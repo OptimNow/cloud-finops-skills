@@ -8,6 +8,18 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["data-platforms:data:deep", "data-platforms:bill:deep", "data-platforms:commitments:deep", "data-platforms:waste:deep", "data-platforms:budget:partial", "data-platforms:ai:partial", "data-platforms:contracts:partial", "aws:data:partial", "azure:data:partial"]
+questions:
+  - q: "How do we know what Databricks costs per team or per job?"
+    section: "Cost data foundations on Databricks"
+  - q: "Serverless Databricks is on and nobody can attribute it. How do we split it?"
+    section: "Serverless attribution - what changes vs classic compute"
+  - q: "Does our Azure VM reservation cover Databricks, or do we need a DBU commitment?"
+    section: "The Azure VM Reservation vs DBU clarification"
+  - q: "Should we commit to Databricks, and what should we clean up before we do?"
+    section: "Sequencing - clean up before committing"
+  - q: "How do we stop Databricks clusters that nobody uses from running all night?"
+    section: "Compute Optimization Patterns"
+  - "Combien nous coûte Databricks par équipe, et faut-il s'engager sur des DBU ?"
 ---
 
 # FinOps on Databricks

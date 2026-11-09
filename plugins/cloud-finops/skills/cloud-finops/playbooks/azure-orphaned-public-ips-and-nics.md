@@ -4,6 +4,12 @@ scope: azure
 service: Azure Public IP / Network Interface
 waste_category: orphaned
 confidence: obvious
+questions:
+  - "We have public IPs attached to nothing in Azure. Do they cost money?"
+  - "How do we find network interfaces and public IPs left behind by deleted VMs?"
+  - "Why does a subnet deletion fail because of resources nobody can name?"
+  - "Can we delete unattached public IPs without breaking anything?"
+  - "Des IP publiques Azure ne sont associées à rien : coûtent-elles, et comment les retrouver ?"
 ---
 
 # Azure Orphaned Public IPs and NICs

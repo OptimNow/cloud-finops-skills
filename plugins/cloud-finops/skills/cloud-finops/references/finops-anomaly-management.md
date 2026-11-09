@@ -8,6 +8,20 @@ fcp_personas_primary: ["FinOps Practitioner"]
 fcp_personas_collaborating: ["Engineering", "Finance", "Security"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["aws:budget:deep", "azure:budget:deep", "gcp:budget:deep", "ai-platforms:budget:partial"]
+questions:
+  - q: "How do we catch a cloud cost spike before the invoice arrives?"
+    section: "Why anomaly management comes first"
+  - q: "Which alert thresholds should we set so we are not flooded with false alarms?"
+    section: "Threshold philosophy"
+  - q: "Which anomaly detection tools do AWS, Azure and GCP include, and are they enough?"
+    section: "Native tooling per cloud"
+  - q: "How do we detect a cost anomaly that hides inside a normal daily pattern?"
+    section: "The layered-detection pattern (catching masked anomalies)"
+  - q: "Someone spun up resources in a region we never use. How would we have known?"
+    section: "New-region and new-service detection"
+  - q: "Who should receive a cost anomaly alert, and where should it land?"
+    section: "Where the alert lands (integration points)"
+  - "Comment détecter une dérive de coûts cloud avant la facture, et qui doit recevoir l'alerte ?"
 ---
 
 # FinOps Anomaly Management

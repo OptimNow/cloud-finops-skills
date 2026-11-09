@@ -8,6 +8,18 @@ fcp_personas_primary: ["FinOps Practitioner", "Procurement"]
 fcp_personas_collaborating: ["Engineering", "Finance", "Leadership"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["saas:saas:deep", "saas:waste:deep", "saas:contracts:partial", "saas:bill:partial", "saas:budget:partial", "saas:commitments:partial"]
+questions:
+  - q: "How many SaaS tools are we paying for, and how do we find the ones nobody uses?"
+    section: "Discovery Methods"
+  - q: "What is SaaS sprawl, and how does it show up in our spend?"
+    section: "SaaS Sprawl Patterns"
+  - q: "Do we need a SaaS management platform, and how do we choose one?"
+    section: "SaaS Management Platform (SMP) Landscape"
+  - q: "Who owns SaaS licences: IT, Procurement or the business?"
+    section: "SAM Governance Model"
+  - q: "Which SaaS metrics should we track to prove the programme pays?"
+    section: "Key metrics"
+  - "Combien d'outils SaaS payons-nous, et comment trouver ceux que personne n'utilise ?"
 ---
 
 # FinOps for SaaS Asset Management (SAM)

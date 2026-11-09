@@ -4,6 +4,12 @@ scope: gcp
 service: GCP GKE Autopilot
 waste_category: idle
 confidence: likely
+questions:
+  - "We pay a management fee for GKE clusters nobody uses. How do we find them?"
+  - "Which of our GKE Autopilot clusters have had no deployment for a month?"
+  - "Can we delete a sandbox GKE cluster safely, and what does keeping it cost?"
+  - "Why does an empty GKE cluster still cost money every month?"
+  - "Nous payons des clusters GKE que personne n'utilise : comment les repérer ?"
 ---
 
 # GCP Idle GKE Autopilot Cluster

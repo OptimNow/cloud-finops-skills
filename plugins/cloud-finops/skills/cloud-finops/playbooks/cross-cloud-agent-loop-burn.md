@@ -4,6 +4,12 @@ scope: cross-cloud
 service: GenAI inference (Bedrock / Anthropic API / Azure OpenAI)
 waste_category: ai-ml-inefficiency
 confidence: likely
+questions:
+  - "Our AI agent spent all night on tokens with nothing to show. How do we catch that earlier?"
+  - "Why did our cost anomaly alert miss an agent stuck in a loop?"
+  - "How do we detect an agent that retries forever against a failing tool?"
+  - "Which limits should every agent have so a loop cannot burn money for hours?"
+  - "Notre agent IA a consommé des tokens toute la nuit pour rien : comment le détecter plus tôt ?"
 ---
 
 # Agent-Loop Flat-Line Burn

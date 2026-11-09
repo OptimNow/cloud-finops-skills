@@ -4,6 +4,12 @@ scope: aws
 service: AWS SageMaker
 waste_category: idle
 confidence: obvious
+questions:
+  - "Our SageMaker notebooks run around the clock. How do we shut them down automatically?"
+  - "Which notebook instances have been in service for weeks without being touched?"
+  - "What does an always-on GPU notebook cost us per month?"
+  - "How do we stop data scientists from leaving notebooks running?"
+  - "Nos notebooks SageMaker tournent en permanence : comment les arrêter automatiquement ?"
 ---
 
 # AWS SageMaker Always-On Notebook Instance
