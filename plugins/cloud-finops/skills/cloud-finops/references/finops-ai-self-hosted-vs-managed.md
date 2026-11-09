@@ -103,7 +103,9 @@ These rates are **on-demand**. Reserved or spot can be 40-60% cheaper, with the 
 as cloud compute commitments: liquidity risk on reserved, preemption risk on spot.
 
 To this you add:
-- **Volume disk** (model weights, caches): $0.05 to $0.10 per GB-month, often $50-200/month
+- **Volume disk** (model weights, caches): block storage runs $0.08 (EBS gp3, us-east-1) to
+  $0.17 per GB-month (GCP pd-ssd, us-central1) at hyperscaler list rates read in November
+  2026, GPU clouds price volumes in the same order; often $50-200/month
 - **Egress** if your traffic leaves the GPU provider
 - **Engineer time** (the dominant hidden cost, see below)
 

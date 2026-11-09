@@ -66,29 +66,36 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 
 ## Rate structure: Claude models
 
-> *Illustrative rates, list price, as of 1 October 2026 (Anthropic pricing page).
-> Prices move and this file does not. For a current figure, call a live pricing tool or
-> check <https://optimtoken.optimnow.io>. What is durable below is the tier structure and
-> the multipliers, not the absolute numbers.*
+> *No absolute rate in this file since 9 November 2026: the AI Pricing Hub carries the
+> rate of the day. If the `ai-pricing-hub` connector is in the session, call
+> `compare-llm-models(provider="Anthropic")` for the catalogue or
+> `estimate-llm-cost(modelName=...)` for a workload, and read the `provenance` block
+> before quoting; otherwise check <https://optimtoken.optimnow.io> or Anthropic's pricing
+> page, and write the figure with its source and date. What is durable below is the tier
+> structure and the multipliers.*
 
-### Base token pricing
+### Base token pricing: tiers and ratios
 
-| Model | Input ($/MTok) | Output ($/MTok) | Context | Notes |
+Output is priced at 5x input on every model in this table, so one ratio per model
+describes both meters. Ratios are against Opus 5 (pricing page and hub, read 9 November
+2026); the hub carries the dollar figures.
+
+| Model | Rate vs Opus 5 | Cache read | Context | Notes |
 |---|---|---|---|---|
-| Claude Fable 5.1 | $10 | $50 | 1M | Most capable widely released model; above Opus-tier pricing. Cache reads at 0.025x |
-| Claude Fable 5 | $10 | $50 | 1M | Previous Fable; cache reads at the standard 0.1x |
-| Claude Opus 5.5 | $4 | $20 | 1M | Launched 22 September 2026 at 0.8x the Opus 5 rate, with cache reads at 0.05x (half the standard multiplier). 128K max output, always-on adaptive thinking |
-| Claude Opus 5 | $5 | $25 | 1M | Same price as Opus 4.8 - a drop-in upgrade |
-| Claude Opus 4.8 | $5 | $25 | 1M | Previous Opus |
-| Claude Opus 4.7 | $5 | $25 | 1M | |
-| Claude Opus 4.6 | $5 | $25 | 1M | |
-| Claude Sonnet 5.5 | $2 | $10 | 1M | Launched 28 September 2026 at the Sonnet 5 rate. Carries breaking API changes from Sonnet 5 (thinking-mode and forced-tool-use behaviour), so the upgrade is an engineering change at constant unit cost. Cache reads at 0.05x |
-| Claude Sonnet 5 | $2 | $10 | 1M | Launched at an introductory rate; Anthropic made it the standard price in August 2026 and cancelled the scheduled 1 September increase |
-| Claude Sonnet 4.6 | $3 | $15 | 1M | |
-| Claude Sonnet 4.5 | $3 | $15 | 200K | Deprecated 30 September 2026; retirement on the Claude API scheduled for 30 November 2026. Plan the migration to Sonnet 5 or 5.5 (0.67x the rate) before then |
-| Claude Haiku 4.5 | $1 | $5 | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (the still-active Opus 4.5 is likewise 200K) |
+| Claude Fable 5.1 | 2x | 0.025x | 1M | Most capable widely released model; above Opus-tier pricing |
+| Claude Fable 5 | 2x | 0.1x | 1M | Previous Fable, at the standard cache multiplier |
+| Claude Opus 5.5 | 0.8x | 0.05x | 1M | Launched 22 September 2026 at 0.8x the Opus 5 rate, with cache reads at half the standard multiplier. 128K max output, always-on adaptive thinking |
+| Claude Opus 5 | 1x | 0.1x | 1M | Same rate as Opus 4.8 - a drop-in upgrade |
+| Claude Opus 4.8 | 1x | 0.1x | 1M | Previous Opus |
+| Claude Opus 4.7 | 1x | 0.1x | 1M | |
+| Claude Opus 4.6 | 1x | 0.1x | 1M | |
+| Claude Sonnet 5.5 | 0.4x | 0.05x | 1M | Launched 28 September 2026 at the Sonnet 5 rate. Carries breaking API changes from Sonnet 5 (thinking-mode and forced-tool-use behaviour), so the upgrade is an engineering change at constant unit cost |
+| Claude Sonnet 5 | 0.4x | 0.1x | 1M | Launched at an introductory rate; Anthropic made it the standard rate in August 2026 and cancelled the scheduled 1 September increase |
+| Claude Sonnet 4.6 | 0.6x | 0.1x | 1M | |
+| Claude Sonnet 4.5 | 0.6x | 0.1x | 200K | Deprecated 30 September 2026; retirement on the Claude API scheduled for 30 November 2026. Plan the migration to Sonnet 5 or 5.5 (0.67x the rate) before then |
+| Claude Haiku 4.5 | 0.2x | 0.1x | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (the still-active Opus 4.5 is likewise 200K) |
 
-**Three FinOps consequences of this table.** First, the Opus tier held $5/$25 across
+**Three FinOps consequences of this table.** First, the Opus tier held one list rate across
 five generations (4.5 through 5), and Opus 5.5 is the first break in that line: 0.8x
 the rate with cache reads at half the standard multiplier, so moving a cache-heavy
 agentic workload from Opus 5 to Opus 5.5 is a rate cut as well as a capability change.
@@ -110,9 +117,9 @@ current and the target model with the token counting endpoint (free, rate-limite
 compare `input_tokens`; do not reuse counts measured on the older model, and do not
 apply 30% to the bill, because output length changes with the model too.
 
-**The Sonnet 5 introductory rate became the standard rate.** The $2/$10 launch
-price was announced as temporary, with a 50% increase scheduled for 1 September
-2026. Anthropic cancelled the increase before it took effect (pricing page, checked
+**The Sonnet 5 introductory rate became the standard rate.** The launch rate was
+announced as temporary, with a 50% increase scheduled for 1 September 2026.
+Anthropic cancelled the increase before it took effect (pricing page, checked
 9 September 2026: the previously scheduled increase "will not occur"). Two
 consequences: budgets built on the introductory rate stay valid, and Sonnet 5 now
 sits at 0.4x Opus rather than 0.6x, which widens the payoff from tiered routing.
@@ -129,15 +136,15 @@ preview and need the `fast-mode-2026-02-01` beta header; Opus 5 access goes thro
 account manager or the waitlist. Opus 4.8 fast mode was deprecated on 30 October 2026 and
 is removed on 30 November 2026:
 
-| Model | Standard | Fast mode | Premium |
-|---|---|---|---|
-| Claude Opus 5.5 | $4 / $20 | $8 / $40 | 2x |
-| Claude Opus 5 | $5 / $25 | $10 / $50 | 2x |
-| Claude Opus 4.8 (deprecated, removed 30 November 2026) | $5 / $25 | $10 / $50 | 2x |
+| Model | Fast mode premium | Status (9 November 2026) |
+|---|---|---|
+| Claude Opus 5.5 | 2x the standard rate | Generally available since 15 October 2026 |
+| Claude Opus 5 | 2x the standard rate | Research preview: beta header, account-manager or waitlist access |
+| Claude Opus 4.8 | 2x the standard rate | Deprecated 30 October 2026, removed 30 November 2026 |
 
-Rates per million input / output tokens, illustrative, from the Claude pricing page read
-31 October 2026; Anthropic states the premium as "a multiplier on standard rates", and 2x
-is the ratio of the published rates.
+Anthropic states the premium as "a multiplier on standard rates", and 2x is the ratio of
+the published Fast and Standard rates (pricing page read 31 October 2026, unchanged on
+9 November 2026); the hub carries the standard rate the multiplier applies to.
 
 - **No Sonnet or Haiku Fast tier exists.** Fast mode is Opus-tier only.
 - **Opus 4.7 Fast mode has been removed** - requesting it returns an error. On
@@ -173,15 +180,10 @@ is the ratio of the published rates.
 
 ### Batch API pricing
 
-50% discount on both input and output for every model. Most batches complete within
-an hour; the ceiling is 24 hours. Results are retained 29 days.
-
-| Model | Input ($/MTok) | Output ($/MTok) |
-|---|---|---|
-| Claude Opus 5.5 Batch | $2 | $10 |
-| Claude Opus 5 Batch | $2.50 | $12.50 |
-| Claude Sonnet 5.5 / Sonnet 5 Batch | $1 | $5 |
-| Claude Haiku 4.5 Batch | $0.50 | $2.50 |
+50% discount on both input and output for every model: the Batch rate is half the Standard
+rate in the table above, for every row, so it needs no table of its own (current figures:
+<https://optimtoken.optimnow.io>). Fast mode is excluded. Most batches complete within an
+hour; the ceiling is 24 hours. Results are retained 29 days.
 
 Batch is the largest rate lever on this rate card that needs no commercial negotiation:
 50% off, against a 2x Fast premium or a 1.1x residency multiplier. The gating question
@@ -252,10 +254,12 @@ and <https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback
 
 ### Tool charges
 
+*Mechanics from the pricing page, read 9 November 2026; the page carries the rates.*
+
 | Tool | Pricing |
 |---|---|
-| Web search | $10 per 1,000 searches + standard input token costs for search results |
-| Code execution | 1,550 free hours/month per org, then $0.05/hour/container (5-minute minimum billed execution time). **Free** when the request also includes web search or web fetch (tool versions `20260209` or later) |
+| Web search | A flat meter per 1,000 searches, plus the search results as standard input tokens. Each search counts once whatever the number of results; a search that fails with an error is not billed |
+| Code execution | 1,550 free hours/month per org, then a flat rate per container-hour (5-minute minimum billed execution time). **Free** when the request also includes web search or web fetch (tool versions `20260209` or later) |
 
 ---
 
@@ -263,8 +267,8 @@ and <https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback
 
 > **Status (verified August 2026).** Managed Agents is a documented beta with a
 > published API surface and, since this section was last revised, **published
-> pricing**: tokens at standard model rates plus session runtime at **$0.08 per
-> session-hour**. The architecture and billing model below are from Anthropic's
+> pricing**: tokens at standard model rates plus a flat session-runtime rate per
+> session-hour. The architecture and billing model below are from Anthropic's
 > documentation.
 
 ### What Managed Agents are
@@ -300,10 +304,12 @@ Three properties change the cost shape versus plain API calls:
 > from pre-pricing community reporting. Anthropic's published billing model has
 > exactly **two dimensions**, and the docs contradict the idle-cost claim directly.
 
+*Managed Agents pricing page, read 9 November 2026:*
+
 | Dimension | Rate | Metering |
 |---|---|---|
 | Tokens | Standard model rates (see pricing table above) | All tokens consumed by the session. Prompt-caching multipliers apply identically; Fast mode premium applies if the agent's `model.speed` is `"fast"`; the 1.1x US-residency multiplier applies if `model.inference_geo` is `"us"` |
-| Session runtime | $0.08 per session-hour | Metered to the millisecond, and **only while the session status is `running`**. Time spent `idle`, `rescheduling`, or `terminated` is not billed |
+| Session runtime | A flat rate per session-hour (pricing page; the worked example below carries the dated figure) | Metered to the millisecond, and **only while the session status is `running`**. Time spent `idle`, `rescheduling`, or `terminated` is not billed |
 
 Two exclusions matter for cost modelling:
 
@@ -319,8 +325,9 @@ Two exclusions matter for cost modelling:
 ### FinOps implications
 
 - **Two meters, not one**: token spend still dominates for most workloads (a
-  one-hour Opus 5 session consuming 50K in / 15K out is ~$0.63 of tokens and $0.08
-  of runtime), but long-running low-token agents invert that ratio
+  one-hour Opus 5 session consuming 50K in / 15K out is ~$0.63 of tokens and $0.08 of
+  runtime at the 9 November 2026 list rates, so the runtime meter is about an eighth of
+  the token meter), but long-running low-token agents invert that ratio
 - **Idle time is free** - there is no always-on charge for a session waiting on
   input, so keeping sessions open is an attribution question, not a cost one
 - **Harder attribution**: Agent costs spread across multiple invocations vs discrete API calls
@@ -574,9 +581,9 @@ dimensions:
 
 A forecast based solely on base token pricing is insufficient:
 - Fast mode doubles the unit price, on the Opus-tier models that support it
-- Model choice creates a 10x price range across the current lineup (Haiku 4.5 at
-  $1/$5 to Fable 5 at $10/$50) - wider than the 5x range of the previous generation,
-  because Fable 5 sits above Opus
+- Model choice creates a 10x price range across the current lineup (Haiku 4.5 to
+  Fable 5, per the pricing table above) - wider than the 5x range of the previous
+  generation, because Fable 5 sits above Opus
 - Tool usage adds call-based meters that are independent of token volume
 - Managed Agents add runtime-based costs that scale differently than token usage
 - Behavioural effect: lower latency reduces friction, which increases usage volume

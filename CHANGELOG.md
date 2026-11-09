@@ -81,6 +81,31 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   seat attributes, per-developer AWS attribution, pooled budget priority settings.
 - **Azure commitments**: the file pruned of internal repetition to fit the token budget;
   no mechanic, figure or dated claim dropped.
+- **The Anthropic, open-weight vendor and AI coding tool guides now give ratios and point
+  to the AI Pricing Hub for the rate of the day** (maintainer decision of 9 November 2026).
+  The Claude table reads as tiers relative to Opus 5 with each model's cache-read
+  multiplier (output is 5x input on every row), the Fast mode and Batch sections as the 2x
+  and 0.5x multipliers they are, and the tool and Managed Agents meters as mechanics; the
+  DeepSeek, Qwen, Kimi and GLM sections keep the peak ratio, the context step, the cache
+  multiples and the seat-tier ratios; the Cursor, Claude Code, Copilot and Devin Desktop
+  plan tables keep each tier's position relative to the entry tier and the annual-billing
+  discount, with the vendor pricing page and the date it was read (9 November 2026 for
+  Claude, Copilot, Devin Desktop and Cursor's current lineup). Ask the hub, or
+  `compare-llm-models` on the `ai-pricing-hub` connector, for the dollar figure; the
+  worked examples keep their one dated figure.
+- **Every other price in the reference files now carries its date and region in its own
+  paragraph.** The AWS figures (CloudFront plans and
+  pay-as-you-go tiers, WAF, S3, S3 Files, EFS, data transfer out, the Cost Explorer API)
+  were re-read on the Price List API and the pricing pages on 9 November 2026, the Azure
+  networking figures on the Retail Prices API and the Anthropic tool and runtime rates on
+  the pricing page the same day. Three corrections: Azure internet egress above 10 TB
+  ($0.083 then $0.07 per GB, where the file said $0.05 and $0.04), global VNet peering at
+  $0.035/GB each side where the file quoted the $0.01 intra-region rate, and the block
+  storage range in the self-hosting reference ($0.08 to $0.17 per GB-month at hyperscaler
+  list, not $0.05 to $0.10). The CI guard that keeps a date in every runbook price paragraph now
+  covers the references too: a table is dated by the sentence right above it, a rounded
+  magnitude ("$50K/month") is not a price, and the worked-example figures that read like
+  rates ("a 20% increase on $50,000") sit in an allowlist.
 - **1 November scan applied** (eleven items, each read on the provider's page on
   9 November 2026): ECS Managed Instances consolidation and ECS GPU sharing with NVIDIA
   MPS; Aurora Serverless v2 to 384 ACUs on PostgreSQL; RDS storage autoscaling on

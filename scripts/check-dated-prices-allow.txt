@@ -1,0 +1,12 @@
+# check-dated-prices.sh allowlist: one substring per line. A prose paragraph that
+# contains one of these is not checked. Reserve it for a worked-example figure or a
+# contract term that reads like a rate but is not one (docs/DESIGN.md, "Content rules",
+# "Write mechanics, not price figures"). A list price is dated, never allowed here.
+a 20% increase on $50,000 is $10,000
+A 50% spike on a $100/day service is $50
+alert on any daily delta > $1,000
+above a small floor (e.g. $100)
+$100/hour for 8 hours and $30/hour
+$50,000 refund cap
+the greater of $20 or AWS's own conservative estimate
+€150/tCO2e

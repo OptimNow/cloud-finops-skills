@@ -605,9 +605,9 @@ example 12,500 DBCUs (worth $12,500 of pay-as-you-go DBUs) for $12,000 (both rea
 | $1,340,000 | 33% | $3,780,000 | 37% |
 
 Values are the commitment over the whole term. A 24-month schedule exists on the
-same pattern: the 12-month percentages at twice the threshold, from 4% at $24,000 to
-33% at $2,680,000. The bands are the published floor; what a large account obtains
-beyond them is negotiated and not public.
+same pattern (read 24 October 2026): the 12-month percentages at twice the threshold,
+from 4% at $24,000 to 33% at $2,680,000. The bands are the published floor; what a large
+account obtains beyond them is negotiated and not public.
 
 **What the paper says** (G-Cloud 14 Usage Commitment Pricing Annex):
 - Each Contract Year is billed as an **Advance Payment**, non-refundable and not a

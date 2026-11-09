@@ -72,13 +72,14 @@ before every release. A report that is right but out of scope goes to
 
 **Price drift check (since 2026-11-09).** The infrastructure list prices the files
 carry as dated illustrative figures (a NAT gateway hour, a gp3 GB-month, an App Service
-plan, the GKE cluster fee, the Databricks DBCU plans: ninety provider SKUs, written in
-150 places across the playbooks and nine references) have no live source, unlike the AI
+plan, the GKE cluster fee, the Databricks DBCU plans: ninety-eight provider SKUs, written in
+163 places across the playbooks and ten references) have no live source, unlike the AI
 token rates routed to the AI Pricing Hub and the OptimToken figures the connector
 serves. `scripts/price-manifest.yaml` lists each SKU once (`prices:`, with the query
 that reads it on the AWS Price List API, the Azure Retail Prices API, the Google Cloud
 Billing Catalog API or a Google pricing page) and each place its number is written
-(`figures:`, with the derivation where the text carries a monthly or per-TB figure).
+(`figures:`, with the derivation where the text carries a monthly or per-TB figure); an
+Azure meter sold in volume tiers names the row it reads with `tier_minimum_units`.
 `scripts/check-prices.py` fetches every price, applies the derivation and compares
 with the number as written within a 2% tolerance that absorbs the rounding
 ("~$33/month"); `.github/workflows/price-drift.yml` runs it every Saturday and, on a
@@ -702,14 +703,24 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
   a break-even calculation. Absolute $/1M-token and $/hour figures belong in the AI
   Pricing Hub (<https://optimtoken.optimnow.io>), which is queried live. Where a worked
   example genuinely needs a number to be legible, keep one, mark it illustrative, and
-  date it inline. In a playbook the date goes in the same paragraph as the figure,
+  date it inline. Since 9 November 2026 (maintainer decision) the AI model and AI tool
+  price tables carry no absolute figure at all: `finops-anthropic.md`,
+  `finops-open-weight-vendors.md` and `finops-ai-dev-tools.md` give the tier structure,
+  the multipliers and the ratios between tiers and point once per section to the AI
+  Pricing Hub (or, for a seat price or a model the hub does not list, to the vendor's
+  pricing page with its read date), while the exception for one dated figure in a worked
+  example stands. In a playbook the date goes in the same paragraph as the figure,
   beside it where the sentence allows: the 9 November 2026 probe smoke showed the
   model relaying a playbook's figures and dropping the date that sat in a trailing
   sentence, and `scripts/check-dated-prices.sh` gates the paragraph rule in CI since
-  that day (playbooks only; a reference may date a whole section with one framing
-  sentence, as the next rule says, and the same check there would flag the scale
-  examples that are not prices). The reader-facing version of this rule is the
-  "Price figures" section in SKILL.md and POWER.md.
+  that day. The same day's pass over the references (66 flagged paragraphs: 7 tables
+  already dated by a framing sentence, 13 rounded magnitudes, 14 worked examples, the
+  rest list prices to date or route) let the guard cover both folders with three
+  readings: a table is dated by the prose paragraph directly above it (the framing
+  sentence of the next rule, placed right over the table), a rounded magnitude such as
+  $50K or $3M is a scale and not a price, and a worked-example figure that reads like a
+  rate is listed in `scripts/check-dated-prices-allow.txt`. The reader-facing version
+  of this rule is the "Price figures" section in SKILL.md and POWER.md.
 - **Every quantitative claim carries its provenance (rule of 2026-10-13).** A
   percentage, ratio, multiplier, hour count or FTE count that is not a price is still
   a claim, and the 13 October 2026 brand review found about 60 of them stated as

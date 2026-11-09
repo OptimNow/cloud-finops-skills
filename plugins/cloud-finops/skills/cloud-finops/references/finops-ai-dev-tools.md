@@ -108,7 +108,7 @@ Two changes alter the cost shape, not only the price:
 - **The pool covers Cursor's own models only** (Grok and Composer). Claude, GPT and
   Gemini sit outside it: on Premium and above they bill at API list price from the first
   request, paid from prepaid credit, and on Teams and Enterprise at API list price plus a
-  Cursor Token Rate ($0.25 per million tokens as of 17 October 2026). Plus has no
+  Cursor Token Rate, a flat surcharge per million tokens (read 17 October 2026). Plus has no
   third-party models at all. A team that relies on Claude or GPT inside Cursor has moved
   from a seat with an included allowance to metered spend from token one.
 - **The pool resets weekly, not monthly.** Usage reports and forecasts built on a
@@ -130,26 +130,28 @@ pool. Prepaid credit pays for third-party models and for Cursor-model use beyond
 pool, Auto Top-up refills it below a threshold, and a monthly additional-usage limit
 caps paid usage whatever the credit balance. Sources:
 [models and pricing](https://cursor.com/docs/models-and-pricing),
-[pricing](https://cursor.com/pricing) (read 17 October 2026; no start date stated).
+[pricing](https://cursor.com/pricing) (read 17 October 2026, lineup and pool ratios unchanged
+on 9 November 2026; no start date stated).
 
 **Legacy plans keep working as they are.** Hobby, Start, Pro, Pro+, Ultra and Teams
 Standard and Premium seats keep two monthly pools (Cursor Models and Other Models) and
-on-demand usage. The table below describes them. *Seat prices are list price as of
-August 2026.*
+on-demand usage. The table below describes them (structure as read on the pricing page in
+August 2026; the page no longer lists these plans, so a legacy seat's price is read from
+the invoice).
 
-| Plan | Seat cost | Included usage | Overage billing |
+| Plan | Seat | Included usage | Overage billing |
 |---|---|---|---|
-| Hobby (free) | $0 | Limited requests and completions | Not available |
-| Pro | $20/month | $20/month usage pool | Per token at model rates |
+| Hobby (free) | Free | Limited requests and completions | Not available |
+| Pro | Individual tier | A monthly usage pool worth the seat price | Per token at model rates |
 | Pro+ | Higher individual tier | ~3x the Pro usage pool | Per token at model rates |
 | Ultra | Top individual tier | ~20x the Pro usage pool | Per token at model rates |
-| Teams Standard (was "Business") | $40/seat/month | Usage pool per seat | Per token at model rates |
-| Teams Premium | $120/seat/month | Larger pool per seat | Per token at model rates |
+| Teams Standard (was "Business") | 2x the Pro seat, per seat | Usage pool per seat | Per token at model rates |
+| Teams Premium | 6x the Pro seat, per seat | Larger pool per seat | Per token at model rates |
 | Enterprise | Custom | Custom | Custom |
 
-Annual billing on Pro reduced the seat cost to ~$16/month. Cursor renames and
-restructures tiers frequently - check which lineup each seat is on before building a
-seat forecast, because a mixed estate of legacy and current plans has two cost shapes.
+Annual billing on Pro took about 20% off the monthly seat price. Cursor renames and
+restructures tiers frequently - check which lineup each seat is on before building a seat
+forecast, because a mixed estate of legacy and current plans has two cost shapes.
 
 ### Token rate variability
 
@@ -212,13 +214,18 @@ each with a different billing model.
 
 ### Subscription access
 
-*List price as of August 2026 - verify on the vendor's pricing page before quoting.*
+*Plan structure as read on claude.com/pricing, 9 November 2026; the page carries the seat
+prices.*
 
-| Plan | Cost | What you get |
+| Plan | Price relative to Pro | What you get |
 |---|---|---|
-| Pro | $20/month | Claude Code access, current Sonnet and Opus models, moderate token budget |
-| Max 5x | $100/month | 5x the Pro usage allowance |
-| Max 20x | $200/month | 20x the Pro usage allowance |
+| Pro | 1x | Claude Code access, current Sonnet and Opus models, the baseline usage allowance per 5 hours and per week |
+| Max | 5x | 5x the Pro usage allowance |
+| Ultra | 10x | 10x the Pro weekly allowance, and no 5-hour limit on verified accounts |
+| Team | Standard and Premium seats, Premium at 5x the Standard seat | Premium seats get 5x the Standard seat's usage; annual billing takes about 20% off either seat |
+| Enterprise | Per seat, 20-seat minimum, plus usage at API rates | Annual billing only |
+
+Annual billing on Pro takes about 15% off the monthly price.
 
 On subscription plans, usage is included up to the plan limit. You do not see per-token
 charges, but you hit rate limits when the budget is consumed.
@@ -302,9 +309,11 @@ Codex is OpenAI's coding agent, available through ChatGPT and as a CLI tool.
 ### Access paths
 
 **ChatGPT subscription (default):** Codex CLI usage draws from your ChatGPT plan limits
-at no extra per-token charge. ChatGPT Plus at $20/month is the cheapest access path. On
-ChatGPT Enterprise the agreement decides whether usage draws workspace credits or bills
-in USD by token; see `finops-sam.md`, "Consumption-billed AI workspaces".
+at no extra per-token charge. ChatGPT Plus is the cheapest plan with expanded Codex usage
+(chatgpt.com/pricing, read 9 November 2026; the Free and Go tiers carry limited Codex
+access, and the page holds the seat prices). On ChatGPT Enterprise the agreement decides
+whether usage draws workspace credits or bills in USD by token; see `finops-sam.md`,
+ "Consumption-billed AI workspaces".
 
 **Fast mode on the subscription path is a consumption multiplier.** Signed in with
 ChatGPT, Codex offers a Fast mode on supported models that draws included plan limits at
@@ -371,19 +380,22 @@ billing.
 
 ### GitHub Copilot
 
-*List price as of August 2026 - verify on the vendor's pricing page before quoting.*
+*Plan structure as read on github.com/features/copilot/plans, 9 November 2026 (individual
+tiers and their credits) and in August 2026 (Business and Enterprise); the pages carry the
+seat prices.*
 
-| Plan | Seat cost | Notes |
+| Plan | Seat | Notes |
 |---|---|---|
-| Free | $0 | Limited completions |
-| Pro | $10/month | Individual developers (~$15 in AI credits included) |
-| Pro+ | $39/month | Higher limits, premium models (~$70 in credits) |
-| Max | $100/month | Top individual tier (~$200 in credits) |
-| Business | $19/seat/month | Admin controls, audit logs, IP indemnity |
-| Enterprise | $39/seat/month | Requires GH Enterprise Cloud ($21/seat/month extra); ~3,900 credits/user |
+| Free | Free | Limited chat and agent usage |
+| Pro | Individual baseline | Monthly AI credits worth 1.5x the seat price (a base allotment plus a variable flex top-up) |
+| Pro+ | About 4x Pro | Premium models; credits worth about 1.8x the seat price |
+| Max | 10x Pro | Top individual tier; credits worth 2x the seat price |
+| Business | About 2x Pro, per seat | Admin controls, audit logs, IP indemnity |
+| Enterprise | About 2x Business, per seat | Requires GitHub Enterprise Cloud, itself about half the Enterprise seat again; ~3,900 credits/user |
 
 Overage beyond the monthly allocation used to be charged at a flat $0.04 per premium
-request. That rate is retired - see the transition note below before quoting it.
+request until 1 June 2026. That rate is retired - see the transition note below before
+quoting it.
 
 **GitHub AI Credits - transition date passed 1 June 2026.** GitHub moved Copilot
 overage from the fixed `$0.04 per premium request` rate to usage-based billing in
@@ -416,10 +428,10 @@ card. Opus 4.8 stays for individual subscribers on annual plans.
 Sources: https://docs.github.com/en/copilot/how-tos/manage-and-track-spending/prepare-for-your-move-to-usage-based-billing,
 [GitHub changelog, 15 October 2026](https://github.blog/changelog/2026-10-15-upcoming-deprecation-of-selected-github-copilot-models-in-mid-november).
 
-On Copilot Enterprise seats, total cost of ownership is $60/seat/month when including the
-required GitHub Enterprise Cloud subscription - a detail that often surprises procurement.
-Note GitHub flags the $21 GHEC rate as "for the first 12 months", so model the post-year-1
-renewal above $60.
+On Copilot Enterprise seats, total cost of ownership is the Copilot seat plus the required
+GitHub Enterprise Cloud seat, about 1.5x the Copilot seat alone at the August 2026 list
+prices - a detail that often surprises procurement. Note GitHub flags the GHEC rate as
+"for the first 12 months", so model the post-year-1 renewal above that total.
 
 **October 2026 changes.** *Copilot access* (from 28 October 2026 through account teams,
 self-serve later) removes the Copilot seat charge for users with a GHEC licence; users
@@ -451,14 +463,14 @@ daily/weekly usage quotas, and rebranded to **Devin Desktop** in June 2026 (wind
 now redirects to devin.ai - expect the vendor name change to surface in invoices and
 SaaS-management inventories).
 
-*List price as of August 2026 - verify on the vendor's pricing page before quoting.*
+*Plan structure as read on devin.ai/pricing, 9 November 2026; the page carries the seat prices.*
 
-| Plan | Cost | Usage model | Notes |
+| Plan | Seat | Usage model | Notes |
 |---|---|---|---|
-| Free | $0 | Limited quota | - |
-| Pro | $20/month | Daily/weekly usage quota | The former $40 mid-tier no longer exists |
-| Max | $200/month | Larger quota | Top individual tier |
-| Teams | $40/seat/month | Quota per seat | Centralised billing, admin analytics |
+| Free | Free | Limited quota | - |
+| Pro | Individual baseline | Daily/weekly usage quota | The former mid-tier at 2x Pro no longer exists |
+| Max | 10x Pro | Larger quota | Top individual tier |
+| Teams | A flat team fee plus seats at 2x Pro | Quota per seat | Centralised billing, admin analytics |
 | Enterprise | Custom | Per-seat allocation | SSO, compliance |
 
 Usage beyond the included quota bills at underlying model API pricing. The legacy
@@ -634,7 +646,8 @@ mechanics). Two things break that: (1) the cache TTL - about 5 minutes on API-ke
 or usage-credit billing, 1 hour on subscription sessions, configurable via `promptCacheTtl`
 since v2.1.243 - an idle gap longer than the window forces the whole prefix to be
 reprocessed at full price on the next turn (in
-the walkthrough, a cache miss after a coffee break turned a ~$0.02 turn into ~$0.12), and
+the walkthrough, a cache miss after a coffee break made the next turn cost about six times
+a cached one), and
 (2) enabling a new server mid-prefix invalidates the cache from that point on. Long,
 unfocused sessions make it worse: the resent context keeps growing, so every miss reprocesses
 a larger blob.
@@ -702,19 +715,18 @@ becomes a cost problem when:
 
 ## Pricing comparison
 
-> *Seat prices are list price as of August 2026. They are the most frequently repriced
-> figures in this file - treat the table as a shape comparison (who charges for what),
-> not as a quotable rate card, and verify against each vendor's pricing page. For the
-> per-token rates behind the BYOK rows, use a live source such as
-> <https://optimtoken.optimnow.io>.*
+> *A shape comparison (who charges for what), not a rate card: seat prices are the most
+> frequently repriced figures in this file, so each vendor's section above points to its
+> pricing page with the date it was read. For the per-token rates behind the BYOK rows,
+> use a live source such as <https://optimtoken.optimnow.io>.*
 
 | Tool | Type | Seat cost | Token / usage model | Enterprise option | Proxy-compatible |
 |---|---|---|---|---|---|
 | **Cursor** | Seat + usage | Teams seats at the Premium, Super or Ultra tier (current plans, October 2026); legacy Teams Standard / Premium seats still run | Weekly pool for Cursor's own models; third-party models metered from the first request (current plans) | Yes (custom) | No (vendor-mediated) |
-| **Claude Code** | BYOK or subscription | $20 (Pro) / $100 (Max 5x) / $200 (Max 20x) | API key: per-token at current Claude-model rates (see `finops-anthropic.md` for the rate structure) | Via Anthropic Enterprise | Yes (API key mode) |
-| **OpenAI Codex** | BYOK or subscription | $20 (ChatGPT Plus) and up | API key: per-token at current Codex-model rates (see OpenAI pricing page) | Via OpenAI Enterprise | Yes (API key mode) |
-| **GitHub Copilot** | Seat + usage | $10 (Pro) / $100 (Max) / $19 (Business) / $39 (Enterprise) | AI-credit overage priced on underlying model cost (legacy $0.04/request retired June 2026) | Yes ($60/seat total with GH Enterprise Cloud) | No (vendor-mediated) |
-| **Windsurf (Devin Desktop)** | Seat + usage | $20 (Pro) / $200 (Max) / $40 (Teams) | Daily/weekly quota + API-priced overage (credits retired March 2026) | Yes (custom) | No (vendor-mediated) |
+| **Claude Code** | BYOK or subscription | Pro, Max (5x Pro usage at 5x the price), Ultra (10x at 10x); Team Standard and Premium seats; Enterprise seat plus API-rate usage | API key: per-token at current Claude-model rates (see `finops-anthropic.md` for the rate structure) | Via Anthropic Enterprise | Yes (API key mode) |
+| **OpenAI Codex** | BYOK or subscription | ChatGPT Plus and up | API key: per-token at current Codex-model rates (see OpenAI pricing page) | Via OpenAI Enterprise | Yes (API key mode) |
+| **GitHub Copilot** | Seat + usage | Pro, Pro+ (about 4x Pro), Max (10x Pro); Business (about 2x Pro) and Enterprise (about 2x Business) per seat | AI-credit overage priced on underlying model cost (the legacy flat per-request rate retired June 2026) | Yes (Enterprise seat plus a GitHub Enterprise Cloud seat, about 1.5x the Copilot seat alone) | No (vendor-mediated) |
+| **Windsurf (Devin Desktop)** | Seat + usage | Pro, Max (10x Pro), Teams (a flat team fee plus seats at 2x Pro) | Daily/weekly quota + API-priced overage (credits retired March 2026) | Yes (custom) | No (vendor-mediated) |
 
 ---
 

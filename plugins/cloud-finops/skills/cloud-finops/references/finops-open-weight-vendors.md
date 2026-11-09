@@ -102,11 +102,15 @@ Allocate by model *and* channel from the start.
 
 ## Per-vendor billing mechanics
 
-> *All figures below are illustrative, list price, read from the vendor pricing pages on
-> 23 August 2026 unless dated otherwise. Prices in this segment move on a scale of weeks
-> and this file does not move with them. For a current figure, call a live pricing tool
-> if one is available, otherwise check <https://optimtoken.optimnow.io>. What is durable
-> here is the shape of each vendor's discount mechanics, not the absolute numbers.*
+> *No absolute rate below since 9 November 2026: the AI Pricing Hub carries the rate of
+> the day for DeepSeek, Alibaba (Qwen), Moonshot (Kimi) and Zhipu (GLM). If the
+> `ai-pricing-hub` connector is in the session, call `compare-llm-models(provider=...)`
+> and read the `provenance` block before quoting; otherwise check
+> <https://optimtoken.optimnow.io>. A model the hub does not list (on 9 November 2026,
+> Kimi K3 and Qwen3.5-Plus) is read on the vendor's own pricing page and dated. What is
+> durable here is the shape of each vendor's discount mechanics: the multipliers and
+> steps below were read from the vendor pricing pages on 23 August 2026 unless dated
+> otherwise.*
 
 ### DeepSeek: time-of-day pricing
 
@@ -122,16 +126,16 @@ FinOps consequence.
 | Multiplier | Peak is exactly 2x off-peak, on input and output alike |
 | Cache hits | Priced at roughly **3% of the cache-miss input rate** - deeper than the 10% multiplier on most OpenAI, Anthropic and Moonshot models and the 5% on GPT-6.1 Sol and Claude Opus 5.5, though Claude Fable 5.1 and Mythos 5.1 now read at 2.5% (read 2 October 2026) |
 
-Illustrative off-peak rates per 1M tokens (input cache-miss / output), read
-23 August 2026: DeepSeek V4 Flash $0.22 / $0.66; V4 Pro $0.66 / $1.98. Peak is double
-each figure. Cache-hit input off-peak is $0.007 on Flash and $0.022 on Pro.
+The shape of the V4 Flash and V4 Pro rate cards (read 23 August 2026; the hub carries the
+figures): output is 3x cache-miss input on both models, peak is double each off-peak
+figure, and cache-hit input is about 3% of cache-miss input.
 
 **Read the change correctly, because the framing traps forecasters.** Off-peak is not a
 discount applied to the previous flat rate. The flat rate was replaced by a higher peak
-rate, and off-peak is half of that new peak. Secondary reporting puts the prior V4-Pro
-flat output rate at $0.87 per 1M tokens against $1.98 off-peak today, which means every
-tier costs more than it did before, and the off-peak "discount" still lands above the
-old flat price. A forecast that models the announcement as a saving will be wrong in
+rate, and off-peak is half of that new peak. Secondary reporting puts the new off-peak
+V4-Pro output rate at about 2.3x the prior flat rate, which means every tier costs more
+than it did before, and the off-peak "discount" still lands above the old flat price.
+A forecast that models the announcement as a saving will be wrong in
 the wrong direction. *(Prior flat rate from press coverage of the August 2026
 announcement, not from DeepSeek documentation - verify before quoting to a client.)*
 
@@ -144,7 +148,7 @@ rewards scheduling.
 
 | Mechanic | How it works |
 |---|---|
-| Context-length step | Price steps **above 256K input tokens**, not at the context limit. Illustrative for Qwen3.5-Plus, International (Singapore), read 23 August 2026: $0.40 / $2.40 per 1M tokens up to 256K input, stepping to $0.50 / $3.00 from 256K to 1M |
+| Context-length step | Price steps **above 256K input tokens**, not at the context limit. On Qwen3.5-Plus, International (Singapore) endpoint, read 23 August 2026, the step adds 25% to the input and the output rate alike; output is 6x input on either side of it |
 | Batch inference | 50% of the real-time rate on both input and output, where the model supports batch calls |
 | Explicit context cache | Cache creation billed at 125% of the standard input price; cache hits at 10%. An implicit, automatic cache is also documented at a shallower discount - verify which one a given model uses before modelling the saving |
 | Discount exclusivity | Batch and caching **do not stack**. Batch suits bulk offline jobs, caching suits high-frequency requests sharing a prefix. Pick one per workload |
@@ -165,18 +169,18 @@ own pricing documentation states 50%, verified 23 August 2026.)*
 
 | Mechanic | How it works |
 |---|---|
-| Flagship rate | Kimi K3, illustrative and read 23 August 2026: $3.00 per 1M input tokens on a cache miss, $15.00 per 1M output tokens |
-| Cache hits | $0.30 per 1M input tokens - 10% of the cache-miss rate, in line with Western vendors and three times shallower than DeepSeek's |
+| Flagship rate | Kimi K3 prices output at 5x cache-miss input (read 23 August 2026), the shape of the Western frontier rate cards; the figures are on Moonshot's platform pricing page, not on the hub as of 9 November 2026 |
+| Cache hits | 10% of the cache-miss input rate, in line with Western vendors and three times shallower than DeepSeek's |
 | Context | ~1M tokens (1,048,576), single tier, no long-context premium band published |
 | On Bedrock | Since 18 September 2026 Kimi K3 is also on Amazon Bedrock, the first open-weight model there with explicit prompt caching. Bedrock bills a single 30-minute cache write at 1.25x input next to the 0.1x read; Moonshot direct bills K3 cache writes by TTL, 5 minutes at 1x input and 1 hour at 2x (both read 2 October 2026). Model the write tier when comparing the two channels |
 | Taxes | The rate card is quoted excluding applicable taxes, assessed at checkout by jurisdiction. Budget gross, not net |
 
-**This is the data point OptimNow uses most in client conversations.** K3
-at $3 / $15 sits 50% above Claude Sonnet 5's list rate of $2 / $10, which Anthropic made
-standard in August 2026 when it cancelled the scheduled rise to $3 / $15 (see
-`finops-anthropic.md`; both rates read 2 October 2026). An open-weight flagship from a
-Chinese lab is priced at or above
-a Western mid-tier managed model. Any business case whose premise is "we switch to open
+**This is the data point OptimNow uses most in client conversations.** K3's flagship
+rate sits 50% above Claude Sonnet 5's list rate on input and output alike, level with the
+rise Anthropic scheduled for Sonnet 5 and then cancelled in August 2026 (see
+`finops-anthropic.md`; both rate cards read 2 October 2026). An open-weight flagship from
+a Chinese lab is priced at or above a Western mid-tier managed model. Any business
+case whose premise is "we switch to open
 weights and cut inference cost" has to survive that comparison first.
 
 **A catalogue-hygiene warning specific to this vendor.** Moonshot's older, cheaper
@@ -189,10 +193,10 @@ reaches a forecast.
 
 | Mechanic | How it works |
 |---|---|
-| Metered API | Illustrative for GLM-5.2, read 23 August 2026: $1.40 per 1M input tokens, $0.26 cached input, $4.40 output |
+| Metered API | GLM-5.2 prices output at about 3.1x input (read 23 August 2026, unchanged on the Z.ai pricing page 9 November 2026); the hub carries the figures |
 | Cache multiplier | Cached input is about **19% of the input rate**, not the ~10% the market has converged on. The gap matters when the caching business case is what justifies a migration |
 | Free tier models | Some Flash-class models are published at zero cost. Free is a rate, not a commitment - treat availability as unguaranteed |
-| **GLM Coding Plan** | A Claude Code-style seat subscription from **$18/month** at the entry tier. Secondary reporting puts the higher tiers at $72 and $160/month - verify before quoting |
+| **GLM Coding Plan** | A Claude Code-style seat subscription: an entry tier priced near a Claude Code Pro seat and, per secondary reporting, two higher tiers at about 4x and 9x the entry price - verify on the Z.ai pricing page before quoting |
 
 **The seat model has crossed into the open-weight vendors, and it brings the seat
 model's cost problems with it.** The GLM Coding Plan is not billed per token. It meters
@@ -351,8 +355,8 @@ unallocated estate is guesswork with extra steps.
 
 ## Common anti-patterns
 
-- **"Open weight, therefore cheap."** Kimi K3 at $3 / $15 (read 23 August 2026) is the
-  counter-example at the top of the range, and Z.ai's flagship also prices in the
+- **"Open weight, therefore cheap."** Kimi K3, priced 50% above Claude Sonnet 5 on both
+  meters (read 23 August 2026), is the counter-example at the top of the range, and Z.ai's flagship also prices in the
   Western mid-tier band. Price the specific model.
 - **"Open weight, therefore we can leave."** True only if the model you are buying has
   published weights. On Model Studio, the Plus and Max tiers do not.

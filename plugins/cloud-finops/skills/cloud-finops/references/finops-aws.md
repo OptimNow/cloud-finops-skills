@@ -407,12 +407,14 @@ bundle CDN, WAF, Route 53, CloudWatch Logs ingest, ACM, CloudFront Functions and
 S3 storage credits into a single monthly price, removing the bill variance that
 made CloudFront costs hard to forecast.
 
-> *Plan prices and allowances below are list values as of August 2026. The durable content
-> in this section is the shape of the trade-off - what each tier locks behind it, where the
-> request ceiling bites before the bandwidth one, what the plan does not include - not the
-> specific dollar amounts. Verify against the CloudFront pricing page before quoting.*
+> *The durable content in this section is the shape of the trade-off - what each tier locks
+> behind it, where the request ceiling bites before the bandwidth one, what the plan does
+> not include - not the specific dollar amounts. Verify against the CloudFront pricing page
+> before quoting.*
 
 ### Tier summary
+
+Plan prices and allowances as listed on the CloudFront pricing page, read 9 November 2026:
 
 | Plan | Monthly cost | Data transfer out | Requests | S3 credit | WAF rules | Cache behaviours |
 |---|---|---|---|---|---|---|
@@ -422,7 +424,9 @@ made CloudFront costs hard to forecast.
 | Premium | $1,000 | 50 TB | 500M | 5 TB | 75 | 100 |
 
 Pay-as-you-go pricing for 50 TB of data transfer out from North America runs
-roughly $4,250 at $0.085/GB. The Pro plan delivers the same 50 TB for $15. For
+roughly $4,250 at the $0.085/GB first tier (pay-as-you-go page, read 9 November 2026; the
+1 TB free tier and the $0.080 tier above 10 TB pull the exact figure nearer $4,000). The
+Pro plan delivers the same 50 TB for $15. For
 bandwidth-heavy workloads the effective discount is at the 99% mark, so this is
 not a repriced meter dressed as simplified pricing. Our reading: the plan targets
 mid-market customers who would otherwise move to Cloudflare; AWS has not said so.
@@ -462,7 +466,8 @@ performance matters.
 - S3 storage credit at the bundled tier
 
 The WAF inclusion is load-bearing for the value math. 25 WAF rules at $1/rule/month
-is $25/month of standalone WAF value, which by itself exceeds the $15 Pro price.
+(us-east-1 list rate, read 9 November 2026) is $25/month of standalone WAF value, which by
+itself exceeds the $15 Pro price.
 If you were going to adopt WAF anyway, Pro pays for itself on that line alone.
 
 ### Route 53 gotchas
@@ -536,12 +541,14 @@ rely on AWS's email cadence.
 
 AWS can offer 50 TB for $15 because origin traffic from S3 or EC2 to CloudFront
 is free. Moving that same workload to Cloudflare triggers standard AWS data
-transfer out charges at roughly $0.09/GB - 50 TB/month becomes $4,500 in egress
+transfer out charges at $0.09/GB for the first 10 TB and $0.085/GB for the next 40
+(us-east-1 list, read 9 November 2026) - 50 TB/month becomes about $4,400 in egress
 alone, every month. The real price of CloudFront Pro is $15 plus the AWS
 dependency you have already accepted.
 
 For greenfield workloads with no AWS origins, Cloudflare's unlimited-bandwidth
-Pro plan at $25/month is the correct comparison. For existing AWS shops, add the
+Pro plan at $25/month billed monthly ($20 on annual billing, list read 9 November 2026)
+is the correct comparison. For existing AWS shops, add the
 egress charge on the AWS origin to the Cloudflare side before comparing.
 
 ### Operational gotchas
@@ -615,8 +622,9 @@ original S3 bucket as durable backing store.
 
 ### Pricing mechanics
 
-Two cost dimensions on top of the underlying S3 bucket (us-east-1 list rates as of
-August 2026 - verify against the AWS pricing page before using them in a model):
+Two cost dimensions on top of the underlying S3 bucket (us-east-1 list rates read on the
+Price List API, 9 November 2026 - verify against the AWS pricing page before using them in
+a model):
 
 | Dimension | Rate |
 |---|---|
@@ -629,9 +637,9 @@ infrastructure is the same.
 
 **The design that makes it cheap:** you mount a petabyte bucket and pay S3 Files
 rates only on the small slice you touch. Everything else stays at
-standard S3 pricing ($0.023/GB-month Standard, or less on Intelligent-Tiering or
-Infrequent Access). The hot tier is an opt-in cache, not a whole-bucket storage
-class.
+standard S3 pricing ($0.023/GB-month Standard at the us-east-1 November 2026 list rate, or
+less on Intelligent-Tiering or Infrequent Access). The hot tier is an opt-in cache, not a
+whole-bucket storage class.
 
 ### The 128 KB threshold
 
@@ -663,10 +671,11 @@ metadata reads at 4 KB each; if that triggers prefetch it is another 10,000
 writes at 32 KB minimum each. Model these patterns before you mount anything
 production.
 
-**First-read cost for small files:** $0.06/GB (the import write), not $0.03/GB.
-The read is included in the import operation. Subsequent reads of the same
-cached file are $0.03/GB. AWS's pricing examples were misleading on this
-initially - cost the workload on your real access patterns.
+**First-read cost for small files:** the $0.06/GB write rate (the import write), not the
+$0.03/GB read rate (both us-east-1, November 2026). The read is included in the import
+operation. Subsequent reads of the same cached file bill at the read rate. AWS's pricing
+examples were misleading on this initially - cost the workload on your real access
+patterns.
 
 **Rename cost:** a file rename is an S3 PUT plus a filesystem read (32 KB
 minimum). Renaming a directory meters every object with that prefix - moving
@@ -687,7 +696,8 @@ Glacier Deep Archive or the Intelligent-Tiering archive tiers - those require a
 standard S3 restore first.
 
 This means you can put the authoritative data on Intelligent-Tiering at roughly
-$0.0125/GB-month in the infrequent tier and still mount it as a filesystem,
+$0.0125/GB-month in the infrequent tier (us-east-1, November 2026) and still mount it as a
+filesystem,
 paying hot-tier rates only on the active working set. S3 Intelligent-Tiering
 transitions between classes are free, which matters because EFS equivalents
 charge per-GB tiering fees.
@@ -695,7 +705,8 @@ charge per-GB tiering fees.
 ### S3 Files vs EFS comparison
 
 For an illustrative 10 TB workload with 90% cold data, 500 GB hot working set,
-500 GB/month reads (90% large files / 10% small files), 100 GB/month writes:
+500 GB/month reads (90% large files / 10% small files), 100 GB/month writes, at us-east-1
+list rates read 9 November 2026:
 
 | | EFS Legacy + IA | EFS Performance-optimised + Archive | S3 Intelligent-Tiering + S3 Files |
 |---|---|---|---|
@@ -728,8 +739,8 @@ lives in S3.
   it adds an access pattern
 - Metadata-heavy workloads (directory listings, frequent stats, mass renames)
   where 4 KB per metadata op dominates the bill
-- Ultra-latency-sensitive small-file reads where the $0.06/GB first-read import
-  is a recurring hit
+- Ultra-latency-sensitive small-file reads where the first-read import (billed at the
+  write rate) is a recurring hit
 - Use cases that need filesystem features EFS supports but S3 Files does not
 
 ### Decision checklist
