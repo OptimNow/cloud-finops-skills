@@ -228,24 +228,17 @@ START: What Azure compute service runs the workload?
 | Size | Flexible within family (instance size flexibility) | Any size |
 | Covers App Service | Premium v3 + Isolated v2 | App Service & Functions Premium plans (broader SKU set) |
 | Covers Container Instances | No | Yes |
-| Exchangeable | Until 1 Feb 2027 for covered services (then one final exchange for reservations bought earlier); unaffected for non-covered services such as VMware. Same product family, no fee, no cap | No |
-| Refundable | Pro-rated, up to $50K per 12 months - no fee today; Microsoft reserves right to add 12% future fee | No |
-| Cancellable | Yes - refund and cancellation are the same operation today, no fee currently charged | No |
-| Payment options | Monthly or Upfront | Monthly or Upfront |
-| Scoping | Subscription, resource group, management group, shared | Subscription, resource group, management group, shared |
-
-For the operating rule after the exchange retirement, see "Commitment liquidity after
-February 2027".
+Both take monthly or upfront payment and the same scopes (subscription, resource group,
+management group, shared). Exchange, refund and trade-in are in the liquidity table
+above; the operating rule after the exchange retirement follows.
 
 ### Commitment liquidity after February 2027
 
-Context: this rule assumes the 1 February 2027 retirement of reservation exchange for
-services also covered by a savings plan, and it applies to those covered services only.
-
-The escape hatch that made reservations safe at moderate confidence, free and uncapped
-exchange, is being removed for covered services. The remaining corrections are a refund
-capped at $50,000 per 12-month rolling window and a one-way trade-in to a savings plan.
-Build the strategy around that.
+This rule applies to services also covered by a savings plan. Free, uncapped exchange,
+the escape hatch that made reservations safe at moderate confidence, retires for them on
+1 February 2027. What remains is a refund capped at $50,000 per 12-month rolling window
+and a one-way trade-in to a savings plan. Savings plans give usage flexibility (any
+family, any region) and no financial liquidity.
 
 **Reserve only at high conviction across five lock dimensions, for the full term:**
 
@@ -261,10 +254,9 @@ hard new locks; size within the family stays flexible through ISF.
 **Two refinements so the rule does not backfire:**
 
 - **The default has a price, so size it.** A savings plan discounts roughly 7 points less
-  than a reservation on compute (up to 65% vs up to 72%), and more on databases (up to 35%
-  vs the reservation rate); on compute with no upfront, the median gap measured on the
-  2026-10-25 OptimToken catalogue is 8.7 points at 1 year (point 3). That gap is the premium for the flexibility exchange used to
-  provide for free. On a large, stable baseline it can reach six figures a year.
+  than a reservation on compute (measured gap in point 3), and more on databases (up to
+  35% vs the reservation rate). That gap is the premium for the flexibility exchange used
+  to provide for free; on a large, stable baseline it can reach six figures a year.
   Reserve the certain floor; do not surrender its depth out of caution.
 - **At Crawl and Walk maturity, the fallback is often more PAYG buffer, not a bigger
   savings plan.** Azure bills daily while a savings plan is sized on an hourly floor (see
@@ -278,13 +270,10 @@ workloads, savings plans for evolving or dynamic ones.
 
 ### Spot Virtual Machines
 
-Spot offers up to 90% off pay-as-you-go for fault-tolerant, interruptible workloads:
-batch, dev/test, CI/CD, stateless AKS pods, ML training with checkpointing. The
-constraint is a 30-second eviction notice (2 minutes on AWS) and no SLA. Choose the
-eviction policy (Deallocate keeps the disk, Delete is cheapest), cap the maximum price
-at the pay-as-you-go rate, and track eviction rates by family and region. Spot is not a
-commitment: it takes interruptible capacity out of the commitment equation (Layer 1 of
-the layering strategy below).
+Beyond the table and the decision tree: the eviction notice is 30 seconds (2 minutes on
+AWS). Choose the eviction policy (Deallocate keeps the disk, Delete is cheapest), cap
+the maximum price at the pay-as-you-go rate, and track eviction rates by family and
+region.
 
 ### Instance size flexibility ratios come from the API, not the CSV
 
@@ -296,17 +285,10 @@ Source: [Instance size flexibility for Azure Reservations](https://learn.microso
 
 ### Compute commitment layering strategy
 
-Azure applies discounts in a specific order. The layering sequence matters.
-
-**Discount application order (Azure-defined):**
-1. Azure Hybrid Benefit (licence overlay, applied first to eligible VMs)
-2. Spot pricing (market rate, for Spot-eligible workloads)
-3. Reservations (capacity-based, applied to matching PAYG usage)
-4. Savings Plans (spend-based, applied to remaining eligible PAYG usage)
-
-Note: MACC is **not** in this list. It is a commercial commitment / burn-down construct,
-not a metered discount applied per usage record. See "MACC - commercial commitment
-alignment" below.
+**Discount application order (Azure-defined):** Azure Hybrid Benefit removes the licence
+component first; Spot usage is market-priced; reservations apply to matching
+pay-as-you-go usage; savings plans then apply to the remaining eligible usage. MACC is
+not in this order: it is a burn-down construct, not a metered discount (next section).
 
 **Recommended layering approach:**
 
@@ -363,17 +345,14 @@ in what gets shared with Microsoft - the commitment can appear ahead or behind
 depending on who pulls the number.
 
 **Operational guidance:**
-- Include MACC burndown rate in FinOps reporting alongside ESR (Effective Savings Rate)
-  and commitment coverage. When burndown slows while ESR improves, that is the signal
-  to act
-- Review required monthly burn rate alongside optimisation metrics in the same session
+- Report MACC burndown rate beside ESR (Effective Savings Rate) and coverage, in the
+  same session as the optimisation metrics. Burndown slowing while ESR improves is the
+  signal to act
 - Keep procurement and FinOps in the same cadence review at least quarterly
-- Maintain a forward-looking list of planned software purchases with MACC eligibility
-  confirmed in advance, and pace them to support the burndown trajectory
-- Confirm Marketplace eligibility at planning time, not at purchase time
-- Do not treat Marketplace as a mechanism for spending toward a target - purchases
-  made primarily because they count create vendor relationships, licensing costs, and
-  integration work that were never in the original business case
+- Keep a forward list of planned software purchases with MACC and Marketplace
+  eligibility confirmed at planning time, paced to the burndown trajectory
+- Do not buy Marketplace products because they count: they bring vendor, licence and
+  integration costs that were never in the business case
 
 Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/track-consumption-commitment
 
@@ -418,10 +397,6 @@ legitimate lever against a forecast shortfall; a monthly-billed reservation only
 the instalments that fall inside the MACC window.
 
 ### Commitment sizing methodology - granularity, Advisor calibration, tooling
-
-The earlier sections cover **what** to commit to (RI vs SP, scope, term, family). This
-section covers **how to size** the commitment - the harder problem, with a structural
-difficulty in Azure that AWS practitioners do not encounter until they hit it.
 
 #### Data granularity - the AWS-vs-Azure difference that bites in commitment sizing
 
@@ -515,14 +490,8 @@ normalisation tweaked for the customer's resource ID conventions.
 
 #### Calibrating Advisor's reservation and Savings Plan recommendations
 
-Advisor's commitment recommendations are **a sanity check, not a source of truth**.
-
-What Advisor does well: surfaces obvious commitment opportunities at scale (hundreds of
-subscriptions, manual analysis impractical). The "you would have saved $X if you had
-purchased this RI three months ago" framing is operationally useful for stakeholder
-conversations.
-
-**Calibration points** - what Advisor does poorly:
+Advisor's commitment recommendations are **a sanity check, not a source of truth**:
+useful to surface opportunities across hundreds of subscriptions, weak on:
 
 - **Backward-looking by design.** Analyses 7, 30, or 60 days of past usage (default 60
   days). Does not know about a planned decommission, migration, or architecture change.
@@ -539,13 +508,10 @@ conversations.
   scope boundary.
 - **Recommendation scope has caught up with purchase scope (29 September 2026).**
   Savings plan and reservation recommendations, including P3 reservations, are now
-  produced at **management group** scope in the portal purchase flows and through
-  the savings-plan and reservation recommendations REST endpoints. They aggregate the
-  steady-state usage of every subscription under the group, which is the right input
-  for a management-group-scoped purchase and removes the old workaround of summing
-  per-subscription recommendations by hand (and over-committing, because each one
-  targeted its own 80-90%). The calibration points above still apply: the figure is
-  backward-looking, gross of AHB, and silent on planned decommissions. Source:
+  produced at **management group** scope in the portal and the REST endpoints,
+  aggregating every subscription under the group. Do not sum per-subscription
+  recommendations by hand any more: each targeted its own 80-90%, so the sum
+  over-commits. The other calibration points still apply. Source:
   https://techcommunity.microsoft.com/blog/finopsblog/now-available-management-group%E2%80%93scoped-savings-plan-and-reservation-recommendatio/4560869
   (Microsoft FinOps blog, 29 September 2026).
 - **Conservative coverage targeting.** Recommendations target ~80-90% of observed usage.
@@ -557,13 +523,9 @@ calculation from the cost-plus-utilisation join, reconcile differences. Differen
 diagnostic - they usually reveal AHB not factored, scope mismatches, or workload context
 Advisor cannot know.
 
-**Agentic access.** Since August 2026 the Azure Resource Manager MCP server (preview)
-exposes cost query and pricing tools, plus an optional Cost Management toolset with
-reservation and savings plan insights. Agent-surfaced recommendations carry the same
-calibration caveats; see "Agentic FinOps on Azure" in `finops-azure-billing.md`.
-Sources: https://github.com/Azure/Azure-Resource-Manager-MCP (README),
-https://techcommunity.microsoft.com/blog/finopsblog/cost-management-with-azure-resource-manager-mcp/4550182
-(Microsoft FinOps blog, 25 August 2026).
+**Agentic access.** Reservation and savings plan insights surfaced through the Azure
+Resource Manager MCP server (preview, August 2026) carry the same caveats; see "Agentic
+FinOps on Azure" in `finops-azure-billing.md`.
 
 Source: https://learn.microsoft.com/en-us/azure/advisor/advisor-reference-cost-recommendations
 
@@ -671,21 +633,14 @@ Is the database workload stable and predictable (90+ days)?
         |     database instances to capture deeper discounts
         |
         \-- Cosmos DB (special case)
-            -> Cosmos DB Reserved Capacity available separately
-              - 1yr or 3yr terms, significant discounts on RU/s
-              - Requires predictable throughput baseline
-              - For variable throughput: use autoscale (no commitment)
-              - Evaluate serverless for low/intermittent usage first
+            -> Reserved capacity on a predictable RU/s baseline (units and
+              ratios below); serverless first for low or intermittent usage
 ```
 
-**Database commitment diagnostic questions:**
-- What percentage of your database spend is PAYG vs committed?
-- Are Azure Hybrid Benefit licences applied to all eligible SQL instances?
-- Are dev/test databases on Serverless (auto-pause) or still running 24/7?
-- Do you have SQL Server on Azure VMs that would consume a Database Savings Plan
-  at PAYG rates? If so, how much of the plan's hourly commitment would they absorb?
-- Are overprovisioned tiers (Business Critical on non-prod, RA-GRS backup storage
-  on non-critical DBs) inflating the baseline you would commit to?
+**Diagnostic questions beyond the pre-commitment list:** how much of a Database Savings
+Plan's hourly commitment would SQL Server on Azure VMs absorb at PAYG rates? Are
+overprovisioned tiers (Business Critical on non-prod, RA-GRS backup storage on
+non-critical DBs) inflating the baseline you would commit to?
 
 **What cannot be reserved.** DTU-based SQL tiers (Basic, Standard, Premium); Azure
 SQL Database serverless compute (Learn: "Reservation discounts don't apply to Azure
@@ -722,25 +677,12 @@ sizing" above). Under a MACC, apply the net-discount rule before ranking candida
 
 ### Savings Plan for Databases (announced March 2026)
 
-A spend-based commitment discount for eligible database services. Customers commit
-to a fixed hourly spend (e.g. $5/hr) for one year and receive discounted prices -
-up to 35% vs PAYG on select services. The plan applies savings automatically each
-hour, prioritising the usage that delivers the greatest discount first, across
-services and regions.
-
-**Eligible services:** Azure SQL Database, Azure Database for PostgreSQL, Azure
-Database for MySQL, Azure Cosmos DB, Azure SQL Managed Instance.
-
-Azure Database for MariaDB is **not** eligible - the service retired in September
-2025. If you still carry MariaDB workloads, they are running somewhere other than
-the managed service (VMs, containers, or a third-party host) and no database
-commitment covers them.
-
-**Scoping:** Subscription, resource group, management group, or entire billing
-account.
-
-**Purchase options:** Monthly or upfront payment, optional auto-renewal. Personalised
-recommendations available in Azure Advisor and the Azure portal.
+A fixed hourly spend (e.g. $5/hr) committed for one year, applied each hour across
+services and regions to the usage with the greatest discount first. Scope:
+subscription, resource group, management group or billing account; monthly or upfront
+payment, optional auto-renewal. Azure Database for MariaDB retired in September 2025
+and is not covered: MariaDB workloads still running sit on VMs, containers or a third
+party, outside any database commitment.
 
 **Terms and coverage as published (Azure savings plans page and Redmondmag, 10 April
 2026; both read 15 October 2026).** 1-year term only. Covered: Azure SQL Database
@@ -838,23 +780,11 @@ and https://prices.azure.com/api/retail/prices (queried 15 October 2026).
 
 ### Commitment portfolio liquidity
 
-Commitment liquidity - the ability to reshape, rebalance, or exit your commitment
-portfolio without wasting money - is as important as discount depth. Azure offers
-more built-in liquidity mechanisms than AWS, but each has limits.
-
-The mechanics themselves - exchange, refund and its $50,000 rolling cap, instance
-size flexibility, trade-in to a savings plan, staggered expiry - are tabulated once in
-"Reservation and Savings Plan liquidity mechanics" near the top of this file. Read
-that table first, then the portfolio consequences below.
-
-**The portfolio consequence.** Savings plans give usage flexibility (any family, any
-region) and no financial liquidity. Reservations keep a refund within the $50,000
-rolling cap and a trade-in to a savings plan, and for covered services that is all they
-keep after 1 February 2027, so the refund cap becomes the main reshaping lever and binds
-harder on large portfolios. It restores day by day: spread cancellations across the
-window.
-
-Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations
+Liquidity, the ability to reshape or exit the portfolio without wasting money, matters
+as much as discount depth. The mechanics are in the liquidity table near the top. The
+portfolio consequence: for covered services after 1 February 2027 the $50,000 refund
+cap becomes the main reshaping lever and binds harder on large portfolios. It restores
+day by day, so spread cancellations across the window.
 
 **Size the first tranche at the keel commitment** - the usage level that has never
 left the water across the trailing 12 months. Below the keel, committing needs no
@@ -906,13 +836,10 @@ the growth rate stabilises.
 This keeps the total portfolio size similar but distributes the risk across more,
 smaller decisions.
 
-**Azure-specific consideration:** until 1 February 2027, reservations for covered services
-can be exchanged mid-term, giving moderate-frequency buyers (monthly/bi-monthly) an extra
-liquidity layer on top of staggered expiry. From that date exchange retires for covered
-services, so that layer disappears there and the choice rests on discount depth and
-conviction; it persists for non-covered services such as VMware. Organisations buying
-weekly may still prefer Savings Plans to avoid the administrative overhead of frequent
-Reservation management.
+**Azure-specific consideration:** mid-term exchange, an extra liquidity layer on top of
+staggered expiry, disappears for covered services on 1 February 2027 (it stays for
+non-covered services such as VMware). Weekly buyers may prefer savings plans to avoid
+the overhead of frequent reservation management.
 
 **Phased purchasing framework (quarterly example for steady consumption):**
 
@@ -966,9 +893,8 @@ expiries together.
   applied: the FinOps Foundation definition, which decomposes as utilisation x
   coverage x discount. On FOCUS data, (sum of `ContractedCost` minus sum of
   `EffectiveCost`) / sum of `ContractedCost` per service. Name the denominator
-  in use; the two give different numbers. An earlier version of this line
-  defined ESR as actual savings over the theoretical maximum, which is a
-  realisation ratio, not ESR. Sources: <https://www.finops.org/?p=16534> (FinOps Foundation playbook
+  in use; the two give different numbers. Actual savings over the theoretical
+  maximum is a realisation ratio, not ESR. Sources: <https://www.finops.org/?p=16534> (FinOps Foundation playbook
   "How to Calculate Effective Savings Rate", updated 17 March 2026) and
   <https://focus.finops.org/docs/use-cases/v1-4/determine-effective-savings-rate-by-service/>
   (both read 15 October 2026).
