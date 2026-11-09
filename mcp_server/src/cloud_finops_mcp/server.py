@@ -176,10 +176,12 @@ mcp = FastMCP(
         "Cloud FinOps knowledge by OptimNow. Two retrieval surfaces: "
         "REFERENCES (long-form provider/discipline files) and PLAYBOOKS "
         "(small named-pattern runbooks for specific waste patterns). "
-        "REFERENCES: list_references() to discover, find_references(domain=, "
-        "capability=, phase=, persona=, maturity=, persona_primary_only=) to "
-        "narrow by FinOps Capability/Phase facets, get_reference(name=, "
-        "section=) to fetch one body. "
+        "REFERENCES: list_references() to discover, find_references(query=, "
+        "domain=, capability=, phase=, persona=, maturity=, "
+        "persona_primary_only=) to route a question - query= takes the user's "
+        "own wording (English or French) and ranks by the questions each file "
+        "declares it answers, the facets narrow by FinOps Capability/Phase - "
+        "and get_reference(name=, section=) to fetch one body. "
         "Every listing entry carries approx_tokens: references run from about "
         "2,000 to about 15,000 tokens. get_reference(name=, section=\"<heading "
         "phrase>\") returns one section instead of the whole file - section "
@@ -189,9 +191,10 @@ mcp = FastMCP(
         "enumerated list, usually needed one section at a time; the AWS "
         "catalogue is one file per service family (finops-aws-patterns-compute, "
         "-storage, -databases, -networking, -other). "
-        "PLAYBOOKS: list_playbooks() to discover, find_playbooks(scope=, "
-        "service=, waste_category=, confidence=) to narrow by pattern facets, "
-        "get_playbook(name=) to fetch one body. "
+        "PLAYBOOKS: list_playbooks() to discover, find_playbooks(query=, scope=, "
+        "service=, waste_category=, confidence=) to route a symptom or a 'which "
+        "of my X' question (query= takes the user's wording) or to narrow by "
+        "pattern facets, get_playbook(name=) to fetch one body. "
         "A playbook serves 'how do I detect/fix this specific pattern' "
         "(zombie NAT, snapshot sprawl, idle ELB, etc.); a reference serves "
         "billing mechanics, commitment strategy, allocation methodology "
@@ -316,6 +319,7 @@ def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
     meta=_ui_tool_meta(REFERENCE_BROWSER_URI),
 )
 def find_references(
+    query: str | None = None,
     domain: str | None = None,
     capability: str | None = None,
     phase: str | None = None,
@@ -326,15 +330,27 @@ def find_references(
     """Find which guidance serves a FinOps question - how to commit, size,
     allocate, charge back, forecast, or govern cloud and AI spend.
 
-    Use this for questions like "how should we size Savings Plans",
-    "what should Finance own in chargeback", "what does a Crawl-stage org
-    tackle first" - anything that maps to FinOps Framework facets (domain,
-    capability, phase, persona, maturity) - and you want only the
-    references that serve it, instead of scanning the full list.
+    Use this with ``query`` for a question in the user's own words rather
+    than in FinOps Framework terms: "how should we size our first Savings
+    Plan when usage is seasonal", "we hold SQL Server licences with Software
+    Assurance, BYOL or licence-included?", "our forecast missed by 20%",
+    "who should own commitment purchases", "combien s'engager en Savings
+    Plans". Every guide declares the questions it answers (English and
+    French); the result is ranked by those, then by title and section
+    headings, and each entry carries ``matched_question`` and
+    ``suggested_section``, the heading that ``get_reference(name=,
+    section=)`` takes. The facets narrow the set first; ``query`` ranks what
+    is left.
 
-    All filters are optional and combine with AND semantics. String matching
+    Use this with the facets alone for a question already in FinOps
+    Framework terms (domain, capability, phase, persona, maturity): "what
+    does a Crawl-stage org tackle first", "the Engineering reading list",
+    "what should Finance own in chargeback".
+
+    All filters are optional and combine with AND semantics. Facet matching
     is case-insensitive and exact (not substring). Examples:
 
+    - ``find_references(query="our forecast missed by 20%, was it the model or the drivers")``
     - ``find_references(domain="Optimize Usage & Cost")``
     - ``find_references(phase="Optimize", persona="Engineering")``
     - ``find_references(persona="Engineering", persona_primary_only=True)``
@@ -342,6 +358,11 @@ def find_references(
     - ``find_references(maturity="Crawl")``
 
     Args:
+        query: the user's question or symptom in their own words, any
+            length, English or French. Ranks the facet-filtered guides by
+            the questions they declare, their title and their headings;
+            returns at most five, best first, each with ``match_score``,
+            ``matched_question`` and ``suggested_section``.
         domain: FinOps Framework domain (e.g. ``"Optimize Usage & Cost"``,
             ``"Quantify Business Value"``, ``"Manage the FinOps Practice"``).
         capability: FinOps capability (matches ``fcp_capability`` and
@@ -358,11 +379,14 @@ def find_references(
             engineering reading list; the default is the everything-they-touch
             view.
 
-    Returns ``{"filters": {...}, "references": [...], "total": N}``. A query
-    that matches nothing also returns `hint` and `valid_values`, so a typo is
-    distinguishable from a genuine gap in coverage.
+    Returns ``{"filters": {...}, "references": [...], "total": N}``. With
+    ``query`` the entries are ranked and capped at five. A facet filter that
+    matches nothing also returns `hint` and `valid_values`, so a typo is
+    distinguishable from a genuine gap in coverage; a ``query`` that matches
+    nothing returns `hint` alone.
     """
     return _tools.find_references(
+        query=query,
         domain=domain,
         capability=capability,
         phase=phase,
@@ -526,6 +550,7 @@ def reference_browser_ui_apps_sdk() -> str:
     meta=_ui_tool_meta(PLAYBOOK_EXPLORER_URI),
 )
 def find_playbooks(
+    query: str | None = None,
     scope: str | None = None,
     service: str | None = None,
     waste_category: str | None = None,
@@ -537,25 +562,39 @@ def find_playbooks(
     runbook includes a detection query the user can run in their own
     account. This connector has no access to the user's accounts.
 
-    Use this for questions like "which VMs are running for nothing",
-    "why is our NAT bill so high", "my NAT gateway processes 10TB to S3",
-    "should I delete these old snapshots", "which of our RIs are about to
-    expire", "what waste can we clean up safely without review" - anything
-    that names a provider, a waste category, or how confident the
-    detection needs to be before acting. Patterns
-    covered include NAT gateways and VPC endpoints, expiring Savings
-    Plans / RIs / reservations, snapshot sprawl, S3 lifecycle gaps, idle
-    or stopped VMs, orphaned disks / public IPs / EBS volumes, GPU and
-    SageMaker sizing, Kubernetes idle capacity, and schedule blindness.
+    Use this with ``query`` for a symptom or a "which of my X" question in
+    the user's own words: "our AWS bill has NAT gateway charges but nothing
+    uses them", "which of my RIs are about to expire", "my NAT gateway
+    processes 10TB to S3", "should I delete these old snapshots", "our Log
+    Analytics ingestion doubled", "which VMs are running for nothing",
+    "passerelle NAT qui ne sert à rien". Every runbook declares the
+    questions it answers (English and French); the result is ranked by
+    those, then by title and service, and carries ``matched_question``; the
+    first entry is the one ``get_playbook(name=)`` fetches. Facets narrow
+    the set first; ``query`` ranks what is left.
+
+    Use this with the facets alone to browse: "what waste can we clean up safely
+    without review" (confidence), "every idle pattern on Azure" (scope and
+    waste category). Patterns covered include NAT gateways and VPC
+    endpoints, expiring Savings Plans / RIs / reservations, snapshot
+    sprawl, S3 lifecycle gaps, idle or stopped VMs, orphaned disks / public
+    IPs / EBS volumes, GPU and SageMaker sizing, Kubernetes idle capacity,
+    and schedule blindness.
 
     All filters are optional and combine with AND semantics. String matching
     is case-insensitive and exact. Examples:
 
+    - ``find_playbooks(query="which of my RIs are about to expire")`` - ranked runbooks
     - ``find_playbooks(scope="aws")`` - all AWS-specific playbooks
     - ``find_playbooks(waste_category="idle")`` - every idle-resource pattern
     - ``find_playbooks(scope="cross-cloud", confidence="obvious")``
 
     Args:
+        query: the user's symptom or question in their own words, any
+            length, English or French. Ranks the facet-filtered runbooks by
+            the questions they declare, their title and their service;
+            returns at most five, best first, each with ``match_score``,
+            ``matched_question`` and ``suggested_section``.
         scope: ``"aws"``, ``"azure"``, ``"gcp"``, or ``"cross-cloud"``.
         service: Provider service exact-match (e.g. ``"AWS NAT Gateway"``).
         waste_category: ``"orphaned"``, ``"idle"``, ``"overprovisioned"``,
@@ -566,11 +605,14 @@ def find_playbooks(
             (needs human review). From the OptimNow three-tier confidence
             model in `finops-waste-detection-playbooks`.
 
-    Returns ``{"filters": {...}, "playbooks": [...], "total": N}``. A query
-    that matches nothing also returns `hint` and `valid_values`, so a typo is
-    distinguishable from a genuine gap in coverage.
+    Returns ``{"filters": {...}, "playbooks": [...], "total": N}``. With
+    ``query`` the entries are ranked and capped at five. A facet filter that
+    matches nothing also returns `hint` and `valid_values`, so a typo is
+    distinguishable from a genuine gap in coverage; a ``query`` that matches
+    nothing returns `hint` alone.
     """
     return _tools.find_playbooks(
+        query=query,
         scope=scope,
         service=service,
         waste_category=waste_category,

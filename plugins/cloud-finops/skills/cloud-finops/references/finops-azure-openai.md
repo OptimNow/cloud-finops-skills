@@ -8,6 +8,20 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["azure:ai:deep", "ai-platforms:ai:deep", "ai-platforms:bill:deep", "ai-platforms:commitments:deep", "ai-platforms:waste:deep", "ai-platforms:budget:partial"]
+questions:
+  - q: "Our Azure OpenAI PTU utilisation is under 40% at night. Should we drop back to pay-as-you-go?"
+    section: "When PTUs make sense"
+  - q: "How many PTUs do we need, and should we reserve them for a month or a year?"
+    section: "Provisioned Throughput Units"
+  - q: "How does Azure OpenAI spillover work and what does it cost us?"
+    section: "Spillover mechanics"
+  - q: "Why can we not see Azure OpenAI cost per deployment or per application in Cost Management?"
+    section: "Cost visibility limitation"
+  - q: "Should we put Azure API Management in front of Azure OpenAI to track cost per team?"
+    section: "Azure API Management"
+  - q: "Does Azure OpenAI spend count towards our MACC?"
+    section: "Azure Hybrid Benefit and MACC"
+  - "Nos PTU Azure OpenAI sont sous-utilisées la nuit : faut-il repasser au paiement à l'usage ?"
 ---
 
 # FinOps on Azure OpenAI Service

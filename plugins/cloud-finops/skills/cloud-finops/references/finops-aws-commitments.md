@@ -8,6 +8,20 @@ fcp_personas_primary: ["FinOps Practitioner", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Procurement", "Leadership"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["aws:commitments:deep", "aws:contracts:partial"]
+questions:
+  - q: "How should we size our first Savings Plan when our usage is seasonal?"
+    persona: "FinOps lead"
+    section: "Phased purchasing"
+  - "Compute Savings Plan or EC2 Instance Savings Plan: which one, and what does the flexibility cost us?"
+  - "Our Savings Plans expire in 90 days. Do we renew the same shape, change instrument or let them lapse?"
+  - q: "Can we sell, exchange or shrink AWS reservations we no longer need?"
+    section: "Commitment portfolio liquidity"
+  - "We have an EDP. Do Savings Plans still make sense, and which discount applies first?"
+  - "Is Spot a commitment alternative for our workloads, or a complement to one?"
+  - "Combien faut-il s'engager en Savings Plans, et sur quelle durée, quand l'usage est saisonnier ?"
+  - q: "How much of our cloud spend should sit under commitment, and what is the risk if the business changes?"
+    persona: "Executive"
+    section: "Commitment portfolio liquidity"
 ---
 
 # AWS Commitment Discounts

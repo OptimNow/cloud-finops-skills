@@ -4,6 +4,13 @@ scope: aws
 service: AWS NAT Gateway
 waste_category: egress
 confidence: obvious
+questions:
+  - q: "Our NAT gateway bill is higher than the compute it serves. Where does it come from and what do we change?"
+    persona: "Engineering and platform"
+  - "My NAT gateway processes 10TB/month to S3. What should I do?"
+  - "Would a VPC endpoint be cheaper than routing S3 or DynamoDB traffic through our NAT gateway?"
+  - "How do we move traffic to a gateway endpoint without breaking the applications?"
+  - "Notre passerelle NAT coûte plus cher que les serveurs qu'elle dessert : d'où vient la facture ?"
 ---
 
 # AWS NAT-to-Gateway-Endpoint Substitution

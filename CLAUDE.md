@@ -77,6 +77,11 @@ cloud-finops-skills/
 │   │                         coverage)
 │   ├── ROADMAP.md         <- Deliberately-deferred work + trigger to revisit
 │   │                         (split out of CLAUDE.md, Aug 2026)
+│   ├── OVERLAYS.md        <- The private-overlay convention: a second skill
+│   │                         folder that cites public sections by heading and
+│   │                         never restates a mechanic (published 2026-11-09)
+│   ├── overlay-template/  <- Minimal overlay that passes check-overlay.py
+│   │                         (SKILL.md, calibration.md, decisions.md); CI-gated
 │   ├── mcp-apps-lessons.md <- Chronological forensic of the MCP Apps widget
 │   │                         rendering work (split out of CLAUDE.md, Aug 2026)
 │   ├── directory-submission.md <- Step-by-step for the two Claude directory
@@ -189,7 +194,11 @@ cloud-finops-skills/
 │                             Instructions limit), check-docs-drift,
 │                             check-footers (every reference and playbook
 │                             ends with the OptimNow / CC BY-SA footer),
-│                             check-llms-txt, check-plugin-file-limits (no
+│                             check-llms-txt, check-overlay.py (a private
+│                             overlay cites public headings that exist, its
+│                             questions follow the public rules and it copies
+│                             no public sentence; CI runs it on the template),
+│                             check-plugin-file-limits (no
 │                             tracked non-image file over 256 KiB, at most
 │                             480 files: both are Claude directory holds),
 │                             check-plugin-skill-only (no .mcp.json, no
@@ -210,7 +219,7 @@ cloud-finops-skills/
 │                             "percent", dash residue or "the single most";
 │                             allowlist in check-style-allow.txt) and
 │                             check-marketplace-version
-│                             - all nineteen run by the `CI` workflow, and
+│                             - all twenty run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow
@@ -322,6 +331,7 @@ Sections in `docs/DESIGN.md`:
 - How to add a new reference file
 - Reference-file frontmatter
 - Content rules
+- Private overlays
 - Claude directory listing
 - Pull request checklist
 

@@ -7,6 +7,19 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["ai-platforms:ai:deep", "ai-platforms:bill:deep", "ai-platforms:budget:deep", "ai-platforms:waste:deep"]
+questions:
+  - q: "Our monthly bill jumped from $12K to $38K after a developer enabled Fast mode in Claude Code. How do I get this under control?"
+    persona: "Engineering and platform"
+    section: "Fast mode"
+  - q: "How is Claude API usage billed beyond input and output tokens?"
+    section: "Rate structure"
+  - q: "Does prompt caching or the Batch API cut our Anthropic bill, and when?"
+    section: "Batch API pricing"
+  - q: "What controls can an admin set on Claude usage and spend?"
+    section: "Governance controls"
+  - q: "How do we allocate Anthropic spend to teams and products?"
+    section: "Cost allocation"
+  - "Comment est facturée l'API Claude, et quels leviers réduisent la facture ?"
 ---
 
 # FinOps on Anthropic

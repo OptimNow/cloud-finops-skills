@@ -54,7 +54,7 @@ methodology questions - not for routine billing-mechanics queries.
 | Azure billing data: Cost Management exports, FOCUS exports, Retail Prices API, FinOps Toolkit and hubs, MCA billing scopes, cost allocation, tagging and Azure Policy, budgets, EA-to-MCA transition, Azure MCP servers for cost data | `references/finops-azure-billing.md` |
 | Azure Reservations, Savings Plans, Azure Hybrid Benefit, AHB, Spot VMs, compute and database commitment decision trees, commitment portfolio liquidity, 1 February 2027 exchange retirement, phased purchasing, MACC, storage reserved capacity, blob reservation, ADLS Gen2 reservation, Azure Files reservation, Premium SSD disk reservation, database reservation sizing, SQL serverless not reservable, Cosmos DB reserved capacity, Savings Plan for Databases, MACC net discount, ACD, break-even utilisation, reservation recommendations API | `references/finops-azure-commitments.md` |
 | Azure per-service inefficiency catalogue, enumerated Azure optimisation patterns | `references/finops-azure-patterns.md` |
-| Azure OpenAI Service, Azure AI Foundry, PTU reservations, locality constraint, GPT-4o, GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
+| Azure OpenAI Service, Azure AI Foundry, PTU reservations, PTU utilisation, PTU vs pay-as-you-go break-even, locality constraint, GPT-4o, GPT-5 pricing, AOAI spillover, fine-tuning costs | `references/finops-azure-openai.md` |
 | Anthropic billing, Claude API costs, Claude Code costs, Opus, Sonnet, Haiku pricing, Fast mode, prompt caching, Batch API, long-context pricing, Managed Agents | `references/finops-anthropic.md` |
 | GCP billing, Compute Engine, Cloud SQL, GCS, BigQuery billing export, BigQuery optimisation, FOCUS export, Sustained Use Discounts, SUDs, Committed Use Discounts, CUDs, Flexible CUDs, Flexible Savings Plans, Spot VMs, Cloud Carbon Footprint | `references/finops-gcp.md` |
 | GCP Vertex AI billing, Gemini Enterprise Agent Platform, Vertex provisioned throughput, Gemini pricing, AI Studio, Gemini Developer API, Flexible Savings Plans, FSP, Priority / Flex tiers, Vertex batch prediction, default PAYG spillover | `references/finops-vertexai.md` |
@@ -67,7 +67,7 @@ methodology questions - not for routine billing-mechanics queries.
 | OCI compute, storage, networking optimisation, Cost Reports, FOCUS Reports, cost-tracking tags, Budgets, Universal Credits | `references/finops-oci.md` |
 | GreenOps, cloud carbon, sustainability, carbon-aware workloads | `references/greenops-cloud-carbon.md` |
 | SaaS management, licence optimisation, shadow IT, SaaS sprawl, renewal governance, SMP, SAM | `references/finops-sam.md` |
-| ITAM, IT asset management, BYOL, marketplace channel governance, licence compliance, vendor negotiation, FinOps-ITAM collaboration, entitlement management, consumption-based SaaS overages | `references/finops-itam.md` |
+| ITAM, IT asset management, BYOL, BYOL vs licence-included, Software Assurance, licence mobility, marketplace channel governance, licence compliance, vendor negotiation, FinOps-ITAM collaboration, entitlement management, consumption-based SaaS overages | `references/finops-itam.md` |
 | Cloud contract negotiation, enterprise agreement, EDP, PPA, Private Pricing, MACC, ACD, EA or MCA-E renewal, Google Cloud commitment, Minimum Commitment, Marketplace drawdown, migration credits (MAP, Azure Accelerate, RaMP), term sheet review, shortfall exposure | `references/finops-cloud-contracts.md` |
 | Cost anomaly management, anomaly detection, masked anomalies, layered detection, threshold tuning, AWS Cost Anomaly Detection config, Azure anomaly detection, GCP Cost Anomaly Detection, new-region detection, security integration | `references/finops-anomaly-management.md` |
 | FinOps KPIs, KPI portfolio by maturity, unit economics denominators, cost per customer / order / transaction, realised vs potential savings reporting, forecast variance, benchmarking (internal and external, data-quality caveats), executive reporting, CFO / CIO narrative, executive strategy alignment, maturity scorecard | `references/finops-kpis-benchmarking.md` |
@@ -83,6 +83,7 @@ methodology questions - not for routine billing-mechanics queries.
 | Named waste pattern (e.g. zombie NAT, snapshot sprawl, idle ELB, cross-AZ egress, orphan Azure disks, Log Analytics ingestion sprawl, idle GKE Autopilot, idle SageMaker endpoint, oversized GPU instance, agent-loop flat-line burn, expiring commitment without a renewal decision, unused Azure reservation, GCP CUD mismatch, S3 lifecycle gaps - incomplete multipart uploads, noncurrent version sprawl, cold data in Standard) | `playbooks/<slug>.md` (see `playbooks/README.md` for the full pattern list) |
 | What does model X / instance Y cost right now - a current price figure rather than a billing mechanic | Not a reference. Use a live pricing tool if one is connected in the session; otherwise point the user at a live source such as <https://optimtoken.optimnow.io>. A figure remembered from a reference file is illustrative and dated, not a current price. |
 | Multi-domain query | Load all relevant references, synthesise |
+| No row above matches the wording | Every reference and playbook carries a `questions:` list in its frontmatter, written the way users ask (English and French). Search it for the user's words, for example `grep -il "<two or three words from the question>" references/*.md playbooks/*.md`, and load the file whose question matches; with the cloud-finops MCP connected, `find_playbooks(query=<the question>)` or `find_references(query=...)` runs the same search |
 
 ### Reasoning sequence (apply to every response)
 
@@ -93,6 +94,7 @@ methodology questions - not for routine billing-mechanics queries.
 5. **Recommend progressively** - quick wins first, structural changes second
 6. **Reference open-source FinOps tools** (FinOps Toolkit, OpenCost, Kubecost, Infracost, etc.) where they fit the problem
 7. **Never quote an undated price** - see "Price figures" below
+8. **Match the reader** - when the asker is a CTO, CIO, CFO or another executive, lead with the decision and its business impact in a few lines, keep billing mechanics to what that decision needs, and hand detection queries and provider detail to their team as an annex
 
 ---
 

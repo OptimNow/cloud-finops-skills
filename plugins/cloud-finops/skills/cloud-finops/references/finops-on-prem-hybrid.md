@@ -8,6 +8,19 @@ fcp_personas_primary: ["FinOps Practitioner", "Platform Engineering", "Finance"]
 fcp_personas_collaborating: ["Engineering", "Procurement", "ITAM", "Leadership"]
 fcp_maturity_entry: "Crawl"
 business_coverage: ["on-prem:bill:deep", "on-prem:budget:partial", "on-prem:commitments:partial", "on-prem:waste:partial", "on-prem:saas:partial"]
+questions:
+  - q: "We run half our workloads in our own data centres. How do we give app teams a monthly bill for on-prem capacity they will accept?"
+    persona: "FinOps lead"
+    section: "Running the internal bill"
+  - q: "How do we set an internal rate for a VM or a terabyte in our data centre?"
+    section: "Setting the rate"
+  - q: "How do we get on-premises usage into the same reports as our cloud costs?"
+    section: "Getting on-premises usage"
+  - q: "How are Outposts, Azure Local, Arc and Exadata Cloud@Customer billed?"
+    section: "Hybrid platforms"
+  - q: "What does it cost to leave a cloud provider, and which fees can be waived?"
+    section: "Moving a workload out of a cloud"
+  - "Comment facturer en interne la capacité de notre datacenter aux équipes applicatives ?"
 ---
 
 # FinOps for On-Premises and Hybrid Estates

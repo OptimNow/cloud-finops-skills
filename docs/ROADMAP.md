@@ -281,6 +281,14 @@ non-cloud domains such as the IoT and unmanned-retail request in issue #200.
   is proposed, or if OptimToken failures show up in this server's answers beyond that
   one tool.
 
+- **Private content stays out of the repository; the overlay convention is its public
+  surface (decided 2026-11-09).** Observed figures, negotiated terms, tactics,
+  thresholds and client context are never written into a public file or a pull
+  request. The way to hold them beside the skill is a private overlay
+  (`docs/OVERLAYS.md`): cite the public sections by heading, add the calibration, copy
+  nothing. A mechanic found missing while writing an overlay is fixed here, in public,
+  which is also how the private work feeds the public base.
+
 ## Routing record (probe cycles 4 to 7)
 
 Probe cycles 4 to 7 (August 2026) measured how the same library grounds answers
@@ -299,6 +307,46 @@ future runs against:
 
 P12 ("which of my RIs...") is closed as structural: no surface picks up account-data
 phrasing, and the reachable ceiling is the model offering to check the library.
+
+## Question index (phase 1 shipped 2026-11-09)
+
+A user-lens review on 2026-11-09 found that the library's first defect, measured by
+the probe battery, is routing on the user's own wording: catalogue questions route,
+naive symptom questions route stochastically, and the library has no surface that
+speaks the user's language rather than the framework's. The remedy is a `questions:`
+frontmatter field on every reference and playbook (spec and writing rules in
+`docs/DESIGN.md`, "Reference-file frontmatter"), rolled out in three phases:
+
+- **Phase 1, content only (shipped 2026-11-09).** The field on the 27 most-asked
+  files: the 19 README role questions, each anchored to one file with its `persona`,
+  the files behind probes P06, P11, P12, P13, P23, P25 and P31 with the probe wording
+  verbatim, and at least one French question per file. SKILL.md and POWER.md gained a
+  routing fallback row (grep the lists when no keyword matches) and the ITAM and Azure
+  OpenAI rows gained the probe vocabulary they lacked (Software Assurance, licence
+  mobility, PTU utilisation). Measurable now on the skill surface and on the ChatGPT /
+  Gemini knowledge files, where the text travels with the file. An Executive persona
+  (CTO, CIO, CFO) joined the same day: fifteen decision-shaped questions across ten
+  files, three of them new to the index (KPIs and benchmarking, AI value management,
+  the methodology lens), plus a "match the reader" rule in SKILL.md and POWER.md so
+  the answer leads with the decision for that reader.
+- **Phase 2, server (shipped 2026-11-09 on the same branch; the probe cycle is
+  still to run).** `metadata.py` reads the field; `find_references` and
+  `find_playbooks` gain a `query` parameter scored by word overlap on questions,
+  titles and section headings (no embedding, no network, questions withheld from the
+  listings so `list_references` does not grow); the query text is never written to
+  the zero-result log, only its word count, so PRIVACY.md stays true. Generating the
+  tool descriptions from the index moves to phase 3. A `query` parameter rather than
+  an eighth tool, so the directory listing's tool list does not change. Then a probe
+  cycle: fresh chats, tool-call-visible
+  discipline, Sonnet; success is the P03 / P31 pair passing and P25 converting; P12 is
+  structural and not expected to move. Three French probes join the battery.
+- **Phase 3, generation and guards.** README "What you can ask, by role" generated
+  between markers from the `persona` entries with `--check` in CI (the
+  `business-coverage.sh` pattern); a guard for count (4 to 8), repository vocabulary,
+  and cross-file duplicates (warning first); the field on the remaining files.
+
+Open point carried from phase 1: verify on one uploaded file how claude.ai renders a
+longer frontmatter block, since the `description` field was banned for rendering twice.
 
 ## Planned distribution
 

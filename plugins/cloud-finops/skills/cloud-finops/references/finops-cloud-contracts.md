@@ -8,6 +8,23 @@ fcp_personas_primary: ["FinOps Practitioner", "Procurement"]
 fcp_personas_collaborating: ["Finance", "Leadership"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["aws:contracts:deep", "azure:contracts:deep", "gcp:contracts:deep", "data-platforms:contracts:partial", "aws:saas:partial", "azure:saas:partial", "gcp:saas:partial"]
+questions:
+  - q: "Our AWS enterprise agreement renews in 6 months. What should we check on the term sheet before signing?"
+    persona: "Finance and procurement"
+    section: "Offer review grid"
+  - q: "What discount can we expect on an AWS, Azure or Google commitment of our size?"
+    section: "Where benchmarks come from"
+  - q: "We will not reach our committed spend this year. What are our options?"
+    section: "Situations and what changes"
+  - q: "Can Marketplace purchases count towards our MACC or EDP commitment?"
+    section: "Marketplace private offers"
+  - "What should we ask for before signing a Google Cloud Addendum or an Azure MACC?"
+  - q: "Does migration funding like MAP or Azure Accelerate come with strings attached?"
+    section: "Migration funding"
+  - "Notre contrat cloud arrive à renouvellement : quelles clauses regarder avant de signer ?"
+  - q: "Should we sign a three-year commitment with our cloud provider, and what do we give up if we do?"
+    persona: "Executive"
+    section: "Situations and what changes"
 ---
 
 # Cloud Contract Negotiation - Enterprise Agreements on AWS, Azure and Google Cloud

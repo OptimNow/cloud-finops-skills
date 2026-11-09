@@ -4,6 +4,13 @@ scope: aws
 service: AWS Savings Plans / Reserved Instances
 waste_category: commitment-mismatch
 confidence: obvious
+questions:
+  - q: "Which of our Savings Plans and reservations expire in the next 90 days, and what should we decide before they do?"
+    persona: "FinOps lead"
+  - "Which of my RIs are about to expire without a renewal decision?"
+  - "Our on-demand spend rose last month although usage was flat. Could a commitment have lapsed?"
+  - "Who should own the decision when a Savings Plan reaches its end date?"
+  - "Lesquelles de nos réservations AWS expirent bientôt, et que décider avant l'échéance ?"
 ---
 
 # AWS Expiring Commitment Without a Renewal Decision

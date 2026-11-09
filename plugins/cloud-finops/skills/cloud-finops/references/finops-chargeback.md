@@ -8,6 +8,22 @@ fcp_personas_primary: ["FinOps Practitioner"]
 fcp_personas_collaborating: ["Finance", "Leadership", "Tax", "Internal Audit"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["aws:bill:partial", "azure:bill:partial"]
+questions:
+  - q: "What has to be true in Finance and in the ERP before we move from showback to chargeback?"
+    persona: "Finance and procurement"
+    section: "Finance and accounting prerequisites"
+  - q: "Showback or chargeback: which one should we start with?"
+    section: "Why chargeback comes after showback"
+  - q: "Can we recharge cloud costs between legal entities in different countries without a tax problem?"
+    section: "Cross-border tax"
+  - q: "Should each business unit get its own provider invoice, or should we recharge internally?"
+    section: "Provider invoicing mechanisms"
+  - q: "Teams dispute the amounts we charge them. How do we handle it?"
+    section: "Methodology dispute process"
+  - "Comment passer du showback à la refacturation sans provoquer une révolte des équipes ?"
+  - q: "Should business units pay for the cloud they use, and what changes in the P&L if they do?"
+    persona: "Executive"
+    section: "Inter-business-unit P&L impact"
 ---
 
 # FinOps Chargeback

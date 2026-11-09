@@ -6,6 +6,10 @@ Walks the bundled ``data/`` directory at startup, parses frontmatter from each
 - references (FCP frontmatter: domain, capability, phases, personas, maturity)
 - playbooks  (named-pattern frontmatter: scope, service, waste_category,
   confidence)
+
+Both records also carry the ``questions:`` block (the questions a file
+answers, in the user's words) and the file's H2/H3 headings, which the
+``find_*`` tools rank on when called with ``query``.
 """
 
 from __future__ import annotations
@@ -72,6 +76,69 @@ def summarise(text: str, limit: int = SUMMARY_LIMIT) -> str:
     return text[:limit].rsplit(" ", 1)[0].rstrip(" ,;:-") + "..."
 
 
+@dataclass(frozen=True)
+class Question:
+    """One question a file answers, written the way a user asks it.
+
+    Read from the ``questions:`` frontmatter block (phase 1 of the question
+    index, November 2026). Each entry is a plain string or a mapping with
+    ``q`` and the optional ``persona`` (the README role that asks it) and
+    ``section`` (the H2/H3 heading that answers it). The field is the one
+    piece of frontmatter written in the user's vocabulary rather than the
+    framework's, which is what ``find_*(query=...)`` ranks on.
+    """
+
+    text: str
+    persona: str | None = None
+    section: str | None = None
+
+
+def _clean_optional(value) -> str | None:
+    return value.strip() if isinstance(value, str) and value.strip() else None
+
+
+def _parse_questions(value, source: str) -> list[Question]:
+    """Coerce a ``questions:`` frontmatter value into ``list[Question]``.
+
+    Tolerant on purpose, like the facet parsers: a malformed entry is logged
+    and skipped, never fatal, so a typo in one question cannot drop a file
+    from the index. A bare string is accepted as a one-question list.
+    """
+    if value is None:
+        return []
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, list):
+        logger.warning(
+            "questions in %s is %s, expected a list - ignored.", source, type(value).__name__
+        )
+        return []
+    questions: list[Question] = []
+    for item in value:
+        if isinstance(item, str):
+            if item.strip():
+                questions.append(Question(text=item.strip()))
+            continue
+        if isinstance(item, dict) and isinstance(item.get("q"), str) and item["q"].strip():
+            questions.append(
+                Question(
+                    text=item["q"].strip(),
+                    persona=_clean_optional(item.get("persona")),
+                    section=_clean_optional(item.get("section")),
+                )
+            )
+            continue
+        logger.warning("Malformed questions entry in %s skipped: %r", source, item)
+    return questions
+
+
+def _section_headings(body: str) -> list[str]:
+    """H2 and H3 heading texts of a body, in document order, code fences skipped."""
+    return [
+        text for _, level, text in _atx_headings(body.splitlines()) if level in _SECTION_LEVELS
+    ]
+
+
 @dataclass
 class Reference:
     """One indexed reference file."""
@@ -89,6 +156,8 @@ class Reference:
     fcp_personas_primary: list[str] = field(default_factory=list)
     fcp_personas_collaborating: list[str] = field(default_factory=list)
     fcp_maturity_entry: str | None = None
+    questions: list[Question] = field(default_factory=list)
+    headings: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         """Stable JSON-friendly shape returned by the MCP tools.
@@ -100,6 +169,9 @@ class Reference:
         do not help a caller *choose* (a broad persona collaborates on nearly
         every file, which is why ``persona_primary_only`` exists) while
         costing ~17% of a discovery call that every session makes.
+        ``questions`` and ``headings`` are withheld for the same reason:
+        they are what ``find_references(query=...)`` ranks on, and printed
+        they would add about 150 tokens to every entry of every listing.
 
         ``approx_tokens`` replaces the old ``lines`` field: an agent budgets in
         tokens, and the whole point of the hint is to let it tell a 3K-token
@@ -226,6 +298,8 @@ def _parse_reference(path: Path) -> Reference:
         fcp_maturity_entry=(
             fm.get("fcp_maturity_entry") if isinstance(fm.get("fcp_maturity_entry"), str) else None
         ),
+        questions=_parse_questions(fm.get("questions"), path.name),
+        headings=_section_headings(body),
     )
 
 
@@ -311,6 +385,8 @@ class Playbook:
     confidence: str | None = None
     lines: int = 0
     chars: int = 0
+    questions: list[Question] = field(default_factory=list)
+    headings: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         """Listing entry. Carries the same ``approx_tokens`` hint as a reference.
@@ -366,6 +442,8 @@ def _parse_playbook(path: Path) -> Playbook:
         confidence=_scalar("confidence"),
         lines=lines,
         chars=len(text),
+        questions=_parse_questions(fm.get("questions"), f"playbooks/{path.name}"),
+        headings=_section_headings(body),
     )
 
 

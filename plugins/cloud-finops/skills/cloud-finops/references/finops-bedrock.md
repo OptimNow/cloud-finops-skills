@@ -8,6 +8,19 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["aws:ai:deep", "ai-platforms:ai:deep", "ai-platforms:bill:deep", "ai-platforms:commitments:deep", "ai-platforms:waste:deep"]
+questions:
+  - q: "We spend $40K a month on Bedrock and do not know which features it goes to. Where do we start?"
+    persona: "AI product owner"
+    section: "Cost visibility and allocation"
+  - q: "How do we see Bedrock cost per model, per team and per application?"
+    section: "Cost Explorer integration"
+  - q: "When is Bedrock provisioned throughput worth it instead of on-demand?"
+    section: "When provisioned throughput makes sense"
+  - q: "Does prompt caching or batch inference cut our Bedrock bill, and by how much?"
+    section: "Prompt caching"
+  - q: "Our Bedrock bill jumped overnight. How do we find which application caused it?"
+    section: "Cost Anomaly Detection"
+  - "Combien nous coûte Bedrock par application, et comment l'attribuer aux équipes ?"
 ---
 
 # FinOps on AWS Bedrock

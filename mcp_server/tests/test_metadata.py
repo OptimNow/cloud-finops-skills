@@ -314,3 +314,71 @@ def test_every_playbook_has_a_title() -> None:
 
 def test_lookup_unknown_playbook_returns_none() -> None:
     assert metadata.get_playbook_by_name("nope-not-here") is None
+
+
+# --- questions (phase 2 of the question index) -----------------------------
+
+
+def test_questions_parse_plain_strings() -> None:
+    pb = metadata.get_playbook_by_name("aws-zombie-nat-gateway")
+    assert pb is not None
+    texts = [q.text for q in pb.questions]
+    assert "Is it safe to delete a NAT gateway nobody seems to use?" in texts
+    assert all(q.persona is None and q.section is None for q in pb.questions)
+
+
+def test_questions_parse_mapping_entries_with_section() -> None:
+    itam = metadata.get_by_name("finops-itam")
+    assert itam is not None
+    first = next(q for q in itam.questions if q.text.startswith("We hold SQL Server licences"))
+    assert first.section == "BYOL strategy"
+    assert first.persona is None
+
+
+def test_questions_parse_persona() -> None:
+    pb = metadata.get_playbook_by_name("aws-expiring-commitment-no-decision")
+    assert pb is not None
+    assert {q.persona for q in pb.questions if q.persona} == {"FinOps lead"}
+
+
+def test_questions_absent_is_an_empty_list() -> None:
+    oci = metadata.get_by_name("finops-oci")
+    assert oci is not None
+    assert oci.questions == []
+
+
+def test_parse_questions_tolerates_malformed_entries() -> None:
+    parsed = metadata._parse_questions(
+        [
+            "A plain question?",
+            {"q": " Mapped? ", "section": "Fix", "persona": ""},
+            {"no_q": 1},
+            42,
+            "",
+        ],
+        source="test.md",
+    )
+    assert [q.text for q in parsed] == ["A plain question?", "Mapped?"]
+    assert parsed[1].section == "Fix"
+    assert parsed[1].persona is None
+    assert metadata._parse_questions("one", source="t") == [metadata.Question(text="one")]
+    assert metadata._parse_questions(None, source="t") == []
+    assert metadata._parse_questions({"q": "not a list"}, source="t") == []
+
+
+def test_headings_are_indexed_for_query_ranking() -> None:
+    ref = metadata.get_by_name("finops-aws-commitments")
+    assert ref is not None
+    assert "Phased purchasing" in ref.headings
+    pb = metadata.get_playbook_by_name("aws-zombie-nat-gateway")
+    assert pb is not None
+    assert "Detection" in pb.headings
+
+
+def test_executive_persona_is_declared_across_the_index() -> None:
+    """CTO / CIO / CFO questions exist on the files written for that reader."""
+    files = {
+        r.name for r in metadata.get_index() if any(q.persona == "Executive" for q in r.questions)
+    }
+    assert {"finops-kpis-benchmarking", "finops-ai-value-management", "optimnow-methodology"} <= files
+    assert len(files) >= 8

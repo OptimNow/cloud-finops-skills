@@ -19,7 +19,10 @@ file you are touching, follow the conventions in [`CLAUDE.md`](./CLAUDE.md) (FCP
 frontmatter, no em dashes, British spelling in prose, license footer), and pass the
 coverage checks (`./scripts/fcp-coverage.sh --check` and
 `./scripts/business-coverage.sh --check`; the second one reads the
-`business_coverage` frontmatter field that feeds the README coverage tables).
+`business_coverage` frontmatter field that feeds the README coverage tables). A
+reference or playbook may also carry a `questions:` list in its frontmatter: four to
+eight questions written the way a user asks them, none in repository vocabulary, at
+least one in French (rules in `docs/DESIGN.md`, "Reference-file frontmatter").
 
 You keep authorship: every contribution lives in the commit history under your name
 and shows up in `git blame`. Substantive contributors are visible in the repo's
@@ -34,7 +37,9 @@ you - can fork, customise, and redistribute under their own brand, as long as th
 credit and share-alike. If you want a project under your own name rather than
 contributing here, fork freely; see "Adapting this skill for your organisation" in
 the [README](./README.md#adapting-this-skill-for-your-organisation) for the fork
-playbook. Both paths are first-class.
+playbook. Both paths are first-class. A third needs no fork at all: your own figures,
+policies or client context layered on top of the public files as a private overlay,
+see [docs/OVERLAYS.md](./docs/OVERLAYS.md).
 
 ## Repository structure
 

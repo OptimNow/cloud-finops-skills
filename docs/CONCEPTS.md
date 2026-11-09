@@ -111,7 +111,7 @@ spans patterns.
 |---|---|
 | `list_references()` | What guidance exists? The catalogue with its FinOps Framework facets and an `approx_tokens` size hint per file |
 | `get_reference(name, section?)` | One guide: mechanics, decision rules, worked examples. Whole, or a single H2/H3 section when the question is narrower than the file |
-| `find_references(domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | "How should we size Savings Plans?" "What must be true before chargeback?" Routes a FinOps question to the guides that serve it (`persona_primary_only` cuts to the primary audience) |
+| `find_references(query?, domain?, capability?, phase?, persona?, maturity?, persona_primary_only?)` | "How should we size Savings Plans?" "What must be true before chargeback?" Routes a FinOps question to the guides that serve it; `query` takes the question in your own words, English or French, and ranks the guides by the questions each one declares it answers (`persona_primary_only` cuts to the primary audience) |
 
 **Playbooks**: small named-pattern runbooks, one waste pattern each. Reach for these
 for "how do I detect and fix this specific thing".
@@ -120,7 +120,7 @@ for "how do I detect and fix this specific thing".
 |---|---|
 | `list_playbooks()` | What cloud waste can we hunt with a ready-made runbook? |
 | `get_playbook(name)` | The step-by-step runbook: symptoms, detection queries, fix, anti-pattern |
-| `find_playbooks(scope?, service?, waste_category?, confidence?)` | "Which VMs run for nothing?" "Why is the NAT bill so high?" "Which of my RIs are about to expire?" Finds the runbook for a specific waste suspicion. The server cannot see your account; the runbook's detection query is the answer it hands over |
+| `find_playbooks(query?, scope?, service?, waste_category?, confidence?)` | "Which VMs run for nothing?" "Why is the NAT bill so high?" "Which of my RIs are about to expire?" Finds the runbook for a specific waste suspicion; `query` takes the symptom in your own words and ranks the runbooks by the questions each one declares it answers. The server cannot see your account; the runbook's detection query is the answer it hands over |
 
 Both listings carry `approx_tokens` per entry, because the references vary by more
 than tenfold, roughly 2K tokens for the smallest and about 15K for the largest. An

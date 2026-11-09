@@ -8,6 +8,21 @@ fcp_personas_primary: ["FinOps Practitioner", "Engineering"]
 fcp_personas_collaborating: ["Product", "Finance"]
 fcp_maturity_entry: "Walk"
 business_coverage: ["data-platforms:data:deep", "data-platforms:bill:deep", "data-platforms:commitments:deep", "data-platforms:waste:deep", "data-platforms:budget:partial", "data-platforms:ai:partial", "data-platforms:contracts:partial"]
+questions:
+  - q: "Our Snowflake bill doubled in a quarter. Is it the warehouses, storage or Cortex, and what do we check first?"
+    persona: "Engineering and platform"
+    section: "Key diagnostic questions"
+  - q: "How do we attribute Snowflake credits to teams when there are no tags on queries?"
+    section: "Cost attribution"
+  - q: "Which Snowflake warehouses are oversized or left running, and how do we find them?"
+    section: "Compute Optimization Patterns"
+  - q: "Should we buy Snowflake capacity up front or stay on demand?"
+    section: "Commitment model"
+  - q: "How do we cap Snowflake spend with budgets and resource monitors?"
+    section: "Snowflake Budgets"
+  - q: "How do we govern the cost of Cortex AI functions and agents?"
+    section: "Cortex AI cost governance"
+  - "Notre facture Snowflake a doublé : entrepôts, stockage ou Cortex, par où commencer ?"
 ---
 
 # FinOps on Snowflake

@@ -4,6 +4,13 @@ scope: azure
 service: Azure Monitor / Log Analytics
 waste_category: overprovisioned
 confidence: likely
+questions:
+  - q: "Our Log Analytics ingestion doubled. Which tables and which settings do we check first?"
+    persona: "Engineering and platform"
+  - "Which Azure Monitor tables cost us the most, and does anyone query them?"
+  - "Should we set a daily cap or a commitment tier on our Log Analytics workspace?"
+  - "How do we stop diagnostic settings from sending everything to Log Analytics?"
+  - "Notre ingestion Log Analytics a doublé : quelles tables et quels réglages vérifier en premier ?"
 ---
 
 # Azure Log Analytics Ingestion Sprawl
