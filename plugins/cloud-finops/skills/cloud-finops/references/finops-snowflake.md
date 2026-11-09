@@ -48,7 +48,7 @@ Multiple virtual warehouses (VWH) can read the same storage simultaneously. This
 
 ### 60-second billing minimum
 
-Warehouses bill per second, but with a 60-second minimum on every cold start. A warehouse that suspends and restarts frequently for short queries can cost more than one that runs continuously. This is counter-intuitive and has no direct equivalent in IaaS billing models (except AWS Lambda to a limited extent).
+Warehouses bill per second, but with a 60-second minimum on every cold start. A warehouse that suspends and restarts frequently for short queries can cost more than one that runs continuously. This is counter-intuitive, and the nearest IaaS equivalent is EC2 per-second billing, which also charges a 60-second minimum each time an instance enters the running state (Amazon Linux, Windows, RHEL, Ubuntu); AWS Lambda has no minimum, rounding duration up to the nearest millisecond ([EC2 pricing](https://aws.amazon.com/ec2/pricing/), [Lambda pricing](https://aws.amazon.com/lambda/pricing/), read 9 November 2026). What makes Snowflake different is the frequency: auto-suspend and auto-resume can trigger the minimum many times an hour.
 
 ### Hidden cost categories specific to Snowflake
 

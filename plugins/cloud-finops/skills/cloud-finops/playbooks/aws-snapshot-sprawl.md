@@ -46,27 +46,41 @@ against live pricing before sizing a business case.
 ## Detection
 
 ```sql
--- Athena over CUR 2.0: top snapshot spend by account, last 30 days
+-- Athena over CUR 2.0: top snapshot and backup spend by account, last 30 days.
+-- EBS bills EBS:SnapshotUsage (Standard) and EBS:SnapshotArchiveStorage;
+-- RDS bills backup storage above the free allocation as RDS:ChargedBackupUsage
+-- and Aurora as Aurora:BackupUsage - neither RDS type contains "Snapshot".
 SELECT
   line_item_usage_account_id      AS account,
-  product_volume_type             AS volume_type,
+  line_item_usage_type            AS usage_type,
   SUM(line_item_usage_amount)     AS gb_month,
   SUM(line_item_unblended_cost)   AS cost_30d
 FROM cur2
 WHERE line_item_usage_start_date >= current_date - interval '30' day
   AND product_servicecode IN ('AmazonEC2', 'AmazonRDS')
-  AND line_item_usage_type LIKE '%Snapshot%'
+  AND (line_item_usage_type LIKE '%EBS:Snapshot%'
+       OR line_item_usage_type LIKE '%BackupUsage%')
 GROUP BY 1, 2
 ORDER BY cost_30d DESC;
 ```
 
-Cross-reference with the EC2 API to find orphaned snapshots:
+Cross-reference with the EC2 API to find orphaned snapshots. The EC2
+documentation names no tag that links a snapshot to its AMI: the link lives in
+the AMI's block device mappings
+([AWS re:Post](https://repost.aws/knowledge-center/view-ami-snapshot-encryption-details),
+read 9 November 2026). Build the list of snapshot IDs your AMIs use and of
+volume IDs that still exist, then keep the snapshots that match neither:
 
 ```bash
-# Snapshots with no associated AMI AND no current volume
+# Snapshots used by no AMI you own AND whose source volume no longer exists
+# (run per Region; snapshot and volume IDs cannot collide, so one list works)
+{ aws ec2 describe-images --owners self \
+    --query 'Images[].BlockDeviceMappings[].Ebs.SnapshotId' --output text
+  aws ec2 describe-volumes --query 'Volumes[].VolumeId' --output text
+} | tr '\t' '\n' | sort -u > in-use.txt
 aws ec2 describe-snapshots --owner-ids self \
-  --query 'Snapshots[?!not_null(Tags[?Key==`aws:ec2:image-id`])].{Id:SnapshotId,VolumeId:VolumeId,Created:StartTime,SizeGb:VolumeSize}' \
-  --output table
+  --query 'Snapshots[].[SnapshotId,VolumeId,StartTime,VolumeSize]' --output text \
+  | awk 'NR==FNR {used[$1]=1; next} !($1 in used) && !($2 in used)' in-use.txt -
 ```
 
 Manual RDS snapshots need their own pass, because the automated-backup

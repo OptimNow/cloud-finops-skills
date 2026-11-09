@@ -19,9 +19,13 @@ questions:
 A multipart upload that fails or is abandoned mid-transfer leaves its
 already-uploaded parts in the bucket, billed at the bucket's storage rate,
 forever - unless a lifecycle rule aborts them. The parts are invisible in
-the console object listing and excluded from the CloudWatch
-`BucketSizeBytes` metric, which is exactly why they accumulate for years:
-nothing a team normally looks at shows them. Any bucket that receives
+the console object listing and in an object inventory, which is exactly why
+they accumulate for years: nothing a team normally looks at names them. The
+CloudWatch `BucketSizeBytes` metric does count every part of every
+incomplete upload, but inside the bucket total, with nothing to tell them
+apart from objects
+([S3 CloudWatch metrics](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html),
+read 9 November 2026). Any bucket that receives
 large objects over unreliable links (log shippers, backup agents, CI
 artefact pushes) grows this waste continuously. The fix is a one-line
 lifecycle rule with essentially no risk.
@@ -32,8 +36,9 @@ lifecycle rule with essentially no risk.
   lifecycle rule containing `AbortIncompleteMultipartUpload`
 - S3 Storage Lens shows non-zero **incomplete multipart upload bytes**
   (in the free tier of Lens metrics) on buckets nobody can explain
-- Billed storage for a bucket exceeds what the console object listing and
-  `BucketSizeBytes` suggest
+- `BucketSizeBytes` and the billed storage for a bucket exceed the total of
+  the console object listing or of an S3 Inventory report: the gap is the
+  incomplete parts, which the metric counts and the listing does not show
 
 ## Detection
 

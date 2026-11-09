@@ -148,34 +148,49 @@ Effective implementation requires collaboration across roles:
 ## Database commitment discount decision tree
 
 AWS now offers a **Database Savings Plan** alongside service-specific Reserved
-Instances for managed databases. Database Savings Plans provide up to 35% discount
-on serverless databases (Aurora Serverless v2, DynamoDB On-Demand, Neptune Serverless)
-and up to 20% on provisioned database instances (RDS, Aurora, ElastiCache, MemoryDB,
-OpenSearch). Compute Savings Plans still do not cover managed databases - those
-workloads need either RIs or the Database Savings Plan, depending on the service.
-Choosing the wrong instrument - or committing too early - is a common database
-FinOps mistake.
+Instances for managed databases: a 1-year, no-upfront commitment of up to 35% off
+across Aurora, RDS, DynamoDB, ElastiCache, DocumentDB, Timestream, Neptune, Keyspaces,
+DMS and OpenSearch. It covers Generation 7 and newer instances only, Valkey only on
+ElastiCache and InfluxDB only on Timestream, plus the serverless offerings (Aurora
+Serverless, Aurora PostgreSQL Limitless, ElastiCache Serverless for Valkey, DocumentDB
+Serverless, Neptune Serverless, OpenSearch Serverless) and DynamoDB and Keyspaces
+throughput. MemoryDB is not on the list. The 35% is a ceiling, and the depth varies by
+usage type: DynamoDB gets up to 18% on on-demand throughput and up to 12% on provisioned
+throughput (DynamoDB pricing page), ElastiCache for Valkey 20% on nodes and 30% on
+Serverless (AWS ElastiCache re:Invent 2025 recap). For the same workload the plan does
+not combine with RDS Reserved Instances or DynamoDB reserved capacity: one workload takes
+one instrument. Compute Savings Plans still do not cover managed databases. Choosing the
+wrong instrument - or committing too early - is a common database FinOps mistake.
 
-Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html
+Sources (read 9 November 2026):
+https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html,
+https://aws.amazon.com/savingsplans/faqs/ (eligible instances and usage types),
+https://aws.amazon.com/savingsplans/database-pricing/ (per-usage rates; no combination
+with RIs or reserved capacity on one workload), https://aws.amazon.com/dynamodb/pricing/
+and https://aws.amazon.com/blogs/database/amazon-elasticache-reinvent-2025-recap/
 
 **Instrument availability by service:**
 
 | Service | Reserved Instances | Database Savings Plan | Compute Savings Plans | Notes |
 |---|---|---|---|---|
-| RDS (MySQL, PostgreSQL, MariaDB) | Yes - size-flexible within family | Yes - up to 20% discount | No | RI size flexibility means right-sizing does not invalidate the commitment. Database SP adds spend-based flexibility across engines. |
-| RDS (Oracle, SQL Server) | Yes - locked to instance type | Eligibility varies - verify per engine | No | No size flexibility for commercial engines; must match instance exactly |
-| Aurora (MySQL, PostgreSQL) | Yes - size-flexible within family | Yes - up to 20% discount (provisioned), up to 35% (Serverless v2) | No | Same RI pool as RDS open-source engines |
-| DynamoDB | Yes - Reserved Capacity | Yes - up to 35% discount (On-Demand mode) | No | Commit to read/write capacity units for Provisioned mode; Database SP covers On-Demand |
-| ElastiCache (Redis, Memcached) | Yes - node-type specific | Yes - up to 20% discount | No | Locked to node type, no size flexibility |
-| MemoryDB | Yes - node-type specific | Yes - up to 20% discount | No | Same mechanics as ElastiCache RIs |
-| Neptune | Yes - instance-type specific | Yes - up to 35% discount (Serverless) | No | Low discount depth compared to RDS RIs |
-| OpenSearch | Yes - instance-type specific | Yes - up to 20% discount | No | Also covers legacy Elasticsearch domains |
+| RDS (MySQL, PostgreSQL, MariaDB) | Yes - size-flexible within family | Yes - Generation 7 and newer instances | No | RI size flexibility means right-sizing does not invalidate the commitment. Database SP adds spend-based flexibility across engines. |
+| RDS (Oracle, SQL Server) | Yes - locked to instance type | Yes - Generation 7 and newer; on SQL Server the plan discounts the instance price only, licence charges stay On-Demand | No | No size flexibility for commercial engines; must match instance exactly |
+| Aurora (MySQL, PostgreSQL) | Yes - size-flexible within family | Yes - Generation 7 and newer provisioned, Serverless, PostgreSQL Limitless | No | Same RI pool as RDS open-source engines |
+| DynamoDB | Yes - Reserved Capacity | Yes - up to 18% on on-demand throughput, up to 12% on provisioned throughput | No | Reserved capacity (provisioned, single-Region, Standard table class) goes deeper; a table takes one instrument or the other |
+| ElastiCache (Redis, Memcached) | Yes - node-type specific | Valkey only - 20% on nodes, 30% on Serverless; Redis OSS and Memcached not covered | No | Locked to node type, no size flexibility |
+| MemoryDB | Yes - node-type specific | No - not on the eligible list | No | Same mechanics as ElastiCache RIs |
+| Neptune | Yes - instance-type specific | Yes - Generation 7 and newer instances, Serverless, Analytics | No | Low discount depth compared to RDS RIs |
+| OpenSearch | Yes - instance-type specific | Yes - Generation 7 and newer instances, OpenSearch Serverless | No | Also covers legacy Elasticsearch domains |
 | Redshift | Yes - node-type specific (All Upfront / Partial Upfront / No Upfront for 1yr) | No | No | Redshift Serverless has its own Serverless Reservations: a committed RPU level for 1 or 3 years (up to 24% and 45% off), managed at payer-account level and shareable across accounts, with usage above the committed level at on-demand rates ([Redshift pricing](https://aws.amazon.com/redshift/pricing/), read 22 October 2026). As of July 2026, 1-year Redshift RIs support All Upfront and Partial Upfront payment options alongside No Upfront. |
-| DocumentDB | Yes - instance-type specific | No | No | Same RI mechanics as RDS commercial engines |
+| DocumentDB | Yes - instance-type specific | Yes - Generation 7 and newer instances, DocumentDB Serverless | No | Same RI mechanics as RDS commercial engines |
+
+The plan also covers Keyspaces (on-demand and provisioned throughput), Timestream
+(InfluxDB instances) and DMS (instances and Serverless), which the table does not list.
 
 **Verify Database Savings Plan eligibility per engine and instance class** at the
-plan-types reference above before sizing - the Database SP scope is narrower than
-"all managed databases" and the eligible-engine list evolves.
+sources above before sizing - the Database SP scope is narrower than "all managed
+databases" (older instance generations, Redis OSS and MemoryDB fall outside it) and
+the eligible list evolves.
 
 **Key insight:** Compute Savings Plans do NOT cover any managed database service.
 Compute SPs apply to EC2, Fargate, and Lambda. SageMaker AI uses its own Savings Plan.
@@ -282,11 +297,14 @@ flexibility. The decision is rarely purely financial.
 **Layering strategy for database commitments:**
 
 1. **EDP as base** - if eligible, the portfolio-wide EDP discount applies to both
-   EC2 and RDS, reducing the effective rate before any RI is applied
+   EC2 and RDS. On current paper it is computed after RIs and Savings Plans, on the
+   already-discounted amount, so it lowers committed and On-Demand spend alike; AWS
+   does not publish the order, and the addendum's scope clause decides (see
+   `finops-cloud-contracts.md`)
 2. **Right-size and optimise** - complete the 9-step RDS framework before committing
 3. **Database Savings Plan for serverless** - if using Aurora Serverless v2, DynamoDB
-   On-Demand, or Neptune Serverless, Database SP provides up to 35% discount with
-   spend-based flexibility
+   On-Demand, or Neptune Serverless, Database SP provides up to 35% discount (up to
+   18% on DynamoDB on-demand throughput) with spend-based flexibility
 4. **Reserve the steady-state floor** - commit RIs for provisioned baseline that will
    not change during the term. Leave headroom for scaling
 5. **On-Demand for the variable layer** - peaks, new workloads, and workloads under

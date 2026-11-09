@@ -34,7 +34,7 @@ live pricing before quoting.
   during the same window (the notebook configuration has not been touched)
 - The instance has no Lifecycle Configuration (LCC) attached, or the LCC
   does not implement auto-shutdown
-- CUR `line_item_usage_amount` for `*-SageMaker:Notebk-*` exceeds 600 hours
+- CUR `line_item_usage_amount` for `*-Notebk:ml.*` exceeds 600 hours
   in a single month for the same `line_item_resource_id`
 - The owner / team tag is empty or points to someone who has moved on
 
@@ -51,7 +51,7 @@ FROM cur2
 WHERE line_item_usage_start_date >= date_trunc('month', current_date - interval '1' month)
   AND line_item_usage_start_date <  date_trunc('month', current_date)
   AND product_servicecode = 'AmazonSageMaker'
-  AND line_item_usage_type LIKE '%SageMaker:Notebk-%'
+  AND line_item_usage_type LIKE '%Notebk:ml.%'   -- e.g. USE1-Notebk:ml.t3.medium
 GROUP BY 1, 2
 HAVING SUM(line_item_usage_amount) > 600
 ORDER BY cost_month DESC;

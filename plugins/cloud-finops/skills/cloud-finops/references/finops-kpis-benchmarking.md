@@ -19,7 +19,7 @@ questions:
     section: "The executive conversation"
   - q: "Which KPIs should a FinOps practice track at each maturity stage?"
     section: "The KPI portfolio by maturity stage"
-  - q: "How do we report savings: realised, potential or avoided, and who signs them off?"
+  - q: "How do we report savings to Finance: realised or potential, and which one counts as an achievement?"
     section: "The KPI portfolio by maturity stage"
   - q: "Cost per customer, per order or per transaction: how do we choose a unit-economics denominator?"
     section: "Unit economics"

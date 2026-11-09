@@ -39,7 +39,8 @@ questions:
 ### Compute commitment instruments
 
 AWS provides six distinct instruments for reducing compute costs, plus a separate
-Database Savings Plan (covered in the database section below). Each has different
+Database Savings Plan (covered in `finops-aws-patterns-databases.md`, "Database
+commitment discount decision tree"). Each has different
 flexibility, discount depth, and risk profile. A common mistake is treating them as
 alternatives when they are designed to be layered.
 
@@ -86,10 +87,14 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
    Compute SPs **do not cover SageMaker** - SageMaker AI workloads need their own
    SageMaker AI Savings Plan, which is a separate purchase.
 
-3. **Standard RIs are the only instrument that reserves capacity.** If you need
-   guaranteed capacity in a specific AZ (e.g. GPU instances, high-demand regions),
-   Standard RIs with capacity reservation are the only option. An EC2 Capacity Block
-   for ML is paid up front, but since 6 November 2026 CUR 2.0 and Cost Explorer amortise
+3. **Of the discount instruments, only zonal RIs reserve capacity.** A zonal RI,
+   Standard or Convertible, reserves capacity in its AZ; a regional RI and every Savings
+   Plan reserve none ([RI scope](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/reserved-instances-scope.html),
+   read 9 November 2026). If you need guaranteed capacity in a specific AZ (e.g. GPU
+   instances, high-demand regions), the routes are a zonal RI, an On-Demand Capacity
+   Reservation (capacity without a discount, which a regional RI or a Savings Plan then
+   discounts), or, for ML accelerators, an EC2 Capacity Block. A Capacity Block
+   is paid up front, but since 6 November 2026 CUR 2.0 and Cost Explorer amortise
    that fee over the reservation, so GPU block spend no longer spikes on the purchase
    date in amortised views (see "Deriving the amortised view from CUR 2.0" in
    `finops-allocation-showback.md`).
@@ -153,11 +158,11 @@ START: What compute service runs the workload?
 │   │       ├── NO → Stay On-Demand. Re-evaluate quarterly.
 │   │       │
 │   │       └── YES → Has it been right-sized?
-│   │           ├── NO → Right-size first (see Compute rightsizing below)
+│   │           ├── NO → Right-size first (see "Compute rightsizing" in finops-aws.md)
 │   │           │
 │   │           └── YES → Do you need guaranteed capacity in a specific AZ?
-│   │               ├── YES → EC2 Standard RI with capacity reservation
-│   │               │         (only instrument that reserves capacity)
+│   │               ├── YES → Zonal RI (reserves capacity in that AZ), or an
+│   │               │         ODCR discounted by a Savings Plan or regional RI
 │   │               │
 │   │               └── NO → Will it stay in the same instance family + region?
 │   │                   ├── YES → EC2 Instance Savings Plan (up to 72%)
@@ -172,7 +177,7 @@ START: What compute service runs the workload?
 │   │
 │   └── Special case: GPU / accelerated compute (P, G, Inf, Trn families)
 │       - Capacity scarcity is the primary risk, not just cost
-│       - Standard RIs with capacity reservation may be necessary
+│       - Zonal RIs, ODCRs or Capacity Blocks may be necessary
 │       - EC2 Instance SPs work if capacity is available on-demand
 │       - The Compute SP discounts a GPU shape less than CPU families:
 │         g5.xlarge 21.3% off at 1 year against 27.5% on the CPU families,
@@ -183,7 +188,7 @@ START: What compute service runs the workload?
 │         https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances/figures.json (data),
 │         or get_live_figures("savings-plans-vs-reserved-instances"))
 │       - Spot is viable for ML training with checkpointing
-│       - For SageMaker-based ML: see SageMaker section below
+│       - For SageMaker-based ML: see "SageMaker operational FinOps" in finops-aws.md
 │
 ├── Fargate (ECS or EKS on Fargate)
 │   │
@@ -241,8 +246,9 @@ START: What compute service runs the workload?
     │     Savings Plans over Instance SPs if Karpenter is active
     │   - Spot nodes work well for stateless pods with proper
     │     disruption budgets and node affinity rules
-    │   - For cost attribution: see Kubernetes cost management below
-    │   - EKS Auto Mode GPU fee reduction (see note below) makes
+    │   - For cost attribution: see finops-kubernetes.md
+    │   - EKS Auto Mode GPU fee reduction (see "GPU node pools and EKS
+    │     Auto Mode fee reduction" in finops-kubernetes.md) makes
     │     Auto Mode more cost-competitive vs self-managed node groups
     │     for GPU workloads
     │
@@ -336,12 +342,16 @@ read 5 November 2026. To find Spot candidates and check availability before a mo
 The instruments are designed to be stacked, not chosen in isolation. The layering
 order matters because AWS applies discounts in a specific sequence.
 
-**Discount application order (AWS-defined):**
+**Discount application order (steps 2 and 3 AWS-documented):**
 1. Spot pricing (market rate, applied first)
 2. Reserved Instances (capacity + rate, applied to matching On-Demand usage)
 3. Savings Plans (spend-based, applied to remaining eligible On-Demand usage; EC2 Instance
    Savings Plans before Compute Savings Plans, because Compute Savings Plans apply more broadly)
-4. EDP (portfolio discount, applied last to remaining spend)
+4. EDP / Private Pricing (portfolio discount, applied last, to the already-discounted amount
+   of eligible spend, RI- and Savings Plan-covered usage included, not only to what is left
+   On-Demand). AWS does not document this step in its public billing pages: it is practitioner
+   consensus for current paper, and the addendum's scope clause decides (see
+   "Private Pricing (EDP) and the commitment instruments" below)
 
 **Within the Savings Plans layer the order is fixed, not random.** In a consolidated billing
 family, a plan covers its owner account's usage first and reaches other accounts only when
@@ -370,10 +380,10 @@ Layer 4: SageMaker AI Savings Plan (if SageMaker spend is material)
   ↓ separate purchase - Compute SPs no longer cover SageMaker AI
 Layer 5: Database Savings Plan (if RDS/Aurora spend is material - see finops-aws-patterns-databases.md)
   ↓ separate purchase - Compute SPs do not cover managed databases
-Layer 6: Standard RIs (capacity reservation needs only)
+Layer 6: Zonal RIs or ODCRs (capacity reservation needs only)
   ↓ only where guaranteed AZ capacity is required (GPU, scarce types)
 Layer 7: EDP (portfolio-wide, if eligible)
-  ↓ applies on top of everything above for remaining On-Demand spend
+  ↓ applies on top of everything above, to the already-discounted spend
 Layer 8: On-Demand (variable / new workloads)
   ↓ buffer for growth, experimentation, and workloads under evaluation
 ```
@@ -546,17 +556,18 @@ Month 9+: Evaluate - early blocks approaching renewal
 
 **Portfolio view - staggered expiry example (1-year terms, quarterly cadence):**
 
-| Block | Purchased | Expires | % of total | Instrument |
+| Block | Purchased | Expires | % of total compute spend | Instrument |
 |---|---|---|---|---|
-| Block 1 | Jan 2026 | Jan 2027 | 25% | Compute SP (broad baseline) |
+| Block 1 | Jan 2026 | Jan 2027 | 20% | Compute SP (broad baseline) |
 | Block 2 | Apr 2026 | Apr 2027 | 20% | EC2 Instance SP (stable m6i workloads) |
 | Block 3 | Jul 2026 | Jul 2027 | 15% | EC2 Instance SP (stable r6g workloads) |
-| Block 4 | Oct 2026 | Oct 2027 | 10% | Compute SP (new Fargate workloads) |
+| Block 4 | Oct 2026 | Oct 2027 | 15% | Compute SP (new Fargate workloads) |
 | On-Demand | - | - | 30% | Buffer for variable / new workloads |
 
-With staggered expiry, no more than 25% of your commitment portfolio expires in any
-single quarter. This means you are never forced into a large, rushed repurchase
-decision.
+With staggered expiry, no single quarter puts more than about 29% of the commitment
+portfolio up for renewal (a 20-point block out of the 70 points committed), inside the
+30% test in the diagnostic questions below. This means you are never forced into a
+large, rushed repurchase decision.
 
 **3-year term phasing:**
 For 3-year commitments (deeper discounts), phasing is even more critical. Buy in
@@ -670,8 +681,8 @@ Negotiating an AWS Private Pricing agreement (EDP, PPA) is covered in
 `finops-cloud-contracts.md`. Three interactions matter for the instruments in this file:
 
 - On current paper Private Pricing applies after Savings Plans and Reserved Instances,
-  to the already-discounted amount; older paper differed, and the addendum's scope
-  clause decides.
+  to the already-discounted amount (practitioner consensus: AWS does not publish the
+  order); older paper differed, and the addendum's scope clause decides.
 - Reserved Instances bought under a discount programme cannot be resold on the RI
   Marketplace without AWS's prior approval (Service Terms 5.6.1), so staggered expiry
   is the liquidity route for private pricing customers (see

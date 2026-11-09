@@ -45,7 +45,11 @@ SELECT
 FROM cur2
 WHERE line_item_usage_start_date >= current_date - interval '30' day
   AND product_servicecode = 'AmazonRDS'
-  AND line_item_usage_type LIKE '%InstanceUsage%'
+  -- Single-AZ and Aurora bill InstanceUsage:<class>; a Multi-AZ instance
+  -- bills Multi-AZUsage:<class> and a Multi-AZ DB cluster
+  -- Multi-AZClusterUsage:<class>, which InstanceUsage alone misses
+  AND (line_item_usage_type LIKE '%InstanceUsage%'
+       OR line_item_usage_type LIKE '%Multi-AZ%Usage:%')
 GROUP BY 1, 2
 ORDER BY cost_30d DESC
 LIMIT 30;
@@ -62,7 +66,7 @@ aws cloudwatch get-metric-statistics \
   --start-time $(date -u -d '14 days ago' +%FT%TZ) \
   --end-time $(date -u +%FT%TZ) \
   --period 3600 \
-  --statistics p95
+  --extended-statistics p95
 ```
 
 ## Fix
@@ -93,9 +97,8 @@ aws cloudwatch get-metric-statistics \
 
 ## See also
 
-- `references/finops-aws-commitments.md` - Database Savings Plans and the
-  commitment decision tree
-- `references/finops-aws-patterns-databases.md` - RDS commitment strategy and the
+- `references/finops-aws-patterns-databases.md` - Database Savings Plans and the
+  database commitment decision tree, RDS commitment strategy and the
   enumerated RDS inefficiency patterns
 - `references/finops-aws.md` - Aurora vs RDS economics
 - `playbooks/aws-snapshot-sprawl.md` - related RDS snapshot sprawl

@@ -43,23 +43,32 @@ question is whether the trade is worth it for a specific function.
 ## Detection
 
 ```sql
--- BigQuery billing export: Cloud Functions cost by function
+-- BigQuery detailed billing export: function cost by function. A function
+-- deployed with Cloud Run (or detached from the Cloud Functions v2 API)
+-- bills as Cloud Run, so 'Cloud Functions' alone misses it; Cloud Run rows
+-- also hold ordinary Cloud Run services, so keep only your function names.
 SELECT
   resource.name                   AS function_name,
   SUM(cost)                       AS cost_30d,
   SUM(usage.amount)               AS gb_seconds
 FROM `<project>.<dataset>.gcp_billing_export_resource_v1_<account>`
 WHERE _PARTITIONTIME >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)
-  AND service.description = 'Cloud Functions'
+  AND service.description IN ('Cloud Functions', 'Cloud Run')
 GROUP BY 1
 ORDER BY cost_30d DESC
 LIMIT 30;
 ```
 
+Google lists Cloud Run pricing as the pricing model for Cloud Run functions
+and a separate 1st gen price list for 1st gen functions
+([Cloud Run functions comparison](https://docs.cloud.google.com/run/docs/functions/comparison),
+read 9 November 2026).
+
 ```bash
 # P50 vs P99 latency for a candidate function (Cloud Monitoring)
 gcloud monitoring metrics list --filter="metric.type:cloudfunctions.googleapis.com/function/execution_times"
 # Then query in Metrics Explorer with grouping by execution_status
+# (a function deployed with Cloud Run reports run.googleapis.com/request_latencies)
 ```
 
 ## Fix

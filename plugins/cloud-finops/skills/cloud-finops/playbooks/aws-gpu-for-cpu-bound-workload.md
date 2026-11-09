@@ -45,10 +45,17 @@ the current bill; verify against live pricing before quoting.
 ## Detection
 
 ```promql
-# Combined signature: GPU asleep, CPU busy
-avg_over_time(DCGM_FI_PROF_GR_ENGINE_ACTIVE{instance="<id>"}[14d]) < 0.05
-  AND avg_over_time(node_cpu_seconds_total{instance="<id>",mode!="idle"}[14d]) > 0.60
+# Combined signature: GPU asleep, CPU busy. node_cpu_seconds_total is a
+# counter (seconds per CPU per mode), so it needs rate(): the idle rate per
+# CPU is the idle fraction, and one minus its average is the busy fraction.
+avg by (instance) (avg_over_time(DCGM_FI_PROF_GR_ENGINE_ACTIVE{instance="<id>"}[14d])) < 0.05
+  and on (instance)
+(1 - avg by (instance) (rate(node_cpu_seconds_total{instance="<id>",mode="idle"}[14d]))) > 0.60
 ```
+
+The `on (instance)` match assumes both exporters carry the same `instance`
+label; if DCGM and node exporters scrape on different ports, relabel one or
+run the two halves separately.
 
 Or via CloudWatch + a one-off DCGM scrape:
 

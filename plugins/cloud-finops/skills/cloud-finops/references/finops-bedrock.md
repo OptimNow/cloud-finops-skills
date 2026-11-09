@@ -53,9 +53,11 @@ Moonshot, and others) through a unified API.
 | Service tier | Standard, Priority (+75%) and Flex (50% off), chosen per request; some models add a speed tier (see "Service tiers and speed tiers" below) |
 | Batch inference | Asynchronous processing at discounted rates |
 
-**Key cost driver:** output tokens are billed at roughly 4-5x the input rate on
-current Bedrock models (4x on Amazon Nova, 5x on Claude, as of August 2026).
-Workloads with high output ratios (agentic tasks, long-form generation) carry
+**Key cost driver:** output tokens are billed at a multiple of the input rate that
+varies by model family: 4x on Amazon Nova and 5x on Claude (as of August 2026), and
+higher on the OpenAI GPT-5.6 and GPT-6 family, whose ratio follows OpenAI's
+per-generation structure at 6x or more (see `finops-azure-openai.md` for the ratios by
+generation). Workloads with high output ratios (agentic tasks, long-form generation) carry
 disproportionately higher costs. Size against the multiplier, not the input rate.
 
 **Video models bill per second of input, and some bill outside Bedrock.** TwelveLabs
@@ -653,17 +655,22 @@ Input token volume is directly controllable:
 
 Bedrock supports prompt caching for selected models, with two distinct token types
 that bill differently from regular input tokens. **The shape depends on the model
-family**, so do not carry the Claude numbers across the catalogue (as of 2 October 2026):
+family**, and on Claude by model, so do not carry one number across the catalogue (as of
+2 October 2026; Claude row re-read 9 November 2026):
 
 | Model family on Bedrock | Cache write | Cache read | TTL |
 |---|---|---|---|
-| Claude | 1.25x base input (5-minute TTL) or 2x (1-hour TTL) | 0.1x | 5 minutes or 1 hour |
+| Claude | 1.25x base input (5-minute TTL) or 2x (1-hour TTL) | 0.1x standard; 0.05x on Opus 5.5 and Sonnet 5.5; 0.025x on Fable 5.1 and 5.2 and Mythos 5.1 and 5.2 on Anthropic's own price list, so check the Bedrock pricing page per model and Region | 5 minutes or 1 hour |
 | OpenAI GPT-5.6 and later, GPT-6 Astra | 1.25x | 0.1x (0.05x on GPT-6.1 Sol) | single 30-minute TTL |
 | OpenAI GPT-5.5 and earlier | no write premium | discounted | per model |
 | Kimi K3 (first open-weight model with explicit caching, September 2026) | 1.25x | 0.1x | single 30-minute TTL |
 
 Sources: <https://aws.amazon.com/bedrock/pricing/>,
-<https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html>. The user
+<https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html>; for the
+per-model Claude read multipliers, Anthropic's pricing page
+(<https://platform.claude.com/docs/en/about-claude/pricing>) and AWS's Bedrock FinOps
+playbook, which gives 0.05x on Opus 5.5 and Sonnet 5.5 in US East as of October 2026
+(<https://aws.amazon.com/blogs/machine-learning/managing-amazon-bedrock-costs-end-to-end-a-playbook-for-finops-and-platform-teams/>). The user
 guide's caching table lagged the pricing page for Kimi K3 when read; trust the pricing
 page.
 

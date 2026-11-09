@@ -572,9 +572,17 @@ distinguish which AI investments are efficient from which are not.
 
 ### Azure Hybrid Benefit and MACC
 
-Azure OpenAI Service spend can count toward Microsoft Azure Consumption Commitments
-(MACC) in enterprise agreements. Verify this with your Microsoft account team  -
-it affects how GenAI spend is credited against existing commitments.
+Azure OpenAI is an Azure service, and Microsoft states that Azure services as defined
+in the Product Terms contribute to a Microsoft Azure Consumption Commitment (MACC)
+inherently, so Azure OpenAI consumption decrements the MACC on the invoice like any other
+Azure consumption. Two exceptions change the answer: consumption that Azure credits or an
+Azure prepayment cover does not count (the prepayment purchase itself does), and a
+partner model bought through Marketplace counts only where the offer carries the "Azure
+benefit eligible" badge and is bought through the Azure portal. Sources, read 9 November
+2026: [Track your MACC](https://learn.microsoft.com/en-us/azure/cost-management-billing/benefits/macc/track-consumption-commitment)
+and [Azure Consumption Commitment benefit](https://learn.microsoft.com/en-us/marketplace/azure-consumption-commitment-benefit).
+Contract-specific exclusions exist, so confirm with your Microsoft account team before
+counting GenAI spend against the commitment in a forecast.
 
 ---
 

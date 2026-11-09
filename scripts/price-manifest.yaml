@@ -780,10 +780,10 @@ figures:
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md, anchor: 'block storage runs $0.08 (EBS gp3, us-east-1) to', figure: '0.08', price: aws-ebs-gp3-gb-month}
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md, anchor: '$0.17 per GB-month (GCP pd-ssd, us-central1)', figure: '0.17', price: gcp-pd-ssd-gib-month-us-central1}
 
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-patterns-networking.md, anchor: 'AWS charges $0.005/hr (~$3.60/month)', figure: '0.005', price: aws-public-ipv4-hour}
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-patterns-networking.md, anchor: 'AWS charges $0.005/hr (~$3.60/month)', figure: '3.60', price: aws-public-ipv4-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-patterns-networking.md, anchor: 'AWS charges $0.005/hr (~$3.65/month at the us-east-1', figure: '0.005', price: aws-public-ipv4-hour}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-aws-patterns-networking.md, anchor: 'AWS charges $0.005/hr (~$3.65/month at the us-east-1', figure: '3.65', price: aws-public-ipv4-hour, derivation: rate * 730}
 
-  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-waste-detection-playbooks.md, anchor: '~$3.60/month each (illustrative', figure: '3.60', price: aws-public-ipv4-hour, derivation: rate * 730}
+  - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-waste-detection-playbooks.md, anchor: '~$3.65/month each (illustrative', figure: '3.65', price: aws-public-ipv4-hour, derivation: rate * 730}
 
   - {file: plugins/cloud-finops/skills/cloud-finops/references/finops-onboarding-workloads.md, anchor: 'every cross-zone byte costs $0.01/GB', figure: '0.01', price: aws-ec2-cross-az-gb, note: a generic sentence; the AWS rate is the one it matches}
 

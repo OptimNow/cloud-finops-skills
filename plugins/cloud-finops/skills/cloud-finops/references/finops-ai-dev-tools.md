@@ -233,8 +233,10 @@ charges, but you hit rate limits when the budget is consumed.
 ### API key access (BYOK)
 
 When using an API key, Claude Code bills directly against your Anthropic account at
-standard API rates. The per-model list prices are in `finops-anthropic.md` and on
-Anthropic's pricing page; they are not repeated here.
+standard API rates. The per-model rates are in the AI Pricing Hub
+(<https://optimtoken.optimnow.io>) and on Anthropic's pricing page; `finops-anthropic.md`
+carries the tier structure and the ratios between models, not the rates, and neither is
+repeated here.
 
 Anthropic's own data (as of September 2026) puts the average Claude Code user on API
 key mode at around $13 per developer per active day, with 90% of users staying under
@@ -243,9 +245,9 @@ https://code.claude.com/docs/en/costs.
 
 **Important cross-reference:** Claude Code usage on API key mode is subject to the same
 billing mechanics documented in `finops-anthropic.md` - Fast mode (2x, Opus-tier only),
-prompt-caching multipliers, and Batch API discounts. Read the rates there rather than
-here; this file states the developer-tool consequences, `finops-anthropic.md` is the
-source of truth for the mechanics. Fast mode was introduced in Claude Code and doubles
+prompt-caching multipliers, and Batch API discounts. Read the multipliers there and the
+rates in the AI Pricing Hub rather than here; this file states the developer-tool
+consequences, `finops-anthropic.md` is the source of truth for the mechanics. Fast mode was introduced in Claude Code and doubles
 the unit price of a session on the models that support it, which makes it a governance
 question wherever developers can toggle it themselves.
 

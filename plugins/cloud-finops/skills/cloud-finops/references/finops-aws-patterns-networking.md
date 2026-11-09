@@ -162,7 +162,7 @@ VPC Interface Endpoints are commonly deployed to meet network security or compli
 **Unassociated Elastic Ip Address**
 Service: AWS EIP | Type: Unused Resource
 
-Elastic IPs are often provisioned but forgotten - left unassociated, or still attached to EC2 instances that have been stopped. Since 1 February 2024 AWS charges $0.005/hr (~$3.60/month) for **every** public IPv4 address, attached or not, so an unassociated EIP is not a special "idle" penalty - it is the ordinary IPv4 charge buying you nothing. The saving from releasing one is the full address cost, and the same charge applies to in-use addresses, which makes IPv4 footprint reduction (IPv6, shared NAT egress, private endpoints) a distinct optimisation lever rather than a hygiene task.
+Elastic IPs are often provisioned but forgotten - left unassociated, or still attached to EC2 instances that have been stopped. Since 1 February 2024 AWS charges $0.005/hr (~$3.65/month at the us-east-1 list rate read in November 2026) for **every** public IPv4 address, attached or not, so an unassociated EIP is not a special "idle" penalty - it is the ordinary IPv4 charge buying you nothing. The saving from releasing one is the full address cost, and the same charge applies to in-use addresses, which makes IPv4 footprint reduction (IPv6, shared NAT egress, private endpoints) a distinct optimisation lever rather than a hygiene task.
 
 - Release any EIPs that are no longer required
 - Automate audits to identify unassociated or inactive EIPs on a recurring basis
