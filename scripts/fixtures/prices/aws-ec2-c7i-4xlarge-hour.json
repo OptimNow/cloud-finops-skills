@@ -1,0 +1,88 @@
+{
+ "live_value": 0.714,
+ "method": "price-list",
+ "price": "aws-ec2-c7i-4xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "capacitystatus": "Used",
+   "instanceType": "c7i.4xlarge",
+   "location": "US East (N. Virginia)",
+   "operatingSystem": "Linux",
+   "operation": "RunInstances",
+   "preInstalledSw": "NA",
+   "tenancy": "Shared"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availabilityzone": "NA",
+     "capacitystatus": "Used",
+     "classicnetworkingsupport": "false",
+     "clockSpeed": "3.2 GHz",
+     "currentGeneration": "Yes",
+     "dedicatedEbsThroughput": "Up to 10000 Mbps",
+     "dedicatedEbsThroughputDescription": "5000 Mbps",
+     "ecu": "NA",
+     "enhancedNetworkingSupported": "Yes",
+     "gpuMemory": "NA",
+     "instanceFamily": "Compute optimized",
+     "instanceFamilyCategory": "Compute Optimized",
+     "instanceType": "c7i.4xlarge",
+     "intelAvx2Available": "Yes",
+     "intelAvxAvailable": "Yes",
+     "intelTurboAvailable": "Yes",
+     "licenseModel": "No License required",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "marketoption": "OnDemand",
+     "memory": "32 GiB",
+     "networkPerformance": "Up to 12500 Megabit",
+     "normalizationSizeFactor": "32",
+     "operatingSystem": "Linux",
+     "operation": "RunInstances",
+     "physicalProcessor": "Intel Xeon Scalable (Sapphire Rapids)",
+     "preInstalledSw": "NA",
+     "processorArchitecture": "64-bit",
+     "processorFeatures": "Intel AVX; Intel AVX2; Intel AVX512; Intel Turbo; Intel AMX",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storage": "EBS only",
+     "tenancy": "Shared",
+     "usagetype": "BoxUsage:c7i.4xlarge",
+     "vcpu": "16",
+     "vpcnetworkingsupport": "true"
+    },
+    "sku": "MDCEERAZ4UHT28VS"
+   },
+   "terms": {
+    "OnDemand": {
+     "MDCEERAZ4UHT28VS.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "MDCEERAZ4UHT28VS.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.714 per On Demand Linux c7i.4xlarge Instance Hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.7140000000"
+        },
+        "rateCode": "MDCEERAZ4UHT28VS.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "MDCEERAZ4UHT28VS",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

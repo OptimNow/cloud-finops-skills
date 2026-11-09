@@ -170,6 +170,17 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
 - A test that every declared question, asked verbatim, routes to its own file.
 - CLAUDE.md slimmed: its reference sections moved to `docs/DESIGN.md`. Commits and
   pull requests carry no assistant attribution lines.
+- **A weekly price-drift check.** `scripts/price-manifest.yaml` lists every
+  infrastructure list price the library carries (ninety provider SKUs, written in 150
+  places) with the query that reads it on the AWS Price List API,
+  the Azure Retail Prices API or Google's catalogue and pricing pages;
+  `scripts/check-prices.py` re-reads them and compares with the figures as written;
+  the `price-drift` workflow runs it every Saturday and opens one labelled issue when
+  a figure has moved or a query broke. A price no API serves (the Snowflake storage
+  tiers) is aged instead: the issue lists it under "Check by hand" once the date it
+  was read is older than 90 days. It never edits a file. The same script runs in CI
+  against recorded fixtures, so a figure edited without its manifest line fails the
+  build.
 
 ## Earlier versions
 

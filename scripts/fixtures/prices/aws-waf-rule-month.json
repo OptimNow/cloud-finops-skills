@@ -1,0 +1,55 @@
+{
+ "live_value": 1.0,
+ "method": "price-list",
+ "price": "aws-waf-rule-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-Rule"
+  },
+  "service_code": "awswaf"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "group": "Rule",
+     "groupDescription": "Number of Rules added per Web Access Control Lists",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "awswaf",
+     "servicename": "AWS WAF",
+     "usagetype": "USE1-Rule"
+    },
+    "sku": "MMK6882R53ZPMBQG"
+   },
+   "terms": {
+    "OnDemand": {
+     "MMK6882R53ZPMBQG.JRTCKXETXF": {
+      "effectiveDate": "2025-12-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "MMK6882R53ZPMBQG.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "Price per Rule",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "1.0000000000"
+        },
+        "rateCode": "MMK6882R53ZPMBQG.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "month"
+       }
+      },
+      "sku": "MMK6882R53ZPMBQG",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,53 @@
+{
+ "live_value": 0.01,
+ "method": "price-list",
+ "price": "aws-cost-explorer-api-request",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "usagetype": "USE1-APIRequest"
+  },
+  "service_code": "AWSCostExplorer"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "requestType": "Reporting",
+     "servicecode": "AWSCostExplorer",
+     "servicename": "AWS Cost Explorer",
+     "usagetype": "USE1-APIRequest"
+    },
+    "sku": "BX68HKNBJP73AFBV"
+   },
+   "terms": {
+    "OnDemand": {
+     "BX68HKNBJP73AFBV.JRTCKXETXF": {
+      "effectiveDate": "2025-09-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "BX68HKNBJP73AFBV.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.01 per API Request",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0100000000"
+        },
+        "rateCode": "BX68HKNBJP73AFBV.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Request"
+       }
+      },
+      "sku": "BX68HKNBJP73AFBV",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,54 @@
+{
+ "live_value": 0.025,
+ "method": "price-list",
+ "price": "aws-efs-ia-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-IATimedStorage-ByteHrs"
+  },
+  "service_code": "AmazonEFS"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEFS",
+     "servicename": "Amazon Elastic File System",
+     "storageClass": "Infrequent Access",
+     "usagetype": "USE1-IATimedStorage-ByteHrs"
+    },
+    "sku": "29XC62PHCNK7YFTC"
+   },
+   "terms": {
+    "OnDemand": {
+     "29XC62PHCNK7YFTC.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "29XC62PHCNK7YFTC.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD $0.025 per GB-Mo for Standard-Infrequent Access storage (USE1)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0250000000"
+        },
+        "rateCode": "29XC62PHCNK7YFTC.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "29XC62PHCNK7YFTC",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

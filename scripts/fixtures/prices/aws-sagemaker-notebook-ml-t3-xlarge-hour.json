@@ -1,0 +1,70 @@
+{
+ "live_value": 0.2,
+ "method": "price-list",
+ "price": "aws-sagemaker-notebook-ml-t3-xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-Notebk:ml.t3.xlarge"
+  },
+  "service_code": "AmazonSageMaker"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "clockSpeed": "2.5 GHz",
+     "component": "Notebook",
+     "computeType": "Standard Instances",
+     "currentGeneration": "Yes",
+     "gpu": "0",
+     "gpuMemory": "0",
+     "instanceName": "ml.t3.xlarge",
+     "instanceType": "ml.t3.xlarge-Notebook",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "memory": "16 GiB",
+     "networkPerformance": "Moderate",
+     "operation": "RunInstance",
+     "physicalCpu": "Intel Skylake E5 2686 v5",
+     "physicalGpu": "None",
+     "platoinstancename": "t3",
+     "platoinstancetype": "Notebook",
+     "processorArchitecture": "64-bit",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonSageMaker",
+     "servicename": "Amazon SageMaker",
+     "storage": "EBS only",
+     "usagetype": "USE1-Notebk:ml.t3.xlarge",
+     "vCpu": "4"
+    },
+    "sku": "VS465RSNBNMUZAVA"
+   },
+   "terms": {
+    "OnDemand": {
+     "VS465RSNBNMUZAVA.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "VS465RSNBNMUZAVA.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.2 per Notebook ml.t3.xlarge hour in US East (N. Virginia)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.2000000000"
+        },
+        "rateCode": "VS465RSNBNMUZAVA.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "VS465RSNBNMUZAVA",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

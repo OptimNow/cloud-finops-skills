@@ -1,0 +1,89 @@
+{
+ "live_value": 16.288,
+ "method": "price-list",
+ "price": "aws-ec2-g5-48xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "capacitystatus": "Used",
+   "instanceType": "g5.48xlarge",
+   "location": "US East (N. Virginia)",
+   "operatingSystem": "Linux",
+   "operation": "RunInstances",
+   "preInstalledSw": "NA",
+   "tenancy": "Shared"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availabilityzone": "NA",
+     "capacitystatus": "Used",
+     "classicnetworkingsupport": "false",
+     "clockSpeed": "2.8 GHz",
+     "currentGeneration": "Yes",
+     "dedicatedEbsThroughput": "19000 Mbps",
+     "dedicatedEbsThroughputDescription": "19000 Mbps",
+     "ecu": "NA",
+     "enhancedNetworkingSupported": "Yes",
+     "gpu": "8",
+     "gpuMemory": "192 GB",
+     "instanceFamily": "GPU instance",
+     "instanceFamilyCategory": "Accelerated Computing",
+     "instanceType": "g5.48xlarge",
+     "intelAvx2Available": "No",
+     "intelAvxAvailable": "No",
+     "intelTurboAvailable": "No",
+     "licenseModel": "No License required",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "marketoption": "OnDemand",
+     "memory": "768 GiB",
+     "networkPerformance": "100 Gigabit",
+     "normalizationSizeFactor": "16.190854871",
+     "operatingSystem": "Linux",
+     "operation": "RunInstances",
+     "physicalProcessor": "AMD EPYC 7R32",
+     "preInstalledSw": "NA",
+     "processorArchitecture": "64-bit",
+     "processorFeatures": "AMD Turbo; AVX; AVX2",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storage": "2 x 3800 GB NVMe SSD",
+     "tenancy": "Shared",
+     "usagetype": "BoxUsage:g5.48xlarge",
+     "vcpu": "192",
+     "vpcnetworkingsupport": "true"
+    },
+    "sku": "YX5WAG89Y55938RB"
+   },
+   "terms": {
+    "OnDemand": {
+     "YX5WAG89Y55938RB.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "YX5WAG89Y55938RB.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$16.288 per On Demand Linux g5.48xlarge Instance Hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "16.2880000000"
+        },
+        "rateCode": "YX5WAG89Y55938RB.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "YX5WAG89Y55938RB",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

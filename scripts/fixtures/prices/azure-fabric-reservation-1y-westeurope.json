@@ -1,0 +1,35 @@
+{
+ "live_value": 1146.0,
+ "method": "retail-prices",
+ "price": "azure-fabric-reservation-1y-westeurope",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Microsoft Fabric' and armRegionName eq 'westeurope' and priceType eq 'Reservation' and skuName eq 'Fabric Capacity'",
+  "reservation_term": "1 Year"
+ },
+ "raw": [
+  {
+   "armRegionName": "westeurope",
+   "meterName": "Fabric Capacity CU",
+   "productName": "Fabric Capacity Reservation",
+   "reservationTerm": "1 Year",
+   "retailPrice": 1146.0,
+   "skuName": "Fabric Capacity",
+   "tierMinimumUnits": 0.0,
+   "type": "Reservation",
+   "unitOfMeasure": "1 Hour"
+  },
+  {
+   "armRegionName": "westeurope",
+   "meterName": "Fabric Capacity CU",
+   "productName": "Fabric Capacity Reservation",
+   "reservationTerm": "3 Years",
+   "retailPrice": 3438.0,
+   "skuName": "Fabric Capacity",
+   "tierMinimumUnits": 0.0,
+   "type": "Reservation",
+   "unitOfMeasure": "1 Hour"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

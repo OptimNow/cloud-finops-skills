@@ -1,0 +1,56 @@
+{
+ "live_value": 0.14,
+ "method": "price-list",
+ "price": "aws-sagemaker-notebook-storage-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-Notebk:VolumeUsage.gp2"
+  },
+  "service_code": "AmazonSageMaker"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "maxThroughputvolume": "160 MB/sec",
+     "operation": "CreateVolume-Gp2",
+     "platoclassificationtype": "Notebk:VolumeUsage",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonSageMaker",
+     "servicename": "Amazon SageMaker",
+     "usagetype": "USE1-Notebk:VolumeUsage.gp2",
+     "volumeType": "General Purpose-Notebook"
+    },
+    "sku": "MM4XVUQHGWZY6H46"
+   },
+   "terms": {
+    "OnDemand": {
+     "MM4XVUQHGWZY6H46.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "MM4XVUQHGWZY6H46.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.14 per GB-Mo of Notebook Instance ML storage",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.1400000000"
+        },
+        "rateCode": "MM4XVUQHGWZY6H46.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "MM4XVUQHGWZY6H46",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

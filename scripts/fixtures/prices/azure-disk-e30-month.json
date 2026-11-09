@@ -1,0 +1,22 @@
+{
+ "live_value": 76.8,
+ "method": "retail-prices",
+ "price": "azure-disk-e30-month",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Storage' and armRegionName eq 'eastus' and priceType eq 'Consumption' and productName eq 'Standard SSD Managed Disks' and meterName eq 'E30 LRS Disk'"
+ },
+ "raw": [
+  {
+   "armRegionName": "eastus",
+   "meterName": "E30 LRS Disk",
+   "productName": "Standard SSD Managed Disks",
+   "retailPrice": 76.8,
+   "skuName": "E30 LRS",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1/Month"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

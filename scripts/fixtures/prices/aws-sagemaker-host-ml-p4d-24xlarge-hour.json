@@ -1,0 +1,70 @@
+{
+ "live_value": 25.2512883,
+ "method": "price-list",
+ "price": "aws-sagemaker-host-ml-p4d-24xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-Host:ml.p4d.24xlarge"
+  },
+  "service_code": "AmazonSageMaker"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "clockSpeed": "3 GHz",
+     "component": "Hosting",
+     "computeType": "Accelerated Computing Instances",
+     "currentGeneration": "Yes",
+     "gpu": "8",
+     "gpuMemory": "320",
+     "instanceName": "ml.p4d.24xlarge",
+     "instanceType": "ml.p4d.24xlarge-Hosting",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "memory": "1152 GiB",
+     "networkPerformance": "400 Gigabit",
+     "operation": "RunInstance",
+     "physicalCpu": "Intel Xeon Platinum 8275L",
+     "physicalGpu": "N/A",
+     "platoinstancename": "p4d",
+     "platoinstancetype": "Hosting",
+     "processorArchitecture": "64-bit",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonSageMaker",
+     "servicename": "Amazon SageMaker",
+     "storage": "8 x 1000 SSD",
+     "usagetype": "USE1-Host:ml.p4d.24xlarge",
+     "vCpu": "96"
+    },
+    "sku": "ZABPXNNEXF38RR8R"
+   },
+   "terms": {
+    "OnDemand": {
+     "ZABPXNNEXF38RR8R.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "ZABPXNNEXF38RR8R.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$25.2512883 per hour for Hosting ml.p4d.24xlarge in US East (N. Virginia)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "25.2512883000"
+        },
+        "rateCode": "ZABPXNNEXF38RR8R.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "ZABPXNNEXF38RR8R",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

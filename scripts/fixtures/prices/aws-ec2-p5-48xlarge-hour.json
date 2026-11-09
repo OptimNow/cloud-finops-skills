@@ -1,0 +1,89 @@
+{
+ "live_value": 55.04,
+ "method": "price-list",
+ "price": "aws-ec2-p5-48xlarge-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "capacitystatus": "Used",
+   "instanceType": "p5.48xlarge",
+   "location": "US East (N. Virginia)",
+   "operatingSystem": "Linux",
+   "operation": "RunInstances",
+   "preInstalledSw": "NA",
+   "tenancy": "Shared"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "availabilityzone": "NA",
+     "capacitystatus": "Used",
+     "classicnetworkingsupport": "false",
+     "clockSpeed": "2.95 GHz",
+     "currentGeneration": "Yes",
+     "dedicatedEbsThroughput": "80 Gbps",
+     "dedicatedEbsThroughputDescription": "80 Gbps",
+     "ecu": "NA",
+     "enhancedNetworkingSupported": "Yes",
+     "gpu": "8",
+     "gpuMemory": "640 GB HBM3",
+     "instanceFamily": "GPU instance",
+     "instanceFamilyCategory": "Accelerated Computing",
+     "instanceType": "p5.48xlarge",
+     "intelAvx2Available": "No",
+     "intelAvxAvailable": "No",
+     "intelTurboAvailable": "No",
+     "licenseModel": "No License required",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "marketoption": "OnDemand",
+     "memory": "2048 GiB",
+     "networkPerformance": "3200 Gigabit",
+     "normalizationSizeFactor": "384",
+     "operatingSystem": "Linux",
+     "operation": "RunInstances",
+     "physicalProcessor": "AMD EPYC 7R13 Processor",
+     "preInstalledSw": "NA",
+     "processorArchitecture": "64-bit",
+     "processorFeatures": "AMD Turbo; AVX; AVX2",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storage": "8 x 3840 GB SSD",
+     "tenancy": "Shared",
+     "usagetype": "BoxUsage:p5.48xlarge",
+     "vcpu": "192",
+     "vpcnetworkingsupport": "true"
+    },
+    "sku": "3D4V8UAYEMB38GU2"
+   },
+   "terms": {
+    "OnDemand": {
+     "3D4V8UAYEMB38GU2.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "3D4V8UAYEMB38GU2.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$55.04 per On Demand Linux p5.48xlarge Instance Hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "55.0400000000"
+        },
+        "rateCode": "3D4V8UAYEMB38GU2.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "3D4V8UAYEMB38GU2",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

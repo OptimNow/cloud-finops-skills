@@ -1,0 +1,102 @@
+{
+ "live_value": 1000.0,
+ "method": "price-list",
+ "price": "aws-cloudfront-plan-premium-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "usagetype": "Global-CloudFrontPlan-Premium"
+  },
+  "service_code": "CloudFrontPlans",
+  "term": "FlatRate"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "Any",
+     "locationType": "AWS Region",
+     "operation": "CloudFrontPlan",
+     "plancode": "Premium",
+     "planfamilycode": "CloudFrontPlan",
+     "planfamilyname": "CloudFrontPlan",
+     "planname": "Premium",
+     "regionCode": "",
+     "servicecode": "CloudFrontPlans",
+     "servicename": "CloudFront Flat-Rate Plans",
+     "usagetype": "Global-CloudFrontPlan-Premium"
+    },
+    "sku": "3PB5CKFAYPQWYGPT"
+   },
+   "terms": {
+    "FlatRate": {
+     "plans": [
+      {
+       "eligibleDowngradePlans": [
+        "62NKXBU85SAM2UCH",
+        "ZV6NSURPZJGXK373",
+        "YFCX9S4GTPBAUPRE"
+       ],
+       "eligibleUpgradePlans": [
+        "V2KJXMNUN5F48RNT",
+        "SB2DYFW4NDQBJPB3",
+        "QJTPJUUGJJECY7ED",
+        "5CRDCHZR9BJGZJMC",
+        "T976739Z7Z34RKE8"
+       ],
+       "features": [
+        {
+         "featureCode": "Requests",
+         "featureName": "Requests",
+         "featureSku": "72M4J5MT2V9NDTFR",
+         "overagePolicy": "NO_OVERAGE_THROTTLE",
+         "usageQuota": {
+          "unit": "Requests",
+          "usagePoolingPolicy": "ACCOUNT",
+          "value": "500000000"
+         },
+         "usageType": "Global-CloudFrontPlan-Requests"
+        },
+        {
+         "featureCode": "DataTransfer",
+         "featureName": "Data Transfer",
+         "featureSku": "ZH4CF2VT9RGDWARF",
+         "overagePolicy": "NO_OVERAGE_THROTTLE",
+         "usageQuota": {
+          "unit": "GB",
+          "usagePoolingPolicy": "ACCOUNT",
+          "value": "51200"
+         },
+         "usageType": "Global-CloudFrontPlan-DataTransfer"
+        },
+        {
+         "featureCode": "S3Storage",
+         "featureName": "Included S3 Storage",
+         "featureSku": "HG7Z3KSQ5EHU93M6",
+         "overagePolicy": "NO_OVERAGE_THROTTLE",
+         "usageQuota": {
+          "unit": "GB",
+          "usagePoolingPolicy": "ACCOUNT",
+          "value": "5120"
+         },
+         "usageType": "Global-CloudFrontPlan-S3Storage"
+        }
+       ],
+       "planCode": "Premium",
+       "planFamilyCode": "CloudFrontPlan",
+       "sku": "3PB5CKFAYPQWYGPT",
+       "subscriptionPrice": {
+        "description": "$1000.00 per Premium plan",
+        "pricePerUnit": {
+         "USD": "1000.0000000000"
+        },
+        "rateCode": "3PB5CKFAYPQWYGPT.JRTCKXETXF.6YS6EN2CT7"
+       }
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

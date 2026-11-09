@@ -59,7 +59,7 @@ cloud-finops-skills/
 │                             plugins/cloud-finops/; both versions bump together)
 ├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
 │                             publish-mcp, publish-registry, mcp-install-smoke,
-│                             release, dependabot-automerge
+│                             release, dependabot-automerge, price-drift (weekly)
 ├── .github/ISSUE_TEMPLATE/ <- Two issue forms (wrong or incomplete answer,
 │                             question not covered) plus the chooser config; each
 │                             confirmed report becomes a coverage probe
@@ -210,19 +210,16 @@ cloud-finops-skills/
 │                             carries 4 to 8 `questions:` in the user's words,
 │                             no duplicate across files, every `section`
 │                             resolves; PyYAML, so after the install),
-│                             check-plugin-file-limits (no
-│                             tracked non-image file over 256 KiB, at most
-│                             480 files: both are Claude directory holds),
-│                             check-plugin-skill-only (no .mcp.json, no
-│                             mcpServers in plugin.json),
+│                             check-plugin-file-limits (no tracked non-image
+│                             file over 256 KiB, at most 480 files),
+│                             check-plugin-skill-only (no .mcp.json, no mcpServers),
 │                             check-plugin-content (the plugin folder holds
 │                             markdown and the licence only: no image, no
 │                             `$VAR` beside a URL, no curl-pipe-to-shell, no
 │                             package launcher),
 │                             check-reference-size (token budget per file:
-│                             warns above 15,000 for a reference or
-│                             playbook and 6,000 for SKILL.md, fails above
-│                             30,000 and 8,000),
+│                             warns at 15,000, or 6,000 for SKILL.md, fails
+│                             at 30,000 and 8,000),
 │                             check-skill-description,
 │                             check-skill-power-parity (diffs the shared
 │                             SKILL.md / POWER.md body so the routing tables
@@ -231,9 +228,12 @@ cloud-finops-skills/
 │                             "percent", dash residue or "the single most";
 │                             allowlist in check-style-allow.txt),
 │                             check-dated-prices (a price paragraph carries a
-│                             year; allowlist in check-dated-prices-allow.txt)
-│                             and check-marketplace-version
-│                             - all twenty-three run by the `CI` workflow, and
+│                             year; allowlist in check-dated-prices-allow.txt),
+│                             check-prices.py (price-manifest.yaml, every list
+│                             price and where it is written, against the live
+│                             price lists; --offline in CI, live weekly in
+│                             price-drift.yml) and check-marketplace-version
+│                             - all twenty-four run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow

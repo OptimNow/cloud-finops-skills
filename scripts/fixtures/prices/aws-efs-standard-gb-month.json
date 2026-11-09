@@ -1,0 +1,54 @@
+{
+ "live_value": 0.3,
+ "method": "price-list",
+ "price": "aws-efs-standard-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-TimedStorage-ByteHrs"
+  },
+  "service_code": "AmazonEFS"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEFS",
+     "servicename": "Amazon Elastic File System",
+     "storageClass": "General Purpose",
+     "usagetype": "USE1-TimedStorage-ByteHrs"
+    },
+    "sku": "YFV3RHAD3CDDP3VE"
+   },
+   "terms": {
+    "OnDemand": {
+     "YFV3RHAD3CDDP3VE.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "YFV3RHAD3CDDP3VE.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "USD $0.30 per GB-Mo for Standard storage (USE1)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.3000000000"
+        },
+        "rateCode": "YFV3RHAD3CDDP3VE.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "YFV3RHAD3CDDP3VE",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

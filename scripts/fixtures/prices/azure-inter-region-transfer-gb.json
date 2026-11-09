@@ -1,0 +1,22 @@
+{
+ "live_value": 0.02,
+ "method": "retail-prices",
+ "price": "azure-inter-region-transfer-gb",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Bandwidth' and armRegionName eq 'eastus' and priceType eq 'Consumption' and meterName eq 'Standard Inter-Region Data Transfer'"
+ },
+ "raw": [
+  {
+   "armRegionName": "eastus",
+   "meterName": "Standard Inter-Region Data Transfer",
+   "productName": "Rtn Preference: MGN",
+   "retailPrice": 0.02,
+   "skuName": "Standard",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,56 @@
+{
+ "live_value": 0.01,
+ "method": "price-list",
+ "price": "aws-vpc-interface-endpoint-hour",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "USE1-VpcEndpoint-Hours"
+  },
+  "service_code": "AmazonVPC"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "endpointType": "PrivateLink",
+     "group": "VPCE:VpcEndpoint",
+     "groupDescription": "Hourly charge for VPC Endpoints",
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "operation": "VpcEndpoint",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonVPC",
+     "servicename": "Amazon Virtual Private Cloud",
+     "usagetype": "USE1-VpcEndpoint-Hours"
+    },
+    "sku": "EN2N5TATXE673A3B"
+   },
+   "terms": {
+    "OnDemand": {
+     "EN2N5TATXE673A3B.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "EN2N5TATXE673A3B.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.01 per VPC Endpoint Hour",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0100000000"
+        },
+        "rateCode": "EN2N5TATXE673A3B.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "Hrs"
+       }
+      },
+      "sku": "EN2N5TATXE673A3B",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

@@ -1,0 +1,57 @@
+{
+ "live_value": 0.01,
+ "method": "price-list",
+ "price": "aws-ec2-cross-az-gb",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "fromLocation": "US East (N. Virginia)",
+   "usagetype": "DataTransfer-Regional-Bytes"
+  },
+  "service_code": "AWSDataTransfer"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "fromLocation": "US East (N. Virginia)",
+     "fromLocationType": "AWS Region",
+     "fromRegionCode": "us-east-1",
+     "operation": "",
+     "servicecode": "AWSDataTransfer",
+     "servicename": "AWS Data Transfer",
+     "toLocation": "US East (N. Virginia)",
+     "toLocationType": "AWS Region",
+     "toRegionCode": "us-east-1",
+     "transferType": "IntraRegion",
+     "usagetype": "DataTransfer-Regional-Bytes"
+    },
+    "sku": "PNUBVW4CPC8XA46W"
+   },
+   "terms": {
+    "OnDemand": {
+     "PNUBVW4CPC8XA46W.JRTCKXETXF": {
+      "effectiveDate": "2026-06-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "PNUBVW4CPC8XA46W.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.010 per GB - regional data transfer - in/out/between EC2 AZs or using elastic IPs or ELB",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.0100000000"
+        },
+        "rateCode": "PNUBVW4CPC8XA46W.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB"
+       }
+      },
+      "sku": "PNUBVW4CPC8XA46W",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}

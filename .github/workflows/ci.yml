@@ -158,6 +158,13 @@ jobs:
       - name: README role questions in sync (--check)
         run: python scripts/render-questions-readme.py --check
 
+      # The weekly price-drift workflow reads scripts/price-manifest.yaml against the
+      # live price lists. This run reads the recorded fixtures instead, so a figure
+      # edited in a file without its manifest line, or an anchor that no longer
+      # matches, fails here rather than next Saturday. PyYAML only.
+      - name: Price manifest in step with the files (check-prices --offline)
+        run: python scripts/check-prices.py --offline
+
       - name: Sync references into bundled data/
         working-directory: mcp_server
         run: python scripts/sync_references.py

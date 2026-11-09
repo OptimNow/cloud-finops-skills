@@ -1,0 +1,32 @@
+{
+ "live_value": 2.3,
+ "method": "retail-prices",
+ "price": "azure-log-analytics-ingestion-gb",
+ "provider": "azure",
+ "query": {
+  "filter": "serviceName eq 'Log Analytics' and armRegionName eq 'eastus' and priceType eq 'Consumption' and meterName eq 'Analytics Logs Data Ingestion'"
+ },
+ "raw": [
+  {
+   "armRegionName": "eastus",
+   "meterName": "Analytics Logs Data Ingestion",
+   "productName": "Log Analytics",
+   "retailPrice": 0.0,
+   "skuName": "Analytics Logs",
+   "tierMinimumUnits": 0.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  },
+  {
+   "armRegionName": "eastus",
+   "meterName": "Analytics Logs Data Ingestion",
+   "productName": "Log Analytics",
+   "retailPrice": 2.3,
+   "skuName": "Analytics Logs",
+   "tierMinimumUnits": 5.0,
+   "type": "Consumption",
+   "unitOfMeasure": "1 GB"
+  }
+ ],
+ "recorded": "2026-11-09"
+}

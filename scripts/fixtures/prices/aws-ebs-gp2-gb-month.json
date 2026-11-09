@@ -1,0 +1,60 @@
+{
+ "live_value": 0.1,
+ "method": "price-list",
+ "price": "aws-ebs-gp2-gb-month",
+ "provider": "aws",
+ "query": {
+  "filters": {
+   "location": "US East (N. Virginia)",
+   "usagetype": "EBS:VolumeUsage.gp2"
+  },
+  "service_code": "AmazonEC2"
+ },
+ "raw": [
+  {
+   "product": {
+    "attributes": {
+     "location": "US East (N. Virginia)",
+     "locationType": "AWS Region",
+     "maxIopsBurstPerformance": "3000 for volumes <= 1 TiB",
+     "maxIopsvolume": "16000",
+     "maxThroughputvolume": "250 MiB/s",
+     "maxVolumeSize": "16 TiB",
+     "operation": "",
+     "regionCode": "us-east-1",
+     "servicecode": "AmazonEC2",
+     "servicename": "Amazon Elastic Compute Cloud",
+     "storageMedia": "SSD-backed",
+     "usagetype": "EBS:VolumeUsage.gp2",
+     "volumeApiName": "gp2",
+     "volumeType": "General Purpose"
+    },
+    "sku": "HY3BZPP2B6K8MSJF"
+   },
+   "terms": {
+    "OnDemand": {
+     "HY3BZPP2B6K8MSJF.JRTCKXETXF": {
+      "effectiveDate": "2026-11-01T00:00:00Z",
+      "offerTermCode": "JRTCKXETXF",
+      "priceDimensions": {
+       "HY3BZPP2B6K8MSJF.JRTCKXETXF.6YS6EN2CT7": {
+        "appliesTo": [],
+        "beginRange": "0",
+        "description": "$0.10 per GB-month of General Purpose SSD (gp2) provisioned storage - US East (Northern Virginia)",
+        "endRange": "Inf",
+        "pricePerUnit": {
+         "USD": "0.1000000000"
+        },
+        "rateCode": "HY3BZPP2B6K8MSJF.JRTCKXETXF.6YS6EN2CT7",
+        "unit": "GB-Mo"
+       }
+      },
+      "sku": "HY3BZPP2B6K8MSJF",
+      "termAttributes": {}
+     }
+    }
+   }
+  }
+ ],
+ "recorded": "2026-11-09"
+}
