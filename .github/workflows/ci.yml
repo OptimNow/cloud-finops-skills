@@ -66,8 +66,9 @@ jobs:
         run: bash scripts/check-style.sh
 
       # The 9 November 2026 probe smoke relayed a playbook's prices without the date
-      # that sat in a trailing sentence; every price now has its date in its paragraph.
-      - name: Every playbook price carries its date (check-dated-prices)
+      # that sat in a trailing sentence; every price, in a playbook or a reference, now
+      # has its date in its paragraph (for a table, in the sentence right above it).
+      - name: Every price carries its date (check-dated-prices)
         run: bash scripts/check-dated-prices.sh
 
       # SKILL.md and POWER.md are two entry points onto one body of content and

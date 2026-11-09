@@ -670,10 +670,14 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
   beside it where the sentence allows: the 9 November 2026 probe smoke showed the
   model relaying a playbook's figures and dropping the date that sat in a trailing
   sentence, and `scripts/check-dated-prices.sh` gates the paragraph rule in CI since
-  that day (playbooks only; a reference may date a whole section with one framing
-  sentence, as the next rule says, and the same check there would flag the scale
-  examples that are not prices). The reader-facing version of this rule is the
-  "Price figures" section in SKILL.md and POWER.md.
+  that day. The same day's pass over the references (66 flagged paragraphs: 7 tables
+  already dated by a framing sentence, 13 rounded magnitudes, 14 worked examples, the
+  rest list prices to date or route) let the guard cover both folders with three
+  readings: a table is dated by the prose paragraph directly above it (the framing
+  sentence of the next rule, placed right over the table), a rounded magnitude such as
+  $50K or $3M is a scale and not a price, and a worked-example figure that reads like a
+  rate is listed in `scripts/check-dated-prices-allow.txt`. The reader-facing version
+  of this rule is the "Price figures" section in SKILL.md and POWER.md.
 - **Every quantitative claim carries its provenance (rule of 2026-10-13).** A
   percentage, ratio, multiplier, hour count or FTE count that is not a price is still
   a claim, and the 13 October 2026 brand review found about 60 of them stated as

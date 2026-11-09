@@ -773,8 +773,9 @@ A billing view is an AWS resource that controls which accounts' cost and usage d
   of the three, so the podcast lead is the only source for them.
 - Creating, sharing, and combining billing views is free, and there is no fee for Cost
   Explorer console or Budgets access. Cost Explorer **API** calls are charged at $0.01
-  per source in the view per API request, so a view built on several sources costs a
-  multiple of a single-source call (same announcement). Note the unit: AWS prices this
+  per source in the view per API request (Cost Explorer pricing page and us-east-1 Price
+  List, read 9 November 2026), so a view built on several sources costs a multiple of a
+  single-source call (same announcement). Note the unit: AWS prices this
   per *source*, not per organisation queried.
 
 **Typical use cases:** enterprises managing multiple AWS organisations after M&A; FinOps teams giving an external consultant read access to cost data without console access; business unit owners needing a budget that spans accounts across multiple payers.

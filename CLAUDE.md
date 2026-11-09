@@ -230,8 +230,8 @@ cloud-finops-skills/
 │                             no em dash, filler intensifier, corporate verb,
 │                             "percent", dash residue or "the single most";
 │                             allowlist in check-style-allow.txt),
-│                             check-dated-prices (a playbook paragraph that
-│                             carries a currency figure also carries a year)
+│                             check-dated-prices (a price paragraph carries a
+│                             year; allowlist in check-dated-prices-allow.txt)
 │                             and check-marketplace-version
 │                             - all twenty-three run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its

@@ -88,7 +88,7 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 | Claude Sonnet 4.5 | $3 | $15 | 200K | Deprecated 30 September 2026; retirement on the Claude API scheduled for 30 November 2026. Plan the migration to Sonnet 5 or 5.5 (0.67x the rate) before then |
 | Claude Haiku 4.5 | $1 | $5 | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (the still-active Opus 4.5 is likewise 200K) |
 
-**Three FinOps consequences of this table.** First, the Opus tier held $5/$25 across
+**Three FinOps consequences of this table.** First, the Opus tier held one list rate across
 five generations (4.5 through 5), and Opus 5.5 is the first break in that line: 0.8x
 the rate with cache reads at half the standard multiplier, so moving a cache-heavy
 agentic workload from Opus 5 to Opus 5.5 is a rate cut as well as a capability change.
@@ -173,15 +173,10 @@ is the ratio of the published rates.
 
 ### Batch API pricing
 
-50% discount on both input and output for every model. Most batches complete within
-an hour; the ceiling is 24 hours. Results are retained 29 days.
-
-| Model | Input ($/MTok) | Output ($/MTok) |
-|---|---|---|
-| Claude Opus 5.5 Batch | $2 | $10 |
-| Claude Opus 5 Batch | $2.50 | $12.50 |
-| Claude Sonnet 5.5 / Sonnet 5 Batch | $1 | $5 |
-| Claude Haiku 4.5 Batch | $0.50 | $2.50 |
+50% discount on both input and output for every model: the Batch rate is half the Standard
+rate in the table above, for every row, so it needs no table of its own (current figures:
+<https://optimtoken.optimnow.io>). Fast mode is excluded. Most batches complete within an
+hour; the ceiling is 24 hours. Results are retained 29 days.
 
 Batch is the largest rate lever on this rate card that needs no commercial negotiation:
 50% off, against a 2x Fast premium or a 1.1x residency multiplier. The gating question
@@ -252,6 +247,8 @@ and <https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback
 
 ### Tool charges
 
+*Pricing-page figures read 9 November 2026; verify before quoting.*
+
 | Tool | Pricing |
 |---|---|
 | Web search | $10 per 1,000 searches + standard input token costs for search results |
@@ -300,6 +297,8 @@ Three properties change the cost shape versus plain API calls:
 > from pre-pricing community reporting. Anthropic's published billing model has
 > exactly **two dimensions**, and the docs contradict the idle-cost claim directly.
 
+*Managed Agents pricing page, read 9 November 2026:*
+
 | Dimension | Rate | Metering |
 |---|---|---|
 | Tokens | Standard model rates (see pricing table above) | All tokens consumed by the session. Prompt-caching multipliers apply identically; Fast mode premium applies if the agent's `model.speed` is `"fast"`; the 1.1x US-residency multiplier applies if `model.inference_geo` is `"us"` |
@@ -319,8 +318,9 @@ Two exclusions matter for cost modelling:
 ### FinOps implications
 
 - **Two meters, not one**: token spend still dominates for most workloads (a
-  one-hour Opus 5 session consuming 50K in / 15K out is ~$0.63 of tokens and $0.08
-  of runtime), but long-running low-token agents invert that ratio
+  one-hour Opus 5 session consuming 50K in / 15K out is ~$0.63 of tokens at the
+  1 October 2026 list rates above and $0.08 of runtime), but long-running low-token
+  agents invert that ratio
 - **Idle time is free** - there is no always-on charge for a session waiting on
   input, so keeping sessions open is an attribution question, not a cost one
 - **Harder attribution**: Agent costs spread across multiple invocations vs discrete API calls
@@ -574,9 +574,9 @@ dimensions:
 
 A forecast based solely on base token pricing is insufficient:
 - Fast mode doubles the unit price, on the Opus-tier models that support it
-- Model choice creates a 10x price range across the current lineup (Haiku 4.5 at
-  $1/$5 to Fable 5 at $10/$50) - wider than the 5x range of the previous generation,
-  because Fable 5 sits above Opus
+- Model choice creates a 10x price range across the current lineup (Haiku 4.5 to
+  Fable 5, per the pricing table above) - wider than the 5x range of the previous
+  generation, because Fable 5 sits above Opus
 - Tool usage adds call-based meters that are independent of token volume
 - Managed Agents add runtime-based costs that scale differently than token usage
 - Behavioural effect: lower latency reduces friction, which increases usage volume

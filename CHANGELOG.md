@@ -81,6 +81,21 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   seat attributes, per-developer AWS attribution, pooled budget priority settings.
 - **Azure commitments**: the file pruned of internal repetition to fit the token budget;
   no mechanic, figure or dated claim dropped.
+- **Every price in the reference files now carries its date and region in its own
+  paragraph, or is routed to the AI Pricing Hub.** The AWS figures (CloudFront plans and
+  pay-as-you-go tiers, WAF, S3, S3 Files, EFS, data transfer out, the Cost Explorer API)
+  were re-read on the Price List API and the pricing pages on 9 November 2026, the Azure
+  networking figures on the Retail Prices API and the Anthropic tool and runtime rates on
+  the pricing page the same day. Three corrections: Azure internet egress above 10 TB
+  ($0.083 then $0.07 per GB, where the file said $0.05 and $0.04), global VNet peering at
+  $0.035/GB each side where the file quoted the $0.01 intra-region rate, and the block
+  storage range in the self-hosting reference ($0.08 to $0.17 per GB-month at hyperscaler
+  list, not $0.05 to $0.10). The Anthropic reference states the Batch tier as half the
+  Standard rate instead of carrying a second price table, and gives the model price
+  spread as a ratio. The CI guard that keeps a date in every runbook price paragraph now
+  covers the references too: a table is dated by the sentence right above it, a rounded
+  magnitude ("$50K/month") is not a price, and the worked-example figures that read like
+  rates ("a 20% increase on $50,000") sit in an allowlist.
 - Six section pointers in the question index now cite a full heading where a short
   phrase matched several.
 - **Every illustrative price in the runbooks now carries its date and region beside

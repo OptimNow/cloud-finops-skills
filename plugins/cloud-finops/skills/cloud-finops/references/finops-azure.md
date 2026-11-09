@@ -1148,27 +1148,28 @@ compound to material amounts on busy workloads.
 
 ### Egress pricing tiers
 
-Outbound to internet, per-GB pricing decreases by volume:
+Outbound to internet, per-GB pricing decreases by volume (eastus list rates on the default
+Microsoft-network routing, Retail Prices API read 9 November 2026; the Internet routing
+preference runs $0.08 to $0.04 across the same tiers):
 
-| Volume per month | Approximate price per GB |
+| Volume per month | Price per GB |
 |---|---|
 | First 100 GB | Free |
-| 100 GB - 10 TB | ~$0.087 |
-| 10 - 50 TB | ~$0.05 |
-| 50 - 150 TB | ~$0.04 |
-| Above 150 TB | Negotiated |
+| 100 GB - 10 TB | $0.087 |
+| 10 - 50 TB | $0.083 |
+| 50 - 150 TB | $0.07 |
+| Above 150 TB | $0.05 list; negotiated at volume |
 
-Egress *between* Azure regions is charged separately at ~$0.02/GB outbound from
-the source region.
-
-**Source:** https://azure.microsoft.com/en-us/pricing/details/bandwidth/
+Egress *between* Azure regions is charged separately at $0.02/GB outbound from the source
+region (eastus, November 2026). **Source:** https://azure.microsoft.com/en-us/pricing/details/bandwidth/
 
 ### VNet peering - the multi-region surprise
 
-VNet peering charges **$0.01/GB on each side** - both ingress to peer and egress
-to peer. For a multi-region architecture peered through a hub VNet, every cross-
-region byte is billed twice (once on each peering edge). On busy hub-spoke
-designs, peering can be a meaningful share of the network bill.
+VNet peering charges **on each side** - both ingress to peer and egress to peer: $0.01/GB
+within a region, $0.035/GB for global peering between zone-1 regions (list rates read
+9 November 2026). For a multi-region architecture peered through a hub VNet, every
+cross-region byte is billed twice (once on each peering edge) at the global rate. On busy
+hub-spoke designs, peering can be a meaningful share of the network bill.
 
 Reduce peering traffic by:
 - Co-locating chatty workloads in the same VNet
@@ -1195,10 +1196,11 @@ high-throughput circuits.
 
 ### NAT Gateway as a hidden cost driver in AKS
 
-NAT Gateway has two charges: **per-hour** (~$0.045/hr) and **per-GB processed**
-(~$0.045/GB). On AKS clusters defaulted to NAT Gateway outbound:
+NAT Gateway has two charges: **per-hour** ($0.045/hr) and **per-GB processed**
+($0.045/GB), list rates read 9 November 2026. On AKS clusters defaulted to NAT Gateway
+outbound:
 
-- A 24/7 NAT Gateway costs ~$33/month idle, before any traffic
+- A 24/7 NAT Gateway costs ~$33/month idle at the November 2026 rate, before any traffic
 - 1 TB of outbound through NAT Gateway adds ~$45 on top
 - For low-egress AKS clusters, removing the NAT Gateway and using **outbound rules
   on a Standard Load Balancer** can save 60-80% of the outbound networking line
@@ -1220,17 +1222,17 @@ outbound is materially cheaper.
 
 | Feature | Private Endpoint | Service Endpoint |
 |---|---|---|
-| Cost | ~$0.01/hour per endpoint + per-GB processed | Free |
+| Cost | $0.01/hour per endpoint + $0.01/GB processed each way (list, November 2026) | Free |
 | Network model | Private IP in your VNet | VNet allows access to public endpoint via Microsoft backbone |
 | Cross-region | Supported | Same region only |
 | Cross-tenant | Supported | Not supported |
 | Security posture | Stronger - resource is reachable only from VNet | Weaker - public endpoint still exposed |
 
 Per-endpoint cost is small individually but compounds. On a fleet of 200 storage
-accounts with Private Endpoint enabled, the monthly bill is non-trivial (~$1,400
-plus per-GB processing). Use Private Endpoint where compliance requires it; use
-Service Endpoint for internal storage accounts where same-region access is the
-only requirement.
+accounts with Private Endpoint enabled, the monthly bill is non-trivial (~$1,460 at the
+November 2026 hourly rate, plus per-GB processing). Use Private Endpoint where compliance
+requires it; use Service Endpoint for internal storage accounts where same-region access
+is the only requirement.
 
 ### Front Door vs Application Gateway vs Traffic Manager
 
