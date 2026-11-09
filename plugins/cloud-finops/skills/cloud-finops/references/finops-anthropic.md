@@ -56,9 +56,9 @@ Total cost is now shaped by a combination of variables that FinOps must track ex
 |---|---|
 | Model choice | Base token rate anchor (see "Rate structure: Claude models" below) |
 | Performance tier | Standard vs Fast mode - 2x price multiplier, and only on the models that offer it |
-| Context length | **Per-model**: the current generation prices flat across a 1M-token window with no long-context premium. Older models applied premium rates above 200K input tokens. Verify per model rather than assuming either behaviour. |
+| Context length | **Per-model**: the current generation prices flat across a 1M-token window with no long-context premium, except Haiku 5.5, which bills a whole request at 5x once its prompt passes 100K tokens. Older models applied premium rates above 200K input tokens. Verify per model rather than assuming either behaviour. |
 | Data residency | US-only inference adds a 1.1x multiplier |
-| Prompt caching | Writes are priced (1.25x or 2x), reads are discounted (0.1x; 0.05x on Opus 5.5 and Sonnet 5.5; 0.025x on Fable 5.1 and Mythos 5.1) |
+| Prompt caching | Writes are priced (1.25x or 2x), reads are discounted (0.1x; 0.05x on Opus 5.5 and Sonnet 5.5; 0.025x on Fable 5.1 and 5.2 and Mythos 5.1 and 5.2) |
 | Tool usage | Web search and code execution have separate meters |
 | Batch processing | 50% discount via Batch API (Fast mode excluded) |
 | Service tier | Standard, Priority, or Batch - affects capacity and pricing |
@@ -84,7 +84,8 @@ describes both meters. Ratios are against Opus 5 (pricing page and hub, read 9 N
 
 | Model | Rate vs Opus 5 | Cache read | Context | Notes |
 |---|---|---|---|---|
-| Claude Fable 5.1 | 2x | 0.025x | 1M | Most capable widely released model; above Opus-tier pricing |
+| Claude Fable 5.2 | 1.6x | 0.025x | 1M | Released 9 November 2026, the most capable widely released model, at 0.8x the Fable 5.1 rate. Claude Mythos 5.2 is the same model and price for organisations verified through Anthropic's verification programmes (limited access). Requires 30-day data retention: not available under zero data retention unless Anthropic authorises it |
+| Claude Fable 5.1 | 2x | 0.025x | 1M | Previous Fable; Mythos 5.1 is its limited-access twin at the same rate |
 | Claude Fable 5 | 2x | 0.1x | 1M | Previous Fable, at the standard cache multiplier |
 | Claude Opus 5.5 | 0.8x | 0.05x | 1M | Launched 22 September 2026 at 0.8x the Opus 5 rate, with cache reads at half the standard multiplier. 128K max output, always-on adaptive thinking |
 | Claude Opus 5 | 1x | 0.1x | 1M | Same rate as Opus 4.8 - a drop-in upgrade |
@@ -95,19 +96,26 @@ describes both meters. Ratios are against Opus 5 (pricing page and hub, read 9 N
 | Claude Sonnet 5 | 0.4x | 0.1x | 1M | Launched at an introductory rate; Anthropic made it the standard rate in August 2026 and cancelled the scheduled 1 September increase |
 | Claude Sonnet 4.6 | 0.6x | 0.1x | 1M | |
 | Claude Sonnet 4.5 | 0.6x | 0.1x | 200K | Deprecated 30 September 2026; retirement on the Claude API scheduled for 30 November 2026. Plan the migration to Sonnet 5 or 5.5 (0.67x the rate) before then |
+| Claude Haiku 5.5 | 0.02x for prompts up to 100K tokens, 0.1x above | 0.1x | 1M | Released 7 October 2026. Priced by prompt length: a request whose prompt (cache reads and writes included) passes 100K tokens pays 5x on every meter, request by request. On the newer tokenizer, so the same text counts about 30% more tokens than on Haiku 4.5; minimum cacheable prompt 512 tokens. Also on Bedrock (AWS GovCloud and Canada cross-Region inference included) |
 | Claude Haiku 4.5 | 0.2x | 0.1x | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (the still-active Opus 4.5 is likewise 200K) |
 
-**Three FinOps consequences of this table.** First, the Opus tier held one list rate across
+**Four FinOps consequences of this table.** First, the Opus tier held one list rate across
 five generations (4.5 through 5), and Opus 5.5 is the first break in that line: 0.8x
 the rate with cache reads at half the standard multiplier, so moving a cache-heavy
 agentic workload from Opus 5 to Opus 5.5 is a rate cut as well as a capability change.
 Second, the cache-read multiplier is no longer one number across the catalogue (0.1x
-standard, 0.05x Opus 5.5 and Sonnet 5.5, 0.025x Fable 5.1 and Mythos 5.1): the caching
+standard, 0.05x Opus 5.5 and Sonnet 5.5, 0.025x Fable 5.1 and 5.2 and Mythos 5.1 and 5.2): the caching
 break-even below has to be computed per model, and a routing layer that mixes models is
 mixing cache economics.
-Third, Fable sits at 2x Opus-5 pricing (2.5x Opus 5.5), which makes "use the most
-capable model" a materially different decision from "use the newest Opus": route to
-Fable on evidence, not by default.
+Third, Fable 5.2 sits at 1.6x Opus 5 (2x Opus 5.5), below Fable 5.1 at 2x, so a workload
+pinned to Fable 5.1 pays more per token than one on the newer model; Fable is still a
+different decision from "use the newest Opus": route to it on evidence, not by default.
+Fourth, Haiku 5.5 is the one current model with a price step: below a 100K-token prompt
+it costs a tenth of Haiku 4.5 per token, above it half; the step is per request and
+counts cached tokens, so a retrieval or agent loop that lets the prompt grow past the
+threshold pays 5x on the whole request, output and cache reads included. Keep Haiku 5.5
+prompts under 100K tokens by design, and alert on requests that cross it (pricing page,
+read 9 November 2026).
 
 **A newer tokenizer raises the token count at the same rate card.** Claude Opus 4.7 and
 later models, Fable and Mythos included, use a tokenizer that produces approximately 30%
@@ -140,6 +148,7 @@ is removed on 30 November 2026:
 
 | Model | Fast mode premium | Status (9 November 2026) |
 |---|---|---|
+| Claude Fable 5.2 | 2x the standard rate | Available since its release on 9 November 2026; Mythos 5.2 the same, on the Claude API |
 | Claude Opus 5.5 | 2x the standard rate | Generally available since 15 October 2026 |
 | Claude Opus 5 | 2x the standard rate | Research preview: beta header, account-manager or waitlist access |
 | Claude Opus 4.8 | 2x the standard rate | Deprecated 30 October 2026, removed 30 November 2026 |
@@ -148,7 +157,8 @@ Anthropic states the premium as "a multiplier on standard rates", and 2x is the 
 the published Fast and Standard rates (pricing page read 31 October 2026, unchanged on
 9 November 2026); the hub carries the standard rate the multiplier applies to.
 
-- **No Sonnet or Haiku Fast tier exists.** Fast mode is Opus-tier only.
+- **No Sonnet or Haiku Fast tier exists.** Fast mode is limited to the Opus models in
+  the table and to Fable 5.2 and Mythos 5.2 (pricing page, read 9 November 2026).
 - **Opus 4.7 Fast mode has been removed** - requesting it returns an error. On
   **Opus 4.6** the failure mode is quieter: requests with `speed: "fast"` run at
   standard speed and bill at standard rates, so a misconfigured client pays
@@ -167,9 +177,10 @@ the published Fast and Standard rates (pricing page read 31 October 2026, unchan
   November 2026); and, for **Opus 5.5
   only**, Claude in Microsoft Foundry on deployments hosted on Azure (not on Foundry
   deployments hosted on Anthropic), and Claude Models on Google Cloud (Anthropic managed)
-  since 22 October 2026. Not available on Amazon Bedrock, the Google-managed Google Cloud
-  route (Vertex AI) or Claude Platform on AWS, so a Bedrock-based estate cannot use it at
-  all.
+  since 22 October 2026. **Fable 5.2** fast mode is on the Claude API, both Google Cloud
+  routes (Anthropic managed, and Google managed at Google's prices) and Foundry
+  deployments hosted on Anthropic. Neither model's fast mode is on Amazon Bedrock or
+  Claude Platform on AWS, so a Bedrock-based estate cannot use it at all.
 - **The access request no longer gates Opus 5.5.** Any key in the Start tier or above
   can send `speed: "fast"` and pay 2x, so the allow-list has to live in the gateway or
   client configuration, not in Anthropic's approval step. `usage.speed` in each
@@ -196,13 +207,15 @@ a workload-classification exercise rather than a procurement one.
 
 - **US-only inference** (`inference_geo`): 1.1x on all token categories.
   Claude 4.6 and later models only - earlier models return a 400 error if the
-  parameter is set
+  parameter is set. On Haiku 5.5 it also applies to the higher prices above a
+  100K-token prompt
 - **5-minute cache writes**: 1.25x on base input price
 - **1-hour cache writes**: 2x on base input price
-- **Cache reads**: 0.1x on base input price (90% discount) as the standard. Four
+- **Cache reads**: 0.1x on base input price (90% discount) as the standard. Six
   models read cheaper: Opus 5.5 and Sonnet 5.5 at 0.05x (95% discount), Fable 5.1 and
-  Mythos 5.1 at 0.025x (97.5% discount). Each moves the cache break-even for its tier
-  ([Anthropic prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching), read 27 October 2026)
+  5.2 and Mythos 5.1 and 5.2 at 0.025x (97.5% discount). Each moves the cache break-even for its tier
+  ([Anthropic prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching), read 27 October 2026;
+  [pricing](https://platform.claude.com/docs/en/about-claude/pricing), read 9 November 2026)
 - **Automatic caching**: a top-level `cache_control` on the request puts the breakpoint
   on the last cacheable block and moves it forward as the conversation grows, so no
   markers need maintaining. Not available on the legacy Bedrock integration (Opus 4.6
@@ -380,12 +393,16 @@ on 7 February 2026.
 ### Context window pricing - per-model, not uniform
 
 Long-context pricing is **not uniform across the Claude line-up.** Practical state
-as of June 2026:
+as of 9 November 2026:
 
-- **The current generation** (Fable 5, Opus 5 / 4.8 / 4.7 / 4.6, Sonnet 5, Sonnet 4.6)
-  carries a **1M-token context window at standard rates** - it is both the default and
-  the maximum, with no beta header and no long-context premium. For these models the
-  "1M context cliff" no longer exists.
+- **The current generation** (Fable 5.2 / 5.1 / 5, Opus 5.5 / 5 / 4.8 / 4.7 / 4.6,
+  Sonnet 5.5 / 5 / 4.6) carries a **1M-token context window at standard rates** - it is
+  both the default and the maximum, with no beta header and no long-context premium.
+  For these models the "1M context cliff" no longer exists.
+- **Haiku 5.5 brings a cliff back, at 100K tokens.** Its window is 1M, but a request
+  whose prompt passes 100K tokens, cache reads and writes included, pays 5x on input,
+  output and caching for that whole request. Each request is priced on its own, so the
+  exposure is the share of requests that cross, not the average prompt length.
 - **Haiku 4.5** remains on a 200K window. That is a capacity limit, not a pricing
   tier: there is no premium band above it, the request cannot exceed it.
 - **Older models reached 1M via a beta header and did apply premium rates above 200K
@@ -489,7 +506,8 @@ Sources: [Anthropic - New analytics and cost controls for Claude Enterprise](htt
 ### Monitoring checklist
 
 - [ ] Track total token usage against the model's context window (1M on the current
-      generation, 200K on Haiku 4.5)
+      generation, 200K on Haiku 4.5) and, on Haiku 5.5, the share of requests whose
+      prompt passes 100K tokens, which bill at 5x
 - [ ] Monitor cache reads and writes that contribute to the input token count
 - [ ] Monitor Fast mode activation per user or team
 - [ ] Treat web search and code execution as separate cost centres with their own budgets
@@ -585,9 +603,10 @@ dimensions:
 
 A forecast based solely on base token pricing is insufficient:
 - Fast mode doubles the unit price, on the Opus-tier models that support it
-- Model choice creates a 10x price range across the current lineup (Haiku 4.5 to
-  Fable 5, per the pricing table above) - wider than the 5x range of the previous
-  generation, because Fable 5 sits above Opus
+- Model choice spans an 80x range per token across the current lineup (Haiku 5.5 below
+  a 100K-token prompt to Fable 5.2, per the pricing table above), against 10x from
+  Haiku 4.5 to Fable 5: the cheap end moved further than the expensive one, which
+  makes routing the lever and the Haiku 5.5 threshold the trap
 - Tool usage adds call-based meters that are independent of token volume
 - Managed Agents add runtime-based costs that scale differently than token usage
 - Behavioural effect: lower latency reduces friction, which increases usage volume

@@ -124,7 +124,7 @@ FinOps consequence.
 | Peak windows | 01:00-04:00 and 06:00-10:00 UTC, Monday to Friday. Seven peak hours per weekday |
 | Off-peak | All other hours. Weekends are off-peak all day |
 | Multiplier | Peak is exactly 2x off-peak, on input and output alike |
-| Cache hits | Priced at roughly **3% of the cache-miss input rate** - deeper than the 10% multiplier on most OpenAI, Anthropic and Moonshot models and the 5% on GPT-6.1 Sol and Claude Opus 5.5, though Claude Fable 5.1 and Mythos 5.1 now read at 2.5% (read 2 October 2026) |
+| Cache hits | Priced at roughly **3% of the cache-miss input rate** - deeper than the 10% multiplier on most OpenAI, Anthropic and Moonshot models and the 5% on GPT-6.1 Sol and Claude Opus 5.5, though Claude Fable 5.1 and 5.2 and Mythos 5.1 and 5.2 now read at 2.5% (Anthropic pricing page, read 9 November 2026) |
 
 The shape of the V4 Flash and V4 Pro rate cards (read 23 August 2026; the hub carries the
 figures): output is 3x cache-miss input on both models, peak is double each off-peak

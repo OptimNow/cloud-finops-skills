@@ -618,8 +618,8 @@ September 2026).
   for a 5-minute and 2x for a 1-hour lifetime
   ([Claude prompt caching on Vertex AI](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/partner-models/claude/prompt-caching),
   read 9 November 2026), so the Gemini break-even does not carry over. Read rates vary too: 0.1x on most models, 0.05x on GPT-6.1 Sol and Claude
-  Opus 5.5 and Sonnet 5.5, 0.025x on Claude Fable 5.1 and Mythos 5.1 (as of 2 October
-  2026; Claude rates re-checked on the Anthropic prompt caching page, 27 October 2026).
+  Opus 5.5 and Sonnet 5.5, 0.025x on Claude Fable 5.1 and 5.2 and Mythos 5.1 and 5.2 (as of 2 October
+  2026; Claude rates re-checked on Anthropic's pricing page, 9 November 2026).
   On OpenAI GPT-5.6 and later, implicit mode (the default) places a breakpoint at the latest
   eligible message and writes it whenever that prefix is not already cached, so
   one-shot workloads should use explicit-only mode with no breakpoints. Where writes

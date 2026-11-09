@@ -92,6 +92,12 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   order in which an EDP discount applies, and figures the library stated two ways.
 - **Vertex AI**: the Developer API reroutes `gemini-2.5-pro` and `gemini-2.5-flash` to
   3.8 Flash and 3.5 Flash-Lite from 1 December 2026, billed at the target rates.
+- **Claude Fable 5.2, Mythos 5.2 and Haiku 5.5** in the Anthropic guide, read on
+  Anthropic's pricing page on 9 November 2026. Fable 5.2 (released that day) sits at
+  0.8x the Fable 5.1 rate, with the 0.025x cache read and a 2x fast mode; Mythos 5.2 is
+  the same model for verified organisations. Haiku 5.5 (7 October) costs a tenth of
+  Haiku 4.5 per token below a 100K-token prompt and 5x that above it, for the whole
+  request: the guide flags the threshold as the trap to watch.
 - **AWS**: the EC2 Capacity Block upfront fee is amortised in CUR 2.0 and Cost Explorer
   since 6 November 2026 (allocation and commitments files).
 - **Databricks**: Unity Gateway budgets count AI Functions spend since 1 November 2026.
