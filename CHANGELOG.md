@@ -106,6 +106,14 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   covers the references too: a table is dated by the sentence right above it, a rounded
   magnitude ("$50K/month") is not a price, and the worked-example figures that read like
   rates ("a 20% increase on $50,000") sit in an allowlist.
+- **1 November scan applied** (eleven items, each read on the provider's page on
+  9 November 2026): ECS Managed Instances consolidation and ECS GPU sharing with NVIDIA
+  MPS; Aurora Serverless v2 to 384 ACUs on PostgreSQL; RDS storage autoscaling on
+  additional Oracle and SQL Server volumes; Neptune online index rebuild; ElastiCache
+  data tiering on r7gd and r8gd; the OpenSearch Serverless warm tier; why Savings Plans
+  recommendations differ between the management and a member account; GPT-6.1 Terra's
+  place in the Bedrock cost tiers and GPT-5.6 in GovCloud; Azure VNet flow logs
+  filtering at collection.
 - Six section pointers in the question index now cite a full heading where a short
   phrase matched several.
 - **Every illustrative price in the runbooks now carries its date and region beside

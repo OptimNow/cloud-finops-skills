@@ -452,6 +452,18 @@ check what happens to each commitment when its account
 leaves: see the "Commitments in a separation" table in
 `finops-onboarding-workloads.md` ("Divestiture and separation").
 
+**Recommendations differ by account view (AWS, 25 October 2026).** Cost Explorer's
+Savings Plans recommendation from the management account analyses the eligible usage of
+every account in the Organization with discount sharing on; from a member account it
+analyses that account's usage alone, so it reads lower (AWS's example: a 1-year
+no-upfront Compute plan recommended at $100 per hour from the management account and
+$70 from the member). A member account already covered by a plan shared from elsewhere
+can show no recommendation at all, and a plan applies to the purchasing account's own
+usage first. Read the management view when commitments are bought centrally, the member
+view when business units buy against their own budgets, and never add the two. Source:
+[AWS Cloud Financial Management blog, 25 October 2026](https://aws.amazon.com/blogs/aws-cloud-financial-management/understanding-aws-savings-plans-recommendations-management-vs-member-account-views/),
+read 9 November 2026.
+
 ### Phased purchasing
 
 Avoid buying the full commitment in a single transaction. Purchase in blocks to create

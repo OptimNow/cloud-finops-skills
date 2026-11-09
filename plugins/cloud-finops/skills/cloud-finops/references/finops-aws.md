@@ -113,6 +113,16 @@ Sources: [AWS What's New, 13 October 2026](https://aws.amazon.com/about-aws/what
 [ECS service utilisation metrics](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service_utilization.html)
 (both read 16 October 2026).
 
+**ECS Managed Instances consolidation (October 2026).** Since 28 October 2026 the
+capacity provider repacks tasks across several under-filled instances at once, and
+consolidates under-used Spot Instances only after confirming that replacement capacity
+exists. It is on by default for new and existing Managed Instances capacity providers,
+at no charge, in all Regions; AWS's own test took a 261-task fleet from 19 to 13
+instances. It removes the manual bin-pack-and-drain cycle, not the task sizing: an
+oversized task definition is now packed tightly, so right-size the tasks first.
+Source: [AWS What's New, 28 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/ecs-managed-instances-consolidation/),
+read 9 November 2026.
+
 ### Lambda Web Functions and Event Functions (October 2026)
 
 Since 12 October 2026 Lambda has two function types with different billing shapes.
@@ -194,6 +204,16 @@ Mode a more cost-competitive option for GPU workloads (ML inference,
 fine-tuning, and batch). Re-evaluate the EKS Auto Mode vs Karpenter /
 self-managed cost comparison for GPU node pools in light of this change.
 Source: https://aws.amazon.com/about-aws/whats-new/2026/07/amazon-eks-auto-mode-gpu-price
+
+**ECS GPU sharing with NVIDIA MPS (October 2026).** Since 27 October 2026 several ECS
+tasks can run on one NVIDIA GPU, each declaring the GPU memory it needs and optionally
+a cap on its share of compute, on ECS Managed Instances and ECS on EC2 (Fargate is not
+named), in all commercial and GovCloud (US) Regions. It is the container-level answer
+to the partial-GPU patterns above: small-model inference and embedding tasks that each
+held a whole GPU can share one, the economics of `aws-mig-candidate` without a
+MIG-capable instance. Per-task GPU utilisation from the CloudWatch agent identifies
+the candidates. Source: [AWS What's New, 27 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-ecs-gpu-sharing-nvidia-mps/),
+read 9 November 2026.
 
 ---
 
@@ -302,6 +322,12 @@ Database services often represent 20-40% of cloud spend, yet many organisations 
 - Databases sized for Black Friday traffic that run at 10% utilisation for 11 months
 - Solution: auto-scaling where the engine supports it, or scheduled scaling for predictable patterns
 - Aurora Serverless v2 for variable load; RDS Proxy where the pressure is connection churn rather than compute
+  - Since 27 October 2026 Serverless v2 on Aurora PostgreSQL scales to 384 ACUs (about
+    768 GiB) instead of 256, still down to zero, on Platform Version 4 with engine
+    14.23, 15.18, 16.14, 17.10 or 18.4; older clusters take the pending maintenance
+    action first. Bursty workloads above the old ceiling no longer need a provisioned
+    instance ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/10/aurora-serverless-supports-384-acu/),
+    read 9 November 2026)
 
 **2. High availability in non-production**
 - Multi-AZ deployments double infrastructure costs
@@ -312,6 +338,25 @@ Database services often represent 20-40% of cloud spend, yet many organisations 
 - Provisioned IOPS (io1/io2) where gp3 suffices
 - Retained backups and snapshots beyond business requirements
 - Uncompressed or poorly indexed tables driving storage growth
+- Additional RDS volumes over-provisioned by hand to avoid a resize: since 29 October
+  2026 RDS for Oracle and SQL Server storage autoscaling also covers up to three
+  additional volumes (256 TiB in total), with a maximum per volume and no charge beyond
+  the storage provisioned, on new and existing instances
+  ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-rds-oracle-sqlserver-autoscaling-additional-storage-volumes),
+  read 9 November 2026)
+- Neptune storage that never shrinks after deletes: fragmented indexes keep
+  `VolumeBytesUsed` high and raise I/O; the online index rebuild (engine 1.5.0.0,
+  provisioned writer instances) reclaims it with reads and writes continuing
+  ([AWS What's New, 27 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/neptune-online-index-rebuild/))
+- Cache memory paid for cold data: ElastiCache data tiering keeps least-recently-used
+  items on the node's SSD and reads them back on demand (Valkey 7.2 and later, r7gd and
+  r8gd Graviton nodes, extended to Europe (Spain) and Asia Pacific (Hyderabad) in
+  September 2026), suited to workloads that touch up to about a fifth of their dataset
+  ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/09/elasticache-data-tiering-spain/))
+- Observability data kept in hot search storage: time series collections on the next
+  generation of OpenSearch Serverless add a warm tier with a configurable hot-to-warm
+  age, up to 100 TB hot per collection; the warm rate is on the pricing page, not in the
+  announcement ([AWS What's New, 28 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/time-series-collection-next-generation-opensearch-serverless/))
 - Solution: regular storage audits, lifecycle policies, compression strategies
 
 **4. Backup retention overkill**
