@@ -380,6 +380,12 @@ billed". Corrections to billing mechanics, new or improved runbooks, real-world
 counter-examples and adversarial review of the recommendations are all welcome: the
 repository is opinionated, and it should also be falsifiable.
 
+The shortest contribution is a report. Two issue forms, at
+[https://github.com/OptimNow/cloud-finops-skills/issues/new/choose](https://github.com/OptimNow/cloud-finops-skills/issues/new/choose), take an
+answer that was wrong or incomplete, or a question the library did not cover, with
+the wording you used. Each confirmed report is fixed on the provider's documentation
+and becomes a test question run before every release.
+
 The full guide, including the repository structure, contribution types, process and
 conventions, is in [CONTRIBUTING.md](./CONTRIBUTING.md). If your change names another
 OptimNow tool (an MCP tool name, an endpoint URL, a provenance field), read

@@ -75,6 +75,18 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
 - Six section pointers in the question index now cite a full heading where a short
   phrase matched several.
 
+### Tell us when it is wrong
+
+- **Two report forms on GitHub.** "Wrong or incomplete answer" and "Question not
+  covered", at
+  [https://github.com/OptimNow/cloud-finops-skills/issues/new/choose](https://github.com/OptimNow/cloud-finops-skills/issues/new/choose).
+  Each asks where you were (plugin, hosted connector, package, another tool), the
+  question as you typed it and what came back, and nothing confidential. A confirmed
+  report is checked against the provider's documentation, fixed in a content release
+  that credits it, and its wording becomes a test question run before every release.
+  The connector's "no match" hint now names the form, since the connector itself
+  never records what you typed.
+
 ### Install and listings
 
 - The **MCP connector is listed in the Claude directory** (live 8 November 2026). The

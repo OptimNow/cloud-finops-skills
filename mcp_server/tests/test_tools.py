@@ -731,6 +731,18 @@ def test_zero_result_query_log_carries_word_count_not_text(caplog) -> None:
     assert "'query_words': 3" in caplog.text
 
 
+def test_query_miss_hint_names_the_report_form() -> None:
+    """A miss with content words points the user at the public report form.
+
+    The connector never logs the query text (PRIVACY.md), so the issue form is
+    the only way the wording reaches the maintainers; the hint has to say so.
+    """
+    result = tools.find_references(query="xylophone marmalade")
+    assert result["total"] == 0
+    assert "issues/new/choose" in result["hint"]
+    assert "does not log" in result["hint"]
+
+
 def test_stopword_only_query_gets_its_own_hint() -> None:
     result = tools.find_references(query="what should we do about it")
     assert result["total"] == 0

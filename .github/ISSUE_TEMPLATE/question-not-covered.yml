@@ -1,0 +1,90 @@
+name: Question not covered
+description: You asked a cost question and the skill or the connector found nothing, or answered in generalities.
+title: "Not covered: "
+labels: ["coverage-gap"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A question the library could not answer is the most useful thing you can send us: it is demand evidence, and the connector never records what you typed, so this form is the only way we learn it. Each gap we confirm becomes a test question we run before every release, and the content that closes it credits the report.
+
+        Before you paste anything, remove account identifiers, negotiated rates, invoice amounts and anything else your company would not publish. This form is public.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where did you ask?
+      options:
+        - Claude plugin (Claude directory or Claude Code marketplace)
+        - Hosted MCP connector (mcp.optimnow.io)
+        - cloud-finops-mcp package (PyPI, local server)
+        - Another tool through install.sh (Cursor, Windsurf, Codex, Aider, Kiro, ...)
+        - ChatGPT or Gemini bundle
+        - llms-full.txt or the raw files
+        - I do not know
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: The question, as you asked it
+      description: Paste your exact wording, in English or in French. The wording matters as much as the topic. It tells us how people ask, which is what the index is built from.
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: What happened
+      options:
+        - The assistant answered from general knowledge, without using the library
+        - The assistant opened the wrong guide or runbook
+        - The connector returned no match for the query
+        - The answer was so generic it did not help
+        - Something else (say what below)
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What a useful answer would have contained
+      description: Optional. The decision you were trying to make, the mechanic you needed, the query you wanted to run. One sentence is enough.
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider or domain
+      multiple: true
+      options:
+        - AWS
+        - Azure
+        - GCP
+        - OCI
+        - AI platforms (Bedrock, Azure OpenAI, Vertex AI, Anthropic, open-weight vendors)
+        - Data platforms (Databricks, Fabric, Snowflake)
+        - SaaS, licences, ITAM
+        - Kubernetes
+        - Cross-provider (allocation, chargeback, forecasting, KPIs, contracts, the practice)
+        - Other
+  - type: dropdown
+    id: role
+    attributes:
+      label: Who was asking
+      description: Optional. It decides which role's wording the question joins in the index.
+      options:
+        - FinOps lead or practitioner
+        - Finance, procurement or product
+        - Engineering or platform team
+        - AI product owner
+        - Executive (CTO, CIO, CFO)
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Follow-up
+      options:
+        - label: I can review the content that answers this question, or contribute it.
+          required: false
+  - type: checkboxes
+    id: confidentiality
+    attributes:
+      label: Confidentiality
+      options:
+        - label: This report contains no account identifier, negotiated rate, invoice amount or client name.
+          required: true

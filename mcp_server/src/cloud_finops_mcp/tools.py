@@ -297,7 +297,9 @@ def _query_miss_help(kind: str, query_text: str) -> dict[str, Any]:
         "hint": (
             f"No {kind} shares a content word with the query - its questions, title "
             "and headings were all checked. Try fewer or more specific words (the "
-            "service or the symptom), or drop the query and browse with the facets."
+            "service or the symptom), or drop the query and browse with the facets. "
+            "If the library should answer this, the user can report the wording at "
+            "https://github.com/OptimNow/cloud-finops-skills/issues/new/choose; this server does not log it."
         )
     }
 
