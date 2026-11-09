@@ -72,6 +72,14 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   without BYOL.
 - **Microsoft Fabric**: the free mirroring storage allowance stops while a capacity is
   paused.
+- **Detection queries that run, and facts re-checked on the provider pages**
+  (9 November 2026): the runbook queries that failed or returned nothing on CUR 2.0,
+  BigQuery, CloudWatch and PromQL now run, from the SageMaker, load balancer and
+  Multi-AZ RDS usage types to orphaned snapshots, GPU memory units and Google's
+  detailed billing export. Corrected facts include the Database Savings Plan coverage
+  (MemoryDB out; DocumentDB, Keyspaces, Timestream and DMS in; DynamoDB up to 18%), the
+  per-model Claude cache-read rates on Bedrock, which instruments reserve capacity, the
+  order in which an EDP discount applies, and figures the library stated two ways.
 - **Vertex AI**: the Developer API reroutes `gemini-2.5-pro` and `gemini-2.5-flash` to
   3.8 Flash and 3.5 Flash-Lite from 1 December 2026, billed at the target rates.
 - **AWS**: the EC2 Capacity Block upfront fee is amortised in CUR 2.0 and Cost Explorer
@@ -126,14 +134,6 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   Archive tier rate; App Service figures are now given per operating system, since
   a Linux and a Windows P1v3 differ by a factor of two. A CI guard keeps a date in
   every runbook paragraph that carries a price.
-- **Detection queries that run, and facts re-checked on the provider pages**
-  (9 November 2026): the runbook queries that failed or returned nothing on CUR 2.0,
-  BigQuery, CloudWatch and PromQL now run, from the SageMaker, load balancer and
-  Multi-AZ RDS usage types to orphaned snapshots, GPU memory units and Google's
-  detailed billing export. Corrected facts include the Database Savings Plan coverage
-  (MemoryDB out; DocumentDB, Keyspaces, Timestream and DMS in; DynamoDB up to 18%), the
-  per-model Claude cache-read rates on Bedrock, which instruments reserve capacity, the
-  order in which an EDP discount applies, and figures the library stated two ways.
 
 ### Tell us when it is wrong
 
