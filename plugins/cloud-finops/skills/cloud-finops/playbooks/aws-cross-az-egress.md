@@ -16,14 +16,14 @@ questions:
 
 ## Problem
 
-EC2 cross-AZ data transfer is billed at $0.01/GB outbound + $0.01/GB
-inbound (so $0.02/GB round-trip). For latency-sensitive microservice
-meshes that gossip across AZs, or for Kafka / database clusters that
-replicate across AZs, this can become the largest single line item on
-the AWS bill, in some cases above the EC2 compute cost itself. The cost is
-invisible at design time and only surfaces after weeks of CUR review. The
-per-GB rates above are illustrative list rates as at May 2026 and vary by
-region - verify against live pricing before sizing a business case.
+At us-east-1 list rates read in November 2026, EC2 cross-AZ data transfer
+is billed at $0.01/GB outbound plus $0.01/GB inbound, so $0.02/GB for a
+round trip. For latency-sensitive microservice meshes that gossip across
+AZs, or for Kafka / database clusters that replicate across AZs, this can
+become the largest single line item on the AWS bill, in some cases above
+the EC2 compute cost itself. The cost is invisible at design time and only
+surfaces after weeks of CUR review. The per-GB rates are illustrative and
+vary by region; verify against live pricing before sizing a business case.
 
 ## Symptoms
 

@@ -65,6 +65,11 @@ jobs:
       - name: Prose free of style regressions (check-style)
         run: bash scripts/check-style.sh
 
+      # The 9 November 2026 probe smoke relayed a playbook's prices without the date
+      # that sat in a trailing sentence; every price now has its date in its paragraph.
+      - name: Every playbook price carries its date (check-dated-prices)
+        run: bash scripts/check-dated-prices.sh
+
       # SKILL.md and POWER.md are two entry points onto one body of content and
       # have drifted before (a routing row added to one only).
       - name: SKILL.md and POWER.md have not drifted

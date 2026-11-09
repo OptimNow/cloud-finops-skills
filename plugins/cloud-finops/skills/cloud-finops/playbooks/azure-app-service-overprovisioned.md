@@ -20,13 +20,14 @@ Azure App Service plans are billed by SKU (P1v3, P2v3, etc.) and instance
 count, regardless of how many web apps run on them. Teams
 default to **Premium v3** plans for production apps and never revisit -
 even when the app handles low traffic that **Standard** or **Basic**
-would serve fine. As an illustrative anchor, list rates as at May 2026
-(verify against the current Azure pricing page in your region before
-sizing): in US East, a P1v3
-instance is roughly $130-160/month (2 vCPUs, 8 GB RAM) versus roughly
-$70/month for S1 (1 vCPU, 1.75 GB RAM). The two are not feature-
-equivalent, but for many low-traffic workloads S1 fits, so the per-
-instance gap of $60-90/month compounds across the auto-scale fleet.
+would serve fine. As an illustrative anchor, East US list rates read in
+November 2026 (verify against the current Azure pricing page in your
+region before sizing): a P1v3 instance (2 vCPUs, 8 GB RAM) is roughly
+$113/month on Linux and $230/month on Windows, versus roughly $69/month
+(Linux) or $73/month (Windows) for S1 (1 vCPU, 1.75 GB RAM). The two are
+not feature-equivalent, but for many low-traffic workloads S1 fits, so a
+per-instance gap of roughly $45/month on Linux and $155/month on Windows
+compounds across the auto-scale fleet.
 
 ## Symptoms
 
@@ -70,7 +71,8 @@ AzureMetrics
 
 1. **Right-size SKU first.** Compare the workload's actual feature use
    against the SKU's feature set. The big tier-jump trade-offs are:
-   - P1v3 -> S1 typically saves $60-90/month per instance. Standard
+   - P1v3 -> S1 saves roughly $45/month per instance on Linux and $155/month
+     on Windows (East US list rates read in November 2026). Standard
      keeps deployment slots (5 vs Premium v3's 20), keeps regional VNet
      integration, keeps custom domains and SSL, keeps daily backups.
      What it loses: the larger autoscale ceiling (Standard caps at 10
@@ -81,8 +83,9 @@ AzureMetrics
      against an assumed Premium-only feature list.
    - P1v3 -> P0v3 stays in Premium v3 tier (preserves all Premium v3
      features including the higher autoscale ceiling and zone redundancy)
-     and saves roughly $70/month per instance via halving the vCPU /
-     memory footprint - the right move when the app needs Premium v3
+     and saves roughly $57/month per instance on Linux, $115/month on
+     Windows (East US list rates read in November 2026), via halving the
+     vCPU / memory footprint - the right move when the app needs Premium v3
      features but not the headroom.
    - P1v3 -> P1v2 (older Premium generation) is rarely the right move
      because v3 is faster per-vCPU and the per-month delta is small.

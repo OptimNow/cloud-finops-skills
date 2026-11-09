@@ -229,9 +229,11 @@ cloud-finops-skills/
 │                             cannot drift apart), check-style (prose only:
 │                             no em dash, filler intensifier, corporate verb,
 │                             "percent", dash residue or "the single most";
-│                             allowlist in check-style-allow.txt) and
-│                             check-marketplace-version
-│                             - all twenty-two run by the `CI` workflow, and
+│                             allowlist in check-style-allow.txt),
+│                             check-dated-prices (a playbook paragraph that
+│                             carries a currency figure also carries a year)
+│                             and check-marketplace-version
+│                             - all twenty-three run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow

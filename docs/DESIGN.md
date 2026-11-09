@@ -666,8 +666,14 @@ a `description` field for the Claude.ai upload skill loader (see "Content rules"
   a break-even calculation. Absolute $/1M-token and $/hour figures belong in the AI
   Pricing Hub (<https://optimtoken.optimnow.io>), which is queried live. Where a worked
   example genuinely needs a number to be legible, keep one, mark it illustrative, and
-  date it inline. The reader-facing version of this rule is the "Price figures" section
-  in SKILL.md and POWER.md.
+  date it inline. In a playbook the date goes in the same paragraph as the figure,
+  beside it where the sentence allows: the 9 November 2026 probe smoke showed the
+  model relaying a playbook's figures and dropping the date that sat in a trailing
+  sentence, and `scripts/check-dated-prices.sh` gates the paragraph rule in CI since
+  that day (playbooks only; a reference may date a whole section with one framing
+  sentence, as the next rule says, and the same check there would flag the scale
+  examples that are not prices). The reader-facing version of this rule is the
+  "Price figures" section in SKILL.md and POWER.md.
 - **Every quantitative claim carries its provenance (rule of 2026-10-13).** A
   percentage, ratio, multiplier, hour count or FTE count that is not a price is still
   a claim, and the 13 October 2026 brand review found about 60 of them stated as

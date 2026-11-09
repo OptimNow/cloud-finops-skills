@@ -17,7 +17,7 @@ questions:
 ## Problem
 
 gp3 is the successor to gp2 at a ~20% lower per-GB rate ($0.08 vs
-$0.10/GB-month in us-east-1; illustrative list rates, written August
+$0.10/GB-month in us-east-1; illustrative list rates read in November
 2026), and it decouples performance from size: every gp3 volume gets
 3,000 IOPS and 125 MB/s baseline regardless of capacity, where gp2 ties
 IOPS to size (3 IOPS per GB) and relies on burst credits below 1,000 GB.

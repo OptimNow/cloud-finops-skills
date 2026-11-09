@@ -101,7 +101,7 @@ to enumerate live instances and tag-check ownership.
   ($24.48/hour) - but on the right workload the H100 delivers 5-10x the
   throughput, cutting cost-per-inference to a fraction. The decision must be
   cost per unit of work. Both hourly figures are illustrative us-east-1
-  on-demand list rates as at August 2026 - verify against live pricing
+  on-demand list rates read in November 2026; verify against live pricing
   before quoting.
 - Assuming framework compatibility. PyTorch ≤ 1.10 has no native H100
   support; some custom CUDA kernels need rewrites. Always run a

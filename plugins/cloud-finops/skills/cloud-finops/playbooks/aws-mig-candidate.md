@@ -23,12 +23,12 @@ and `p5` / `p5e` / `p5en` (H100 / H200). A workload that uses well under
 1/7 of an A100 or H100 - measured by both compute fraction and memory -
 is paying for a whole GPU when it could share the hardware via MIG. With
 `p4d.24xlarge` at ~$22/hour (8 x A100) and `p5.48xlarge` at ~$55/hour (8 x
-H100), running multiple light workloads on a MIG-partitioned single
-server can cut the GPU bill for those workloads by a factor of 4 to 7
-compared with one GPU per workload (a working estimate; the ratio depends
-on how many slices the workloads fill).
-The two hourly rates are illustrative us-east-1 on-demand list prices as
-at August 2026 - verify against live pricing before quoting.
+H100), us-east-1 on-demand list rates read in November 2026, running
+multiple light workloads on a MIG-partitioned single server can cut the GPU
+bill for those workloads by a factor of 4 to 7 compared with one GPU per
+workload (a working estimate; the ratio depends on how many slices the
+workloads fill). The two hourly rates are illustrative; verify against live
+pricing before quoting.
 
 ## Symptoms
 

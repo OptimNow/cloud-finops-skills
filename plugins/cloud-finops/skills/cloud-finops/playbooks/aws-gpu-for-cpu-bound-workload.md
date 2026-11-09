@@ -21,15 +21,14 @@ embeddings APIs, classical ML inference, small-model classifiers, data
 preprocessing pipelines, retrieval-augmented search. In many of these,
 the GPU sits idle while the actual work runs on the CPU (tokenisation,
 JSON serialisation, network I/O, vector arithmetic that fits in CPU
-SIMD). The customer is paying GPU prices for CPU work. A `g4dn.xlarge`
-is ~$0.53/hour ~= $385/month; the equivalent CPU-bound `c7i.xlarge` is
-~$0.18/hour ~= $130/month. For larger instances the gap widens: a
-`g5.4xlarge` is ~$1.62/hour vs `c7i.4xlarge` at ~$0.71/hour. Multiplied
-across an inference fleet, the wrong compute choice is among the
-costliest silent waste in an AI stack. The rates above
-are illustrative us-east-1 on-demand list prices as at May 2026 - they
-anchor the size of the gap, not the current bill; verify against live
-pricing before quoting.
+SIMD). The customer is paying GPU prices for CPU work. At us-east-1
+on-demand list rates read in November 2026, a `g4dn.xlarge` is ~$0.53/hour
+~= $385/month; the equivalent CPU-bound `c7i.xlarge` is ~$0.18/hour ~=
+$130/month. For larger instances the gap widens: a `g5.4xlarge` is
+~$1.62/hour vs `c7i.4xlarge` at ~$0.71/hour. Multiplied across an inference
+fleet, the wrong compute choice is among the costliest silent waste in an
+AI stack. The rates are illustrative: they anchor the size of the gap, not
+the current bill; verify against live pricing before quoting.
 
 ## Symptoms
 

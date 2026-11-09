@@ -17,13 +17,13 @@ questions:
 ## Problem
 
 EBS volumes in the `available` state (detached from any EC2 instance) are
-billed at the same per-GB rate as attached volumes (~$0.08-0.12/GB-month
-for gp3, more for io2). They accumulate after EC2 instance termination
-when the volume's `DeleteOnTermination` flag is `false`, after migrations
-that left source disks behind, and after manual snapshot-and-detach
-workflows. Unlike snapshots, there is no recovery utility for orphaned
-volumes - they just bleed money. The per-GB range above is an illustrative
-us-east-1 list rate as at May 2026 - verify against live pricing before
+billed at the same per-GB rate as attached volumes: at us-east-1 list rates
+read in November 2026, $0.08/GB-month for gp3, $0.10 for gp2 and $0.125
+for io2. They accumulate after EC2 instance termination when the volume's
+`DeleteOnTermination` flag is `false`, after migrations that left source
+disks behind, and after manual snapshot-and-detach workflows. Unlike
+snapshots, there is no recovery utility for orphaned volumes - they just
+bleed money. The rates are illustrative; verify against live pricing before
 sizing a business case.
 
 ## Symptoms

@@ -19,7 +19,7 @@ questions:
 ## Problem
 
 A NAT Gateway charges a per-GB data-processing fee (~$0.045/GB in
-us-east-1; illustrative list rate, written August 2026) on every byte it
+us-east-1; illustrative list rate read in November 2026) on every byte it
 moves. When the traffic behind that fee is destined for **S3 or DynamoDB
 in the same region**, the entire charge is avoidable: a **gateway VPC
 endpoint** carries that traffic for free - no hourly charge, no per-GB

@@ -17,16 +17,15 @@ questions:
 ## Problem
 
 SageMaker notebook instances are billed per hour while they are in `InService`
-state, whether a kernel is running or not. A modest `ml.t3.medium` notebook
-costs ~$36/month if left on 24/7; an `ml.t3.xlarge` is ~$144/month; a GPU
-notebook (`ml.g4dn.xlarge`) is ~$540/month. Data-science teams routinely
-spin notebooks up for a half-day experiment, walk away, and the notebook
-keeps billing for months. Multiply across a 10-person ML team and a Friday
-deadline, and the always-on notebook bill can become the second-largest
-line in SageMaker spend after endpoints. The
-monthly figures are illustrative
-us-east-1 list rates as at May 2026 - verify against live pricing before
-quoting.
+state, whether a kernel is running or not. At us-east-1 list rates read in
+November 2026, a modest `ml.t3.medium` notebook costs ~$36/month if left on
+24/7; an `ml.t3.xlarge` is ~$146/month; a GPU notebook (`ml.g4dn.xlarge`)
+is ~$540/month. Data-science teams routinely spin notebooks up for a
+half-day experiment, walk away, and the notebook keeps billing for months.
+Multiply across a 10-person ML team and a Friday deadline, and the
+always-on notebook bill can become the second-largest line in SageMaker
+spend after endpoints. The monthly figures are illustrative; verify against
+live pricing before quoting.
 
 ## Symptoms
 

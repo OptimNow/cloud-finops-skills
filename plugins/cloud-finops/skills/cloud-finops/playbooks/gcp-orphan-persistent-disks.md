@@ -17,12 +17,12 @@ questions:
 ## Problem
 
 GCP Persistent Disks (Standard / Balanced / SSD / Extreme) bill by
-provisioned capacity regardless of attachment. A 1 TB SSD persistent
-disk accrues ~$170/month whether or not a VM mounts it. Orphans
-accumulate from: deleted VMs whose disks were not in `auto-delete` mode,
-GKE PVCs with `reclaimPolicy: Retain` after pod / namespace deletion,
-and one-off snapshot-and-detach workflows during migrations. The monthly
-figure is an illustrative list rate as at May 2026 and varies by region -
+provisioned capacity regardless of attachment. At the us-central1 list rate
+read in November 2026, a 1 TB SSD persistent disk accrues ~$170/month
+whether or not a VM mounts it. Orphans accumulate from: deleted VMs whose
+disks were not in `auto-delete` mode, GKE PVCs with `reclaimPolicy: Retain`
+after pod / namespace deletion, and one-off snapshot-and-detach workflows
+during migrations. The monthly figure is illustrative and varies by region;
 verify against live pricing before sizing a business case.
 
 ## Symptoms

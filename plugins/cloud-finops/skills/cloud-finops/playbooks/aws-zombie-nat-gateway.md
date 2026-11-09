@@ -16,17 +16,16 @@ questions:
 
 ## Problem
 
-An AWS NAT Gateway is billed at roughly $0.045/hr per gateway plus
-$0.045/GB of data processed (us-east-1 rate; several regions run
-materially higher - Sao Paulo and some Asia-Pacific regions up to roughly
-double - so estimate savings per region, never from one rate). The hourly
-charge alone is about $32/month per gateway, accrued whether traffic flows
+At us-east-1 list rates read in November 2026, an AWS NAT Gateway is billed
+at $0.045/hr per gateway plus $0.045/GB of data processed; several regions
+run materially higher (Sao Paulo and some Asia-Pacific regions up to roughly
+double), so estimate savings per region, never from one rate. The hourly
+charge alone is about $33/month per gateway, accrued whether traffic flows
 or not. A NAT Gateway processing near-zero data still pays the full hourly.
 Multiply across accounts, AZs, and forgotten migration leftovers and the
 waste compounds quickly. Every dollar figure in this playbook is an
-illustrative list rate written between May and August 2026 - verify
-against live pricing for the regions in scope before sizing a business
-case.
+illustrative list rate (us-east-1, November 2026); verify against live
+pricing for the regions in scope before sizing a business case.
 
 ## Symptoms
 
@@ -90,8 +89,9 @@ on one signal, you delete only after confirming.
    subnet routes to it, deletion is safe.
 3. Delete the NAT Gateway. Release the associated Elastic IP if no other
    resource needs it - since February 2024 every public IPv4 address costs
-   $0.005/hr (~$3.60/month) whether it is attached to anything or not, so
-   an address left behind keeps billing.
+   $0.005/hr (~$3.65/month at the us-east-1 list rate read in November 2026)
+   whether it is attached to anything or not, so an address left behind
+   keeps billing.
 4. If a residual workload still needs occasional internet egress, evaluate
    whether **VPC Endpoints** can replace the NAT entirely. Two endpoint types
    with very different cost profiles:
@@ -100,7 +100,8 @@ on one signal, you delete only after confirming.
      NAT Gateway.
    - **Interface endpoints / PrivateLink** (most other AWS services and
      third-party SaaS): hourly charge per endpoint per AZ (~$0.01/hr =
-     ~$7.30/month/AZ) plus a data-processing fee per GB. For
+     ~$7.30/month/AZ at the us-east-1 list rate read in November 2026) plus
+     a data-processing fee per GB. For
      low-traffic services across multiple AZs, an interface endpoint can
      end up costing more than the NAT it replaced. Compare endpoint cost
      against the NAT's data-processing volume before swapping.
@@ -112,9 +113,9 @@ on one signal, you delete only after confirming.
   webhooks fail silently and only surface in operational alerts hours
   later.
 - Replacing a per-AZ NAT Gateway with a single cross-AZ NAT to "save
-  money" - cross-AZ data transfer ($0.01/GB each direction, so $0.02/GB
-  round-trip) often outweighs the saved NAT hours, AND introduces a
-  single-AZ failure mode.
+  money" - cross-AZ data transfer ($0.01/GB each direction at the us-east-1
+  list rate read in November 2026, so $0.02/GB round-trip) often outweighs
+  the saved NAT hours, AND introduces a single-AZ failure mode.
 
 ## See also
 

@@ -18,13 +18,13 @@ questions:
 
 A SageMaker real-time endpoint is billed at the underlying instance hourly
 rate as long as the endpoint is provisioned, whether traffic flows through
-it or not. A small `ml.m5.xlarge` endpoint costs ~$170/month; a single
-`ml.g4dn.xlarge` GPU endpoint costs ~$540/month; an `ml.p4d.24xlarge`
-endpoint costs ~$18,400/month. Forgotten demo endpoints, A/B test variants
-that were never decommissioned, and "we might need it again" endpoints are
-among the highest-density waste patterns in any AWS account running ML.
-The monthly figures are illustrative us-east-1 list rates written between
-May and August 2026 - verify against live pricing before quoting.
+it or not. At us-east-1 list rates read in November 2026, a small
+`ml.m5.xlarge` endpoint costs ~$170/month; a single `ml.g4dn.xlarge` GPU
+endpoint costs ~$540/month; an `ml.p4d.24xlarge` endpoint costs
+~$18,400/month. Forgotten demo endpoints, A/B test variants that were never
+decommissioned, and "we might need it again" endpoints are among the
+highest-density waste patterns in any AWS account running ML. The monthly
+figures are illustrative; verify against live pricing before quoting.
 
 ## Symptoms
 
