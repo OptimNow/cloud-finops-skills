@@ -111,6 +111,7 @@ against current AWS pricing documentation):
 | Anthropic Claude Haiku | Low | High-volume, latency-tolerant tasks |
 | Anthropic Claude Sonnet | Mid | Balanced capability and cost |
 | Anthropic Claude Opus | High | Complex reasoning, agentic workflows |
+| OpenAI GPT-6.1 Terra | Mid (AWS states at least 50% below GPT-6.1 Sol and GPT-5.6 Terra on both token types, 26 October 2026) | Agentic and everyday workloads; 1M-token input context, text and image input |
 
 **FinOps principle:** model selection is the cost decision with the widest range.
 Benchmark task quality across model tiers before defaulting to the most capable model.
@@ -827,6 +828,15 @@ Since 6 October 2026, AgentCore short-term memory bills by data volume (ingestio
 retrieval and storage per GB, with a 12 KB to 64 KB billable size per event) rather
 than per event. The cost-design consequences, including event expiry as a storage
 lever, are in `finops-agentic.md`, "Memory with cost controls".
+
+OpenAI GPT-5.6 Terra and Luna run in both GovCloud (US) Regions since 30 October 2026,
+on the Responses, Converse and Chat Completions APIs of bedrock-runtime, with
+cross-Region inference confined to the GovCloud Regions. Usage is itemised per model in
+Cost Explorer and the CUR as in commercial Regions, but the product attributes above do
+not reach GovCloud, so group by usage type there. AWS does not say whether GovCloud
+cross-Region inference carries the regional premium of the billing table: read the
+model card before sizing. Source: [AWS What's New, 30 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/bedrock-openai-runtime-govcloud/),
+read 9 November 2026.
 
 ---
 
