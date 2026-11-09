@@ -94,6 +94,16 @@ up to 70% cost reduction on non-production compute.
 - Azure Automation Runbooks (most customisable)
 - Infrastructure as Code (Terraform `azurerm_dev_test_schedule`, Bicep)
 
+**Dev/Test pricing before scheduling.** Non-production subscriptions can sit on a
+Dev/Test offer (Enterprise Dev/Test under an EA, Azure Plan for Dev/Test under an MCA,
+Pay-As-You-Go Dev/Test for individuals): Windows VMs bill at Linux rates and SQL
+Database, App Service and some other services get discounted rates. Every user needs an
+active Visual Studio subscription (monthly cloud subscriptions do not qualify), the
+resources may be used only for development and test, and there is no SLA. Moving dev
+and test into such subscriptions is a rate lever that stacks with start/stop
+([Azure Dev/Test pricing](https://azure.microsoft.com/en-us/pricing/offers/dev-test/),
+read 9 November 2026).
+
 **Tagging strategy for automation:** Use `startTime` and `stopTime` tags on VMs.
 Automation reads tags to determine schedule. This allows per-VM scheduling without
 modifying the automation logic.
@@ -531,9 +541,12 @@ retention configuration. Walk each engine:
 
 **Cosmos DB:**
 - **Periodic backup** - free, two copies retained
-- **Continuous backup (7-day or 30-day)** - paid feature, often left on after a
-  one-time PITR test. Audit which accounts have it enabled and whether the workload
-  needs continuous PITR.
+- **Continuous backup** - the 7-day tier has no backup storage charge; the 30-day
+  and 35-day tiers bill backup storage per GB of data per region. Every tier charges
+  per GB restored, each time a restore runs. A 30-day or 35-day tier left on after a
+  one-time PITR test is the cost to audit
+  ([continuous backup](https://learn.microsoft.com/en-us/azure/cosmos-db/continuous-backup-restore-introduction),
+  read 9 November 2026).
 
 **Postgres / MySQL Flexible Server:**
 - `backup_retention_days` is per-server, default 7 days, max 35 days. Servers
@@ -886,12 +899,24 @@ Cosmos DB throughput is provisioned in Request Units per second (RU/s):
 - **Manual throughput** - flat hourly cost at the configured RU/s. Cheaper if load
   is predictable and steady.
 - **Autoscale throughput** - scales between 10% and 100% of the configured maximum
-  RU/s. Costs **1.5x manual at peak**, but only when at peak. For workloads with
-  10x peak-to-trough ratios, autoscale is cheaper despite the 1.5x multiplier.
+  RU/s and bills each hour for the highest RU/s it scaled to (never below 10% of the
+  maximum), at **1.5x the manual rate per RU/s**.
 
-Decision rule: if the steady-state-to-peak ratio is below 1:3, manual is cheaper.
-Above 1:3, autoscale wins. Sample 30 days of `Total Request Units` to establish
-the ratio before deciding.
+Decision rule (Microsoft's): take the `Normalized RU Consumption` metric at 1-hour
+grain with **Max** aggregation over 7 to 30 days, and average those hourly peaks. Below
+66%, autoscale is cheaper; above 66%, stay on manual. On accounts with multi-region
+writes and more than one region, the two rates per 100 RU/s are the same, so autoscale
+costs nothing extra and is always the choice.
+
+**The throughput floor rises on its own.** A manual container cannot go below the
+largest of 400 RU/s, 1 RU/s per GB stored, and one hundredth of the highest RU/s ever
+provisioned; for an autoscale maximum the terms are 1,000 RU/s, 10 RU/s per GB and one
+tenth of the highest maximum ever set. A container scaled up for a one-off migration or
+load test therefore keeps a higher minimum bill afterwards, and growing data raises it
+too: check the minimum in the portal before promising a scale-down saving. Sources:
+[choose between manual and autoscale](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-choose-offer)
+and [service limits](https://learn.microsoft.com/en-us/azure/cosmos-db/concepts-limits),
+read 9 November 2026.
 
 Beyond throughput sizing, Cosmos cost optimisation is dominated by **RU efficiency**
 per query:
@@ -949,7 +974,9 @@ resources
 ```
 
 ```kusto
-// Cosmos DB accounts on autoscale - candidates for manual switch on steady load
+// Cosmos DB accounts and their capabilities (inventory only). Autoscale is set per
+// database or container, not at account level, so this cannot show it: read the
+// throughput settings, then apply the 66% rule above.
 resources
 | where type == "microsoft.documentdb/databaseaccounts"
 | extend capabilities = properties.capabilities
