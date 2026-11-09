@@ -21,7 +21,7 @@ from [https://github.com/OptimNow/cloud-finops-skills/issues/new/choose](https:/
   answer as you got it, and if you have it the provider page that says otherwise.
 - **Question not covered**: you asked, and the library found nothing or answered in
   generalities. The exact wording is the valuable part: the connector never records
-  what you typed (see [PRIVACY.md](./PRIVACY.md)), so these reports and client
+  the text of a `query` (see [PRIVACY.md](./PRIVACY.md)), so these reports and client
   engagements are the only places real wordings come from.
 
 What happens next: the report is reproduced on the surface you named, checked against
@@ -34,8 +34,8 @@ identifiers, negotiated rates, invoice amounts and client names before you paste
 
 Open an issue first for anything larger than a typo or single fact correction, so we
 can scope before you write. Pull requests should keep the existing structure of the
-file you are touching, follow the conventions in [`CLAUDE.md`](./CLAUDE.md) (FCP
-frontmatter, no em dashes, British spelling in prose, license footer), and pass the
+file you are touching, follow the conventions in [`docs/DESIGN.md`](./docs/DESIGN.md)
+(FCP frontmatter, no em dashes, British spelling in prose, license footer), and pass the
 coverage checks (`./scripts/fcp-coverage.sh --check` and
 `./scripts/business-coverage.sh --check`; the second one reads the
 `business_coverage` frontmatter field that feeds the README coverage tables). A
@@ -108,9 +108,9 @@ The full tree with every reference file is in [`CLAUDE.md`](./CLAUDE.md)
   positives in your data, an anti-pattern you saw burn a team, a fix step that
   does not work without a precondition we missed.
 - **Pick up a deferred reference file.** The `Deferred reference files` section of
-  [`docs/ROADMAP.md`](./docs/ROADMAP.md) lists the P2/P3 items (forecasting, unit
-  economics, practice operations, education & enablement, benchmarking, cost
-  warehouse) with the rationale and trigger to revisit. If your engagement has
+  [`docs/ROADMAP.md`](./docs/ROADMAP.md) lists the items still deferred (unit
+  economics, education and enablement, the cost warehouse among them) with the
+  rationale and trigger to revisit. If your engagement has
   surfaced one of those, that is the trigger - open an issue with the engagement
   context and we will scope the file together.
 - **Tool installer addition.** Adding `--tool <new-tool>` for a coding assistant or
@@ -135,7 +135,7 @@ The full tree with every reference file is in [`CLAUDE.md`](./CLAUDE.md)
   practitioner-grade evidence behind the claim.
 - Wholesale AI-generated reference content with no human practitioner pass. The
   pipeline that powers the weekly refresh has hard guard rails (see the
-  `Lessons learned` section of `CLAUDE.md` for why). Hand-written contributions go
+  `Lessons learned` section of `docs/DESIGN.md` for why). Hand-written contributions go
   through human review for the same reasons.
 - "Best practices" lists with no business-value framing. Every recommendation in
   this repo connects cost to a business outcome; contributions should follow that

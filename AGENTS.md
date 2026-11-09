@@ -90,6 +90,7 @@ pricing figures or discount mechanics.
 
 For the full contributor guide (how to add a new reference file, FCP
 frontmatter convention, content rules, PR checklist), see
+[docs/DESIGN.md](./docs/DESIGN.md), which holds the sections moved out of
 [CLAUDE.md](./CLAUDE.md); deliberately-deferred work and the trigger to revisit
 each item live in [docs/ROADMAP.md](./docs/ROADMAP.md). The contributor process
 is shared regardless of which agent surface you use.
@@ -104,7 +105,8 @@ Quick rules:
   + `marketplace.json` `metadata.version` + `mcp_server/pyproject.toml` +
   `server.json`, which carries the version twice, all together) happen only in a
   dedicated release PR, because every `plugin.json` bump reaching main triggers a
-  PyPI publish. See CLAUDE.md "release-train rule".
+  PyPI publish. See docs/DESIGN.md, "How to add a new reference file", step 6
+  (the release-train rule).
 
 ---
 

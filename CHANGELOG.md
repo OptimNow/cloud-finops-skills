@@ -4,16 +4,18 @@ What changed for the people who use the skill, the connector or the package, one
 version at a time. Newest first. Each GitHub Release still carries the generated
 commit list and the attached files; this page is the readable account.
 
-Three surfaces ship on different clocks. The **plugin** (Claude directory, Claude Code
-marketplace, the installer) reads the repository, so content reaches it at merge. The
-**hosted connector** at `mcp.optimnow.io` and the **PyPI package** ship at the tagged
-release. "Unreleased" below means merged to `main`, not yet tagged.
+Surfaces ship on different clocks. The **Claude directory plugin** reads the
+repository, so content reaches it at merge. The **Claude Code marketplace install**
+(`cloud-finops@optimnow`) is pinned by the version in `plugin.json`, so it moves at
+each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
+**PyPI package**. The **installer** copies the repository as it is when you run it.
+"Unreleased" below means merged to `main`, not yet tagged.
 
 ## 1.50.0 (unreleased)
 
 ### Ask in your own words
 
-- **Every reference and runbook now declares the questions it answers.** 515 questions
+- **Every reference and runbook now declares the questions it answers.** 517 questions
   across the 91 files, in English and French, written the way a FinOps lead, a finance
   partner, an engineer, an AI product owner or an executive asks them: "Our AWS bill
   has NAT gateway charges but I do not think anything uses them", "Which of my RIs are
@@ -27,8 +29,9 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   its rarity across the library, a named provider halving the files written for
   another provider. Up to five results, each with `match_score`, `matched_question`
   and `suggested_section`, the heading to pass to `get_reference(section=)`. No
-  embedding, no network call, and the sentence is never written to the connector's
-  zero-result log, only its word count.
+  embedding, no network call. The sentence is capped at 1,000 characters, ranked in
+  memory and discarded: it is never cached, and the connector's zero-result log
+  carries only its word count. `PRIVACY.md` says so since 9 November 2026.
 - **An Executive persona.** Fifteen questions a CTO, CIO or CFO asks, across ten
   files, from "Are we spending the right amount on cloud for a company our size?" to
   "What would it take to cut our cloud bill by 20% without slowing delivery?". The
@@ -69,7 +72,7 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   Every rule is linked to the vendor's page, read 9 November 2026: the 1 October 2019
   Listed Provider rule, License Mobility, the Flexible Virtualization Benefit, RDS for
   SQL Server Bring Your Own Media, Oracle's two-vCPUs-per-licence count, Cloud SQL
-  without BYOL.
+  without BYOL. The licence true-up gets its row in the joint operating model.
 - **Microsoft Fabric**: the free mirroring storage allowance stops while a capacity is
   paused.
 - **Vertex AI**: the Developer API reroutes `gemini-2.5-pro` and `gemini-2.5-flash` to
@@ -93,6 +96,16 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   Claude, Copilot, Devin Desktop and Cursor's current lineup). Ask the hub, or
   `compare-llm-models` on the `ai-pricing-hub` connector, for the dollar figure; the
   worked examples keep their one dated figure.
+- **Every illustrative price in the runbooks now carries its date and region beside
+  the figure**, so an answer that quotes "$0.045 per GB for a NAT gateway" carries
+  "us-east-1, November 2026" with it. The AWS figures were re-read on the Price List
+  API on 9 November 2026 and had not moved since May; the Azure and Google figures
+  were re-read on the Retail Prices API and the pricing pages the same day. Four
+  corrections: the EBS tier rates (gp3, gp2 and io2 each their own), the RDS backup
+  storage rate and its free allowance, the Azure Premium SSD P30 rate, and the
+  Archive tier rate; App Service figures are now given per operating system, since
+  a Linux and a Windows P1v3 differ by a factor of two. A CI guard keeps a date in
+  every runbook paragraph that carries a price.
 - **Every other price in the reference files now carries its date and region in its own
   paragraph.** The AWS figures (CloudFront plans and
   pay-as-you-go tiers, WAF, S3, S3 Files, EFS, data transfer out, the Cost Explorer API)
@@ -116,16 +129,6 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   filtering at collection.
 - Six section pointers in the question index now cite a full heading where a short
   phrase matched several.
-- **Every illustrative price in the runbooks now carries its date and region beside
-  the figure**, so an answer that quotes "$0.045 per GB for a NAT gateway" carries
-  "us-east-1, November 2026" with it. The AWS figures were re-read on the Price List
-  API on 9 November 2026 and had not moved since May; the Azure and Google figures
-  were re-read on the Retail Prices API and the pricing pages the same day. Four
-  corrections: the EBS tier rates (gp3, gp2 and io2 each their own), the RDS backup
-  storage rate and its free allowance, the Azure Premium SSD P30 rate, and the
-  Archive tier rate; App Service figures are now given per operating system, since
-  a Linux and a Windows P1v3 differ by a factor of two. A CI guard keeps a date in
-  every runbook paragraph that carries a price.
 
 ### Tell us when it is wrong
 
@@ -137,7 +140,7 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
   report is checked against the provider's documentation, fixed in a content release
   that credits it, and its wording becomes a test question run before every release.
   The connector's "no match" hint now names the form, since the connector itself
-  never records what you typed.
+  never records the text of a `query`.
 
 ### Install and listings
 
@@ -147,12 +150,19 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
 - The hosted connector's machine **suspends instead of stopping** when idle, so the
   first call after a quiet period resumes in a fraction of a second instead of a cold
   start. Takes effect with this release's deploy.
-- Tool count corrected to seven everywhere it was still six.
+- Tool count corrected to seven everywhere it was still six, the submission kit for
+  the curated GitHub lists included.
+- The **plugin's listing text** (the README the Claude directory shows) is rewritten
+  for the least expert reader first: what Cloud Financial Management is, who the
+  plugin is for with one example question per role, and the plugin and the connector
+  explained in plain words.
 
 ### Upgrading
 
-- **Claude directory plugin**: update the plugin, or reinstall it, to get the question
-  index and the Executive rule.
+- **Claude directory plugin**: the question index and the Executive rule are already
+  there if your copy follows the directory; otherwise update or reinstall the plugin.
+- **Claude Code marketplace** (`cloud-finops@optimnow`): run
+  `/plugin update cloud-finops@optimnow` once this version is tagged.
 - **Hosted connector** (`https://mcp.optimnow.io/mcp`): nothing to do; `query` appears
   on the two finders when this version is deployed.
 - **PyPI package**: `pip install -U cloud-finops-mcp`.
@@ -161,9 +171,12 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
 
 ### For maintainers
 
-- 22 CI guards, three new: `check-overlay.py` on the overlay template,
+- 24 CI guards, five new: `check-overlay.py` on the overlay template,
   `check-questions.py` on the index (count, vocabulary, duplicates, section resolution,
-  personas, `also` links, French), and the README role block `--check`.
+  personas, `also` links, French), the README role block `--check`,
+  `check-dated-prices.sh` on the runbooks and the references, and
+  `check-prices.py --offline` on the price manifest. The `llms-full.txt` smoke check
+  now also proves that every file's questions are in the render.
 - A fresh review of the index PR after merge led to the weighted ranking, the
   named-provider rule, a tokenisation cache (a query from about 124 ms to about 7 ms)
   and the overlay check's alignment with the connector's heading match.
@@ -171,14 +184,17 @@ release. "Unreleased" below means merged to `main`, not yet tagged.
 - CLAUDE.md slimmed: its reference sections moved to `docs/DESIGN.md`. Commits and
   pull requests carry no assistant attribution lines.
 - **A weekly price-drift check.** `scripts/price-manifest.yaml` lists every
-  infrastructure list price the library carries (ninety provider SKUs, written in 150
+  infrastructure list price the library carries (98 provider SKUs, written in 163
   places) with the query that reads it on the AWS Price List API,
   the Azure Retail Prices API or Google's catalogue and pricing pages;
   `scripts/check-prices.py` re-reads them and compares with the figures as written;
   the `price-drift` workflow runs it every Saturday and opens one labelled issue when
   a figure has moved or a query broke. A price no API serves (the Snowflake storage
   tiers) is aged instead: the issue lists it under "Check by hand" once the date it
-  was read is older than 90 days. It never edits a file. The same script runs in CI
+  was read is older than 90 days. A run that had to skip a provider for want of a
+  credential fails and names the provider, and provider error text is cleared of
+  account IDs before it reaches the public issue. It never edits a file. The same
+  script runs in CI
   against recorded fixtures, so a figure edited without its manifest line fails the
   build.
 

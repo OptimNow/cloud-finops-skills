@@ -77,8 +77,9 @@ link.
 
 ## Updates
 
-Content is updated weekly from primary provider sources. Every merge to the `main`
-branch of the repository is a new plugin version.
+Content is updated weekly from primary provider sources. The Claude directory serves
+each merge to the `main` branch of the repository; an install from the Claude Code
+marketplace moves at each tagged release.
 
 If an answer was wrong or incomplete, or a question found nothing, report it at
 <https://github.com/OptimNow/cloud-finops-skills/issues/new/choose> with the

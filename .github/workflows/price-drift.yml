@@ -64,7 +64,11 @@ jobs:
           code=$?
           set -e
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          cat price-drift-report.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -f price-drift-report.md ]; then
+            cat price-drift-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "check-prices wrote no report (exit $code)" > price-drift-report.md
+          fi
           echo "check-prices exited $code"
 
       - name: Open or update the price-drift issue
@@ -82,7 +86,7 @@ jobs:
           title="Price drift - $today"
           case "$EXIT_CODE" in
             1) verdict="At least one figure written in the skill no longer matches the provider's list price, or a page-only figure is past the age at which it should be re-read." ;;
-            *) verdict="A price query failed or a manifest anchor no longer matches its file, so part of the library is unverified this week." ;;
+            *) verdict="A price query failed, a manifest anchor no longer matches its file, or a provider was skipped for want of a credential, so part of the library is unverified this week." ;;
           esac
           {
             echo "Weekly check of the list prices written in the skill against the providers' price lists ([run]($RUN_URL), exit code $EXIT_CODE)."

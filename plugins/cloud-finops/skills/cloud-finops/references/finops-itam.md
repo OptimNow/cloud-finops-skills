@@ -16,7 +16,7 @@ questions:
   - q: "Should we buy software through the AWS or Azure Marketplace to burn down our commitment?"
     section: "Marketplace channel governance"
   - q: "Who owns a licence true-up: FinOps, ITAM or Procurement?"
-    section: "Joint operating model"
+    section: "Governance alignment"
   - q: "Our SaaS vendor bills on consumption and we keep overshooting. How do we monitor it?"
     section: "Consumption-based SaaS monitoring"
   - q: "Our Software Assurance renewal is due. Does keeping it pay for itself through Azure Hybrid Benefit or licence mobility?"
@@ -260,9 +260,10 @@ different licence count under each vendor's rule:
   ([Oracle, Licensing Oracle Software in the Cloud Computing Environment](https://www.oracle.com/a/ocom/docs/cloud-licensing-070579.pdf),
   policies as of 4 September 2026). Licences under an Unlimited License Agreement may
   be used there but do not count at certification.
-- *Multi-threading off* halves the licensed vCPU count for Oracle on all three clouds,
-  and for the SQL Server licence component on Cloud SQL, without halving the compute
-  charge.
+- *Multi-threading off* halves the licensed vCPU count for the SQL Server licence
+  component on Cloud SQL, without halving the compute charge. It saves nothing on
+  Oracle: two vCPUs per licence with multi-threading on and one with it off both come
+  to one licence per physical core.
 
 **4. Price both sides from the bill and the price list, never from the brochure.**
 The licence-included premium is the difference between two otherwise identical
@@ -365,9 +366,9 @@ utilisation it produces, because an under-filled host is the BYOL waste pattern.
 
 **Oracle on a hyperscaler:** the recount of step 3 comes before the architecture. A
 lift-and-shift that keeps the on-premises core count doubles the Enterprise Edition
-licence requirement; right-sizing the instance to the licences owned, turning
-multi-threading off where the workload allows it, and moving Standard Edition 2 to RDS
-licence-included are the three levers. Joint FinOps-ITAM review before any Oracle cloud
+licence requirement; right-sizing the instance to the licences owned and moving
+Standard Edition 2 to RDS licence-included are the two levers (turning multi-threading
+off is not one: the count stays at one licence per core). Joint FinOps-ITAM review before any Oracle cloud
 migration is essential, and because the policy document that defines the count is
 explicitly not contractual, the entitlement position must be confirmed against the
 licence agreement itself.
@@ -388,6 +389,7 @@ through shared forums rather than through RACI matrices that reinforce boundarie
 | Pre-renewal checkpoint | Validate usage data, entitlement position, and negotiation strategy before vendor renewals; put a FOCUS-conformant billing export on the term sheet (see `finops-focus.md`) | Pre-renewal (60-90 days before) |
 | Vendor strategy review | Review channel mix, marketplace volume, EA performance, and consolidation opportunities per strategic vendor | Quarterly |
 | Deal Desk engagement | Joint FinOps-ITAM-Procurement review for any commitment above a defined threshold | As needed |
+| Licence true-up | ITAM reconciles deployed against licensed and owns the count; FinOps supplies the cloud side (BYOL cores in use, licence-included hours already paid, Azure Hybrid Benefit assignments); Procurement owns the order | Annual, before the enrolment anniversary |
 
 ### Shared data requirements
 

@@ -180,7 +180,7 @@ All paths are under `plugins/cloud-finops/skills/cloud-finops/`.
 - **Budget and forecast.** AWS and Azure: `finops-forecasting.md`, `finops-anomaly-management.md`, and the Budgets sections of `finops-aws-billing.md` and `finops-azure-billing.md`. GCP: `finops-gcp.md` (budgets, spend caps), `finops-anomaly-management.md`. OCI, partial: `finops-oci.md` (Budgets). On-prem, partial: `finops-on-prem-hybrid.md` (rate setting); capacity planning is on the roadmap. AI platforms: `finops-ai-value-management.md` (AI investment budgets, stage gates), `finops-forecasting.md` (AI forecast scenarios), `finops-anthropic.md` (spend limits). Data platforms, partial: budget controls in `finops-snowflake.md`, `finops-databricks.md`, `finops-fabric.md`. SaaS, partial: `finops-sam.md` (renewal calendar, metrics), `finops-ai-dev-tools.md` (spending caps).
 - **Commitments and discounts.** AWS: `finops-aws-commitments.md`, `finops-aws-patterns-databases.md` (database commitment tree), `playbooks/aws-expiring-commitment-no-decision.md`, `playbooks/aws-spot-candidate.md`. Azure: `finops-azure-commitments.md`, `playbooks/azure-unused-reservation.md`. GCP: `finops-gcp.md` (CUDs, BigQuery commitments), `finops-vertexai.md` (Flexible Savings Plans), `playbooks/gcp-cud-mismatch.md`. OCI, partial: `finops-oci.md` (Universal Credits). On-prem, partial: `finops-on-prem-hybrid.md` (hybrid platform terms: Outposts, Exadata Cloud@Customer). AI platforms: `finops-genai-capacity.md`, provisioned capacity in `finops-azure-openai.md`, `finops-bedrock.md`, `finops-vertexai.md`. Data platforms: `finops-databricks.md` (committed-use bands), `finops-snowflake.md` (capacity model), `finops-fabric.md` (reservation). SaaS, partial: `finops-ai-dev-tools.md` (plan tiers), `finops-sam.md` (multi-year agreements).
 - **Contract negotiation and renewal.** AWS, Azure, GCP: `finops-cloud-contracts.md`, plus `finops-azure-billing.md` (EA-to-MCA). Data platforms, partial: the data platform section of `finops-cloud-contracts.md`, `finops-databricks.md`, `finops-snowflake.md`. SaaS, partial: `finops-sam.md` (renewal governance), `finops-itam.md` (pre-renewal checkpoint, joint negotiation). OCI, on-prem and AI platforms: no file. See "Contract negotiation and renewal" below.
-- **Reduce waste.** AWS: `finops-aws.md`, the 5 `finops-aws-patterns-*.md` files, 22 runbooks. Azure: `finops-azure.md`, `finops-azure-patterns.md`, 10 runbooks. GCP: the pattern catalogue inside `finops-gcp.md`, 7 runbooks. OCI, partial: `finops-oci.md` (6 patterns, no runbook). On-prem, partial: `finops-on-prem-hybrid.md` (idle capacity line, cost score). AI platforms: `finops-for-ai.md` (anti-patterns), `finops-genai-capacity.md` (provisioned-capacity waste), the optimisation sections of the 4 AI platform files, 2 cross-cloud runbooks. Data platforms: the pattern sections of `finops-databricks.md`, `finops-snowflake.md`, `finops-fabric.md`. SaaS: `finops-sam.md` (sprawl patterns), `finops-ai-dev-tools.md` (optimisation levers).
+- **Reduce waste.** AWS: `finops-aws.md`, the 5 `finops-aws-patterns-*.md` files, 23 runbooks. Azure: `finops-azure.md`, `finops-azure-patterns.md`, 10 runbooks. GCP: the pattern catalogue inside `finops-gcp.md`, 7 runbooks. OCI, partial: `finops-oci.md` (6 patterns, no runbook). On-prem, partial: `finops-on-prem-hybrid.md` (idle capacity line, cost score). AI platforms: `finops-for-ai.md` (anti-patterns), `finops-genai-capacity.md` (provisioned-capacity waste), the optimisation sections of the 4 AI platform files, 2 cross-cloud runbooks. Data platforms: the pattern sections of `finops-databricks.md`, `finops-snowflake.md`, `finops-fabric.md`. SaaS: `finops-sam.md` (sprawl patterns), `finops-ai-dev-tools.md` (optimisation levers).
 - **AI and GenAI spend.** AWS: `finops-bedrock.md`, `finops-aws.md` (SageMaker), the GPU and SageMaker runbooks. Azure: `finops-azure-openai.md`. GCP: `finops-vertexai.md`. On-prem, partial: `finops-ai-self-hosted-vs-managed.md`. AI platforms: `finops-for-ai.md`, `finops-agentic.md`, `finops-ai-value-management.md`, `finops-genai-capacity.md`, `finops-anthropic.md`, `finops-open-weight-vendors.md`. Data platforms, partial: Cortex in `finops-snowflake.md`, model serving in `finops-databricks.md`. SaaS: `finops-ai-dev-tools.md`, `playbooks/cross-cloud-coding-agent-token-waste.md`.
 - **Data platforms.** AWS, partial: `finops-databricks.md` on AWS, Redshift commitments in `finops-aws-patterns-databases.md`. Azure: `finops-fabric.md`, `finops-databricks.md`. GCP, partial: BigQuery in `finops-gcp.md`. Data platforms: `finops-databricks.md`, `finops-snowflake.md`, `finops-fabric.md`.
 - **SaaS and licences.** AWS, Azure, GCP, partial: marketplace channel governance in `finops-itam.md`, Marketplace private offers in `finops-cloud-contracts.md`, Azure Hybrid Benefit in `finops-azure-commitments.md`. On-prem, partial: VMware core licensing in `finops-on-prem-hybrid.md`, BYOL in `finops-itam.md`. AI platforms, partial: licensing in `finops-open-weight-vendors.md`. Data platforms, partial: Pro, PPU and F-SKU licences in `finops-fabric.md`. SaaS: `finops-sam.md`, `finops-itam.md`, `finops-ai-dev-tools.md`.
@@ -218,7 +218,7 @@ detection query you run in your own account, the fix in safest-first order, and 
 mistake to avoid. The library files them by provider and by waste category, and each
 one carries a confidence level that says whether a single signal is enough to act.
 
-![Waste runbook coverage: 43 runbooks across 8 waste categories and 4 scopes](assets/playbook-coverage.svg)
+![Waste runbook coverage: 44 runbooks across 8 waste categories and 4 scopes](assets/playbook-coverage.svg)
 
 ---
 
@@ -338,13 +338,15 @@ each is appropriate. Full policy in [PRIVACY.md](./PRIVACY.md).
   repository reads a cloud account.
 - **The hosted MCP connector, if you add it, sends tool calls to `mcp.optimnow.io`.**
   When the model calls one of the 7 tools, the tool arguments (a reference or runbook
-  name, a section phrase, facet filters, a guide slug) travel over HTTPS to that server and the
+  name, a section phrase, facet filters, a guide slug, or a `query` in the user's own
+  words, ranked in memory and never stored) travel over HTTPS to that server and the
   matching content comes back. The server requires no account and no authentication,
   holds no database and no per-user state, and serves the same public files as this
   repository. Its application log writes one line per request (method, path, status
   and request type, never the arguments); when a lookup matches nothing, it also
   writes the tool name and the arguments that missed, which are short strings the
-  model writes and can include a word copied from your question. The server runs on
+  model writes and can include a word copied from your question; a `query` is the
+  exception, logged as its word count only. The server runs on
   Fly.io, primary region Paris, which holds that log stream, possibly with the client
   IP address, under its default retention. OptimNow does not sell, share or profile
   from it.
@@ -367,7 +369,8 @@ sources: cloud and AI provider release notes, billing changelogs and pricing pag
 plus FinOps community publications. Each change is confirmed on the provider's own
 documentation and reviewed by a practitioner before it is applied. Every merge to
 `main` becomes a new plugin version in the Claude directory, and a version-tagged
-release ships the same content to PyPI and the MCP Registry. Watch or star the
+release ships the same content to the Claude Code marketplace install, PyPI, the MCP
+Registry and the hosted connector. Watch or star the
 repository to be notified, and read [CHANGELOG.md](./CHANGELOG.md) for what each
 version changes for you, in plain words.
 

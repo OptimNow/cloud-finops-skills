@@ -23,7 +23,9 @@
 # YAML frontmatter is stripped from each file and its discriminating facets are
 # re-emitted as a plain-text metadata line, so a reader gets the routing
 # information without a stray `---` fence every few hundred lines confusing the
-# document structure.
+# document structure. The `questions:` list is re-emitted the same way, one
+# question per line under "Questions this file answers", because it is what a
+# retrieval system matches a user's wording against.
 #
 # Usage:
 #   ./scripts/build-llms-full.sh            # write llms-full.txt at the repo root
@@ -94,6 +96,31 @@ frontmatter_value() {
   ' "$1"
 }
 
+# The declared questions, one per line, from the frontmatter `questions:` block.
+# An entry is either a bare string or a mapping whose `q:` key holds the text
+# (scripts/check-questions.py enforces both shapes); quotes are dropped and an
+# escaped quote kept. The block ends at the next top-level key or the fence.
+frontmatter_questions() {
+  awk '
+    { sub(/\r$/, "") }
+    NR == 1 && $0 == "---" { in_fm = 1; next }
+    in_fm && $0 == "---"   { exit }
+    !in_fm { next }
+    /^questions:[ \t]*$/  { in_q = 1; next }
+    in_q && /^[^ \t-]/    { in_q = 0 }
+    in_q {
+      line = $0
+      if (line ~ /^[ \t]*-[ \t]+q:[ \t]*/) { sub(/^[ \t]*-[ \t]+q:[ \t]*/, "", line) }
+      else if (line ~ /^[ \t]*-[ \t]+["\x27]/) { sub(/^[ \t]*-[ \t]+/, "", line) }
+      else next
+      sub(/^"/, "", line); sub(/"[ \t]*$/, "", line)
+      sub(/^\x27/, "", line); sub(/\x27[ \t]*$/, "", line)
+      gsub(/\\"/, "\"", line)
+      print "- " line
+    }
+  ' "$1"
+}
+
 emit_file() {
   local path="$1" kind="$2" facets="$3"
   local base
@@ -104,6 +131,11 @@ emit_file() {
   printf 'Source: plugins/cloud-finops/skills/cloud-finops/%s\n' "${path#"$SKILL_DIR"/}"
   if [[ -n "$facets" ]]; then
     printf '%s\n' "$facets"
+  fi
+  local questions
+  questions="$(frontmatter_questions "$path")"
+  if [[ -n "$questions" ]]; then
+    printf '\nQuestions this file answers:\n%s\n' "$questions"
   fi
   printf '\n'
   strip_frontmatter "$path"
@@ -191,6 +223,15 @@ pbs="$(find "$SKILL_DIR/playbooks" -maxdepth 1 -name '*.md' -type f -not -name '
 expected=$(( 1 + refs + pbs ))
 if (( files != expected )); then
   echo "ERROR: rendered llms-full.txt carries $files sections but the library has $expected files (1 entry point + $refs references + $pbs playbooks)." >&2
+  exit 1
+fi
+
+# Every reference and playbook declares four to eight questions
+# (scripts/check-questions.py), so a render with fewer than four question
+# lines per file lost them, which the 1.50.0 release note promises it does not.
+question_blocks="$(grep -c '^Questions this file answers:$' "$TMP_OUT" || true)"
+if (( question_blocks != refs + pbs )); then
+  echo "ERROR: rendered llms-full.txt carries $question_blocks question lists but the library has $(( refs + pbs )) references and playbooks." >&2
   exit 1
 fi
 

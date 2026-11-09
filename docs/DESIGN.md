@@ -241,7 +241,7 @@ What the session established:
   meant `finops-aws.md` (2,657 lines) and `finops-azure.md` (~3,000 lines),
   which routinely produced guard-rail rejections or anchor failures for
   non-additive changes. The August 2026 split (see "Closed gaps" in
-  [`docs/ROADMAP.md`](docs/ROADMAP.md)) removed both
+  [`docs/ROADMAP.md`](ROADMAP.md)) removed both
   from that band. On 2026-10-22 `finops-aws-patterns.md` (~1,500 lines) was split
   by service family, and `finops-azure.md` (~1,890) and `finops-aws.md` (~1,490)
   into usage and billing files; no file is above the threshold now. Treat roughly 1,500 lines as the
@@ -255,7 +255,7 @@ more automation.
 ### MCP Apps rendering in Claude is gated by implementation shape (2026-08-16 to 08-20)
 
 Full chronological forensic, including the two hypotheses that were tested and
-overturned: [`docs/mcp-apps-lessons.md`](docs/mcp-apps-lessons.md). The operational
+overturned: [`docs/mcp-apps-lessons.md`](mcp-apps-lessons.md). The operational
 rules, which you need before touching `mcp_server/src/cloud_finops_mcp/server.py`:
 
 - **`ui.domain` is required** on every `ui://` widget resource. It is derived in
@@ -325,7 +325,7 @@ its website and its MCP, and the ROI calculator drifted between its web app and 
 far enough to return a 7-point different ROI for the same preset. One person cannot keep
 two implementations of the same computation in sync without automation. **Route, do not
 copy** - and that is why live pricing tools inside `cloud-finops-mcp` were declined even
-though the idea sounds tidier (see the entry in [`docs/ROADMAP.md`](docs/ROADMAP.md)).
+though the idea sounds tidier (see the entry in [`docs/ROADMAP.md`](ROADMAP.md)).
 
 **Verification discipline paid off three times in one day.** Each of these was invisible
 from reading the source and only appeared by calling the thing:
@@ -448,7 +448,7 @@ summary in the README "How it works" section.
 
 ## Roadmap
 
-Moved to [`docs/ROADMAP.md`](docs/ROADMAP.md): deliberately-deferred work, the reasoning
+Moved to [`docs/ROADMAP.md`](ROADMAP.md): deliberately-deferred work, the reasoning
 behind each deferral, and the trigger that should reopen it. Read it before starting a new
 reference file, proposing a new capability, or reviving an idea that looks obviously good -
 several of them were already considered and declined for recorded reasons.
@@ -581,7 +581,7 @@ fcp_personas_primary: ["{persona}", ...]             # FinOps Practitioner / Eng
 fcp_personas_collaborating: ["{persona}", ...]       # optional
 fcp_maturity_entry: "Crawl" | "Walk" | "Run"         # the gate below which the file is premature
 business_coverage: ["{provider}:{need}:{depth}", ...]  # optional - the README matrix cells this file serves (see below)
-questions:                                           # optional - block list of 4 to 8 questions in user words (see below)
+questions:                                           # required - block list of 4 to 8 questions in user words (see below)
   - "{a question as a user asks it}"
   - q: "{a question the README lists by role}"
     persona: "{README role}"                          # optional - feeds the README "What you can ask, by role"
@@ -798,7 +798,7 @@ The repository is prepared for two listings in Anthropic's Claude directory
 (<https://claude.ai/directory/manage>): the **plugin bundle** (this repository,
 followed on `main`) and the **MCP connector** (the hosted server URL). The
 step-by-step, the prefilled portal answers and the reviewer holds to expect are in
-[`docs/directory-submission.md`](docs/directory-submission.md). Four rules that follow
+[`docs/directory-submission.md`](directory-submission.md). Four rules that follow
 from how the directory works:
 
 - **The plugin is skill-only (decision of 2026-09-30).** It declares no MCP
@@ -978,7 +978,7 @@ from how the directory works:
 - [ ] **Cross-repo impact checked.** If the PR quotes another OptimNow repo's tool
       names, parameters, endpoint URLs, `provenance` fields, or ROI methodology, it was
       verified against that repo. See "Cross-repo dependencies" above and
-      [`DEPENDENCIES.md`](DEPENDENCIES.md). Nothing in CI catches this class of drift
+      [`DEPENDENCIES.md`](../DEPENDENCIES.md). Nothing in CI catches this class of drift
 - [ ] **MCP tool surface changed? Move all three copies together.** Renaming a tool,
       changing a parameter, or adding one touches `docs/CONCEPTS.md` (the canonical
       description of what the seven tools do, moved there from README.md in October
@@ -990,5 +990,5 @@ from how the directory works:
 - [ ] No em dashes in any public content
 - [ ] No sensitive or internal files included
 - [ ] Content is practical and based on how billing actually works, not on documentation summaries
-- [ ] If the file deferred or replaced is listed in [`docs/ROADMAP.md`](docs/ROADMAP.md),
+- [ ] If the file deferred or replaced is listed in [`docs/ROADMAP.md`](ROADMAP.md),
       that entry is updated accordingly

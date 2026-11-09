@@ -358,8 +358,8 @@ def find_references(
     - ``find_references(maturity="Crawl")``
 
     Args:
-        query: the user's question or symptom in their own words, any
-            length, English or French. Ranks the facet-filtered guides by
+        query: the user's question or symptom in their own words, up to
+            1,000 characters, English or French. Ranks the facet-filtered guides by
             the questions they declare, their title and their headings;
             returns at most five, best first, each with ``match_score``,
             ``matched_question`` and ``suggested_section``.
@@ -590,11 +590,12 @@ def find_playbooks(
     - ``find_playbooks(scope="cross-cloud", confidence="obvious")``
 
     Args:
-        query: the user's symptom or question in their own words, any
-            length, English or French. Ranks the facet-filtered runbooks by
+        query: the user's symptom or question in their own words, up to
+            1,000 characters, English or French. Ranks the facet-filtered runbooks by
             the questions they declare, their title and their service;
-            returns at most five, best first, each with ``match_score``,
-            ``matched_question`` and ``suggested_section``.
+            returns at most five, best first, each with ``match_score``
+            and ``matched_question`` (a runbook is read whole, so its
+            ``suggested_section`` is null).
         scope: ``"aws"``, ``"azure"``, ``"gcp"``, or ``"cross-cloud"``.
         service: Provider service exact-match (e.g. ``"AWS NAT Gateway"``).
         waste_category: ``"orphaned"``, ``"idle"``, ``"overprovisioned"``,
