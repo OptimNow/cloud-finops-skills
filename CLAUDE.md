@@ -250,7 +250,7 @@ cloud-finops-skills/
 │                             SVGs) for Windows checkouts with
 │                             core.autocrlf=true
 └── pipeline/              <- Content update pipeline (gitignored, private)
-    ├── run_scan.py        <- Fortnightly scan entry point
+    ├── run_scan.py        <- Laptop scan entry point; the live scan is a weekly cloud routine since 2026-10-17
     ├── run_monthly.bat    <- Task Scheduler wrapper (both scheduled tasks call it)
     ├── run_apply.py.FROZEN <- Review and apply entry point, frozen since the
     │                          May 2026 truncation incident (see docs/ROADMAP.md P1)
@@ -262,7 +262,7 @@ cloud-finops-skills/
     ├── coverage-probes.md <- Behavioural coverage probe battery + run log
     │                         (maintainer-local; see docs/ROADMAP.md backlog)
     ├── drafts/            <- Probe-seeded content drafts awaiting adaptation
-    ├── pipeline-audit-2026-05.md / pipeline-harden-plan.md  <- Phase-1 forensics
+    ├── probe-harness/     <- Headless smoke harness (claude -p against a branch server; maintainer-local)
     ├── scanner/           <- Fetcher + Sonnet-based classifier
     ├── proposer/          <- CHANGES.md report generator
     ├── applier/           <- Opus-based diff generator and file editor
