@@ -11,6 +11,24 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 **PyPI package**. The **installer** copies the repository as it is when you run it.
 "Unreleased" below means merged to `main`, not yet tagged.
 
+## 1.51.0 (unreleased)
+
+### New and corrected content
+
+- **CloudWatch Logs account-level retention policies.** The skill now warns that an
+  account policy replaces a log group's own retention even when that is longer, so a
+  short baseline can delete compliance logs, and says to dry-run it first.
+- **Microsoft 365 Copilot Business usage-based billing.** New CSP purchases turn it on
+  by default from January to March 2027, with a per-user credit limit; it cannot be
+  switched off, only capped at zero (`finops-sam.md`).
+- **AgentCore Runtime V2.** How a higher rate on fewer memory GB-hours compares with
+  V1, and when it does not pay (`finops-agentic.md`).
+- **Direct Connect flat-rate pricing.** What the tiers include, what still bills per GB,
+  and the multi-Region topology trap (`finops-aws-patterns-networking.md`).
+- **RI and Savings Plan credits in a Billing Conductor pro forma.** Why billing-group
+  bills show on-demand equivalent by default, AWS's credit method, and the three points
+  to settle before using it for chargeback (`finops-chargeback.md`).
+
 ## 1.50.0 (10 November 2026)
 
 ### Ask in your own words

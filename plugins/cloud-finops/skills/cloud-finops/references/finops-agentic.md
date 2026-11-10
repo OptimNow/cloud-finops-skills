@@ -199,6 +199,18 @@ Sources: [AWS What's New, 12 October 2026](https://aws.amazon.com/about-aws/what
 [CreateMemory API reference](https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_CreateMemory.html)
 (all read 16 October 2026).
 
+**AgentCore Runtime V2: a higher rate on fewer GB-hours.** Runtime bills per second
+on active CPU (zero during I/O waits) and on memory held for the session's whole life.
+On V1, memory allocated at a peak stays billed until the session ends. V2, chosen with
+`platformVersion` set to `V2` on create or update, reclaims memory idle for 120 seconds
+throughout the session, at higher CPU and memory rates than V1. AWS's position is that
+the smaller footprint outweighs the higher rate for most agents; that holds for agents
+with a short memory peak and long idle stretches, not for agents that hold their memory
+steadily. Compare GB-hours times rate on a measured session profile, not the two rate
+cards ([AgentCore pricing](https://aws.amazon.com/bedrock/agentcore/pricing/),
+[the new AgentCore Runtime](https://aws.amazon.com/blogs/machine-learning/the-new-agentcore-runtime-elastic-optimized-and-consistently-fast-starts/),
+read 10 November 2026).
+
 As of August 2026, Bedrock AgentCore memory, policy, and a new managed harness are
 available in AWS GovCloud (US-West), extending these pillars to regulated and government
 cloud environments for cost-governance planning. Source: AWS What's New - Bedrock.

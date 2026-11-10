@@ -156,6 +156,43 @@ Establish which of the two the client means at the first meeting. Case 1 is
 weeks of configuration; case 2 is months, and most of the elapsed time is Tax and Legal
 rather than anything a FinOps practitioner controls.
 
+### Commitment benefits in an AWS Billing Conductor pro forma
+
+When the RIs and Savings Plans are bought in the management account, Billing Conductor
+keeps them apart from the billing groups by default: each group's pro forma bill shows
+its covered usage at the on-demand equivalent, so a chargeback built on it charges teams
+for discounts they received. AWS's published fix (Cloud Financial Management blog,
+18 September 2026) computes each member account's saving from CUR 2.0 and gives it back
+as a flat credit custom line item in that account's billing group, monthly:
+
+- **Saving per account** = `pricing_public_on_demand_cost` minus the effective cost
+  (`savings_plan_savings_plan_effective_cost` on `SavingsPlanCoveredUsage` rows,
+  `reservation_effective_cost` on `DiscountedUsage` rows), grouped by
+  `line_item_usage_account_id`. The credit is proportional to what each account
+  consumed under the commitment, which is the defensible key.
+- **Architecture:** CUR 2.0 in S3, a Glue crawler, an Athena query, Lambda functions
+  that map accounts to billing groups (SSM Parameter Store) and write the credits, an
+  audit log in S3, and a monthly EventBridge schedule. It ships with `DRY_RUN=true` and
+  the schedule off: run it dry and reconcile before the first live month.
+- **Its assumptions:** commitments bought only in the management account, that account
+  outside every billing group, no RIs or SPs in member accounts. An estate that buys
+  commitments in member accounts needs a different design.
+
+Three points to settle before using it for chargeback:
+
+- **Which baseline.** Public on-demand minus effective cost credits the commitment
+  saving and any negotiated discount together. Under an EDP, decide whether teams get
+  the private rate too, and use the `net_` columns if the credit should follow the net
+  bill (see "Cost-column methodology" in `finops-allocation-showback.md`).
+- **Unused commitment.** The method credits used savings only. Unused RI and SP hours
+  stay with the buyer and need their own owner, usually the central FinOps or platform
+  budget.
+- **Pro forma only.** The credits change the Billing Conductor view, never the AWS
+  invoice; the chargeback journal reconciles to the invoice through the credit total.
+
+Source: [Implementing proportional RI and Savings Plans chargeback with AWS Billing Conductor](https://aws.amazon.com/blogs/aws-cloud-financial-management/implementing-proportional-reserved-instance-and-savings-plans-chargeback-with-aws-billing-conductor/),
+read 10 November 2026.
+
 ### Accounting system readiness
 
 Hard chargeback is an accounting transaction. The receiving cost centre's P&L
