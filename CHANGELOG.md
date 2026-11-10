@@ -11,7 +11,7 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 **PyPI package**. The **installer** copies the repository as it is when you run it.
 "Unreleased" below means merged to `main`, not yet tagged.
 
-## 1.51.0 (unreleased)
+## 1.51.0 (10 November 2026)
 
 ### The connector answers in text, without widgets
 
@@ -58,6 +58,31 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   is refused whole and the dated figure in the reference stands. If that site were
   ever tampered with, it could no longer pass a page of instructions or a link to
   another site through the connector. A wrong number would still pass.
+
+### Upgrading
+
+- **Hosted connector** (`https://mcp.optimnow.io/mcp`): nothing to do. The view links
+  go when this version is deployed; the seven tools answer as before.
+- **PyPI package**: `pip install -U cloud-finops-mcp`. A host that rendered the views
+  (MCPJam's emulation did) now shows the plain result, and the `ui://cloud-finops/*`
+  resources no longer exist.
+- **Claude directory plugin**: the new content is already there if your copy follows
+  the directory.
+- **Claude Code marketplace** (`cloud-finops@optimnow`): run
+  `/plugin update cloud-finops@optimnow` once this version is tagged.
+- **ChatGPT and Gemini**: re-upload the knowledge files to get the new content.
+
+### For maintainers
+
+- `mcp_server/tests/test_no_widgets.py` fails if a tool links a view again. It reads
+  the tool metadata, the resources, the package files and the tool descriptions. The
+  evidence is in `docs/mcp-apps-lessons.md` (entry of 10 November 2026); the removed
+  code is at tag `v1.50.0`.
+- `CLAUDE.md` goes from 355 to 88 lines: the repository tree moved to
+  `docs/STRUCTURE.md`, which `scripts/check-docs-drift.sh` now checks, and the
+  cross-repo rules point at `DEPENDENCIES.md`.
+- The connector's directory listing needs one pass in the portal after the deploy
+  (`docs/directory-submission.md`, section 4).
 
 ## 1.50.0 (10 November 2026)
 
