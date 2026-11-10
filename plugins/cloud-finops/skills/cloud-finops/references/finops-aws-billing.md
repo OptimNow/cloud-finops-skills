@@ -615,6 +615,10 @@ rate card exactly in the pro forma view, with no back-calculated percentage that
 when AWS changes a public price. It still changes only the pro forma (showback and
 chargeback) view, never the AWS invoice. Not available in the China Regions. Source:
 <https://aws.amazon.com/about-aws/whats-new/2026/09/AWS-Billing-Conductor-custom-rates-usage-tier/>.
+Commitments bought in the management account do not reach billing-group pro forma
+bills by default; the credit method that gives each account its RI and Savings Plan
+saving back is in `finops-chargeback.md`, "Commitment benefits in an AWS Billing
+Conductor pro forma".
 
 ### Three sentences that anchor the hierarchy
 

@@ -24,6 +24,7 @@ questions:
 > pattern. For named patterns with runnable detection queries, prefer
 > `playbooks/`. The other families are listed in `finops-aws-patterns.md`; billing
 > mechanics are in `finops-aws-billing.md`, commitments in `finops-aws-commitments.md`.
+> A closing section covers Direct Connect flat-rate pricing.
 
 > Source: the [Cloud Efficiency Hub](https://www.pointfive.co/efficiency-hub),
 > an open, practitioner-governed library powered by PointFive, credited here as
@@ -168,6 +169,28 @@ Elastic IPs are often provisioned but forgotten - left unassociated, or still at
 - Automate audits to identify unassociated or inactive EIPs on a recurring basis
 - Count public IPv4 addresses in use, not just orphaned ones - at scale the attached-address charge is usually the larger line
 - Update IaC templates or provisioning workflows to clean up networking assets during teardown
+
+---
+
+## Direct Connect flat-rate pricing
+
+OptimNow text, not from the Cloud Efficiency Hub. Since 15 September 2026, 10 Gbps and
+100 Gbps **dedicated** connections (not hosted ones) can bill at a fixed hourly rate set
+by bandwidth and by a pricing tier chosen per connection, instead of port-hours plus
+per-GB data transfer out. Each of the five tiers (same metro, regional, continental,
+long-haul, global) covers the paths between the Direct Connect location and a set of
+Regions: data transfer out from those Regions is included, and a redundant second port
+in a port-pair is free. Billed separately: data transfer out from Regions outside the
+tier, at standard rates; SiteLink; cross-connect, colocation and last-mile fees; and
+other services such as Transit Gateway data processing. The trap is topology: a
+Direct Connect gateway, Transit Gateway or Cloud WAN attachment can bring traffic from
+Regions the tier does not cover, billed per GB until the tier is raised. Check every
+source Region before choosing the tier; the break-even against pay-as-you-go is the
+per-GB charge the flat rate removes against the rate difference. The billing mode can
+be switched on an existing connection; not in the China Regions
+([flat-rate pricing guide](https://docs.aws.amazon.com/directconnect/latest/PricingGuide/pricing-flat-rate.html),
+[AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/09/aws-direct-connect-announces-flat-rate-pricing/),
+read 10 November 2026).
 
 ---
 

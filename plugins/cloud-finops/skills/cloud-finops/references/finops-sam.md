@@ -304,6 +304,29 @@ SaaS applications are, at their core, CRUD databases with embedded business logi
 - Torii's 2025 launch of MCP-compatible agentic capabilities is one datapoint that SMPs may become platforms for AI agent orchestration; one vendor is not a market direction
 - Until AI agents displace SaaS at scale (which may take years), organisations need the ability to know their current stack, control it deliberately, and evolve it with confidence
 
+**A seat purchase can now open a consumption bill: Microsoft 365 Copilot Business.**
+Copilot Cowork, Work IQ APIs and GitHub Copilot Harness are billed in Copilot Credits,
+by usage, on top of the seat. For new Copilot Business purchases through CSP
+(standalone or bundled; Enterprise, education, nonprofit and government offers are out
+of scope), Microsoft makes this usage-based billing on by default from its FY27 Q3,
+January to March 2027, in all markets, France included (moved from 1 December 2026 on
+3 November 2026). At purchase, Partner Center creates the Azure plan, subscription and
+resource group and a default spending policy of 4,000 credits per user per month for
+all users, and a new purchase also turns it on for the Copilot Business licences
+already in the tenant. Three rules for whoever owns the SaaS budget:
+
+- **It cannot be switched off once configured.** Set the limit to zero to stop spend;
+  deleting the policy is the only way to stop it entirely.
+- **The least restrictive policy wins.** When several policies cover a user, the
+  highest limit applies, and an unlimited one always does.
+- **The charge lands in the Azure reconciliation files,** as consumption separate from
+  the seat line, so a SaaS licence review that reads only seat invoices misses it.
+
+Ask the CSP partner who sets and reviews the limits before the next purchase or seat
+addition. Sources: [usage-based billing for Copilot Business](https://learn.microsoft.com/en-us/partner-center/pricing/usage-based-billing-copilot)
+and the [Partner Center November 2026 announcements](https://learn.microsoft.com/en-us/partner-center/announcements/2026-november),
+both read 10 November 2026.
+
 **Digital sovereignty (European context):**
 
 For European organisations, SaaS governance intersects with sovereignty concerns. Who controls the infrastructure? Where does the data live? What happens when vendor pricing, policies, or geopolitics change? These are governance questions, not technical questions, and they require the same structured approach as cost optimisation.
