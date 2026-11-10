@@ -406,7 +406,9 @@ Restart your client. Verify in Claude Code with `/mcp`, in Codex CLI with
   budget is tight, and for queries that benefit from FCP-faceted filtering ("give me
   the Walk-stage Rate Optimization references aimed at Engineering").
 
-The two paths are complementary - you can install both.
+Both can be installed together without conflict. Whether the pair answers better than
+the file install alone has not been measured yet; see "Skill + installer, or MCP?" in
+[docs/CONCEPTS.md](docs/CONCEPTS.md).
 
 Source: https://github.com/OptimNow/cloud-finops-skills/tree/main/mcp_server
 

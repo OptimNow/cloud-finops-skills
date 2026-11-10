@@ -308,6 +308,16 @@ future runs against:
 P12 ("which of my RIs...") is closed as structural: no surface picks up account-data
 phrasing, and the reachable ceiling is the model offering to check the library.
 
+**Open: plugin and connector together (decided 2026-11-10, to measure after 1.50.0).**
+Cycle 7 suggested that with both enabled the connector pre-empts the skill on symptom
+questions and then does not call, which would make the pair ground worse than the
+skill alone. Nothing measured it, and 1.50.0's `query` parameter changes the connector
+side. The advice in the plugin README, the README, CONCEPTS.md and INSTALLATION.md is
+therefore one line: the plugin by default on Claude, the connector for other hosts and
+retrieval by question, both allowed with the caveat that no measurement shows a gain.
+Trigger: the post-release probe cycle on the hosted connector adds a pass with both
+enabled (P11, P13, P31, the Executive and French probes); its result rewrites that line.
+
 ## Question index (phase 1 shipped 2026-11-09)
 
 A user-lens review on 2026-11-09 found that the library's first defect, measured by

@@ -181,6 +181,11 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   for the least expert reader first: what Cloud Financial Management is, who the
   plugin is for with one example question per role, and the plugin and the connector
   explained in plain words.
+- **One piece of advice on plugin and connector**, the same in the plugin listing, the
+  README, CONCEPTS and INSTALLATION: on Claude, start with the plugin; the connector
+  suits other assistants and search by question; adding both works, but no
+  measurement yet shows the pair answering better than the plugin alone. The probe
+  cycle after this release measures it.
 
 ### Upgrading
 
