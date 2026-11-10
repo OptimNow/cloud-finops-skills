@@ -367,10 +367,9 @@ a playbook rather than a reference. This page covers the wiring instead.
 | Claude Code | `.mcp.json` (project), or `claude mcp add --scope user` (user) | JSON below / command below |
 | Cursor | `~/.cursor/mcp.json` | JSON below |
 | Codex CLI | `~/.codex/config.toml` | TOML below |
-| Windsurf | `~/.windsurf/mcp.json` | JSON below |
-| Cline / other MCP clients | client-specific | use the JSON shape |
+| Windsurf, Cline, other MCP clients | the file your client's documentation names | use the JSON shape |
 
-**JSON snippet** (Claude Code, Cursor, Windsurf, generic):
+**JSON snippet** (Claude Code, Cursor, any client that reads `mcpServers`):
 
 ```json
 {
@@ -397,7 +396,7 @@ claude mcp add --scope user cloud-finops -- cloud-finops-mcp
 ```
 
 Restart your client. Verify in Claude Code with `/mcp`, in Codex CLI with
-`codex mcp list`. In Cursor and Windsurf the server appears in the MCP panel.
+`codex mcp list`. In Cursor the server appears in the MCP panel.
 
 **When to use the MCP server vs the file-based install:**
 
