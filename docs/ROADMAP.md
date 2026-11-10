@@ -322,14 +322,17 @@ called in none of 34 chats; 13 of 16 grounded on Sonnet 5.5 and 16 of 16 on Opus
 all through the skill. The pair behaves as the plugin alone. The four advice lines
 still say that no measurement exists: rewriting them from this result is the open step.
 
-**Open: does the connector route once its tools are untagged (1.51.0, widgets
-removed).** Cycle 8 measured the connector alone at 3 of 16 (Sonnet 5.5) and 11 of 16
-(Opus 5.5), with both finders and `get_playbook` behind claude.ai's opt-in step because
-they linked a view (`docs/mcp-apps-lessons.md`, entry of 2026-11-10). Trigger: 1.51.0
-deployed. Run the same 16 probes on both models with the plugin withdrawn, expand
-"Searched available tools" in one chat to confirm the tags are gone, and compare. If
-the symptom probes (P13, P31, P39) still get no call, the lever left is the model's
-own choice to answer alone, not the connector.
+**Measured on the night of 10 to 11 November 2026: the connector routes once its tools
+are untagged (1.51.0, widgets removed).** Same 16 probes, plugin withdrawn, on the
+deployed 1.51.0: Sonnet 5.5 grounds 7 of 16 (3 before) and Opus 5.5 15 of 16 (11
+before); a finder is called in 6 and 12 chats of 16 (0 and 1 before); the host's tool
+search lists the tools as directly callable (`docs/mcp-apps-lessons.md`, entry of
+2026-11-10). **Open, and not a connector problem:** "My NAT gateway processes
+10TB/month to S3" (P13) gets no call on either model, and Sonnet 5.5 answers four of
+five executive questions (P34 to P37) without a tool. What is left there is the
+model's choice to answer alone; the levers are the tool descriptions, within what the
+directory rule allows, and the plugin. Trigger to revisit: a second connector-alone
+pass that still shows P13 without a call.
 
 **Open: detection through a connected account (pilot 2026-11-10).** The rule, the
 reference section and the read-only guard shipped; the lesson and the numbers are in

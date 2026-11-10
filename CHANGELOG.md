@@ -23,11 +23,12 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   "the runbook is above" without giving the detection query. A tool result is now
   the text the model reads and relays. The seven tools keep their names, parameters
   and results.
-- **What it was measured against.** With the connector alone on claude.ai, the same
+- **Measured before and after.** With the connector alone on claude.ai, the same
   16 questions were grounded 3 times by Sonnet 5.5 and 11 times by Opus 5.5, almost
-  always through the one content tool that had no view. The same pass on this
-  version will say what the removal changes: until then the gain is expected, not
-  measured.
+  always through the one content tool that had no view. On this version, measured
+  the night of the release: 7 by Sonnet 5.5 and 15 by Opus 5.5, with no "Use" card
+  and with the query or the commands in the answer. One question, a NAT gateway
+  sending 10 TB a month to S3, still gets no call on either model.
 - **With the plugin, nothing changes.** In that cycle Claude did not call the
   connector at all when the plugin was present (13 of 16 grounded on Sonnet 5.5, 16
   of 16 on Opus 5.5, all through the skill).
