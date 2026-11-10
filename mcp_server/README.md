@@ -154,6 +154,13 @@ get_live_figures("savings-plans-vs-reserved-instances")
   (`0.2743` is 27.4%), and each key names a median, a range or a count.
   `snapshotDate` is the catalogue the figures were computed from and is the date to
   quote them by.
+- **Checked before it is returned.** Whatever the file holds lands in a model's
+  context, so a file is returned whole or refused whole: numbers, and text short
+  enough to be a label (300 characters, 10,000 across the file), with no line
+  break, angle bracket or link in it; `url` and `page` on `optimtoken.optimnow.io`;
+  dates as `YYYY-MM-DD`. A refused file returns `{"error", "fallback"}`, and the
+  error never quotes the file. This bounds what a tampered site can say to a
+  model; it cannot tell a wrong number from a right one.
 - **Cache:** six hours per guide in process memory (the file changes once a day),
   the guide list likewise. A cached answer says `"source": "cached"` with
   `cache_age_seconds`; `fetched_at` stays the time of the original fetch. Failures
