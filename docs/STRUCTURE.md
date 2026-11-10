@@ -147,7 +147,8 @@ cloud-finops-skills/
 │                             faceted retrieval over references + playbooks,
 │                             and get_live_figures, the one open-world tool,
 │                             which passes through an OptimToken guide's
-│                             figures.json (live_figures.py, offline fixtures
+│                             figures.json once it passes a shape check:
+│                             numbers and short labels (live_figures.py, offline fixtures
 │                             in tests/fixtures/live_figures/);
 │                             stdio + streamable-HTTP transports; no MCP Apps
 │                             widget since 1.51.0: a tool that links one is
