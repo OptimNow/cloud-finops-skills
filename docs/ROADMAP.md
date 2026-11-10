@@ -308,6 +308,31 @@ future runs against:
 P12 ("which of my RIs...") is closed as structural: no surface picks up account-data
 phrasing, and the reachable ceiling is the model offering to check the library.
 
+**Open: plugin and connector together (decided 2026-11-10, to measure after 1.50.0).**
+Cycle 7 suggested that with both enabled the connector pre-empts the skill on symptom
+questions and then does not call, which would make the pair ground worse than the
+skill alone. Nothing measured it, and 1.50.0's `query` parameter changes the connector
+side. The advice in the plugin README, the README, CONCEPTS.md and INSTALLATION.md is
+therefore one line: the plugin by default on Claude, the connector for other hosts and
+retrieval by question, both allowed with the caveat that no measurement shows a gain.
+Trigger: the post-release probe cycle on the hosted connector adds a pass with both
+enabled (P11, P13, P31, the Executive and French probes); its result rewrites that line.
+
+**Open: detection through a connected account (pilot 2026-11-10).** The rule, the
+reference section and the read-only guard shipped; the lesson and the numbers are in
+`docs/DESIGN.md`. What the pilot did not settle, each with its trigger:
+
+| Not covered | Why | Trigger |
+|---|---|---|
+| The skill does not load on an operational wording ("use the connector to...", "delete the...": 0 natural runs of 8) | The description is the only lever before loading and has 26 characters left | The harness account has credit again: run the built variant (nine runs, D2 to D4, three each) and decide on the trade against the words it displaces |
+| The delete order with the skill loaded | One run only (no delete) | Same session: three more runs once loading can be forced reliably |
+| SQL detections (CUR 2.0, FOCUS, BigQuery export) through a query engine | The test account has a billing export and no table over it | A test account with Athena over CUR 2.0, or a user report |
+| Azure and Google Cloud connectors | Only AWS's MCP server was run | A test subscription or project with a connector, or a user report; the rules are written without a vendor name so the section should hold |
+| A real FinOps platform connector | The cost-platform probe ran on a mock | Access to one such connector; check that rule 6 ("first signal, not the second") matches what it returns |
+| A provider's own agent as the runner: the [AWS FinOps Agent](https://docs.aws.amazon.com/finops-agent/latest/userguide/agent-guardrail-control.html), then an Azure one (the [Optimization Agent](https://learn.microsoft.com/azure/copilot/optimization-agent) in Azure Copilot, the [SRE Agent](https://learn.microsoft.com/azure/sre-agent/sub-agents)) | Only a model holding a connector was run. As read on 10 November 2026, AWS's agent (public preview) changes no resource: it opens a Jira issue, comments on one or posts to Slack, so it fits detection then ticket. The Azure side is read, not tried | A test account with the agent enabled: one playbook given as its context, the detection, then the ticket it opens |
+| A multi-turn consent (offer, yes, read) | The harness is single-turn | An official cycle on claude.ai with a connector enabled |
+| The same rule on the hosted connector | The directory rules out instructions about other tools | A change in those criteria; until then, nothing to do |
+
 ## Question index (phase 1 shipped 2026-11-09)
 
 A user-lens review on 2026-11-09 found that the library's first defect, measured by
@@ -363,6 +388,17 @@ Open point carried from phase 1: verify on one uploaded file how claude.ai rende
 longer frontmatter block, since the `description` field was banned for rendering twice.
 
 ## Planned distribution
+
+- **A live feed for the "what changed" digest (phase 2, deferred 2026-11-10).** The
+  digest ships as a reference: current at merge on the Claude directory plugin, at the
+  tagged release on the connector, the package and the marketplace install. A live
+  tool on the connector (`get_recent_changes(since=, provider=)`, reading
+  `scripts/provider-changes.yaml` from `main` the way `get_live_figures` reads an
+  OptimToken guide) would remove that lag. Deferred because an eighth tool means a
+  new tool capture for the connector's directory listing, and because news that is a
+  few days old answers "what changed last month". Trigger: report forms or probes
+  showing the question asked on the connector with the as-of date found too old, or a
+  release cadence slower than weekly.
 
 - **Public Custom GPT for ChatGPT users.** The current ChatGPT install path is
   self-host: `./install.sh --tool chatgpt --grouped` produces 10 grouped knowledge

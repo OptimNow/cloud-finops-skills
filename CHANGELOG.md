@@ -11,12 +11,30 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 **PyPI package**. The **installer** copies the repository as it is when you run it.
 "Unreleased" below means merged to `main`, not yet tagged.
 
-## 1.50.0 (unreleased)
+## 1.51.0 (unreleased)
+
+### New and corrected content
+
+- **CloudWatch Logs account-level retention policies.** The skill now warns that an
+  account policy replaces a log group's own retention even when that is longer, so a
+  short baseline can delete compliance logs, and says to dry-run it first.
+- **Microsoft 365 Copilot Business usage-based billing.** New CSP purchases turn it on
+  by default from January to March 2027, with a per-user credit limit; it cannot be
+  switched off, only capped at zero (`finops-sam.md`).
+- **AgentCore Runtime V2.** How a higher rate on fewer memory GB-hours compares with
+  V1, and when it does not pay (`finops-agentic.md`).
+- **Direct Connect flat-rate pricing.** What the tiers include, what still bills per GB,
+  and the multi-Region topology trap (`finops-aws-patterns-networking.md`).
+- **RI and Savings Plan credits in a Billing Conductor pro forma.** Why billing-group
+  bills show on-demand equivalent by default, AWS's credit method, and the three points
+  to settle before using it for chargeback (`finops-chargeback.md`).
+
+## 1.50.0 (10 November 2026)
 
 ### Ask in your own words
 
-- **Every reference and runbook now declares the questions it answers.** 517 questions
-  across the 91 files, in English and French, written the way a FinOps lead, a finance
+- **Every reference and runbook now declares the questions it answers.** 527 questions
+  across the 92 files, in English and French, written the way a FinOps lead, a finance
   partner, an engineer, an AI product owner or an executive asks them: "Our AWS bill
   has NAT gateway charges but I do not think anything uses them", "Which of my RIs are
   about to expire without a renewal decision?", "Nos VM Azure sont arrêtées mais
@@ -40,7 +58,8 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   the team as an annex.
 - **The README's "What you can ask, by role" is generated from the index** and checked
   in CI, so every listed question is answered by a file that exists, and the Executive
-  block appears with the four other roles.
+  block appears with the four other roles. Each role is a table: the question on the
+  left, the file that answers it on the right.
 - **How it was measured.** Before merge, the fifteen probe wordings of the coverage
   battery were run through a local build of the connector in fresh contexts: all
   fifteen called the finders with `query` first and read the expected file, including
@@ -53,6 +72,17 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   RDS, EC2, AKS or BigQuery names its provider; a tie goes to the file named after
   the query; and a query made only of common words next to a facet returns the
   facet's list instead of nothing.
+
+### What changed, as a question you can ask
+
+- **A dated digest of provider changes.** "What changed in cloud billing last month?",
+  "What did AWS announce that affects our bill?", "Which retirements and price changes
+  are coming?" now have a file that answers them: one table per month for the last 90
+  days and one for the changes already scheduled, each row with its date, its effect
+  on the bill and the guide that carries the mechanics. It lists what the library
+  verified on the provider's own page, not every announcement, and it states the date
+  it was reconciled so an answer can say how fresh it is. On the connector it is
+  `get_reference(name="finops-whats-new")`, or one month with `section=`.
 
 ### Private overlays
 
@@ -101,6 +131,15 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 - **AWS**: the EC2 Capacity Block upfront fee is amortised in CUR 2.0 and Cost Explorer
   since 6 November 2026 (allocation and commitments files).
 - **Databricks**: Unity Gateway budgets count AI Functions spend since 1 November 2026.
+- **Azure Functions, Azure cost access, AWS security services, acquisitions** (each read
+  on the provider's page, 10 November 2026): the oversized Functions plan pattern now
+  sends Linux apps to Flex Consumption (virtual network integration, scale to zero) and
+  away from the classic Consumption plan, whose Linux hosting retires on 30 September
+  2028; on Azure, a cost role shows nothing until the billing account's view-charges
+  policy is on; a new section on what the list prices of WAF, GuardDuty, Inspector and
+  IAM Access Analyzer hide; and, in the acquisition guide, a step before close on what
+  can move (the AWS Seller of Record rule, a subscription holding an active MACC,
+  Marketplace SaaS subscriptions, billing history).
 - **AI coding tools**: the Claude apps gateway cost report API, OpenTelemetry plan and
   seat attributes, per-developer AWS attribution, pooled budget priority settings.
 - **Azure commitments**: the file pruned of internal repetition to fit the token budget;
@@ -151,6 +190,34 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 - Six section pointers in the question index now cite a full heading where a short
   phrase matched several.
 
+### Detection through a connector you enabled
+
+- **Rules for running a runbook's detection on your own account.** The library still
+  reads no account. When your session also holds a tool that does (your cloud
+  provider's connector, a query engine over your billing export, your FinOps
+  platform's connector), the skill now tells the model to ask before the first read,
+  naming the runbook, the account, the regions and whether the read costs anything; to
+  run the Detection step only and hand you the Fix sequence, never run it; to keep the
+  runbook's filters and thresholds when it turns a CLI command into an API call; to say
+  which accounts and regions it covered before any finding, since an empty result is
+  not a clean estate; and to treat a cost platform's figures as the first signal, not
+  the confirmation. The rules are a section of `finops-waste-detection-playbooks`,
+  "Running a detection through a connected account", written after running eight AWS
+  detections on a real account, read-only.
+- **What was measured, and what it does not do.** With a mock account and 38 headless
+  runs: once the skill is loaded, the model asked before reading in 5 runs out of 5
+  (0 out of 2 before the rule). A request worded as an operation ("use the connector
+  to check my account", "delete the orphaned volumes") did not load the skill in 8
+  runs out of 8, and on the delete order the model removed volumes without a snapshot
+  in 3 runs out of 10. So the rule is an instruction, not a lock: name the skill when
+  you ask, and give your account connector a read-only role. The hosted connector is
+  unchanged, since the Claude directory does not let a connector instruct the model
+  about other tools.
+- **Every runbook's Detection step is checked as read-only.** A new CI guard reads the
+  Detection blocks of all the runbooks: provider CLI calls against a closed list of
+  read verbs, SQL limited to SELECT and WITH, no Kusto control command. 83 blocks and
+  94 commands and statements pass.
+
 ### Tell us when it is wrong
 
 - **Two report forms on GitHub.** "Wrong or incomplete answer" and "Question not
@@ -168,6 +235,10 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 - The **MCP connector is listed in the Claude directory** (live 8 November 2026). The
   README has one button for the plugin and one for the connector, with a sentence on
   the difference, and a five-row install table by tool.
+- The **Windsurf MCP config path** is gone from `install.sh --tool mcp`, INSTALLATION.md
+  and the server README: the path printed there could not be confirmed, so Windsurf
+  now follows the generic instructions (the JSON shape, in the file Windsurf's own
+  documentation names). The Windsurf rules install is unchanged.
 - The hosted connector's machine **suspends instead of stopping** when idle, so the
   first call after a quiet period resumes in a fraction of a second instead of a cold
   start. Takes effect with this release's deploy.
@@ -177,6 +248,11 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   for the least expert reader first: what Cloud Financial Management is, who the
   plugin is for with one example question per role, and the plugin and the connector
   explained in plain words.
+- **One piece of advice on plugin and connector**, the same in the plugin listing, the
+  README, CONCEPTS and INSTALLATION: on Claude, start with the plugin; the connector
+  suits other assistants and search by question; adding both works, but no
+  measurement yet shows the pair answering better than the plugin alone. The probe
+  cycle after this release measures it.
 
 ### Upgrading
 
@@ -192,11 +268,13 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### For maintainers
 
-- 24 CI guards, five new: `check-overlay.py` on the overlay template,
+- 26 CI guards, seven new: `check-overlay.py` on the overlay template,
   `check-questions.py` on the index (count, vocabulary, duplicates, section resolution,
   personas, `also` links, French), the README role block `--check`,
-  `check-dated-prices.sh` on the runbooks and the references, and
-  `check-prices.py --offline` on the price manifest. The `llms-full.txt` smoke check
+  `check-dated-prices.sh` on the runbooks and the references,
+  `check-prices.py --offline` on the price manifest, `render-whats-new.py --check`
+  on the digest and its data file, and `check-detection-readonly.py` on the runbooks'
+  Detection blocks. The `llms-full.txt` smoke check
   now also proves that every file's questions are in the render.
 - A fresh review of the index PR after merge led to the weighted ranking, the
   named-provider rule, a tokenisation cache (a query from about 124 ms to about 7 ms)

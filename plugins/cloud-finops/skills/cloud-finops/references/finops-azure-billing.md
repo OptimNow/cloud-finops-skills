@@ -232,6 +232,15 @@ Section level** - the user needs at least **Billing Profile Reader** or **Billin
 Profile Contributor**. Sort out these roles in the engagement kickoff before you
 need them, otherwise the day-1 export setup will block on a permissions ticket.
 
+**A role is not enough to see costs.** On an EA, Cost Management Reader (or
+Contributor) at management group, subscription or resource group scope shows cost
+data only once an Enterprise Administrator turns on "Account owners can view
+charges" in the billing account policies; the department scope needs "Department
+admins can view charges". On an MCA, a Billing Profile Owner turns on the "Azure
+charges" policy on the billing profile. When a team with the right role sees no
+costs, check these switches first ([Assign access to Cost Management data](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/assign-access-acm-data),
+read 10 November 2026).
+
 Sources: [MCA setup](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/mca-setup-account), [Cost Management scopes](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/understand-work-scopes), [Billing roles for MCA](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/understand-mca-roles)
 
 **Allocation strategy (applies to both EA and MCA):**

@@ -76,6 +76,13 @@ jobs:
       - name: SKILL.md and POWER.md have not drifted
         run: bash scripts/check-skill-power-parity.sh
 
+      # The skill lets a model run a playbook's Detection step through an account
+      # connector the user enabled, and never a Fix step. That holds only if no
+      # Detection block changes anything: a closed list of CLI read verbs, SELECT-only
+      # SQL, no Kusto control command. The script runs its own self-test first.
+      - name: Playbook Detection steps only read (check-detection-readonly)
+        run: python scripts/check-detection-readonly.py
+
       - name: Installer artefacts within the size ceiling
         run: bash scripts/check-artefact-size.sh
 
@@ -157,6 +164,12 @@ jobs:
 
       - name: README role questions in sync (--check)
         run: python scripts/render-questions-readme.py --check
+
+      # The "what changed" digest is generated from scripts/provider-changes.yaml;
+      # this validates every entry (date, provider, file and section that exist) and
+      # fails when the reference was not regenerated.
+      - name: What-changed digest in sync (--check)
+        run: python scripts/render-whats-new.py --check
 
       # The weekly price-drift workflow reads scripts/price-manifest.yaml against the
       # live price lists. This run reads the recorded fixtures instead, so a figure

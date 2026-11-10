@@ -54,7 +54,7 @@
 <text x="422" y="516" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">secondary only (1)</text>
 <rect x="24" y="529" width="14" height="14" rx="3" fill="#2C2C2C"/>
 <text x="48" y="540" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#2C2C2C">FinOps Practice Operations</text>
-<text x="422" y="540" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">2 primary + 3 secondary</text>
+<text x="422" y="540" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">3 primary + 3 secondary</text>
 <rect x="24" y="553" width="14" height="14" rx="3" fill="#C1C1C1" stroke="#C1C1C1"/>
 <text x="48" y="564" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#2C2C2C">Governance, Policy &amp; Risk</text>
 <text x="422" y="564" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">secondary only (5)</text>

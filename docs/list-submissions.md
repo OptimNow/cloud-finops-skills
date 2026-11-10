@@ -176,7 +176,7 @@ repository, zero hits). Form answers:
 | Install or connection instructions | `Install: uvx cloud-finops-mcp` (stdio, PyPI package cloud-finops-mcp). `Alternative: pip install cloud-finops-mcp` then run `cloud-finops-mcp`. `Hosted: https://mcp.optimnow.io/mcp` (streamable HTTP). `Env: none`. |
 | Transport | `multiple` |
 | Auth requirements | `no auth` |
-| Known supported clients | `Claude Desktop, Claude Code, Cursor, Codex CLI, Windsurf, VS Code` (the client sections in `mcp_server/README.md`) |
+| Known supported clients | `Claude Desktop, Claude Code, Cursor, Codex CLI, VS Code` (the client sections in `mcp_server/README.md`) |
 | License | `CC-BY-SA-4.0` |
 | Before submitting | tick "I searched the repo for this project URL or name to avoid duplicates" (done on 2026-09-26; redo the search on the day) |
 

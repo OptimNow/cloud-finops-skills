@@ -367,10 +367,9 @@ a playbook rather than a reference. This page covers the wiring instead.
 | Claude Code | `.mcp.json` (project), or `claude mcp add --scope user` (user) | JSON below / command below |
 | Cursor | `~/.cursor/mcp.json` | JSON below |
 | Codex CLI | `~/.codex/config.toml` | TOML below |
-| Windsurf | `~/.windsurf/mcp.json` | JSON below |
-| Cline / other MCP clients | client-specific | use the JSON shape |
+| Windsurf, Cline, other MCP clients | the file your client's documentation names | use the JSON shape |
 
-**JSON snippet** (Claude Code, Cursor, Windsurf, generic):
+**JSON snippet** (Claude Code, Cursor, any client that reads `mcpServers`):
 
 ```json
 {
@@ -397,7 +396,7 @@ claude mcp add --scope user cloud-finops -- cloud-finops-mcp
 ```
 
 Restart your client. Verify in Claude Code with `/mcp`, in Codex CLI with
-`codex mcp list`. In Cursor and Windsurf the server appears in the MCP panel.
+`codex mcp list`. In Cursor the server appears in the MCP panel.
 
 **When to use the MCP server vs the file-based install:**
 
@@ -407,7 +406,9 @@ Restart your client. Verify in Claude Code with `/mcp`, in Codex CLI with
   budget is tight, and for queries that benefit from FCP-faceted filtering ("give me
   the Walk-stage Rate Optimization references aimed at Engineering").
 
-The two paths are complementary - you can install both.
+Both can be installed together without conflict. Whether the pair answers better than
+the file install alone has not been measured yet; see "Skill + installer, or MCP?" in
+[docs/CONCEPTS.md](docs/CONCEPTS.md).
 
 Source: https://github.com/OptimNow/cloud-finops-skills/tree/main/mcp_server
 

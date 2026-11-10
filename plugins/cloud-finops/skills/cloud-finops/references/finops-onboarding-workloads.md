@@ -251,6 +251,21 @@ not 6 weeks. Plan accordingly.
 
 ### The integration sequence
 
+0. **Before close: test what can move.** The deal model often assumes the
+   target folds into the acquirer's billing on day one; provider rules decide
+   whether it can. On AWS, an account joins the acquirer's organisation by
+   invitation, and the move fails if its Seller of Record differs from the
+   destination organisation's; its Reserved Instances and Savings Plans move with
+   it. Organisation-level billing history is deleted when an account leaves, so
+   export the target's billing reports first ([AWS Organizations, account migration](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_account_migration.html)).
+   On Azure, a subscription holding an active MACC cannot be cancelled or
+   transferred until the MACC expires; SaaS Marketplace subscriptions do not move
+   with the Azure subscription and need their own transfer; support plans cannot be
+   transferred; whether reservations and savings plans follow depends on the
+   source and destination agreement types; and usage and billing history does not
+   transfer ([Azure product transfer hub](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/subscription-transfer)).
+   Both pages read 10 November 2026. Price the gap into the plan: a MACC-locked
+   target keeps its own billing relationship until expiry, whatever the deal says.
 1. **Inventory and freeze (months 1-2).** Inventory the acquired estate's
    accounts, subscriptions, billing relationships, commitment portfolio,
    tagging conventions, and tooling. Freeze new commitment purchases until
