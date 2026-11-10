@@ -86,7 +86,7 @@ jobs:
       - name: llms.txt reference list in sync
         run: bash scripts/check-llms-txt.sh
 
-      - name: CLAUDE.md structure tree in sync
+      - name: docs/STRUCTURE.md tree in sync
         run: bash scripts/check-docs-drift.sh
 
       - name: Every reference and playbook keeps its footer
