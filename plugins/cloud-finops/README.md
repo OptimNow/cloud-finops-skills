@@ -69,6 +69,11 @@ It runs no code. It declares no hooks, no commands, no agents and no MCP server.
 sends no data anywhere and reads nothing from your machine: the model reads these
 files as context and answers from them. It cannot see your cloud account; for a
 question about your own resources it hands you the detection query to run yourself.
+If your session also holds a connector to your cloud account or your cost platform,
+the skill tells the model to ask you before the first read, to run a runbook's
+detection only and never its fix, and to say which accounts and regions it covered.
+That is an instruction to the model, not a lock, and it acts only once the skill is
+loaded: give that connector a read-only role.
 The skill names one public website for current prices, the OptimNow AI Pricing Hub;
 whether the model opens it is decided in your session, and the plugin itself makes
 no request. Where a reference quotes a dated figure from one of that site's guides, the

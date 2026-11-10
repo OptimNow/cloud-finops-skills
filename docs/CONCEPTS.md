@@ -71,6 +71,20 @@ guaranteed: the same question phrased 2 ways can ground differently. When an ans
 arrives without a visible tool call or file read, asking for the library by name is
 the one-turn fix.
 
+**With your own cloud or cost connector in the session.** Since 1.50.0 the skill
+carries rules for running a runbook's detection through a tool you connected: ask
+before the first read, read only, say which accounts and regions were covered, treat
+a cost platform's figures as a first signal. Measured on 10 November 2026 with a mock
+account (Claude Sonnet, headless, 38 runs): with the skill loaded, the model asked
+before reading in 5 runs out of 5, against 0 out of 2 before the rule. The limit is
+loading. A request worded as an operation ("use the connector to check my account",
+"delete the orphaned volumes") did not load the skill in 8 natural runs out of 8, and
+on the delete order the model removed volumes without a snapshot in 3 runs out of 10.
+The hosted connector carries no such rule: the Claude directory does not let a
+connector instruct the model about other tools. So name the skill when you ask
+("with the cloud-finops skill, check my account for..."), and give your account
+connector a read-only role: that role is the guarantee, the rule is not.
+
 Using a non-Claude model through an API? Add the **response contract** from
 [INSTALLATION.md](../INSTALLATION.md) ("API integration / Recommended response
 contract") to your system prompt so answers stay structured and billing-grounded.

@@ -20,6 +20,10 @@ questions:
   - q: "Where do we start a waste hunt in a new cloud account?"
     section: "Cross-category detection principles"
   - "Quels types de gaspillage cloud existent, et par lesquels commencer ?"
+  - q: "I have connected my AWS account to the assistant: can it check for waste itself instead of giving me a query?"
+    section: "Running a detection through a connected account"
+  - q: "Peux-tu lancer la détection toi-même sur mon compte cloud, avec le connecteur que j'ai activé ?"
+    section: "Running a detection through a connected account"
 ---
 
 # FinOps Waste Detection Playbooks
@@ -679,6 +683,84 @@ differently from AWS, so do not port an AWS threshold across providers.
 - **Porting thresholds across providers.** Per-GB boundary pricing differs
   by provider and by boundary type; an AWS cross-AZ rule of thumb does not
   transfer to Azure or GCP.
+
+---
+
+## Running a detection through a connected account
+
+This library reads no account: a playbook's Detection step is a query for the
+user to run. A session can also hold a second tool that does reach the user's
+estate: a cloud provider's connector over its resource APIs, a query engine
+over the billing export, or a FinOps platform's connector over cost data. When
+one is present, the Detection step can be run for the user, under seven rules.
+They come from running eight AWS playbook detections through AWS's MCP server
+on one account, read-only, on 10 November 2026.
+
+1. **Ask before the first read.** Say which playbook, which account,
+   subscription or project, which regions, and whether the read costs
+   anything, then wait for a yes. A question about the user's own estate
+   ("which of my volumes are orphaned?") is the moment to offer, not a
+   permission. A yes covers the same scope for the rest of the conversation;
+   another account, a paid query over the full billing table, or anything
+   beyond reading needs a new question. With no such tool, or after a no, hand
+   the Detection step over as written.
+2. **Detection only, never the Fix step.** Run describe, list, get and query
+   calls. Do not create, modify, stop, delete, tag or purchase anything from
+   the session, including when asked to "clean it up": return the candidate
+   list with the playbook's Fix sequence. Its first steps (notify the owner,
+   wait, snapshot) are not API calls, and the automated decommission of the
+   `obvious` tier is a scheduled process with a notice period and an exemption
+   list, not one call from a conversation. A read-only role on the connector
+   is the guarantee, not this rule: in the pilot's mock-account runs (Claude
+   Sonnet, 10 November 2026), a model given a delete order and a tool with
+   write rights deleted volumes without a snapshot in three runs out of ten,
+   each time without this library loaded.
+3. **Transpose the query, keep its logic.** A connector rarely runs a Detection
+   block as written (table below). Where the tool exposes API calls instead of
+   a shell, `aws ec2 describe-volumes --filters Name=status,Values=available`
+   becomes the `DescribeVolumes` call with the same filter. Keep the playbook's
+   filters, thresholds and lookback window, and say which command was
+   transposed. A shell loop ending in `2>/dev/null` reads every error as "no
+   rule"; through an API, tell "does not exist" (a finding) from "access
+   denied" (a gap in coverage).
+4. **State coverage before findings.** A connector sees one account,
+   subscription or project, under one role, and may cap the calls in a run: in
+   the pilot, a loop over 17 regions was cut at 100 calls and the regions never
+   reached came back as zeros. Report the accounts and regions checked, the
+   calls that failed and what was not reached, then the findings. An empty
+   result means "none found in this account, in these regions, today", not "no
+   waste".
+5. **Looking has a cost.** An on-demand warehouse query bills by the data it
+   reads ([Athena](https://aws.amazon.com/athena/pricing/),
+   [BigQuery](https://docs.cloud.google.com/bigquery/docs/estimate-costs)),
+   S3 bills LIST requests ([S3 pricing](https://aws.amazon.com/s3/pricing/)) and
+   CloudWatch always bills `GetMetricData`, which its free tier of API requests
+   leaves out ([CloudWatch pricing](https://aws.amazon.com/cloudwatch/pricing/));
+   pages read 10 November 2026. Bound a billing query by date and partition,
+   rank with a free signal first, and say so before scanning a full billing
+   table.
+6. **A cost connector gives the first signal, not the second.** A FinOps
+   platform's connector, or a provider's cost API, cannot see whether a volume
+   is attached or a target healthy. It answers the sizing half of a playbook,
+   the part the billing SQL covers: spend by service, usage type, account and
+   tag over a period. Ask in the tool's own terms, not with the playbook's
+   SQL, since table and column names differ (FOCUS names are the closest
+   shared vocabulary). The second signal (traffic, attachment, health) still
+   comes from the provider's API or the resource owner; with both kinds of
+   tool connected, rank with the first and confirm with the second.
+7. **The result is the user's data.** Show resource names, account numbers and
+   tags, since they are the answer, and keep them out of anything that leaves
+   the conversation (a ticket, a shared document, a search sent to another
+   tool): a pattern name is enough to find a playbook. The classification
+   rules above still apply: a result is a candidate list, `likely` needs its
+   second signal, and a saving is potential until realised.
+
+| Detection block | What can run it | Check before running |
+|---|---|---|
+| `bash` with a provider CLI (`aws`, `az`, `gcloud`) | A connector that calls the provider's API, or a shell signed in to that CLI | Every call is a describe, list, get or show |
+| `sql` over CUR 2.0, FOCUS or a billing export | A query engine over that export (Athena, BigQuery, a warehouse) | The table exists; the query is bounded by date |
+| `kusto` | Azure Resource Graph or Log Analytics, as the playbook says | The time range |
+| `promql`, `kubectl` | The cluster's own endpoint, seldom reachable from a session | Hand the query over |
 
 ---
 

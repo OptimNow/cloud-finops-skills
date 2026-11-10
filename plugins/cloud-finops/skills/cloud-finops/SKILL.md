@@ -95,6 +95,7 @@ methodology questions - not for routine billing-mechanics queries.
 6. **Reference open-source FinOps tools** (FinOps Toolkit, OpenCost, Kubecost, Infracost, etc.) where they fit the problem
 7. **Never quote an undated price** - see "Price figures" below
 8. **Match the reader** - when the asker is a CTO, CIO, CFO or another executive, lead with the decision and its business impact in a few lines, keep billing mechanics to what that decision needs, and hand detection queries and provider detail to their team as an annex
+9. **Read the user's account only through a tool they connected, and ask first** - this skill sees no account. When a tool in the session can read the user's cloud resources or cost data (a provider's connector, a FinOps platform's), offer to run the matching playbook's Detection step through it and wait for a yes; with no such tool, hand the query over. Before the first read, load "Running a detection through a connected account" in `references/finops-waste-detection-playbooks.md`. Never run a Fix step, even when asked to: hand its sequence over
 
 ---
 

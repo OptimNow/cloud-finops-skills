@@ -151,6 +151,34 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 - Six section pointers in the question index now cite a full heading where a short
   phrase matched several.
 
+### Detection through a connector you enabled
+
+- **Rules for running a runbook's detection on your own account.** The library still
+  reads no account. When your session also holds a tool that does (your cloud
+  provider's connector, a query engine over your billing export, your FinOps
+  platform's connector), the skill now tells the model to ask before the first read,
+  naming the runbook, the account, the regions and whether the read costs anything; to
+  run the Detection step only and hand you the Fix sequence, never run it; to keep the
+  runbook's filters and thresholds when it turns a CLI command into an API call; to say
+  which accounts and regions it covered before any finding, since an empty result is
+  not a clean estate; and to treat a cost platform's figures as the first signal, not
+  the confirmation. The rules are a section of `finops-waste-detection-playbooks`,
+  "Running a detection through a connected account", written after running eight AWS
+  detections on a real account, read-only.
+- **What was measured, and what it does not do.** With a mock account and 38 headless
+  runs: once the skill is loaded, the model asked before reading in 5 runs out of 5
+  (0 out of 2 before the rule). A request worded as an operation ("use the connector
+  to check my account", "delete the orphaned volumes") did not load the skill in 8
+  runs out of 8, and on the delete order the model removed volumes without a snapshot
+  in 3 runs out of 10. So the rule is an instruction, not a lock: name the skill when
+  you ask, and give your account connector a read-only role. The hosted connector is
+  unchanged, since the Claude directory does not let a connector instruct the model
+  about other tools.
+- **Every runbook's Detection step is checked as read-only.** A new CI guard reads the
+  Detection blocks of all the runbooks: provider CLI calls against a closed list of
+  read verbs, SQL limited to SELECT and WITH, no Kusto control command. 83 blocks and
+  94 commands and statements pass.
+
 ### Tell us when it is wrong
 
 - **Two report forms on GitHub.** "Wrong or incomplete answer" and "Question not
