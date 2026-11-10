@@ -47,12 +47,19 @@ routing record of [ROADMAP.md](ROADMAP.md)).
   lookup and discovery questions ("show me the idle waste runbooks") route reliably;
   advisory and specific-symptom questions route on some phrasings and not others, and
   the tool descriptions name the questions each tool serves to move that probability,
-  not to force the call. Its strengths: distribution (paste one URL, the right path
+  not to force the call. Version 1.50.0 adds a `query` parameter that ranks the
+  library by the user's own sentence: a local run of the probe wordings on
+  9 November 2026 saw it called on every one, and the measurement on the hosted
+  connector follows the release. Its strengths: distribution (paste one URL, the right path
   for non-technical users and for hosts with neither skill support nor an installer
   target), faceted queries over the library's metadata, and interactive widgets on
   hosts that render MCP Apps (Claude.ai does not render them yet; see below).
-- **Both is legitimate.** Skill loaded for the doctrine, connector added for faceted
-  retrieval or for hosts where the skill is not loaded.
+- **Both work together, but the gain is unproven.** The August runs found the skill
+  alone grounding symptom questions the connector missed, and suggested that with both
+  enabled the connector may take those questions over without calling a tool. A probe
+  pass with both enabled, on the hosted connector after 1.50.0, settles it (ROADMAP,
+  "Routing record"). Until then the advice is the plugin by default on Claude, the
+  connector for other hosts and for faceted retrieval.
 
 **What to expect in practice, on either surface.** Neither the skill nor the server
 can see your cloud account. For "which of *my* X" questions ("which of my RIs are
@@ -87,9 +94,10 @@ serves the same library through 7 read-only tools and, on hosts that render MCP 
 as interactive views. It is offered separately, as an MCP connector and not as part
 of the plugin, on purpose: both carry the same content, and a plugin that also
 declared the server would load the tool definitions in every session next to the
-skill and put the same library into context twice. Use the plugin when you want the
-doctrine loaded up front, the connector when you want on-demand retrieval or the
-views, and both only when you want both.
+skill and put the same library into context twice. If you use Claude, start with the
+plugin. Add the connector for an assistant other than Claude, for retrieval by
+question or facet, or for the views. Both together work, with the caveat above: no
+measurement yet shows the pair answering better than the plugin alone.
 
 ## The MCP server: seven tools
 

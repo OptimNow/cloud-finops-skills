@@ -30,8 +30,9 @@ it hands you the detection query to run yourself and reads the result with you.
 
 ## Plugin or connector?
 
-The same library exists in two forms in the Claude directory, and you add one of them,
-not both, so the content is not loaded twice in one session.
+The same library exists in two forms in the Claude directory. If you use Claude, start
+with this plugin. Adding the connector as well works, but no measurement yet shows the
+two together answering better than the plugin alone.
 
 - **This plugin** adds the knowledge to Claude as text files it reads when a cost
   question comes up. Nothing runs, nothing is sent anywhere: it works like a reference
