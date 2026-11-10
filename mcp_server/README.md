@@ -263,24 +263,12 @@ Restart Claude Code, then run `/mcp` to confirm the server is connected.
 command = "cloud-finops-mcp"
 ```
 
-### Windsurf
-
-`~/.windsurf/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "cloud-finops": {
-      "command": "cloud-finops-mcp"
-    }
-  }
-}
-```
-
 ### Any other MCP client
 
 The server speaks MCP over stdio. Point any compatible client at `cloud-finops-mcp`
-(or `python -m cloud_finops_mcp`).
+(or `python -m cloud_finops_mcp`). Clients that read an `mcpServers` JSON block,
+Windsurf among them, take the Cursor snippet above, in the file their own
+documentation names.
 
 ## Streamable HTTP (hosted deployments)
 

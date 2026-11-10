@@ -1038,14 +1038,8 @@ EOF
     [mcp_servers.cloud-finops]
     command = "cloud-finops-mcp"
 EOF
-  printf "\n  ${C_BOLD}Windsurf${C_RESET}  (~/.windsurf/mcp.json):\n"
-  cat <<'EOF'
-    {
-      "mcpServers": {
-        "cloud-finops": { "command": "cloud-finops-mcp" }
-      }
-    }
-EOF
+  printf "\n  ${C_BOLD}Other MCP clients${C_RESET}  (the JSON shape above, in the file your client's\n"
+  printf "  documentation names for MCP servers)\n"
   printf "\n"
   printf "${C_BOLD}Step 3${C_RESET} - restart your client. Verify:\n"
   dim "    Claude Code: /mcp"

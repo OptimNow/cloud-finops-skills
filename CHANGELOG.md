@@ -168,6 +168,10 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 - The **MCP connector is listed in the Claude directory** (live 8 November 2026). The
   README has one button for the plugin and one for the connector, with a sentence on
   the difference, and a five-row install table by tool.
+- The **Windsurf MCP config path** is gone from `install.sh --tool mcp`, INSTALLATION.md
+  and the server README: the path printed there could not be confirmed, so Windsurf
+  now follows the generic instructions (the JSON shape, in the file Windsurf's own
+  documentation names). The Windsurf rules install is unchanged.
 - The hosted connector's machine **suspends instead of stopping** when idle, so the
   first call after a quiet period resumes in a fraction of a second instead of a cold
   start. Takes effect with this release's deploy.
