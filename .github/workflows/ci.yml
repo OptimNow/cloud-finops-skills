@@ -76,6 +76,13 @@ jobs:
       - name: SKILL.md and POWER.md have not drifted
         run: bash scripts/check-skill-power-parity.sh
 
+      # The skill lets a model run a playbook's Detection step through an account
+      # connector the user enabled, and never a Fix step. That holds only if no
+      # Detection block changes anything: a closed list of CLI read verbs, SELECT-only
+      # SQL, no Kusto control command. The script runs its own self-test first.
+      - name: Playbook Detection steps only read (check-detection-readonly)
+        run: python scripts/check-detection-readonly.py
+
       - name: Installer artefacts within the size ceiling
         run: bash scripts/check-artefact-size.sh
 

@@ -318,6 +318,20 @@ retrieval by question, both allowed with the caveat that no measurement shows a 
 Trigger: the post-release probe cycle on the hosted connector adds a pass with both
 enabled (P11, P13, P31, the Executive and French probes); its result rewrites that line.
 
+**Open: detection through a connected account (pilot 2026-11-10).** The rule, the
+reference section and the read-only guard shipped; the lesson and the numbers are in
+`docs/DESIGN.md`. What the pilot did not settle, each with its trigger:
+
+| Not covered | Why | Trigger |
+|---|---|---|
+| The skill does not load on an operational wording ("use the connector to...", "delete the...": 0 natural runs of 8) | The description is the only lever before loading and has 26 characters left | The harness account has credit again: run the built variant (nine runs, D2 to D4, three each) and decide on the trade against the words it displaces |
+| The delete order with the skill loaded | One run only (no delete) | Same session: three more runs once loading can be forced reliably |
+| SQL detections (CUR 2.0, FOCUS, BigQuery export) through a query engine | The test account has a billing export and no table over it | A test account with Athena over CUR 2.0, or a user report |
+| Azure and Google Cloud connectors | Only AWS's MCP server was run | A test subscription or project with a connector, or a user report; the rules are written without a vendor name so the section should hold |
+| A real FinOps platform connector | The cost-platform probe ran on a mock | Access to one such connector; check that rule 6 ("first signal, not the second") matches what it returns |
+| A multi-turn consent (offer, yes, read) | The harness is single-turn | An official cycle on claude.ai with a connector enabled |
+| The same rule on the hosted connector | The directory rules out instructions about other tools | A change in those criteria; until then, nothing to do |
+
 ## Question index (phase 1 shipped 2026-11-09)
 
 A user-lens review on 2026-11-09 found that the library's first defect, measured by

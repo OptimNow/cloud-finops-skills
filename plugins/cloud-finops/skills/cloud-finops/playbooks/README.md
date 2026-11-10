@@ -157,6 +157,10 @@ that cannot run is worse than no query at all - it returns empty and reads as
   command that tells the two apart.
 - **Do not present pseudo-code as runnable.** If a step is illustrative, label
   it.
+- **Only read.** A Detection block may be run through an account connector, so
+  it holds no command that creates, changes or deletes anything: that belongs
+  in Fix. `scripts/check-detection-readonly.py` fails CI on one, and on a CLI
+  verb or a fence language it does not know.
 
 ## Fix
 <bullet list of remediation steps, ordered safest-first>

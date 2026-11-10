@@ -17,7 +17,13 @@ This policy covers the three ways the Cloud FinOps library reaches you:
 **Skill files: nothing.** They are static markdown. They run no code, make no network
 request, set no cookie and carry no credential. The playbooks contain detection queries
 you run yourself in your own cloud account; nothing in the library reads a cloud
-account.
+account. If your session also holds a tool that reads your cloud account or your cost
+data, that tool is yours and follows its own provider's terms. The skill asks the
+model to wait for your agreement before the first read, to read only, and to keep
+resource names and account numbers out of anything it sends to another tool. What
+such a tool returns stays in your conversation with your AI assistant: the skill
+files send nothing anywhere, and the hosted connector receives only what the model
+writes in a tool call, as described below.
 
 **Local package: nothing, and one outbound request on demand.** The server runs on
 your machine with the library bundled inside the package and reports nothing back to

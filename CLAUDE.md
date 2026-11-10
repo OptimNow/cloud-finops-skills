@@ -218,10 +218,10 @@ cloud-finops-skills/
 │                             check-reference-size (token budget per file:
 │                             warns at 15,000, or 6,000 for SKILL.md, fails
 │                             at 30,000 and 8,000),
-│                             check-skill-description,
-│                             check-skill-power-parity (diffs the shared
-│                             SKILL.md / POWER.md body so the routing tables
-│                             cannot drift apart), check-style (prose only:
+│                             check-skill-description, check-skill-power-parity
+│                             (the shared SKILL.md / POWER.md body cannot drift),
+│                             check-detection-readonly.py (a playbook's Detection
+│                             block only reads), check-style (prose only:
 │                             no em dash, filler intensifier, corporate verb,
 │                             "percent", dash residue or "the single most";
 │                             allowlist in check-style-allow.txt),

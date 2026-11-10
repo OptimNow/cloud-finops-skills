@@ -101,7 +101,11 @@ Each question below is answered by a file that exists in this repository today.
 
 Neither the skill nor the connector can see your cloud account. For a question about
 your own resources, the answer is a detection query you run yourself, taken from the
-matching runbook.
+matching runbook. If you have connected your cloud account or your cost platform to
+the same session, the skill tells the model to ask before reading it, and to run the
+runbook's detection only, never its fix. That is an instruction, not a lock: a
+read-only role on that connector is the guarantee
+([what was measured](docs/CONCEPTS.md#skill--installer-or-mcp)).
 
 ---
 
