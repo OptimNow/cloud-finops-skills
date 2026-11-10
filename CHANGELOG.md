@@ -11,12 +11,12 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 **PyPI package**. The **installer** copies the repository as it is when you run it.
 "Unreleased" below means merged to `main`, not yet tagged.
 
-## 1.50.0 (unreleased)
+## 1.50.0 (10 November 2026)
 
 ### Ask in your own words
 
-- **Every reference and runbook now declares the questions it answers.** 517 questions
-  across the 91 files, in English and French, written the way a FinOps lead, a finance
+- **Every reference and runbook now declares the questions it answers.** 527 questions
+  across the 92 files, in English and French, written the way a FinOps lead, a finance
   partner, an engineer, an AI product owner or an executive asks them: "Our AWS bill
   has NAT gateway charges but I do not think anything uses them", "Which of my RIs are
   about to expire without a renewal decision?", "Nos VM Azure sont arrêtées mais
@@ -113,6 +113,15 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 - **AWS**: the EC2 Capacity Block upfront fee is amortised in CUR 2.0 and Cost Explorer
   since 6 November 2026 (allocation and commitments files).
 - **Databricks**: Unity Gateway budgets count AI Functions spend since 1 November 2026.
+- **Azure Functions, Azure cost access, AWS security services, acquisitions** (each read
+  on the provider's page, 10 November 2026): the oversized Functions plan pattern now
+  sends Linux apps to Flex Consumption (virtual network integration, scale to zero) and
+  away from the classic Consumption plan, whose Linux hosting retires on 30 September
+  2028; on Azure, a cost role shows nothing until the billing account's view-charges
+  policy is on; a new section on what the list prices of WAF, GuardDuty, Inspector and
+  IAM Access Analyzer hide; and, in the acquisition guide, a step before close on what
+  can move (the AWS Seller of Record rule, a subscription holding an active MACC,
+  Marketplace SaaS subscriptions, billing history).
 - **AI coding tools**: the Claude apps gateway cost report API, OpenTelemetry plan and
   seat attributes, per-developer AWS attribution, pooled budget priority settings.
 - **Azure commitments**: the file pruned of internal repetition to fit the token budget;
@@ -241,12 +250,13 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### For maintainers
 
-- 25 CI guards, six new: `check-overlay.py` on the overlay template,
+- 26 CI guards, seven new: `check-overlay.py` on the overlay template,
   `check-questions.py` on the index (count, vocabulary, duplicates, section resolution,
   personas, `also` links, French), the README role block `--check`,
-  `check-dated-prices.sh` on the runbooks and the references, and
-  `check-prices.py --offline` on the price manifest, and `render-whats-new.py --check`
-  on the digest and its data file. The `llms-full.txt` smoke check
+  `check-dated-prices.sh` on the runbooks and the references,
+  `check-prices.py --offline` on the price manifest, `render-whats-new.py --check`
+  on the digest and its data file, and `check-detection-readonly.py` on the runbooks'
+  Detection blocks. The `llms-full.txt` smoke check
   now also proves that every file's questions are in the render.
 - A fresh review of the index PR after merge led to the weighted ranking, the
   named-provider rule, a tokenisation cache (a query from about 124 ms to about 7 ms)

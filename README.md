@@ -45,6 +45,7 @@ Each question below is answered by a file that exists in this repository today.
 | A third of our bill is unallocated. How do we reach a defensible allocation of shared costs? | [finops-allocation-showback.md](plugins/cloud-finops/skills/cloud-finops/references/finops-allocation-showback.md) |
 | We run half our workloads in our own data centres. How do we give app teams a monthly bill for on-prem capacity they will accept? | [finops-on-prem-hybrid.md](plugins/cloud-finops/skills/cloud-finops/references/finops-on-prem-hybrid.md) |
 | Who should own commitment purchases, and which meetings do we need to run the practice? | [finops-practice-operations.md](plugins/cloud-finops/skills/cloud-finops/references/finops-practice-operations.md) |
+| What changed in cloud and AI billing over the last month that I should know about? | [finops-whats-new.md](plugins/cloud-finops/skills/cloud-finops/references/finops-whats-new.md) |
 | We need to start reporting our cloud carbon emissions. Where do we begin? | [greenops-cloud-carbon.md](plugins/cloud-finops/skills/cloud-finops/references/greenops-cloud-carbon.md) |
 
 **Finance and procurement**

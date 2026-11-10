@@ -7,7 +7,8 @@ fcp_personas_primary: ["FinOps Practitioner", "Leadership"]
 fcp_personas_collaborating: ["Engineering", "Finance", "Procurement"]
 fcp_maturity_entry: "Crawl"
 questions:
-  - "What changed in cloud and AI billing over the last month that I should know about?"
+  - q: "What changed in cloud and AI billing over the last month that I should know about?"
+    persona: "FinOps lead"
   - "What did AWS, Azure and Google Cloud announce recently that affects our bill?"
   - q: "Which upcoming price increases, retirements or deadlines should we plan for in the next few months?"
     section: "Scheduled changes"

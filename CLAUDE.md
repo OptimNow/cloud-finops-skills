@@ -233,7 +233,7 @@ cloud-finops-skills/
 │                             price-drift.yml), render-whats-new.py
 │                             (provider-changes.yaml into finops-whats-new.md;
 │                             --check) and check-marketplace-version
-│                             - all twenty-five run by the `CI` workflow, and
+│                             - all twenty-six run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow
