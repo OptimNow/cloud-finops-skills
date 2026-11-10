@@ -88,8 +88,7 @@ cloud-finops-skills/
         └── playbooks/           <- Named-pattern runbooks (~3-8 KB each) + catalogue
 ```
 
-The full tree with every reference file is in [`CLAUDE.md`](./CLAUDE.md)
-("Repository structure"), which CI keeps in step with the files on disk.
+The full tree with every reference file is in [`docs/STRUCTURE.md`](./docs/STRUCTURE.md), which CI keeps in step with the files on disk.
 
 ## Concrete contribution types we actively want
 

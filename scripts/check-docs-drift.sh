@@ -6,15 +6,15 @@
 # `check-llms-txt.sh` already gates llms.txt. The 2026-08 review (F24) noted
 # that the rest of the PR checklist's doc-sync items rely on a human reading
 # the checklist. This closes the one that actually enumerates every reference:
-# the CLAUDE.md "Repository structure" tree.
+# the docs/STRUCTURE.md tree (moved out of CLAUDE.md on 2026-11-10).
 #
 # AGENTS.md deliberately does NOT enumerate references - it shows a truncated
-# tree and points at CLAUDE.md for the full listing - so there is nothing there
+# tree and points at docs/STRUCTURE.md for the full listing - so there is nothing there
 # to drift, and it is intentionally not checked. If AGENTS.md ever starts
 # listing individual reference files, extend this script to cover it.
 #
 # Three checks, the first two mirroring check-llms-txt.sh:
-#   1. Every plugins/cloud-finops/skills/cloud-finops/references/*.md appears in the CLAUDE.md tree.
+#   1. Every plugins/cloud-finops/skills/cloud-finops/references/*.md appears in the docs/STRUCTURE.md tree.
 #   2. Every reference filename in that tree block exists on disk.
 #   3. Every plugins/cloud-finops/skills/cloud-finops/playbooks/*.md appears in the catalogue table
 #      of playbooks/README.md, and every catalogue entry exists on disk.
@@ -22,7 +22,7 @@
 # Check 3 exists because SKILL.md and POWER.md carry representative examples
 # only and defer to playbooks/README.md "for the full list". That deferral was
 # dangling until August 2026 - the README had no list at all - so the catalogue
-# is now gated the same way the CLAUDE.md tree is.
+# is now gated the same way the docs/STRUCTURE.md tree is.
 #
 # Usage:
 #   ./scripts/check-docs-drift.sh    Report drift; exit 1 if any is found.
@@ -33,10 +33,10 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
 REF_DIR="plugins/cloud-finops/skills/cloud-finops/references"
-CLAUDE_MD="CLAUDE.md"
+TREE_DOC="docs/STRUCTURE.md"
 errors=0
 
-# The reference entries in the CLAUDE.md tree are the lines indented under
+# The reference entries in the docs/STRUCTURE.md tree are the lines indented under
 # `└── references/`, i.e. they start with the tree prefix at that depth.
 # Scoping to that block keeps top-level entries (fcp-coverage.md, README.md)
 # from being mistaken for references.
@@ -49,10 +49,10 @@ listed="$(awk '
   /└── references\/ / { inblock = 1; next }
   inblock && /^│       / { print; next }
   inblock { inblock = 0 }
-' "$CLAUDE_MD" | grep -oE '[a-z0-9-]+\.md' | sort -u)"
+' "$TREE_DOC" | grep -oE '[a-z0-9-]+\.md' | sort -u)"
 
 if [[ -z "$listed" ]]; then
-  echo "FAIL: could not find the references block in the $CLAUDE_MD tree." >&2
+  echo "FAIL: could not find the references block in the $TREE_DOC tree." >&2
   echo "      The tree format changed - update this script to match." >&2
   exit 1
 fi
@@ -64,7 +64,7 @@ fi
 for f in "$REF_DIR"/*.md; do
   base="$(basename "$f")"
   if ! grep -qxF "$base" <<<"$listed"; then
-    echo "MISSING: $base exists but is not in the $CLAUDE_MD structure tree" >&2
+    echo "MISSING: $base exists but is not in the $TREE_DOC structure tree" >&2
     errors=$((errors + 1))
   fi
 done
@@ -72,17 +72,17 @@ done
 # Check 2: every filename in the tree block points at a real file.
 while IFS= read -r base; do
   [[ -f "$REF_DIR/$base" ]] || {
-    echo "STALE: $CLAUDE_MD lists $base which does not exist in $REF_DIR" >&2
+    echo "STALE: $TREE_DOC lists $base which does not exist in $REF_DIR" >&2
     errors=$((errors + 1))
   }
 done <<<"$listed"
 
 count="$(find "$REF_DIR" -maxdepth 1 -name '*.md' -type f | wc -l | tr -d ' ')"
 if [[ $errors -gt 0 ]]; then
-  echo "FAIL: $errors CLAUDE.md sync error(s). Update the 'Repository structure' tree." >&2
+  echo "FAIL: $errors tree sync error(s). Update $TREE_DOC." >&2
   exit 1
 fi
-echo "OK: CLAUDE.md structure tree lists all $count references, no stale entries."
+echo "OK: $TREE_DOC tree lists all $count references, no stale entries."
 
 # ---- Check 3: playbooks/README.md catalogue ---------------------------------
 PB_DIR="plugins/cloud-finops/skills/cloud-finops/playbooks"
