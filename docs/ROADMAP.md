@@ -374,6 +374,17 @@ longer frontmatter block, since the `description` field was banned for rendering
 
 ## Planned distribution
 
+- **A live feed for the "what changed" digest (phase 2, deferred 2026-11-10).** The
+  digest ships as a reference: current at merge on the Claude directory plugin, at the
+  tagged release on the connector, the package and the marketplace install. A live
+  tool on the connector (`get_recent_changes(since=, provider=)`, reading
+  `scripts/provider-changes.yaml` from `main` the way `get_live_figures` reads an
+  OptimToken guide) would remove that lag. Deferred because an eighth tool means a
+  new tool capture for the connector's directory listing, and because news that is a
+  few days old answers "what changed last month". Trigger: report forms or probes
+  showing the question asked on the connector with the as-of date found too old, or a
+  release cadence slower than weekly.
+
 - **Public Custom GPT for ChatGPT users.** The current ChatGPT install path is
   self-host: `./install.sh --tool chatgpt --grouped` produces 10 grouped knowledge
   files the user uploads themselves. A public Cloud FinOps GPT in the OpenAI GPT

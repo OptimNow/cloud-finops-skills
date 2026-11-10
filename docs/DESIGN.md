@@ -70,6 +70,23 @@ maintainer-local coverage battery (`pipeline/coverage-probes.md`) so it is re-ru
 before every release. A report that is right but out of scope goes to
 `docs/ROADMAP.md` with the issue number, not to a silent close.
 
+**The "what changed" digest (since 2026-11-10).** `references/finops-whats-new.md`
+answers "what happened in the last month" and "what is coming" from a table per
+month and a "Scheduled changes" table. The tables are generated: the source is
+`scripts/provider-changes.yaml`, one entry per provider change the library applied
+(`date`, `provider`, `service`, `change`, `file`, `section`, `source`), and
+`scripts/render-whats-new.py` validates each entry (a closed provider list, a file and a
+section that exist, no dash or price-word regressions) and rewrites the block between
+the markers; `--check` runs in CI. The 90-day window is counted from the file's
+`as_of`, never from the clock, so CI cannot go red because time passed; entries past
+the window stay in the YAML as the archive. Two duties follow. A content PR that
+applies a dated provider change adds its entry (the pull request checklist asks for
+it), written from the sentence the reference now carries, never from the scan's
+summary. And `as_of` moves to the date of the scan a lot was reconciled with: it is
+the freshness the reader is told, so it moves only when the scan's verified items are
+all in. The file lives outside the plugin folder, which holds markdown only. It is
+also the feed a live tool would read (ROADMAP, "Planned distribution").
+
 **Price drift check (since 2026-11-09).** The infrastructure list prices the files
 carry as dated illustrative figures (a NAT gateway hour, a gp3 GB-month, an App Service
 plan, the GKE cluster fee, the Databricks DBCU plans: ninety-eight provider SKUs, written in
@@ -856,6 +873,9 @@ from how the directory works:
       install path) has a line under the unreleased version in `CHANGELOG.md`,
       written for the person who uses the skill, not for the maintainer. The release
       PR turns "(unreleased)" into the date
+- [ ] A dated provider change applied in this PR has its entry in
+      `scripts/provider-changes.yaml`, and `python scripts/render-whats-new.py` was
+      run (CI checks the reference is in sync, not that an entry was added)
 - [ ] New reference file follows the `finops-{domain}.md` naming convention
 - [ ] YAML FCP frontmatter included on the new file (see "Reference-file frontmatter")
 - [ ] Routing table updated in both SKILL.md and POWER.md

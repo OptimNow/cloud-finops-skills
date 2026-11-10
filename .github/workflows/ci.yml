@@ -158,6 +158,12 @@ jobs:
       - name: README role questions in sync (--check)
         run: python scripts/render-questions-readme.py --check
 
+      # The "what changed" digest is generated from scripts/provider-changes.yaml;
+      # this validates every entry (date, provider, file and section that exist) and
+      # fails when the reference was not regenerated.
+      - name: What-changed digest in sync (--check)
+        run: python scripts/render-whats-new.py --check
+
       # The weekly price-drift workflow reads scripts/price-manifest.yaml against the
       # live price lists. This run reads the recorded fixtures instead, so a figure
       # edited in a file without its manifest line, or an anchor that no longer

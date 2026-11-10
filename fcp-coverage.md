@@ -39,7 +39,7 @@ Marker legend:
 ## Manage the FinOps Practice
 
 - [~] **Executive Strategy Alignment** _(secondary: finops-kpis-benchmarking.md)_
-- [x] **FinOps Practice Operations** - finops-framework.md; optimnow-methodology.md _(secondary: finops-ai-value-management.md; finops-onboarding-workloads.md; finops-practice-operations.md)_
+- [x] **FinOps Practice Operations** - finops-framework.md; finops-whats-new.md; optimnow-methodology.md _(secondary: finops-ai-value-management.md; finops-onboarding-workloads.md; finops-practice-operations.md)_
 - [~] **Governance, Policy & Risk** _(secondary: finops-agentic.md; finops-aws-billing.md; finops-azure-billing.md; finops-practice-operations.md; finops-tagging.md)_
 - [ ] **FinOps Education & Enablement** - **GAP** (see docs/ROADMAP.md for deferred capabilities)
 - [x] **Invoicing & Chargeback** - finops-chargeback.md _(secondary: finops-aws-billing.md; finops-azure-billing.md; finops-focus.md; finops-on-prem-hybrid.md; finops-practice-operations.md)_

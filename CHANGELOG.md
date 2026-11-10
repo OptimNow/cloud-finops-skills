@@ -54,6 +54,17 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   the query; and a query made only of common words next to a facet returns the
   facet's list instead of nothing.
 
+### What changed, as a question you can ask
+
+- **A dated digest of provider changes.** "What changed in cloud billing last month?",
+  "What did AWS announce that affects our bill?", "Which retirements and price changes
+  are coming?" now have a file that answers them: one table per month for the last 90
+  days and one for the changes already scheduled, each row with its date, its effect
+  on the bill and the guide that carries the mechanics. It lists what the library
+  verified on the provider's own page, not every announcement, and it states the date
+  it was reconciled so an answer can say how fresh it is. On the connector it is
+  `get_reference(name="finops-whats-new")`, or one month with `section=`.
+
 ### Private overlays
 
 - **A convention for your own layer.** Negotiated rates, tag taxonomy, coverage
@@ -201,11 +212,12 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### For maintainers
 
-- 24 CI guards, five new: `check-overlay.py` on the overlay template,
+- 25 CI guards, six new: `check-overlay.py` on the overlay template,
   `check-questions.py` on the index (count, vocabulary, duplicates, section resolution,
   personas, `also` links, French), the README role block `--check`,
   `check-dated-prices.sh` on the runbooks and the references, and
-  `check-prices.py --offline` on the price manifest. The `llms-full.txt` smoke check
+  `check-prices.py --offline` on the price manifest, and `render-whats-new.py --check`
+  on the digest and its data file. The `llms-full.txt` smoke check
   now also proves that every file's questions are in the render.
 - A fresh review of the index PR after merge led to the weighted ranking, the
   named-provider rule, a tokenisation cache (a query from about 124 ms to about 7 ms)

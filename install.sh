@@ -692,6 +692,7 @@ Use these knowledge files for the following query types:
 | Allocation methodology and showback, EffectiveCost vs BilledCost, shared services | finops-allocation-showback.md |
 | Chargeback, soft-to-hard maturity, Finance prerequisites (ERP, tax, SOX) | finops-chargeback.md |
 | FinOps operating model, RACI, governance forums, ITFM / TBM handoffs | finops-practice-operations.md |
+| What changed recently: dated provider changes, scheduled retirements and deadlines | finops-whats-new.md |
 | Onboarding workloads, intake gate, double-bubble cost, M&A, divestiture | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, Karpenter | finops-kubernetes.md |
 | On-prem and hybrid: internal bill, Outposts / Azure Local / Arc / VMware, exit fees | finops-on-prem-hybrid.md |
@@ -831,7 +832,7 @@ build_gemini_grouped_knowledge() {
     "$refs/finops-anomaly-management.md" "$refs/finops-allocation-showback.md" \
     "$refs/finops-chargeback.md" "$refs/finops-onboarding-workloads.md" \
     "$refs/finops-kpis-benchmarking.md" "$refs/finops-forecasting.md" \
-    "$refs/finops-practice-operations.md"
+    "$refs/finops-practice-operations.md" "$refs/finops-whats-new.md"
   cat_required "$outdir/methodology.md" \
     "$refs/optimnow-methodology.md"
 

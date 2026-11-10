@@ -53,7 +53,8 @@ Text files only, under `skills/cloud-finops/`:
   Azure OpenAI, Vertex AI, Anthropic billing, Databricks, Microsoft Fabric, Snowflake,
   Kubernetes, tagging, allocation and showback, chargeback, anomaly management, KPIs,
   forecasting, contracts, AI cost management, agentic FinOps, SaaS and IT asset
-  management, GreenOps.
+  management, GreenOps, and a dated digest of what the providers changed over the
+  last 90 days and what is already scheduled.
 - `playbooks/`, one short runbook per named waste pattern (idle NAT gateway, snapshot
   sprawl, expiring reservation with no decision, oversized GPU instance, and more):
   symptoms, a detection query you run in your own account, the fix and the
