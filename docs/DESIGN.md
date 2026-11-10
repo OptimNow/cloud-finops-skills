@@ -594,7 +594,7 @@ Follow these six steps whenever you add a new domain:
    The first two are CI-gated - skipping either fails the `CI` workflow, so they
    are not optional tidying:
    - `llms.txt` References section (gated by `scripts/check-llms-txt.sh`)
-   - The CLAUDE.md "Repository structure" tree above (gated by
+   - The `docs/STRUCTURE.md` tree (gated by
      `scripts/check-docs-drift.sh`)
 
    The third is `install.sh` per-tool routing: the ChatGPT inline routing table
@@ -952,7 +952,7 @@ from how the directory works:
       `./scripts/business-coverage.sh` (its `--check` fails on a stale block or an
       unknown provider, need or depth token; the README no longer lists individual
       files or domain families)
-- [ ] CLAUDE.md "Repository structure" directory listing updated (CI-gated by
+- [ ] `docs/STRUCTURE.md` directory listing updated (CI-gated by
       `scripts/check-docs-drift.sh` - a reference missing from the tree, or a
       tree entry with no file behind it, fails the `CI` workflow. The same
       script also gates the playbook catalogue in `playbooks/README.md`)

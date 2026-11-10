@@ -50,7 +50,7 @@ jobs:
       - name: llms-full.txt builds completely (--smoke)
         run: bash scripts/build-llms-full.sh --smoke
 
-      - name: CLAUDE.md structure tree in sync
+      - name: docs/STRUCTURE.md tree in sync
         run: bash scripts/check-docs-drift.sh
 
       # The truncation tripwire. Two documented incidents (April and May 2026)

@@ -436,7 +436,8 @@ async def get_live_figures(guide: str) -> dict[str, Any]:
     (0.2743 is 27.4%) and each key names a median, a range or a count.
 
     An unknown slug returns ``{"error", "available_guides", "suggestions"}``.
-    Any other failure (timeout, HTTP error, invalid JSON) returns
+    Any other failure (timeout, HTTP error, invalid JSON, a file that is not
+    figures and short labels) returns
     ``{"error", "fallback"}``: the dated figure in the reference then stands,
     quoted with its date.
     """
