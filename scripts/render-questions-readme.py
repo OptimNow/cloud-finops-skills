@@ -2,8 +2,9 @@
 """Render the README's "What you can ask, by role" block from the question index.
 
 Every question tagged with a `persona` in a reference's or playbook's
-`questions:` frontmatter is listed under its role, linked to the file that
-declares it and to the files its `also` entry names. The block sits between
+`questions:` frontmatter goes into its role's table: the question on the left,
+the file that declares it (and the files its `also` entry names) on the right,
+one link per line so the file column stays the narrow one. The block sits between
 two HTML markers in README.md; the heading and the prose around it stay
 hand-written. Same pattern as scripts/business-coverage.sh: the frontmatter is
 the source of truth, the README is generated, and CI fails on a stale block.
@@ -55,6 +56,11 @@ def link(name: str, kinds: dict[str, str]) -> str:
     return f"[{label}]({rel})"
 
 
+def cell(text: str) -> str:
+    """Text for a table cell: a pipe would close the cell, so it is escaped."""
+    return text.replace("|", "\\|")
+
+
 def render() -> str:
     try:
         import yaml  # noqa: F401
@@ -85,10 +91,10 @@ def render() -> str:
     for role, heading in ROLES:
         if not entries[role]:
             continue
-        lines += ["", f"**{heading}**", ""]
+        lines += ["", f"**{heading}**", "", "| Question | File |", "|---|---|"]
         for name, question, also in entries[role]:
-            links = ", ".join(link(n, kinds) for n in [name, *also])
-            lines.append(f'- "{question}" ({links})')
+            links = "<br>".join(link(n, kinds) for n in [name, *also])
+            lines.append(f"| {cell(question)} | {links} |")
     lines += ["", END]
     return "\n".join(lines)
 

@@ -40,7 +40,8 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   the team as an annex.
 - **The README's "What you can ask, by role" is generated from the index** and checked
   in CI, so every listed question is answered by a file that exists, and the Executive
-  block appears with the four other roles.
+  block appears with the four other roles. Each role is a table: the question on the
+  left, the file that answers it on the right.
 - **How it was measured.** Before merge, the fifteen probe wordings of the coverage
   battery were run through a local build of the connector in fresh contexts: all
   fifteen called the finders with `query` first and read the expected file, including
