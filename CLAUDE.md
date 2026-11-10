@@ -115,12 +115,10 @@ cloud-finops-skills/
 │       ├── finops-ai-value-management.md   <- AI Investment Council, stage gates
 │       ├── finops-genai-capacity.md        <- Provisioned vs shared capacity
 │       ├── finops-ai-self-hosted-vs-managed.md  <- Self-host vs managed inference
-│       ├── finops-open-weight-vendors.md    <- Open-weight vendor hosted APIs
-│       │                                     (DeepSeek, Qwen, Kimi, GLM)
+│       ├── finops-open-weight-vendors.md    <- Open-weight vendor APIs (DeepSeek, Qwen, Kimi, GLM)
 │       ├── finops-ai-dev-tools.md          <- Cursor / Claude Code / Copilot / Windsurf / Codex
 │       ├── finops-anthropic.md             <- Anthropic billing
-│       ├── finops-aws.md                   <- AWS usage optimisation (rightsizing, SageMaker,
-│       │                                     databases, CloudFront, S3 Files)
+│       ├── finops-aws.md                   <- AWS usage (rightsizing, SageMaker, databases, CloudFront, S3 Files)
 │       ├── finops-aws-billing.md           <- AWS billing data, allocation, SCPs, Budgets,
 │       │                                     billing hierarchy, multi-org (split 2026-10-22)
 │       ├── finops-aws-commitments.md       <- AWS SPs / RIs / Spot, portfolio liquidity, EDP
@@ -148,8 +146,7 @@ cloud-finops-skills/
 │       ├── finops-snowflake.md             <- Snowflake
 │       ├── finops-tagging.md               <- Tagging governance + MCP automation
 │       ├── finops-itam.md                  <- ITAM / BYOL / marketplace
-│       ├── finops-cloud-contracts.md       <- Cloud contract negotiation (EDP / PPA,
-│       │                                     MACC / ACD, Google Minimum Commitment)
+│       ├── finops-cloud-contracts.md       <- Cloud contracts (EDP / PPA, MACC / ACD, Google commitment)
 │       ├── finops-sam.md                   <- SaaS asset management
 │       ├── greenops-cloud-carbon.md        <- GreenOps + cloud carbon
 │       ├── finops-anomaly-management.md    <- Anomaly management (standalone Inform-phase)
@@ -158,6 +155,7 @@ cloud-finops-skills/
 │       ├── finops-allocation-showback.md   <- Allocation methodology + showback
 │       ├── finops-chargeback.md            <- Chargeback + Finance/accounting prerequisites
 │       ├── finops-practice-operations.md   <- Practice operations: operating model, RACI, forums, ITFM
+│       ├── finops-whats-new.md             <- Rolling 90-day digest of verified provider changes (generated block)
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene, M&A, divestiture
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
 │       ├── finops-on-prem-hybrid.md        <- On-prem and hybrid: internal bill, hybrid platforms, exit fees
@@ -232,8 +230,10 @@ cloud-finops-skills/
 │                             check-prices.py (price-manifest.yaml, every list
 │                             price and where it is written, against the live
 │                             price lists; --offline in CI, live weekly in
-│                             price-drift.yml) and check-marketplace-version
-│                             - all twenty-four run by the `CI` workflow, and
+│                             price-drift.yml), render-whats-new.py
+│                             (provider-changes.yaml into finops-whats-new.md;
+│                             --check) and check-marketplace-version
+│                             - all twenty-five run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow
