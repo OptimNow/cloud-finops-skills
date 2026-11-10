@@ -272,10 +272,22 @@ more automation.
 ### MCP Apps rendering in Claude is gated by implementation shape (2026-08-16 to 08-20)
 
 Full chronological forensic, including the two hypotheses that were tested and
-overturned: [`docs/mcp-apps-lessons.md`](mcp-apps-lessons.md). The operational
-rules, which you need before touching `mcp_server/src/cloud_finops_mcp/server.py`:
+overturned: [`docs/mcp-apps-lessons.md`](mcp-apps-lessons.md). The widgets were
+removed in 1.51.0. The rule to know before touching
+`mcp_server/src/cloud_finops_mcp/server.py` is the first one below; the two marked
+"History" describe code that is no longer there and stay as the record of what a
+rendering attempt needs:
 
-- **`ui.domain` is required** on every `ui://` widget resource. It is derived in
+- **No tool links a view (2026-11-10, widgets removed in 1.51.0).** A tool that
+  links one is listed by claude.ai's tool search as `[third_party_mcp_app]` and needs
+  an opt-in step (the connector card) before the model may call it; the one content
+  tool without a link, `get_reference`, was called freely. Connector alone, 16
+  probes: Sonnet 5.5 grounded 3, Opus 5.5 grounded 11, one finder call in 32 chats.
+  A view that does not render also made the model answer "the runbook is above"
+  without the query. What the user must see goes in the text a tool returns
+  (`mcp_server/tests/test_no_widgets.py` pins it). The effect of the removal is to
+  be measured on the deployed 1.51.0 (ROADMAP).
+- **History: `ui.domain` was required** on every `ui://` widget resource. It was derived in
   `server.py` from the documented connector URL exactly as users paste it
   (`CANONICAL_CONNECTOR_ORIGIN + "/mcp"`, no trailing slash, since the Fly move),
   sha256'd, first 32 hex chars + `.claudemcpcontent.com`, and pinned by tests down
@@ -285,16 +297,16 @@ rules, which you need before touching `mcp_server/src/cloud_finops_mcp/server.py
   identical to the connector URL documented in README.md and INSTALLATION.md. (From September 2026 to 2026-09-30
   a root `.mcp.json` carried a fourth copy; the plugin is skill-only now and has
   none - see "Claude directory listing".)
-- **Keep the Skybridge-parity shape** (PR #174): every widget registered twice - an
+- **History: the Skybridge-parity shape** (PR #174): every widget was registered twice - an
   apps-sdk variant (mime `text/html+skybridge`, `openai/*` meta, tool
   `openai/outputTemplate`) alongside the SEP-1865 spec variant
   (`text/html;profile=mcp-app`, `ui.resourceUri`) - plus a `ui.csp` block in the
-  resource `_meta`. Do not delete either while simplifying.
+  resource `_meta`. Both went with the widgets.
 - **The transferable discipline: validate a host-dependent feature in a real host
   before building the infrastructure that depends on it.** An hour in MCPJam, costing
   nothing and requiring no deployment, produced a finding that would otherwise have
   surfaced at the end of a multi-day hosting project.
-- **Status: rendering for this connector still does not happen** as of the
+- **Status at the removal: rendering for this connector never happened.** As of the
   2026-09-30 test on claude.ai at the canonical URL (`docs/mcp-apps-lessons.md`,
   last entry): tool calls work, the sandbox domain was verified correct by calling
   the server, and the host still surfaced no `ui://` resource to the model. Treat

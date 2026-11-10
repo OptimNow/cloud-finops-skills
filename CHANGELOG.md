@@ -13,6 +13,25 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ## 1.51.0 (unreleased)
 
+### The connector answers in text, without widgets
+
+- **The connector's interactive views are removed.** Five of its tools linked a view
+  (a runbook explorer, a runbook viewer, a guide browser). They never displayed in
+  Claude, and they had two costs, both seen on 10 November 2026: Claude placed those
+  five tools behind an opt-in step, the "Use" card, so the two search tools and the
+  runbook reader were rarely called; and after fetching a runbook the model answered
+  "the runbook is above" without giving the detection query. A tool result is now
+  the text the model reads and relays. The seven tools keep their names, parameters
+  and results.
+- **What it was measured against.** With the connector alone on claude.ai, the same
+  16 questions were grounded 3 times by Sonnet 5.5 and 11 times by Opus 5.5, almost
+  always through the one content tool that had no view. The same pass on this
+  version will say what the removal changes: until then the gain is expected, not
+  measured.
+- **With the plugin, nothing changes.** In that cycle Claude did not call the
+  connector at all when the plugin was present (13 of 16 grounded on Sonnet 5.5, 16
+  of 16 on Opus 5.5, all through the skill).
+
 ### New and corrected content
 
 - **CloudWatch Logs account-level retention policies.** The skill now warns that an

@@ -193,16 +193,12 @@ https://mcp.optimnow.io/mcp
 ```
 
 (Until 30 September 2026 it was `https://cloud-finops-mcp.fly.dev/mcp`. That host
-still answers tool calls but no longer renders widgets; re-add the connector with the
-URL above.)
+still answers tool calls but is deprecated; re-add the connector with the URL above.)
 
 The simplest route is the connector's Claude directory listing,
 <https://claude.ai/directory/optimnow-cloud-finops>: one click, with that URL already set. To add it by
 hand, use **Settings -> Connectors -> Add custom connector** and paste exactly that
-URL - the `/mcp` path, no trailing slash; the widget sandbox domain is derived from it.
-A variant form (the bare origin, or a trailing slash) connects fine but silently
-disables widget rendering, because the MCP Apps host validates the sandbox domain
-against the URL as entered.
+URL - the `/mcp` path, no trailing slash.
 
 Do not wire a remote server through `claude_desktop_config.json`: Desktop silently
 drops `"type": "http"` entries from that file, and the `npx mcp-remote` bridge adds
@@ -292,22 +288,16 @@ cloud-finops-mcp --transport http
 Nothing about the tools changes between transports. `tests/test_e2e_http.py`
 mirrors the stdio suite over HTTP so the two cannot silently diverge.
 
-## MCP Apps widgets (SEP-1865)
+## No widgets
 
-Hosts that support MCP Apps can render three bundled widgets instead of raw
-JSON: a **playbook explorer** on `list_playbooks` / `find_playbooks` (card
-grid with facet filters plus a coverage-matrix view; clicking a card opens
-the playbook inline), a **playbook viewer** on `get_playbook` (colour-coded
-sections, Copy buttons on code blocks, a checkable Fix list, clickable
-See-also links), and a **reference browser** on `list_references` /
-`find_references` (facet dropdowns, live-filtered list, reading panel).
-Each widget is a single self-contained HTML file; hosts without MCP Apps
-support fall back to the plain tool result.
-
-Rendering in Claude Desktop / claude.ai for a custom connector is gated by
-the host's `ui.domain` validation of the connector URL (and historically by
-Connectors Directory acceptance) - a conformant widget may still fall back
-to text there. Other hosts (e.g. MCPJam's host emulation) render it as-is.
+Until 1.50.0 five tools linked an MCP Apps view (a playbook explorer, a playbook
+viewer, a reference browser). 1.51.0 removed them, the HTML and the `ui://`
+resources included. They never rendered in claude.ai, and its tool search listed
+exactly those five tools as needing an opt-in step before they could be called,
+while `get_reference`, which had no view, was called freely. A tool result is now
+plain structured data that the model reads and relays.
+`tests/test_no_widgets.py` fails if a tool links a view again. The record is in
+`docs/mcp-apps-lessons.md`; the code is at tag `v1.50.0`.
 
 ## Example tool calls
 

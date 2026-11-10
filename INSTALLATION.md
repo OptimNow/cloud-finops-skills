@@ -313,16 +313,13 @@ For Claude.ai / Claude Desktop, the simplest route is the connector's
 [Claude directory listing](https://claude.ai/directory/optimnow-cloud-finops): one click, with the canonical URL
 already set. To add it by hand, **Settings -> Connectors -> Add custom connector** and
 paste exactly `https://mcp.optimnow.io/mcp` - the `/mcp` path, no trailing
-slash. The widget sandbox domain (MCP Apps) is derived from the URL as entered, so a
-variant form (the bare origin, or a trailing slash) connects fine but silently disables
-widget rendering.
+slash.
 Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry pointing at the
 same URL.
 
 **Deprecated URL.** Until 30 September 2026 the connector was published as
-`https://cloud-finops-mcp.fly.dev/mcp`. That host still answers tool calls, but the
-widget sandbox domain is derived from the canonical URL, so a connector added under
-the old URL renders no widgets. Change this one line in your configuration:
+`https://cloud-finops-mcp.fly.dev/mcp`. That host still answers tool calls, but only
+the canonical URL is supported. Change this one line in your configuration:
 
 ```
 https://cloud-finops-mcp.fly.dev/mcp   ->   https://mcp.optimnow.io/mcp
@@ -481,9 +478,8 @@ claude mcp add --transport http ai-roi-calculator https://airoicalculator-mcp.op
 ```
 
 For Claude.ai / Claude Desktop, **Settings -> Connectors -> Add custom connector** and
-paste the same URL exactly, with `/mcp` and no trailing slash: the widget renders only
-for that form. Cursor, Windsurf, VS Code and ChatGPT take an HTTP MCP server entry
-pointing at it.
+paste the same URL exactly, with `/mcp` and no trailing slash. Cursor, Windsurf, VS
+Code and ChatGPT take an HTTP MCP server entry pointing at it.
 
 **Four tools (all read-only, no credentials):**
 

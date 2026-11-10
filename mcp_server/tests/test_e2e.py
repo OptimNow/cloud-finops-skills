@@ -194,53 +194,22 @@ async def test_e2e_find_playbooks(server_params: StdioServerParameters) -> None:
 
 
 @pytest.mark.asyncio
-async def test_e2e_playbook_viewer_ui_resource(
+async def test_e2e_no_widget_is_advertised(
     server_params: StdioServerParameters,
 ) -> None:
-    """MCP Apps (SEP-1865) prototype: the UI resource is listed and readable."""
+    """No ui:// resource is listed and no tool links one (removed in 1.51.0)."""
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
             resources = await session.list_resources()
-            uris = {str(r.uri) for r in resources.resources}
-            assert "ui://cloud-finops/playbook-viewer" in uris
+            assert not [r for r in resources.resources if str(r.uri).startswith("ui://")]
 
-            viewer = next(
-                r for r in resources.resources if str(r.uri) == "ui://cloud-finops/playbook-viewer"
-            )
-            assert viewer.mimeType == "text/html;profile=mcp-app"
-
-            read_result = await session.read_resource(viewer.uri)
-            html = next(c.text for c in read_result.contents if hasattr(c, "text"))
-            assert "<!DOCTYPE html>" in html
-            assert "ui/initialize" in html
-            assert "ui/notifications/tool-result" in html
-            # The handshake must carry a protocolVersion: a host that
-            # validates McpUiInitializeRequest rejects a bare
-            # {"appCapabilities": {}} and the view never receives a result.
-            assert '"2026-01-26"' in html
-            assert "clientInfo" in html
-            # Links go through the host. The sandbox grants allow-scripts and
-            # allow-same-origin but not allow-popups, so target="_blank"
-            # navigation is silently swallowed.
-            assert "ui/open-link" in html
-
-
-@pytest.mark.asyncio
-async def test_e2e_get_playbook_tool_links_ui_resource(
-    server_params: StdioServerParameters,
-) -> None:
-    """``get_playbook``'s ``_meta.ui.resourceUri`` points at the UI resource."""
-    async with stdio_client(server_params) as (read, write):
-        async with ClientSession(read, write) as session:
-            await session.initialize()
             result = await session.list_tools()
-            get_playbook_tool = next(t for t in result.tools if t.name == "get_playbook")
-            assert get_playbook_tool.meta is not None
-            assert (
-                get_playbook_tool.meta["ui"]["resourceUri"]
-                == "ui://cloud-finops/playbook-viewer"
-            )
+            for tool in result.tools:
+                meta = tool.meta or {}
+                assert "ui" not in meta, f"{tool.name} links a widget"
+                assert "ui/resourceUri" not in meta, f"{tool.name} links a widget"
+                assert "openai/outputTemplate" not in meta, f"{tool.name} links a widget"
 
 
 def _payload(result) -> dict:
