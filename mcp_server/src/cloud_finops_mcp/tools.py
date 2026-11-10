@@ -475,8 +475,7 @@ def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
 
     With ``section`` omitted the payload is exactly what it has always been -
     ``{"name", "content", "lines"}`` with ``content`` the file verbatim,
-    frontmatter included. Callers and the reference-browser widget depend on
-    that, so it is pinned by a test.
+    frontmatter included. Callers depend on that, so it is pinned by a test.
 
     With ``section`` set, ``content`` is the matched H2/H3 span prefixed by the
     reference's H1 so the chunk is self-describing, and ``partial: True`` says

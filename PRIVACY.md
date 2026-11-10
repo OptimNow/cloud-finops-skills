@@ -88,9 +88,8 @@ The hosted connector runs on Fly.io (<https://fly.io>), primary region Paris (`c
 which processes the traffic on OptimNow's behalf. Log retention follows the platform's
 default; OptimNow keeps no separate copy.
 
-On AI hosts that render MCP Apps, the interactive widgets are served from the same
-origin as the connector, and their content security policy allows no third-party
-domain.
+The connector serves no interface of its own. Since 1.51.0 it ships no widget: a tool
+result is text returned to the AI host, which displays it.
 
 ## Other sites the library points to
 

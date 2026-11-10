@@ -52,8 +52,7 @@ routing record of [ROADMAP.md](ROADMAP.md)).
   9 November 2026 saw it called on every one, and the measurement on the hosted
   connector follows the release. Its strengths: distribution (paste one URL, the right path
   for non-technical users and for hosts with neither skill support nor an installer
-  target), faceted queries over the library's metadata, and interactive widgets on
-  hosts that render MCP Apps (Claude.ai does not render them yet; see below).
+  target) and faceted queries over the library's metadata.
 - **Both work together, but the gain is unproven.** The August runs found the skill
   alone grounding symptom questions the connector missed, and suggested that with both
   enabled the connector may take those questions over without calling a tool. A probe
@@ -104,8 +103,7 @@ as described in the README install table.
 
 The hosted MCP connector is optional and is installed separately: as a custom
 connector in Claude.ai or Claude Desktop, or with `claude mcp add` in Claude Code. It
-serves the same library through 7 read-only tools and, on hosts that render MCP Apps,
-as interactive views. It is offered separately, as an MCP connector and not as part
+serves the same library through 7 read-only tools. It is offered separately, as an MCP connector and not as part
 of the plugin, on purpose: both carry the same content, and a plugin that also
 declared the server would load the tool definitions in every session next to the
 skill and put the same library into context twice. If you use Claude, start with the
@@ -172,13 +170,14 @@ nothing from the conversation, and caches the answer for six hours. When the cal
 fails, the dated figure in the reference stands, quoted with its date. Privacy detail
 in [PRIVACY.md](../PRIVACY.md).
 
-On hosts that support MCP Apps (SEP-1865), the tool results render as interactive
-widgets: a playbook explorer with facet filters and a coverage matrix, a playbook
-viewer with copyable detection queries and a checkable fix list, and a reference
-browser with a reading panel. Hosts without MCP Apps support get the plain results;
-nothing about the tools changes. Claude.ai is one of them for now: in the last test
-(30 September 2026) the tool calls worked and returned plain results, and no widget
-rendered. Details in [mcp_server/README.md](../mcp_server/README.md).
+The connector ships no widget. Until 1.50.0 five of its tools linked an interactive
+view (MCP Apps): a playbook explorer, a playbook viewer and a reference browser. They
+never rendered in Claude.ai, and on 10 November 2026 its tool search was seen placing
+exactly those five tools behind an opt-in step, the connector card, while the one
+content tool without a view was called freely. A model that had fetched a runbook
+also answered "the runbook is above" without repeating the detection query. Version
+1.51.0 removed the views: a tool result is the text the model reads and relays. The
+record is in [mcp-apps-lessons.md](mcp-apps-lessons.md).
 
 ## Live prices are not in this repository
 

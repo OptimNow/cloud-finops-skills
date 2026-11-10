@@ -259,8 +259,8 @@ Same portal, **Submit new**, then **MCP connector**.
 
 ### 2.1 Connection
 
-Paste `https://mcp.optimnow.io/mcp` (the `/mcp` path, no trailing slash;
-the widget sandbox domain is derived from it). Single URL, not "users connect to
+Paste `https://mcp.optimnow.io/mcp` (the `/mcp` path, no trailing slash).
+Single URL, not "users connect to
 different URLs". The listing carried the former `https://cloud-finops-mcp.fly.dev/mcp`
 until 2026-11-06; changing the Server URL drops the stored tool capture (section 2.2).
 
@@ -330,8 +330,7 @@ edited by Anthropic afterwards):
 > query you run in your own account, the fix and the anti-pattern. The seventh tool,
 > get_live_figures, returns the current figures of an OptimToken guide (OptimNow's
 > price comparison site), such as the gap between a Savings Plan and a reserved
-> instance, for the figures a reference quotes with a date. On hosts that render MCP
-> Apps, results appear as an interactive explorer and viewer.
+> instance, for the figures a reference quotes with a date.
 >
 > The server holds no account, no credential and no user data; it cannot see your
 > cloud environment and hands over the detection query instead. The library holds
@@ -526,6 +525,15 @@ who add both see one set of tools.
   or connecting a new endpoint all qualify. `get_live_figures` (2026-10-25) was all
   four at once: if the connector is listed when it deploys, report it from the
   listing's page in the portal before or at the `fly deploy` that ships it.
+- **1.51.0 removes the widgets: a material change to report.** Five tools lose their
+  `ui.resourceUri` link, the six `ui://` resources go, and `get_playbook`'s
+  description loses its last sentence. Names, parameters and results are unchanged.
+  After the release and the `fly deploy`: in the portal, remove the sentence on MCP
+  Apps from the description (the counts can be corrected in the same pass: 48
+  guides, 44 runbooks, seven tools), "Update submission", then "Update the copy
+  reviewers see" and check that Tool names still lists seven tools. Section 2.2
+  applies: saving is submitting, so make every edit in one pass. "Has an MCP App"
+  was already unchecked. The update of 6 November 2026 was live on the 8th.
 - Merging to `main` is the release: the directory scans the commit and publishes
   under the auto-publish setting. Nothing to do in the portal.
 - No file in `plugins/cloud-finops/` may exceed 256 KiB and the folder stays under

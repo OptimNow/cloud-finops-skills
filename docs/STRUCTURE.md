@@ -64,7 +64,7 @@ cloud-finops-skills/
 │   ├── overlay-template/  <- Minimal overlay that passes check-overlay.py
 │   │                         (SKILL.md, calibration.md, decisions.md); CI-gated
 │   ├── mcp-apps-lessons.md <- Chronological forensic of the MCP Apps widget
-│   │                         rendering work (split out of CLAUDE.md, Aug 2026)
+│   │                         rendering work, and why 1.51.0 removed the widgets
 │   ├── directory-submission.md <- Step-by-step for the two Claude directory
 │   │                         listings (plugin bundle + MCP connector), with the
 │   │                         prefilled portal answers and the holds to expect
@@ -149,10 +149,10 @@ cloud-finops-skills/
 │                             which passes through an OptimToken guide's
 │                             figures.json (live_figures.py, offline fixtures
 │                             in tests/fixtures/live_figures/);
-│                             stdio + streamable-HTTP transports; MCP Apps
-│                             resources: playbook-viewer, playbook-explorer,
-│                             reference-browser - shared JS/CSS in ui/_* is
-│                             inlined at import by server._load_ui)
+│                             stdio + streamable-HTTP transports; no MCP Apps
+│                             widget since 1.51.0: a tool that links one is
+│                             put behind claude.ai's opt-in step, see
+│                             docs/mcp-apps-lessons.md)
 ├── scripts/               <- `fcp-coverage.sh` and `playbook-coverage.sh`
 │                             (parse frontmatter, emit the two coverage
 │                             matrices; their --check modes diff the

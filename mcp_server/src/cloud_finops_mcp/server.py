@@ -11,9 +11,7 @@ streamable HTTP (for a hosted deployment). The actual tool logic lives in
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import logging
-from pathlib import Path
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -61,114 +59,15 @@ def _annotations(title: str, *, open_world: bool = False) -> ToolAnnotations:
 DEFAULT_HTTP_HOST = "0.0.0.0"  # noqa: S104 - see docstring on run_http
 DEFAULT_HTTP_PORT = 8000
 
-# MCP Apps (SEP-1865, extension id io.modelcontextprotocol/ui) resources:
-# self-contained HTML views over the tool results. The iframe<->host wiring
-# (ui/initialize handshake, tools/call, ui/open-link) lives once in
-# ui/_bridge.js and the playbook/markdown rendering once in
-# ui/_playbook_render.js; _load_ui() inlines them into each widget at import
-# time, so the served HTML stays fully self-contained (the host sandbox
-# blocks every external fetch) without hand-duplicated copies.
-PLAYBOOK_VIEWER_URI = "ui://cloud-finops/playbook-viewer"
-PLAYBOOK_EXPLORER_URI = "ui://cloud-finops/playbook-explorer"
-REFERENCE_BROWSER_URI = "ui://cloud-finops/reference-browser"
-
-# The claude.ai / Claude Desktop MCP Apps host only mounts a widget iframe
-# when the ui:// resource declares the sandbox domain it will be served from:
-# sha256(<connector URL exactly as the host displays it in its error log>)
-# [:32] + ".claudemcpcontent.com". A wrong or missing value logs
-# 'ui.domain validation failed for connector "<url>"' in the Desktop log
-# (mcp-ext-apps-host) and leaves a dead blank frame. Observed live on
-# 2026-08-20 for THIS server, then on Alpic: the host quoted the connector
-# exactly as the user had entered it (the root URL with its trailing slash)
-# while the hash here was computed over "/mcp". Skybridge, whose connectors
-# render, hashes https://<host><request-pathname> per request - the URL as
-# entered. Since 2026-09-09 the server runs on Fly.io, where the MCP is
-# served at /mcp only, so the documented connector URL (README,
-# INSTALLATION.md) is the /mcp form without a trailing slash and this
-# constant must match it byte-for-byte; hashing another variant is exactly
-# the mistake that broke ai-pricing-hub and then this server.
-#
-# Since 2026-09-30 the canonical host is the custom domain mcp.optimnow.io
-# (a CNAME to the Fly app, certificate issued by Fly). The old
-# cloud-finops-mcp.fly.dev host still answers every request - DNS-rebinding
-# protection is off in run_http, so there is no Host allow-list to extend -
-# but its ui.domain no longer matches, so a connector added under the old
-# URL gets tool results without widgets. One URL is canonical on purpose:
-# serving a per-request hash for both would touch the widget path, whose
-# rendering is still unconfirmed (see docs/mcp-apps-lessons.md).
-CANONICAL_CONNECTOR_ORIGIN = "https://mcp.optimnow.io"
-CANONICAL_CONNECTOR_URL = CANONICAL_CONNECTOR_ORIGIN + "/mcp"
-UI_DOMAIN = (
-    hashlib.sha256(CANONICAL_CONNECTOR_URL.encode("utf-8")).hexdigest()[:32]
-    + ".claudemcpcontent.com"
-)
-
-# Skybridge parity (2026-08-20). The Skybridge-built companion connectors
-# (ai-pricing-hub, ai-roi-calculator) render their widgets in Claude as
-# plain custom connectors while this server, spec-conformant and with a
-# valid ui.domain, stayed text-only. Three observable deltas in what
-# Skybridge emits, mirrored here: (1) a ui.csp block in the widget
-# resource meta; (2) an apps-sdk VARIANT of every widget resource (mime
-# "text/html+skybridge", openai/* meta) alongside the SEP-1865 one; (3)
-# the tool's openai/outputTemplate pointing at that variant while
-# ui.resourceUri keeps pointing at the SEP-1865 resource. The HTML served
-# is identical - the widgets are self-contained and the bridge negotiates
-# the host protocol at runtime.
-_UI_CSP = {
-    "resourceDomains": [CANONICAL_CONNECTOR_ORIGIN],
-    "connectDomains": [CANONICAL_CONNECTOR_ORIGIN],
-}
-_UI_RESOURCE_META = {"ui": {"domain": UI_DOMAIN, "csp": _UI_CSP}}
-_APPS_SDK_RESOURCE_META = {
-    "openai/widgetDomain": UI_DOMAIN,
-    "openai/widgetCSP": {
-        "resource_domains": [CANONICAL_CONNECTOR_ORIGIN],
-        "connect_domains": [CANONICAL_CONNECTOR_ORIGIN],
-    },
-}
-
-
-def _apps_sdk_uri(resource_uri: str) -> str:
-    """The apps-sdk variant URI for a SEP-1865 widget resource."""
-    return resource_uri.replace("ui://cloud-finops/", "ui://cloud-finops/apps-sdk/")
-
-
-def _ui_tool_meta(resource_uri: str) -> dict[str, Any]:
-    """Tool-side widget link, declared under every key shape hosts read.
-
-    The working reference (ai-pricing-hub's tool listing as captured in the
-    Desktop logs) declares all three: the SEP-1865 nested form, the flat
-    slash form, and the OpenAI Apps SDK form. Redundant on any one host,
-    but each host reads a different one and the duplication is three lines.
-    """
-    return {
-        "ui": {"resourceUri": resource_uri},
-        "ui/resourceUri": resource_uri,
-        "openai/outputTemplate": _apps_sdk_uri(resource_uri),
-    }
-
-_UI_DIR = Path(__file__).resolve().parent / "ui"
-_UI_MARKERS = (
-    ("<!--THEME_CSS-->", "_theme.css", "style"),
-    ("<!--BRIDGE-->", "_bridge.js", "script"),
-    ("<!--PLAYBOOK_RENDER-->", "_playbook_render.js", "script"),
-    ("<!--WIDGET_COMMON-->", "_widget_common.js", "script"),
-)
-
-
-def _load_ui(filename: str) -> str:
-    """Read a widget HTML file and inline the shared JS/CSS it declares."""
-    html = (_UI_DIR / filename).read_text(encoding="utf-8")
-    for marker, asset_name, tag in _UI_MARKERS:
-        if marker in html:
-            asset = (_UI_DIR / asset_name).read_text(encoding="utf-8")
-            html = html.replace(marker, f"<{tag}>\n{asset}\n</{tag}>")
-    return html
-
-
-_PLAYBOOK_VIEWER_HTML = _load_ui("playbook_viewer.html")
-_PLAYBOOK_EXPLORER_HTML = _load_ui("playbook_explorer.html")
-_REFERENCE_BROWSER_HTML = _load_ui("reference_browser.html")
+# No MCP Apps widgets. Until 1.50.0 five tools linked a ui:// resource (a
+# playbook viewer, a playbook explorer, a reference browser). They never
+# rendered in claude.ai, and on 2026-11-10 its tool search was seen listing
+# exactly those five tools as "[third_party_mcp_app] ... need opt-in": both
+# finders and get_playbook sat behind a connector card while get_reference
+# stayed directly callable, and after get_playbook the model answered "the
+# runbook is above" without the query. With no widget, a tool result is the
+# text the model reads and relays. The record is docs/mcp-apps-lessons.md;
+# the code is at tag v1.50.0. tests/test_no_widgets.py keeps it that way.
 
 mcp = FastMCP(
     "cloud-finops",
@@ -246,10 +145,7 @@ def _tool(title: str, *, open_world: bool = False, **kwargs: Any):
     )
 
 
-@_tool(
-    "Browse the FinOps knowledge library",
-    meta=_ui_tool_meta(REFERENCE_BROWSER_URI),
-)
+@_tool("Browse the FinOps knowledge library")
 def list_references() -> dict[str, Any]:
     """See what FinOps guidance is available: billing mechanics, commitment
     strategy, allocation and chargeback, AI cost management, and per-provider
@@ -318,10 +214,7 @@ def get_reference(name: str, section: str | None = None) -> dict[str, Any]:
     return _tools.get_reference(name, section=section)
 
 
-@_tool(
-    "Find the right FinOps guide",
-    meta=_ui_tool_meta(REFERENCE_BROWSER_URI),
-)
+@_tool("Find the right FinOps guide")
 def find_references(
     query: str | None = None,
     domain: str | None = None,
@@ -400,10 +293,7 @@ def find_references(
     )
 
 
-@_tool(
-    "Browse the cloud waste runbooks",
-    meta=_ui_tool_meta(PLAYBOOK_EXPLORER_URI),
-)
+@_tool("Browse the cloud waste runbooks")
 def list_playbooks() -> dict[str, Any]:
     """See every ready-made runbook for finding and fixing cloud waste:
     idle, orphaned and overprovisioned resources, egress surprises,
@@ -424,10 +314,7 @@ def list_playbooks() -> dict[str, Any]:
     return _tools.list_playbooks()
 
 
-@_tool(
-    "Read one waste runbook",
-    meta=_ui_tool_meta(PLAYBOOK_VIEWER_URI),
-)
+@_tool("Read one waste runbook")
 def get_playbook(name: str) -> dict[str, Any]:
     """Fetch the step-by-step runbook for one specific waste pattern:
     symptoms, the detection queries to run, the fix, and the anti-pattern
@@ -448,111 +335,11 @@ def get_playbook(name: str) -> dict[str, Any]:
     Returns ``{"name": ..., "title": ..., "content": "...", "lines": N}``.
     On miss, returns ``{"error": ..., "suggestions": [...]}`` with up to
     three string-distance matches so the caller can self-correct.
-
-    A host with MCP Apps (SEP-1865) support may render this result via the
-    linked ``ui://cloud-finops/playbook-viewer`` resource instead of showing
-    the raw markdown.
     """
     return _tools.get_playbook(name)
 
 
-@mcp.resource(
-    PLAYBOOK_VIEWER_URI,
-    meta=_UI_RESOURCE_META,
-    name="Playbook viewer",
-    mime_type="text/html;profile=mcp-app",
-)
-def playbook_viewer_ui() -> str:
-    """MCP Apps UI resource linked from ``get_playbook``.
-
-    Self-contained HTML/JS that renders the tool result's markdown as
-    labelled sections (Problem / Symptoms / Detection / Fix / Anti-pattern /
-    See also) inside the sandboxed iframe the host provides. v2 adds a Copy
-    button on every code block, a checkable Fix checklist (local state
-    only), and clickable ``playbooks/<slug>.md`` See-also links that reload
-    the viewer via an app-initiated ``get_playbook`` call.
-    """
-    return _PLAYBOOK_VIEWER_HTML
-
-
-@mcp.resource(
-    PLAYBOOK_EXPLORER_URI,
-    meta=_UI_RESOURCE_META,
-    name="Playbook explorer",
-    mime_type="text/html;profile=mcp-app",
-)
-def playbook_explorer_ui() -> str:
-    """MCP Apps UI resource linked from ``list_playbooks`` and ``find_playbooks``.
-
-    Card grid over the returned playbooks with client-side facet filters
-    (scope, waste category, confidence - values derived from the data), a
-    coverage-matrix tab (waste_category x scope counts; a zero cell is a
-    visually distinct coverage gap), and an inline playbook panel opened via
-    an app-initiated ``get_playbook`` call. One resource serves both tools
-    because a tool declares a single ``ui.resourceUri``.
-    """
-    return _PLAYBOOK_EXPLORER_HTML
-
-
-@mcp.resource(
-    REFERENCE_BROWSER_URI,
-    meta=_UI_RESOURCE_META,
-    name="Reference browser",
-    mime_type="text/html;profile=mcp-app",
-)
-def reference_browser_ui() -> str:
-    """MCP Apps UI resource linked from ``list_references`` and ``find_references``.
-
-    Dropdown row over the five FCP facets (values derived from the data),
-    live-filtered list of references (title + one-line description), and a
-    minimal-markdown reading panel fed by an app-initiated ``get_reference``
-    call.
-    """
-    return _REFERENCE_BROWSER_HTML
-
-
-# Apps-sdk variants of the three widgets (Skybridge parity - see the note
-# above _UI_CSP). Same HTML, different URI, mime and meta vocabulary; the
-# tool meta's openai/outputTemplate points here.
-
-
-@mcp.resource(
-    _apps_sdk_uri(PLAYBOOK_VIEWER_URI),
-    meta=_APPS_SDK_RESOURCE_META,
-    name="Playbook viewer (apps-sdk)",
-    mime_type="text/html+skybridge",
-)
-def playbook_viewer_ui_apps_sdk() -> str:
-    """Apps-sdk variant of the playbook viewer widget."""
-    return _PLAYBOOK_VIEWER_HTML
-
-
-@mcp.resource(
-    _apps_sdk_uri(PLAYBOOK_EXPLORER_URI),
-    meta=_APPS_SDK_RESOURCE_META,
-    name="Playbook explorer (apps-sdk)",
-    mime_type="text/html+skybridge",
-)
-def playbook_explorer_ui_apps_sdk() -> str:
-    """Apps-sdk variant of the playbook explorer widget."""
-    return _PLAYBOOK_EXPLORER_HTML
-
-
-@mcp.resource(
-    _apps_sdk_uri(REFERENCE_BROWSER_URI),
-    meta=_APPS_SDK_RESOURCE_META,
-    name="Reference browser (apps-sdk)",
-    mime_type="text/html+skybridge",
-)
-def reference_browser_ui_apps_sdk() -> str:
-    """Apps-sdk variant of the reference browser widget."""
-    return _REFERENCE_BROWSER_HTML
-
-
-@_tool(
-    "Find a waste runbook",
-    meta=_ui_tool_meta(PLAYBOOK_EXPLORER_URI),
-)
+@_tool("Find a waste runbook")
 def find_playbooks(
     query: str | None = None,
     scope: str | None = None,

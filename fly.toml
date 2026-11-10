@@ -1,9 +1,8 @@
 # Fly.io app for the hosted connector. `fly deploy` from the repo root builds
 # the Dockerfile and rolls the app; the public URL is
 # https://mcp.optimnow.io/mcp (custom domain: a CNAME to cloud-finops-mcp.fly.dev
-# plus a certificate issued with `fly certs add`; the constant in server.py and
-# the docs must match it byte for byte - the MCP Apps sandbox domain is derived
-# from it). The cloud-finops-mcp.fly.dev host still answers but is deprecated.
+# plus a certificate issued with `fly certs add`; the docs name that URL and no
+# other). The cloud-finops-mcp.fly.dev host still answers but is deprecated.
 #
 # Scale-to-zero: the machine suspends when idle and resumes on the next request,
 # so a quiet month costs only the root filesystem (Fly bills a stopped or suspended

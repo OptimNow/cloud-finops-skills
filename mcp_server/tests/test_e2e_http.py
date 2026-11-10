@@ -158,35 +158,23 @@ async def test_http_get_playbook(http_server_url: str) -> None:
 
 
 @pytest.mark.asyncio
-async def test_http_serves_the_ui_resource(http_server_url: str) -> None:
-    """The MCP Apps resource must survive the transport change.
+async def test_http_advertises_no_widget(http_server_url: str) -> None:
+    """Over HTTP too: no ui:// resource, no widget link on any tool.
 
-    It is read from disk at import time and served as a resource, so there is
-    no reason for it to differ - which is precisely why an untested assumption
-    would go unnoticed until a host asked for it over HTTP.
+    The hosted connector is this transport, and it is where a widget link put
+    the tool behind the host's opt-in step until 1.50.0.
     """
     async with streamable_http_client(http_server_url) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
             resources = await session.list_resources()
-            viewer = next(
-                r
-                for r in resources.resources
-                if str(r.uri) == "ui://cloud-finops/playbook-viewer"
-            )
-            assert viewer.mimeType == "text/html;profile=mcp-app"
-
-            read_result = await session.read_resource(viewer.uri)
-            html = next(c.text for c in read_result.contents if hasattr(c, "text"))
-            assert "<!DOCTYPE html>" in html
-            assert "ui/initialize" in html
+            assert not [r for r in resources.resources if str(r.uri).startswith("ui://")]
 
             tools = await session.list_tools()
-            get_playbook_tool = next(t for t in tools.tools if t.name == "get_playbook")
-            assert (
-                get_playbook_tool.meta["ui"]["resourceUri"]
-                == "ui://cloud-finops/playbook-viewer"
-            )
+            for tool in tools.tools:
+                meta = tool.meta or {}
+                assert "ui" not in meta, f"{tool.name} links a widget"
+                assert "openai/outputTemplate" not in meta, f"{tool.name} links a widget"
 
 
 @pytest.mark.asyncio

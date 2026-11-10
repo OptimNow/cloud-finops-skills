@@ -3,6 +3,9 @@
 Why the `ui://cloud-finops/*` widgets do or do not render in Claude, and how that
 understanding changed three times between 16 and 20 August 2026.
 
+The widgets were removed in 1.51.0: the entry of 10 November 2026 says why, and this
+file is now the record of a path not to take again without measuring.
+
 Split out of `CLAUDE.md` in August 2026, for the same reason `docs/ROADMAP.md` was:
 `CLAUDE.md` is read in full at the start of every agent session, and this entry had
 grown to roughly 119 lines of dated diary. The operational rules that an agent
@@ -234,30 +237,66 @@ The domain move itself is done and verified; rendering stays unproven.
 
 ---
 
+## 2026-11-10: the widget link gates the tool, and the widgets are removed
+
+The probe cycle after release 1.50.0 ran the connector alone on claude.ai (plugin
+withdrawn, 16 probes per model). Sonnet 5.5 grounded 3 answers of 16 and Opus 5.5
+11 of 16, and almost every grounded answer went through `get_reference`. The finders
+were called once in 32 chats and `get_playbook` in 3.
+
+The reason is in the host's own answer to the model's tool search, which a chat shows
+when its "Searched available tools" step is expanded:
+
+- `find_playbooks`, `list_playbooks`, `get_playbook`, `find_references` and
+  `list_references` were listed as `[third_party_mcp_app]`, with the rule "need
+  opt-in: call search_mcp_registry then suggest_connectors first, unless the person
+  already named that connector or chose it earlier. Finding a tool here does not
+  license calling it without that step."
+- `get_reference` was listed without the tag, among the tools "available for you to
+  call directly".
+
+The five tagged tools are exactly the five that declared a `ui.resourceUri`. The two
+untagged ones, `get_reference` and `get_live_figures`, declared none. So the link that
+was meant to make results nicer put both finders, where the `query` parameter lives,
+and the playbook reader behind a connector card ("Use"), and the models were
+reluctant to show it: on a symptom question each one searched, found the playbook
+tools, weighed "whether to offer a connector", and answered from its own knowledge.
+
+Two more costs, observed the same day:
+
+- The card still did not render. The iframe was in the page with
+  `visibility: hidden` and zero-height parents; only its header showed. Seen in two
+  browsers.
+- It changed the answer. After `get_playbook`, both models wrote "the playbook is in
+  the card above" or "the full runbook is open above" and did not repeat the
+  detection query. The user was pointed at a card that was not there.
+
+**Decision (maintainer, 2026-11-10): remove the widgets.** 1.51.0 drops the tool
+links, the six `ui://` resources (three SEP-1865, three apps-sdk) and the HTML, JS and
+CSS under `mcp_server/src/cloud_finops_mcp/ui/`. The code is at tag `v1.50.0`.
+`mcp_server/tests/test_no_widgets.py` fails if a tool links a view again.
+
+What is not measured yet: whether the tools are called more once untagged. It is what
+the host's rule implies. The check is the same connector-alone pass on the deployed
+1.51.0 (16 probes, both models), against 3 and 11 of 16.
+
+The match between the tag and the link is five of five and two of two. The tag's
+cause is inferred from that and from its name; the host does not document it.
+
+---
+
 ## Where this stands
 
-- `ui.domain` is required, and is derived in `mcp_server/src/cloud_finops_mcp/server.py`
-  from the documented connector URL, byte for byte. Since the move to Fly (2026-09-09)
-  the MCP is served at `/mcp` only, so that URL is `CANONICAL_CONNECTOR_ORIGIN + "/mcp"`
-  with no trailing slash; on Alpic it had been the root-with-slash form. The rule is
-  the same either way: hash exactly what the user is told to paste. Since 2026-09-30
-  the origin is `https://mcp.optimnow.io` and the literal hash is pinned by
-  `test_ui_domain_pins_the_custom_domain_hash`.
-- The dual widget registration (apps-sdk variant alongside the SEP-1865 spec
-  variant) and the `ui.csp` block are the Skybridge-parity shape, shipped in
-  PR #174. Do not remove either while trying to simplify the server.
-- The tool-side widget link is declared under all three key shapes
-  (`ui.resourceUri`, the flat `ui/resourceUri`, and `openai/outputTemplate`)
-  because different hosts read different ones.
-- **Rendering for this repo's connector is still not happening, as of the
-  2026-09-30 test on claude.ai.** The hash was verified correct before the test and
-  the host still surfaced no resources to the model. Treat interactive rendering as
-  unproven, not as shipped, and do not cite it as a benefit of the hosted deployment.
-- The next diagnostic step, if this is picked up again, is a Claude Desktop render
-  test against the current Fly deployment at the canonical URL, reading the
-  `mcp-ext-apps-host` log: a `ui.domain` error would contradict the direct
-  verification and point back at the constant; no error plus no frame confirms
-  host-side gating and means the remaining lever is the resource shape, not the URL.
+- **There are no widgets since 1.51.0** (entry of 2026-11-10 above). Everything before
+  that entry is history: `ui.domain`, the Skybridge-parity shape and the three key
+  shapes for the tool link describe code that is no longer in the repository.
+- Do not add a view link to a tool to improve presentation. On claude.ai it is what
+  moves the tool behind the opt-in step. If a host ever renders views and the question
+  comes back, measure a variant as a custom connector first: a second deployment under
+  its own URL, added in an organisation's connector settings, with no directory
+  involved and the listed server untouched.
+- What the user must see has to be in the text a tool returns. A model told that a
+  view exists points at it and stops repeating the content.
 
 ---
 
