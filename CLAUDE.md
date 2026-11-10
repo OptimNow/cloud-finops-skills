@@ -306,7 +306,7 @@ instruction that no longer matches reality.
 One inward dependency is code since 2026-10-25: `get_live_figures`
 (`mcp_server/src/cloud_finops_mcp/live_figures.py`) fetches an OptimToken guide's
 `figures.json` at request time and reads the "Figures as JSON" lines of OptimToken's
-`llms.txt`. It checks only that the envelope carries `guide` and `figures`, so a
+`llms.txt`. It refuses a file that is not numbers and short labels (`_validate`), so a
 reshaped file degrades to an error and the dated figure in the reference, not to a
 crash; the tests run against saved copies and do not notice a change upstream.
 

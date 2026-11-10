@@ -29,6 +29,17 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   bills show on-demand equivalent by default, AWS's credit method, and the three points
   to settle before using it for chargeback (`finops-chargeback.md`).
 
+### Connector
+
+- **`get_live_figures` checks the file before handing it to the model.** The tool
+  relays a file fetched from the OptimToken site, and until now it accepted anything
+  carrying a `guide` and a `figures` key. It now returns the file only when it is
+  numbers and short labels: no text over 300 characters, no line break, angle bracket
+  or link in a label, source links on `optimtoken.optimnow.io` only. A file that fails
+  is refused whole and the dated figure in the reference stands. If that site were
+  ever tampered with, it could no longer pass a page of instructions or a link to
+  another site through the connector. A wrong number would still pass.
+
 ## 1.50.0 (10 November 2026)
 
 ### Ask in your own words
