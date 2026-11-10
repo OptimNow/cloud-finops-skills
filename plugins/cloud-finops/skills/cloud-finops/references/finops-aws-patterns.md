@@ -33,7 +33,7 @@ questions:
 | `finops-aws-patterns-storage.md` | S3, EBS, EFS, snapshots, AWS Backup | 28 |
 | `finops-aws-patterns-databases.md` | RDS, Aurora, DynamoDB, ElastiCache, MemoryDB, OpenSearch, DMS; RDS cost strategy; database commitment decision tree (incl. Redshift) | 33 |
 | `finops-aws-patterns-networking.md` | NAT gateways, VPC endpoints, load balancers, cross-AZ transfer, CloudFront, Elastic IPs | 15 |
-| `finops-aws-patterns-other.md` | CloudWatch Logs, AWS Config, CloudTrail, EventBridge, OpenSearch, EDP, Marketplace | 13 |
+| `finops-aws-patterns-other.md` | CloudWatch Logs, AWS Config, CloudTrail, EventBridge, OpenSearch, EDP, Marketplace; security service billing (WAF, GuardDuty, Inspector, Access Analyzer) | 13 |
 
 Each pattern gives the service, the type of inefficiency, the signal to look for
 and the remediation. The database file also carries the RDS cost management

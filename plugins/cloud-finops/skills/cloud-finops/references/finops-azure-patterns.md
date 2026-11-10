@@ -54,9 +54,10 @@ Service: Azure Functions | Type: Inefficient Configuration
 
 Teams often choose the Premium or App Service Plan for Azure Functions to avoid cold start delays or enable VNET connectivity, especially early in a project when performance concerns dominate. However, these decisions are rarely revisited even as usage patterns change.
 
-- Move low-usage or non-critical Function Apps to the Consumption Plan
-- Pilot plan downgrades in non-production or latency-tolerant environments
-- Use cost modelling tools to estimate savings from switching to Consumption Plan
+- Move low-usage or non-critical Function Apps to a serverless plan: Flex Consumption for Linux apps, the Consumption plan only for apps that must stay on Windows
+- Where VNet integration was the reason for Premium, evaluate Flex Consumption: it supports virtual network integration and scales to zero, and bills execution time plus a baseline only for the always-ready instances you configure. It is Linux only, holds one app per plan, and an app cannot be migrated in place: create a new Flex Consumption app and redeploy ([Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), read 10 November 2026)
+- Do not move Linux apps to the classic Consumption plan: Linux hosting on it retires on 30 September 2028 and gets no new features or language versions ([Consumption plan (legacy)](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan), read 10 November 2026)
+- Pilot plan downgrades in non-production or latency-tolerant environments, and estimate the saving before switching
 
 **Missing Scheduled Shutdown For Non Production Azure Virtual Machines**
 Service: Azure Virtual Machines | Type: Inefficient Configuration

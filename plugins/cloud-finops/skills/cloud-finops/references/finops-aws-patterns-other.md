@@ -20,7 +20,8 @@ questions:
 
 > The AWS pattern catalogue for CloudWatch Logs, AWS Config, CloudTrail,
 > EventBridge, OpenSearch, EDP and Marketplace: the signal to look for and the
-> remediation for each. A lookup surface, retrieved when hunting a specific
+> remediation for each. A closing section covers the billing mechanics of the
+> security services (WAF, GuardDuty, Inspector, IAM Access Analyzer). A lookup surface, retrieved when hunting a specific
 > pattern. For named patterns with runnable detection queries, prefer
 > `playbooks/`. The other families are listed in `finops-aws-patterns.md`; billing
 > mechanics are in `finops-aws-billing.md`, commitments in `finops-aws-commitments.md`.
@@ -150,6 +151,47 @@ CloudWatch log groups often persist long after their usefulness has expired. In 
 - Review historical usage to determine if log data is still being used for operational, security, or compliance purposes
 - Evaluate whether the log group is associated with an active application or AWS resource
 - Set a retention period: by default a log group keeps data indefinitely ("Never Expire") until one is set. Events past retention are marked for deletion and stop adding to storage cost at that point, although deletion can take up to 72 hours ([CloudWatch Logs, log groups and retention](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html), read 22 October 2026)
+
+---
+
+## Security services: billing mechanics that list prices hide
+
+OptimNow text, not from the Cloud Efficiency Hub. All pages read 10 November 2026.
+
+**AWS WAF.** Beyond the per web ACL, per rule and per request charges, every request
+evaluated counts, whatever the rule action. The paid intelligent threat mitigation
+groups (Bot Control, Account Takeover Prevention, Account Creation Fraud Prevention)
+add a monthly fee per web ACL and a fee per request they inspect. AWS's own advice:
+exclude traffic with a scope-down statement, run cheaper blocking rules (IP
+reputation, geo) before them, and when using several, order them Bot Control, ATP,
+ACFP. A web ACL above the default 1,500 WCUs pays an extra per-request charge for each
+further 500 WCUs, and body inspection beyond the default limit is charged per extra
+16 KB. Logging: WAF includes a CloudWatch Logs allowance per million requests, with
+vended-log rates beyond it; a logging filter can keep only BLOCK and COUNT requests.
+API Gateway HTTP APIs cannot be protected, only REST APIs ([WAF pricing](https://aws.amazon.com/waf/pricing/),
+[intelligent threat mitigation best practices](https://docs.aws.amazon.com/waf/latest/developerguide/waf-managed-protections-best-practices.html),
+[supported resources](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html)).
+
+**GuardDuty.** The default threat detection cannot be disabled once GuardDuty is on;
+protection plans are turned on or off per plan, for all or selected accounts.
+Malware Protection for S3 scans newly uploaded objects in selected buckets only, does
+not require GuardDuty to be enabled, and bills by GB scanned and objects evaluated
+after a monthly free tier: route uploads to one bucket and protect that bucket. The
+30-day trial applies per new account per Region ([GuardDuty pricing](https://aws.amazon.com/guardduty/pricing/)).
+
+**Amazon Inspector.** EC2 scanning bills on the average number of instances assessed
+in the month; agentless scanning creates EBS snapshots billed separately under EBS.
+Lambda code scanning is charged on top of standard scanning. ECR repositories set to
+scan on push incur no rescan charges, unlike continuous scanning. The 15-day trial
+excludes CIS benchmark assessments and on-demand AMI scans, so a trial bill
+understates them ([Inspector pricing](https://aws.amazon.com/inspector/pricing/)).
+
+**IAM Access Analyzer.** External access analysis is free. Unused access is billed
+per IAM role or user per month; internal access per monitored resource per Region per
+month, so it scales with the buckets and tables in scope, not with identities. Both
+charge at setup and then on the first day of each month: switching an analyzer off
+between reviews saves whole months only, and recreating it mid-month triggers a new
+setup charge ([Access Analyzer pricing](https://aws.amazon.com/iam/access-analyzer/pricing/)).
 
 ---
 
