@@ -49,7 +49,7 @@ cloud-finops-skills/
 ```
 
 For the full directory listing of the reference files and the pipeline
-sub-modules, see CLAUDE.md.
+sub-modules, see docs/STRUCTURE.md.
 
 ---
 
