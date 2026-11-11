@@ -50,6 +50,10 @@ the library unchecked (the 9 November 2026 review found every AWS figure would b
 Error text from a provider is redacted of account IDs and ARNs before it reaches
 the report, which the workflow posts to a public issue.
 
+A throttled request (429), a 5xx or a dropped connection is retried up to four
+times, waiting what Retry-After asks or 2, 5, 15 then 30 seconds, and the report
+says how many requests were retried. Any other error fails at once.
+
 Wired into .github/workflows/price-drift.yml (weekly, live) and ci.yml (--offline).
 """
 
@@ -61,7 +65,9 @@ import json
 import os
 import re
 import sys
+import time
 from dataclasses import dataclass
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
 
@@ -78,6 +84,17 @@ AWS_PRICING_REGION = "us-east-1"
 AZURE_RETAIL_URL = "https://prices.azure.com/api/retail/prices"
 GCP_CATALOG_URL = "https://cloudbilling.googleapis.com/v1/{service}/skus"
 HTTP_TIMEOUT = 60
+# A throttled or briefly unavailable price list is retried, not reported. On the first
+# run in GitHub Actions (11 November 2026) one Azure Retail Prices request out of 47
+# was answered 429 and the run went red with no drift. The pause is the one the server
+# asks for in Retry-After, capped, else the next step of the schedule. The run as a
+# whole never waits past the budget, so a provider that is down fails the run inside
+# the workflow's timeout instead of hanging it.
+HTTP_RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
+HTTP_RETRY_PAUSES = (2, 5, 15, 30)  # seconds before attempts 2 to 5
+HTTP_RETRY_AFTER_CAP = 60
+HTTP_RETRY_BUDGET = 600
+RETRY = {"retries": 0, "waited": 0.0}  # what this run retried, for the report
 USER_AGENT = "cloud-finops-skills price-drift check (+https://github.com/OptimNow/cloud-finops-skills)"
 
 EXIT_OK, EXIT_DRIFT, EXIT_FAILED = 0, 1, 2
@@ -349,15 +366,55 @@ def one_distinct(prices: list[float], what: str) -> float:
     return distinct[0]
 
 
-def http_get(url: str, *, params: dict | None = None, headers: dict | None = None) -> Any:
+def retry_after_seconds(value: str | None, now: dt.datetime | None = None) -> float | None:
+    """The pause a Retry-After header asks for: a number of seconds, or an HTTP date."""
+    if not value:
+        return None
+    text = value.strip()
+    try:
+        return max(0.0, float(text))
+    except ValueError:
+        pass
+    try:
+        when = parsedate_to_datetime(text)
+    except (TypeError, ValueError):
+        return None
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=dt.timezone.utc)
+    return max(0.0, (when - (now or dt.datetime.now(dt.timezone.utc))).total_seconds())
+
+
+def http_get(url: str, *, params: dict | None = None, headers: dict | None = None, sleep=time.sleep) -> Any:
+    """GET, retried on a throttle (429), a 5xx or a dropped connection.
+
+    Any other status (a 400 on a malformed filter, a 403, a 404) is the query's own
+    fault and fails at once. A retryable answer that persists through the last attempt,
+    or arrives once the run's waiting budget is spent, fails as before.
+    """
     import requests  # lazy: --offline needs neither requests nor boto3
 
     h = {"User-Agent": USER_AGENT}
     if headers:
         h.update(headers)
-    response = requests.get(url, params=params, headers=h, timeout=HTTP_TIMEOUT)
-    response.raise_for_status()
-    return response
+    attempts = len(HTTP_RETRY_PAUSES) + 1
+    for attempt in range(attempts):
+        give_up = attempt == attempts - 1 or RETRY["waited"] >= HTTP_RETRY_BUDGET
+        asked: float | None = None
+        try:
+            response = requests.get(url, params=params, headers=h, timeout=HTTP_TIMEOUT)
+        except (requests.ConnectionError, requests.Timeout):
+            if give_up:
+                raise
+        else:
+            if give_up or response.status_code not in HTTP_RETRY_STATUSES:
+                response.raise_for_status()
+                return response
+            asked = retry_after_seconds(response.headers.get("Retry-After"))
+        pause = min(asked if asked is not None else HTTP_RETRY_PAUSES[attempt], HTTP_RETRY_AFTER_CAP)
+        RETRY["retries"] += 1
+        RETRY["waited"] += pause
+        sleep(pause)
+    raise AssertionError("unreachable: the last attempt returns or raises")
 
 
 # --------------------------------------------------------------------------- aws
@@ -656,6 +713,12 @@ def build_report(
         + (f"{len(aged)} past their age." if not offline else "not aged offline.")
     )
     lines.append("")
+    if RETRY["retries"]:
+        lines.append(
+            f"{RETRY['retries']} request(s) were retried after a throttle (429), a server error or a dropped "
+            f"connection, for {RETRY['waited']:.0f} s of waiting in all. A retried request that then answered is a verified price."
+        )
+        lines.append("")
 
     lines.append("## Drift")
     lines.append("")

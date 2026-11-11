@@ -101,7 +101,10 @@ Azure meter sold in volume tiers names the row it reads with `tier_minimum_units
 with the number as written within a 2% tolerance that absorbs the rounding
 ("~$33/month"); `.github/workflows/price-drift.yml` runs it every Saturday and, on a
 drift or a broken query, opens or updates one issue labelled `price-drift` with the
-report. What it never does: edit a content file. A drift is a proposal; the
+report. A throttled request (429), a 5xx or a dropped connection is retried up to four
+times before it counts as a broken query: the first run in GitHub Actions, on
+2026-11-11, went red with no drift because one Azure request out of 47 was answered
+429 (`mcp_server/tests/test_check_prices_retry.py`). What it never does: edit a content file. A drift is a proposal; the
 maintainer re-reads the figure on the provider's page and applies it, with its new
 date, in a content PR. A query that fails exits 2, so a broken query is never read as
 "no drift", and a provider whose secret is missing is skipped, not failed. The same
