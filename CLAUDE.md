@@ -37,7 +37,9 @@ Full annotated tree, every reference file, CI-gated: [`docs/STRUCTURE.md`](docs/
 - `mcp_server/` - the `cloud-finops-mcp` PyPI package (seven tools); `Dockerfile` + `fly.toml` for the hosted connector
 - `scripts/` - CI guards and generators; `.github/workflows/` - CI, release and publish chains
 - `docs/` - `DESIGN.md` (rules, checklist), `ROADMAP.md`, `CONCEPTS.md`, `OVERLAYS.md`, `STRUCTURE.md`
-- Root: `INSTALLATION.md`, `README.md`, `llms.txt`, `DEPENDENCIES.md`, `CHANGELOG.md`; `pipeline/` is gitignored and private
+- Root: `INSTALLATION.md`, `README.md`, `llms.txt`, `DEPENDENCIES.md`, `CHANGELOG.md`
+- `pipeline/` - gitignored and private: the content pipeline, the probe battery and its harnesses, and
+  `provenance-check/`, which tells whether a third-party connector or skill reuses this library with credit
 
 ---
 
