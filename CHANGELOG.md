@@ -25,6 +25,12 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   no measurement existed. So: on Claude, the plugin; the connector for assistants that
   cannot load it.
 - CONCEPTS no longer offers the connector "for the views": they went in 1.51.0.
+- **The connector's listing in the Claude directory is being updated.** A new
+  one-liner and description: what Cloud Financial Management is, what a guide, a
+  runbook and a tool are, the current counts (48 guides, 44 runbooks, 7 tools) and
+  five example questions, from an executive's to an engineer's. The listing no longer
+  declares an MCP App, since the views went in 1.51.0. Submitted on 11 November 2026;
+  the public page changes once the review approves it.
 
 ### New and corrected content
 

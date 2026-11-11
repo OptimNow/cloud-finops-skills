@@ -72,6 +72,20 @@ Then exercise each of the seven tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
 asks you to confirm you did.
 
+**Listing edit saved 2026-11-11, in review.** After release 1.51.0 and `fly deploy` (the
+server answers 1.51.0 with seven tools, no `ui://` resource and no view link on any
+tool), one Save in the portal's full editor sent four things: a new one-liner, a new
+description (section 2.3), "Has an MCP App" unticked, and a fresh tool capture read
+from the live server (section 2.2 for how). The box was found ticked, although the
+2026-11-06 resubmission below records it as left unchecked: the part of the editor it
+sits in says its fields "were previously set only by the review team". The Tools tab
+then read "tool list dated November 11, 2026", against November 6 before, and the
+listing "Your latest edit is in review; the live listing stays until it's approved".
+The server changes since the previous capture are also reported by email to
+mcp-review@anthropic.com, drafted that day for the maintainer to send: the MCP App
+removed in 1.51.0, the `query` parameter of the two finders (1.50.0), and the check
+`get_live_figures` runs on the file it fetches.
+
 **Connector listing published 2026-11-08** at <https://claude.ai/directory/optimnow-cloud-finops>, after
 the 2026-11-06 resubmission below. The plugin listing was already live. Both are now
 public; the README, INSTALLATION.md, `docs/CONCEPTS.md` and `mcp_server/README.md` link
@@ -120,7 +134,7 @@ session):
 |---|---|---|
 | Privacy policy URL | `https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md` | In repo; contact line names jean@optimnow.io |
 | Documentation URL | `https://github.com/OptimNow/cloud-finops-skills#readme` (plugin) and `https://github.com/OptimNow/cloud-finops-skills/blob/main/mcp_server/README.md` (connector) | Exists |
-| Support contact | `jean@optimnow.io` | Decided 2026-09-26 |
+| Support contact | `https://github.com/OptimNow/cloud-finops-skills/issues` in the listing's Support field (read in the portal on 2026-11-11); `jean@optimnow.io` for review correspondence | Email decided 2026-09-26 |
 | Icon | Plugin: `plugins/cloud-finops/.claude-plugin/icon.svg`, picked up by the portal without a manifest field (the validator warned "Add .claude-plugin/icon.svg (square, >=128px) or set icon in plugin.json" on 2026-10-01). Connector: `assets/icon.png` (96x96 PNG, square), uploaded in the portal | The SVG redraws the favicon mark in the brand palette; the raster favicon is 868 KB and would ship in every install |
 | Listing texts | Section 2.3 below | Drafted |
 | Test account | Not applicable, no authentication | Say so in the Test & launch step |
@@ -297,48 +311,85 @@ How the capture behaves, as observed on 2026-11-06:
 - The capture is taken from whatever the server serves, so release and `fly deploy`
   first, verify with section 0, then refresh it.
 
+**The portal had changed by 2026-11-11.** What replaced the buttons above:
+
+- The listing is managed at `https://claude.ai/directory/manage/optimnow-cloud-finops`,
+  with the tabs Overview, Usage, Tools, Edit, Review and Settings.
+- **Two editors, one submission each.** The Edit tab opens one section at a time:
+  "Keep edits" stages the section, then a bar reads "1 section changed" with
+  "Discard" and "Submit changes for review". The full editor ("Open the full
+  editor") shows every field and has one "Save". Use one of them for a pass, not
+  both: an edit staged in the Edit tab and a Save in the full editor are two
+  submissions.
+- **"Update the copy reviewers see" is gone.** In the full editor, "Tools & prompts"
+  says the edit "will be reviewed against the tool list captured on" the date of the
+  last capture, until you choose one of your account's connectors at the listing's
+  URL. The form then says the server's current tool list "was captured from your live
+  connection and will be attached to this edit", and "Sync from server" appears.
+  So: choose the connector, check the seven tool names, then Save. Without that
+  choice the review compares against the old capture.
+- **Saving is still submitting.** "Changes saved." and the listing reads "Your latest
+  edit is in review; the live listing stays until it's approved". The Tools tab
+  shows the date of the tool list the review holds.
+- **"Has an MCP App"** is in the full editor only, under "Directory presentation",
+  with fields that "were previously set only by the review team". Read it at each
+  pass instead of trusting the last record.
+- Use cases, data handling and compliance answers are locked on a published server;
+  mcp-review@anthropic.com changes them. Changes to testing access are saved at once.
+
 ### 2.3 Listing
 
-| Field | Limit | Proposed value |
+What the portal holds since the edit of 2026-11-11, in review that day. The values
+before it are in this file's history.
+
+| Field | Limit | Value |
 |---|---|---|
-| Server name | 100 chars | `Cloud FinOps by OptimNow` |
-| One-liner | 200 chars | `FinOps knowledge for AI agents: billing mechanics, commitments, allocation, AI spend and named waste runbooks across AWS, Azure, GCP and OCI. Read-only, no account needed.` |
-| Description | 2,000 chars | Draft below |
-| Categories | 1 to 5 | Pick the closest from the portal's list; candidates are developer tools, productivity, finance, data and analytics |
+| Name | 100 chars | `Cloud FinOps` |
+| One-liner | 200 chars | `Cloud Financial Management (FinOps) knowledge for Claude: cloud and AI cost guides, plus waste runbooks with detection queries for AWS, Azure and GCP. By practitioners, for practitioners.` |
+| Description | 2,000 chars | Below (1,986 by the portal's count) |
+| Categories | 1 to 5 | Data & Analytics, Productivity, Other |
+| Works with | | Claude (web & mobile), Claude API, Claude Code, Claude Desktop |
 | Documentation URL | | `https://github.com/OptimNow/cloud-finops-skills/blob/main/mcp_server/README.md` |
 | Privacy policy URL | | `https://github.com/OptimNow/cloud-finops-skills/blob/main/PRIVACY.md` |
-| Support contact | | `jean@optimnow.io` |
-| Icon | | `assets/icon.png` |
-| URL slug | permanent | `cloud-finops` |
+| Support | | `https://github.com/OptimNow/cloud-finops-skills/issues` |
+| Icon | | `https://raw.githubusercontent.com/OptimNow/cloud-finops-skills/main/assets/icon.png` |
+| Has an MCP App | | Unticked: the server ships no view since 1.51.0 |
+| URL slug | permanent | `optimnow-cloud-finops` |
 
-Description draft (about 1,500 characters, edit freely; the portal text cannot be
-edited by Anthropic afterwards):
+Description (the portal renders Markdown lists, links and code; Anthropic cannot edit
+the text afterwards):
 
-> Cloud FinOps by OptimNow gives Claude a curated FinOps knowledge base to query at
-> run time: how cloud and AI billing actually works, how to size and manage
-> commitments, how to allocate and charge back, how to manage AI and SaaS spend, and
-> how to detect and fix named waste patterns.
+> Cloud FinOps gives Claude a library on Cloud Financial Management, also called FinOps: how a company understands, allocates and controls what it spends on cloud and AI. It is written by and for practitioners, maintained by OptimNow and refreshed every week, with 2 kinds of content.
 >
-> Seven read-only tools. Six cover two content types. References are long-form guides per
-> provider and discipline (AWS, Azure, GCP, OCI, Bedrock, Azure OpenAI, Vertex AI,
-> Databricks, Snowflake, Microsoft Fabric, Kubernetes, tagging, anomaly management,
-> KPIs, allocation, chargeback, GreenOps, AI coding tools, agentic FinOps), each
-> tagged with its FinOps Framework capability, phase, persona and maturity gate so
-> Claude can filter by facet instead of scanning. Playbooks are short runbooks, one
-> waste pattern each (idle NAT gateway, expiring reservation with no decision,
-> snapshot sprawl, oversized GPU, gp2 to gp3, and more), with symptoms, a detection
-> query you run in your own account, the fix and the anti-pattern. The seventh tool,
-> get_live_figures, returns the current figures of an OptimToken guide (OptimNow's
-> price comparison site), such as the gap between a Savings Plan and a reserved
-> instance, for the figures a reference quotes with a date.
+> 48 reference guides. A guide explains how a provider or a practice works and how to manage it: AWS, Azure and GCP commitments (Savings Plans and reservations), AI spend, data platforms, Kubernetes allocation and optimisation, tagging, allocation, showback and chargeback, anomalies, KPIs, SaaS and AI coding tools, and GreenOps.
 >
-> The server holds no account, no credential and no user data; it cannot see your
-> cloud environment and hands over the detection query instead. The library holds
-> mechanics and ratios, and any figure in a reference is illustrative and dated inline;
-> get_live_figures is the one tool that makes a network request, to OptimNow's own
-> optimtoken.optimnow.io, carrying only the guide name. Content is updated weekly from primary
-> provider sources and published under CC BY-SA 4.0. Built by OptimNow, a FinOps
-> consultancy, from enterprise delivery experience.
+> 44 waste runbooks. A runbook covers a named waste pattern, such as a commitment expiring with no decision, an oversized GPU instance or a zombie NAT gateway. It gives the symptoms, a detection query to run in your account, the fix and its risks.
+>
+> 7 read-only tools. A tool is a function Claude calls while answering. Of these, 6 list, search and read guides and runbooks, by your question or by FinOps Framework filters. The 7th, get_live_figures, reads the current figures of an OptimToken guide, OptimNow's price comparison site.
+>
+> What it does not do: it never connects to your cloud accounts or billing data, needs no account or credentials, and stores no conversation.
+>
+> Example questions: "Are we spending the right amount on cloud for a company our size?", "Our AI projects cost a lot. When do they pay back, and which ones should we stop?", "A third of our bill is unallocated. How do we reach a defensible allocation of shared costs?", "Our NAT gateway bill is higher than the compute it serves. Where does it come from and what do we change?", "Karpenter or Cluster Autoscaler: which one saves more, and how do we tune it?"
+>
+> Figures in the guides illustrate billing mechanics and carry their date. List prices are checked weekly against the providers' price lists.
+>
+> Built by OptimNow, a Cloud Financial Management advisory. The same content is available on GitHub.
+
+Rules the maintainer set for this text on 2026-11-11, to keep at the next edit:
+
+- Open on Cloud Financial Management, "also called FinOps", in a sentence a newcomer
+  understands, then say who writes it, who maintains it and how often it is refreshed.
+- Say what a guide, a runbook and a tool are before listing them.
+- Numbers as figures (48, 44, 7), and the counts corrected at every edit: the text
+  replaced on 2026-11-11 still said 35 guides, 37 runbooks and six tools.
+- Lists run from the least to the most technical item.
+- Example questions are taken word for word from the question index, from an
+  executive question to a very technical one.
+- No sentence on "live prices": it read as unclear to a newcomer. `get_live_figures`
+  is described with the tools.
+- No "Kubernetes" among the detection targets of the one-liner: 3 of the 44 runbooks
+  touch it, and the Kubernetes material is a guide.
+- No count in the one-liner, so that it does not go stale between edits.
 
 ### 2.4 Use cases
 
@@ -525,15 +576,17 @@ who add both see one set of tools.
   or connecting a new endpoint all qualify. `get_live_figures` (2026-10-25) was all
   four at once: if the connector is listed when it deploys, report it from the
   listing's page in the portal before or at the `fly deploy` that ships it.
-- **1.51.0 removes the widgets: a material change to report.** Five tools lose their
-  `ui.resourceUri` link, the six `ui://` resources go, and `get_playbook`'s
-  description loses its last sentence. Names, parameters and results are unchanged.
-  After the release and the `fly deploy`: in the portal, remove the sentence on MCP
-  Apps from the description (the counts can be corrected in the same pass: 48
-  guides, 44 runbooks, seven tools), "Update submission", then "Update the copy
-  reviewers see" and check that Tool names still lists seven tools. Section 2.2
-  applies: saving is submitting, so make every edit in one pass. "Has an MCP App"
-  was already unchecked. The update of 6 November 2026 was live on the 8th.
+- **1.51.0 removed the widgets: reported on 2026-11-11.** Five tools lost their
+  `ui.resourceUri` link, the six `ui://` resources went, and `get_playbook`'s
+  description lost its last sentence. Names, parameters and results are unchanged.
+  The pass is recorded in section 0: "Has an MCP App" unticked, new one-liner and
+  description, fresh tool capture, one Save. The update of 6 November 2026 was live
+  on the 8th.
+- **The order of a pass, since 2026-11-11:** release and `fly deploy`; verify the
+  server (section 0); in the full editor, make every edit, read "Has an MCP App",
+  choose your connector under "Tools & prompts" so that a fresh capture is attached;
+  Save once; check the Tools tab for the new date; then email
+  mcp-review@anthropic.com what changed on the server since the previous capture.
 - Merging to `main` is the release: the directory scans the commit and publishes
   under the auto-publish setting. Nothing to do in the portal.
 - No file in `plugins/cloud-finops/` may exceed 256 KiB and the folder stays under
