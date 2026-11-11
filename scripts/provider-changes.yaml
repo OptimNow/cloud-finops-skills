@@ -112,7 +112,7 @@ entries:
   - date: "2027-02-01"
     provider: "Azure"
     service: "Virtual Machines and Storage"
-    change: "Announced October 2026: prices for Virtual Machines and Azure Storage rise in seven regions - North Europe 17%, France Central and South 11%, West Europe, Norway East and West 9%, Southeast Asia 8%. The v1, v2 and v7 VM series and some storage services are excluded."
+    change: "Announced October 2026: prices for Virtual Machines and Azure Storage rise in seven regions - North Europe 17%, France Central and South 11%, West Europe, Norway East and West 9%, Southeast Asia 8%. The notice excludes v1, v2 and v7 VM series and some storage; a separate rise reported for v1 and v2 is unconfirmed."
     file: "finops-azure"
     section: "Region placement for cost"
     source: "https://learn.microsoft.com/en-in/answers/questions/6026564/clarification-required-azure-vm-and-storage-pricin"

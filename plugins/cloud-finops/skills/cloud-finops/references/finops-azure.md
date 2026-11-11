@@ -147,8 +147,11 @@ Azure Storage will rise in seven regions on 1 February 2027:
 
 The notice excludes the v1 and v2 VM series and the newest v7 series (Dsv7, Ddsv7,
 Dlsv7, Dldsv7, Esv7, Edsv7), and a list of storage services that includes General Block
-Blob, Standard Page Blob, Tables, Queues and Storage Bandwidth. It does not name the
-affected subscriptions or resources, so exposure has to be worked out from the estate.
+Blob, Standard Page Blob, Tables, Queues and Storage Bandwidth. Excluded from this notice
+does not mean spared: a separate rise is reported for the v1 and v2 series, and Microsoft
+has not confirmed it (see "Treat a rise on v1 and v2 as reported, not confirmed" below).
+The notice does not name the affected subscriptions or resources, so exposure has to be
+worked out from the estate.
 
 What to do before the date:
 
@@ -167,15 +170,25 @@ What to do before the date:
   confirm with the account team before buying reservations early to beat the increase,
   and remember that reservation exchange rules change on the same date
   (`finops-azure-commitments.md`).
+- **Treat a rise on v1 and v2 as reported, not confirmed.** Partner and vendor blogs
+  report that the v1 and v2 series take a separate global rise of about 25% in place of
+  the regional one; no Microsoft page states it, and the copies of the notice read for
+  this file do not carry it (checked 11 November 2026). Give that figure only with this
+  status, never as a rise Microsoft is applying, and keep it out of a budget until the
+  customer has read the advisories in their own Service Health blade or has the account
+  team's answer in writing. What Microsoft has published is narrower: its
+  [VM lifecycle post](https://azure.microsoft.com/en-us/blog/enhancing-microsoft-azure-virtual-machine-lifecycle/)
+  of 28 September 2026 says that series entering the End of Life stage "should expect
+  changes to pricing and availability", with no figure, no date and no series named.
 
 Sourcing note: the Service Health notice is visible only in customers' portals and has
 no public Microsoft page. The region list, percentages and exclusions above are as quoted
 from the notice in a [Microsoft Q&A thread](https://learn.microsoft.com/en-in/answers/questions/6026564/clarification-required-azure-vm-and-storage-pricin)
 and reported consistently by partners ([Cloudy with a Chance of Licensing](https://cloudywithachanceoflicensing.com/2026/10/13/microsoft-increase-azure-prices-from-february-2027/),
 [FinOps Weekly](https://finopsweekly.com/news/azure-updates-2026-10-08/)), all read 16
-October 2026. Check the notice in the Service Health blade for the exact scope. Reports
-of a separate global uplift of about 25% on v1 and v2 series, replacing the regional
-increase for those series, were not confirmed on any Microsoft page.
+October 2026. Check the notice in the Service Health blade for the exact scope. The rise
+reported for the v1 and v2 series is a separate matter with no such source behind it: its
+status is in the last bullet above.
 
 ---
 
