@@ -276,9 +276,29 @@ links, the six `ui://` resources (three SEP-1865, three apps-sdk) and the HTML, 
 CSS under `mcp_server/src/cloud_finops_mcp/ui/`. The code is at tag `v1.50.0`.
 `mcp_server/tests/test_no_widgets.py` fails if a tool links a view again.
 
-What is not measured yet: whether the tools are called more once untagged. It is what
-the host's rule implies. The check is the same connector-alone pass on the deployed
-1.51.0 (16 probes, both models), against 3 and 11 of 16.
+**Measured the same night, on the deployed 1.51.0** (plugin withdrawn, the same 16
+probes, one fresh chat each, nobody naming the connector):
+
+| Connector alone | Sonnet 5.5 | Opus 5.5 |
+|---|---|---|
+| 1.50.0, with the view links | 3 of 16 | 11 of 16 |
+| 1.51.0, without | 7 of 16 | 15 of 16 |
+| Chats where a finder was called | 0, then 6 | 1, then 12 |
+| Chats where a runbook was read | 1, then 5 | 2, then 5 |
+
+- The host's tool search now answers "Loaded 5 Cloud FinOps tools ... These tools are
+  now available for you to call directly": no tag, no opt-in rule.
+- No connector card in any of the 32 chats, and no "the runbook is above": the query
+  or the commands are in the answer.
+- The questions that flipped are the ones the gate was stopping: a symptom ("our bill
+  has NAT gateway charges but I do not think anything uses them"), an account-data
+  wording ("which of my RIs are about to expire"), the same symptom in French, and
+  "cut our cloud bill by 20%".
+- What did not move is the model's own choice. "My NAT gateway processes 10TB/month
+  to S3" gets no call on either model; Sonnet 5.5 answers four of five executive
+  questions without a tool and lets web search take three date- or licence-flavoured
+  ones. No change to the connector reaches those.
+- One run per probe and per model: read the totals, not a single probe.
 
 The match between the tag and the link is five of five and two of two. The tag's
 cause is inferred from that and from its name; the host does not document it.
@@ -287,6 +307,8 @@ cause is inferred from that and from its name; the host does not document it.
 
 ## Where this stands
 
+- **The removal is measured.** Connector alone, same 16 probes: from 3 to 7 of 16 on
+  Sonnet 5.5 and from 11 to 15 of 16 on Opus 5.5.
 - **There are no widgets since 1.51.0** (entry of 2026-11-10 above). Everything before
   that entry is history: `ui.domain`, the Skybridge-parity shape and the three key
   shapes for the tool link describe code that is no longer in the repository.

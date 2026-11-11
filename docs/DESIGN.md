@@ -285,8 +285,9 @@ rendering attempt needs:
   probes: Sonnet 5.5 grounded 3, Opus 5.5 grounded 11, one finder call in 32 chats.
   A view that does not render also made the model answer "the runbook is above"
   without the query. What the user must see goes in the text a tool returns
-  (`mcp_server/tests/test_no_widgets.py` pins it). The effect of the removal is to
-  be measured on the deployed 1.51.0 (ROADMAP).
+  (`mcp_server/tests/test_no_widgets.py` pins it). Measured the same night on the
+  deployed 1.51.0, connector alone: Sonnet 5.5 7 of 16, Opus 5.5 15 of 16, a finder
+  called in 6 and 12 chats of 16 (ROADMAP).
 - **History: `ui.domain` was required** on every `ui://` widget resource. It was derived in
   `server.py` from the documented connector URL exactly as users paste it
   (`CANONICAL_CONNECTOR_ORIGIN + "/mcp"`, no trailing slash, since the Fly move),

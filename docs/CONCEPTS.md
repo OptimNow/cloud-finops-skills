@@ -32,7 +32,7 @@ use this.
 
 Same content, 2 delivery shapes, and they behave differently because of how models
 use them. The comparison below comes from running the same battery of practitioner
-questions through both (probe cycles, August 2026; the method is summarised in the
+questions through both (probe cycles, August to November 2026; the method is summarised in the
 routing record of [ROADMAP.md](ROADMAP.md)).
 
 - **Pushed into context**: as a native skill (Claude Code, Claude.ai / Desktop, Kiro),
@@ -47,25 +47,34 @@ routing record of [ROADMAP.md](ROADMAP.md)).
   lookup and discovery questions ("show me the idle waste runbooks") route reliably;
   advisory and specific-symptom questions route on some phrasings and not others, and
   the tool descriptions name the questions each tool serves to move that probability,
-  not to force the call. Version 1.50.0 adds a `query` parameter that ranks the
-  library by the user's own sentence: a local run of the probe wordings on
-  9 November 2026 saw it called on every one, and the measurement on the hosted
-  connector follows the release. Its strengths: distribution (paste one URL, the right path
+  not to force the call. Version 1.50.0 added a `query` parameter that ranks the
+  library by the user's own sentence, and 1.51.0 removed the interactive views that
+  kept Claude from calling the search tools freely. Measured on claude.ai on the night
+  of 10 to 11 November 2026, connector alone, 16 questions from the hard end of the
+  battery, one run each: Claude Opus 5.5 answered 15 from the library and Claude
+  Sonnet 5.5 answered 7, with a search tool called in 12 and 6 of the 16 chats. The
+  same questions through the plugin: 16 and 13. So the connector alone depends on the
+  model. Its strengths: distribution (paste one URL, the right path
   for non-technical users and for hosts with neither skill support nor an installer
   target) and faceted queries over the library's metadata.
-- **Both work together, but the gain is unproven.** The August runs found the skill
-  alone grounding symptom questions the connector missed, and suggested that with both
-  enabled the connector may take those questions over without calling a tool. A probe
-  pass with both enabled, on the hosted connector after 1.50.0, settles it (ROADMAP,
-  "Routing record"). Until then the advice is the plugin by default on Claude, the
-  connector for other hosts and for faceted retrieval.
+- **Both together behave as the plugin alone.** The August runs suggested that with
+  both enabled the connector might take symptom questions over without calling a tool.
+  Measured on claude.ai on 10 November 2026, on the same 16 questions, it did not: with
+  the plugin and the connector both enabled, the connector was called in none of 34
+  chats, and every grounded answer came through the skill (13 of 16 on Claude Sonnet
+  5.5, 16 of 16 on Claude Opus 5.5). No gain and no loss was measured from adding the
+  connector. So the advice is the plugin on Claude, and the connector for hosts that
+  cannot load it and for retrieval by question or facet (ROADMAP, "Routing record").
 
 **What to expect in practice, on either surface.** Neither the skill nor the server
 can see your cloud account. For "which of *my* X" questions ("which of my RIs are
 about to expire?") the deliverable is the runbook's detection query, which you run
-yourself, and the measured behaviour is that models ask you for a data export instead
-of volunteering that runbook. The reliable way to get it is to ask explicitly: "check
-the playbook library" or "show me the runbook for this". Routing is probabilistic, not
+yourself. Until November 2026 the measured behaviour was that models asked you for a
+data export instead of volunteering that runbook. In the November runs, one each,
+Claude Opus 5.5 handed over the detection commands on both surfaces, and Claude Sonnet
+5.5 did through the connector and not through the plugin. Asking explicitly remains
+the reliable way: "check the playbook library" or "show me the runbook for this".
+Routing is probabilistic, not
 guaranteed: the same question phrased 2 ways can ground differently. When an answer
 arrives without a visible tool call or file read, asking for the library by name is
 the one-turn fix.
@@ -107,9 +116,9 @@ serves the same library through 7 read-only tools. It is offered separately, as 
 of the plugin, on purpose: both carry the same content, and a plugin that also
 declared the server would load the tool definitions in every session next to the
 skill and put the same library into context twice. If you use Claude, start with the
-plugin. Add the connector for an assistant other than Claude, for retrieval by
-question or facet, or for the views. Both together work, with the caveat above: no
-measurement yet shows the pair answering better than the plugin alone.
+plugin. Add the connector for an assistant other than Claude, or for retrieval by
+question or facet. Both together work and, as measured above, behave as the plugin
+alone: Claude does not call the connector when the skill is loaded.
 
 ## The MCP server: seven tools
 
