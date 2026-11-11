@@ -242,6 +242,9 @@ cloud-finops-skills/
     │                         (maintainer-local; see docs/ROADMAP.md backlog)
     ├── drafts/            <- Probe-seeded content drafts awaiting adaptation
     ├── probe-harness/     <- Headless smoke harness (claude -p against a branch server; maintainer-local)
+    ├── provenance-check/  <- Reads a third-party connector, skill or text and reports whether it
+    │                         reuses this library and whether the reuse is credited, as CC BY-SA
+    │                         requires (compare.py + README.md; maintainer-local)
     ├── scanner/           <- Fetcher + Sonnet-based classifier
     ├── proposer/          <- CHANGES.md report generator
     ├── applier/           <- Opus-based diff generator and file editor
