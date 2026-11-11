@@ -31,8 +31,9 @@ it hands you the detection query to run yourself and reads the result with you.
 ## Plugin or connector?
 
 The same library exists in two forms in the Claude directory. If you use Claude, start
-with this plugin. Adding the connector as well works, but no measurement yet shows the
-two together answering better than the plugin alone.
+with this plugin. Adding the connector as well works and changes nothing: in our test
+of November 2026, with both installed, Claude never called the connector, and every
+answer that used the library took it from the plugin.
 
 - **This plugin** adds the knowledge to Claude as text files it reads when a cost
   question comes up. Nothing runs, nothing is sent anywhere: it works like a reference
@@ -40,7 +41,9 @@ two together answering better than the plugin alone.
 - **The MCP connector**, listed separately, is a small service Claude can query for the
   same library, one guide or runbook at a time, by topic or by your question. It works
   like a librarian you can call. It suits sessions where you want Claude to search the
-  library rather than carry it, and assistants other than Claude.
+  library rather than carry it, and assistants other than Claude. On its own, in the
+  same test, it answered 15 of 16 questions from the library with Claude Opus 5.5 and
+  7 with Claude Sonnet 5.5, against 16 and 13 for this plugin.
 
 ## What the plugin contains
 

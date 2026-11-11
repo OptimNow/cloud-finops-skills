@@ -11,6 +11,21 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 **PyPI package**. The **installer** copies the repository as it is when you run it.
 "Unreleased" below means merged to `main`, not yet tagged.
 
+## Unreleased
+
+### Install and listings
+
+- **The advice on plugin and connector now rests on a measurement.** On claude.ai in
+  November 2026, with both installed, Claude did not call the connector in any of 34
+  chats, and every answer that used the library took it from the plugin: the pair
+  behaves as the plugin alone. The
+  connector on its own answered 15 of 16 test questions from the library with Claude
+  Opus 5.5 and 7 with Claude Sonnet 5.5, against 16 and 13 for the plugin. The plugin's
+  listing text, the README, CONCEPTS and INSTALLATION now say so, where they said that
+  no measurement existed. So: on Claude, the plugin; the connector for assistants that
+  cannot load it.
+- CONCEPTS no longer offers the connector "for the views": they went in 1.51.0.
+
 ## 1.51.0 (10 November 2026)
 
 ### The connector answers in text, without widgets

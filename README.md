@@ -15,7 +15,8 @@
 
 Both are in the Claude directory. The **plugin** loads the FinOps library into
 Claude's context; the **connector** serves the same library as seven MCP tools that
-Claude calls when a question needs them. Using Claude, start with the plugin; the
+Claude calls when a question needs them. Using Claude, start with the plugin: with
+both installed, Claude answers from the plugin and leaves the connector unused. The
 connector suits other assistants and search by question. See
 [which to choose](docs/CONCEPTS.md#plugin-and-connector).
 
@@ -296,8 +297,9 @@ Full options, troubleshooting, and the model-agnostic API loader: see
 
 The 2 delivery shapes behave differently: a loaded skill grounds advisory and
 symptom questions without a decision to make, while the connector depends on the
-model choosing to call a tool. What that means in practice, and why adding both is
-not yet shown to help, is in [docs/CONCEPTS.md](docs/CONCEPTS.md). Using a non-Claude model through an API,
+model choosing to call a tool. What that means in practice, with the results measured
+in November 2026 (adding both behaves as the plugin alone; the connector alone depends
+on the model), is in [docs/CONCEPTS.md](docs/CONCEPTS.md). Using a non-Claude model through an API,
 add the response contract from [INSTALLATION.md](./INSTALLATION.md) to your system
 prompt so answers stay structured and billing-grounded.
 

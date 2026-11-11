@@ -403,9 +403,10 @@ Restart your client. Verify in Claude Code with `/mcp`, in Codex CLI with
   budget is tight, and for queries that benefit from FCP-faceted filtering ("give me
   the Walk-stage Rate Optimization references aimed at Engineering").
 
-Both can be installed together without conflict. Whether the pair answers better than
-the file install alone has not been measured yet; see "Skill + installer, or MCP?" in
-[docs/CONCEPTS.md](docs/CONCEPTS.md).
+Both can be installed together without conflict. On claude.ai the pair was measured in
+November 2026 and behaves as the plugin alone: the connector is not called when the
+skill is loaded. A file install next to the MCP server in another tool has not been
+measured; see "Skill + installer, or MCP?" in [docs/CONCEPTS.md](docs/CONCEPTS.md).
 
 Source: https://github.com/OptimNow/cloud-finops-skills/tree/main/mcp_server
 

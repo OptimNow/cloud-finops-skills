@@ -308,19 +308,18 @@ future runs against:
 P12 ("which of my RIs...") is closed as structural: no surface picks up account-data
 phrasing, and the reachable ceiling is the model offering to check the library.
 
-**Open: plugin and connector together (decided 2026-11-10, to measure after 1.50.0).**
+**Measured on 2026-11-10: plugin and connector together behave as the plugin alone.**
 Cycle 7 suggested that with both enabled the connector pre-empts the skill on symptom
 questions and then does not call, which would make the pair ground worse than the
-skill alone. Nothing measured it, and 1.50.0's `query` parameter changes the connector
-side. The advice in the plugin README, the README, CONCEPTS.md and INSTALLATION.md is
-therefore one line: the plugin by default on Claude, the connector for other hosts and
-retrieval by question, both allowed with the caveat that no measurement shows a gain.
-Trigger: the post-release probe cycle on the hosted connector adds a pass with both
-enabled (P11, P13, P31, the Executive and French probes); its result rewrites that line.
-**Measured on 2026-11-10** (cycle 8, 16 probes): with both enabled the connector was
-called in none of 34 chats; 13 of 16 grounded on Sonnet 5.5 and 16 of 16 on Opus 5.5,
-all through the skill. The pair behaves as the plugin alone. The four advice lines
-still say that no measurement exists: rewriting them from this result is the open step.
+skill alone. Cycle 8 (16 probes, claude.ai, after 1.50.0) did not reproduce it: with
+both enabled the connector was called in none of 34 chats; 13 of 16 grounded on Sonnet
+5.5 and 16 of 16 on Opus 5.5, all through the skill. The advice in the plugin README,
+the README, CONCEPTS.md and INSTALLATION.md was rewritten from this result on
+2026-11-11: the plugin on Claude, the connector for other hosts and retrieval by
+question, both allowed, no gain and no loss measured. Not measured: a file install
+(Cursor, Windsurf, Codex) next to the MCP server. Trigger to revisit: a host other than
+claude.ai where both are loaded, or a cycle where the connector is called with the
+skill present.
 
 **Measured on the night of 10 to 11 November 2026: the connector routes once its tools
 are untagged (1.51.0, widgets removed).** Same 16 probes, plugin withdrawn, on the
