@@ -50,8 +50,9 @@ Both are ai-ml-inefficiency, but the detection surface and the levers differ.
 
 ## Detection
 
-Coding-agent spend lives in local session logs, not the cloud bill, so detection
-uses agent-log meters rather than CUR / Cost Management queries.
+For subscription seats, coding-agent spend lives in local session logs, not the
+cloud bill, so detection uses agent-log meters rather than CUR / Cost Management
+queries; for API-key access the provider's usage data carries it too.
 
 Install each tool from its own repository (linked below), pinning the release
 you audited, before running the commands.
@@ -88,6 +89,17 @@ usually what unblocks the security review. Tool homepages:
 [ccusage](https://github.com/ccusage/ccusage),
 [tokview](https://github.com/chopratejas/tokview),
 [CodeBurn](https://github.com/getagentseal/codeburn).
+
+No local logs, or keys shared across a team? The provider's usage data gives the
+same signal per key. Anthropic's Usage and Cost Analytics API (or the legacy usage
+report, both on an Admin credential) groups by API key and splits uncached input,
+cache-read and cache-creation tokens in 1-minute, hourly or daily buckets; a key with
+steady input and output and almost no cache-read tokens is not caching. On Bedrock,
+`CacheReadInputTokenCount` against `InputTokenCount` gives the same ratio per model
+only; per key or per caller needs model invocation logging
+([Usage and Cost API](https://platform.claude.com/docs/en/manage-claude/usage-cost-api),
+[Bedrock runtime metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html),
+read 11 November 2026).
 
 Two independent signals raise confidence from possible to likely: for example a
 low cache-read ratio AND tokens-per-task above the team's P90. A single signal on

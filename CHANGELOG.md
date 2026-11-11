@@ -26,6 +26,19 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   cannot load it.
 - CONCEPTS no longer offers the connector "for the views": they went in 1.51.0.
 
+### New and corrected content
+
+- **GCP billing export history depends on the dataset location.** Corrected: a
+  multi-region dataset backfills from the start of the previous month, a single-region
+  one does not, and the pricing export never does (`finops-gcp.md`).
+- **Bedrock's daily token quota is now one pool per account and Region**, shared by all
+  models since 21 September 2026 (`finops-bedrock.md`).
+- **CUR backfill and tag backfill.** How to get history into a new CUR 2.0 or FOCUS
+  export, what an organisation change rules out, and the 12-month cost allocation tag
+  backfill (`finops-aws-billing.md`).
+- **Spotting keys that never cache** from provider usage data when there are no local
+  agent logs (`cross-cloud-coding-agent-token-waste` playbook).
+
 ## 1.51.0 (10 November 2026)
 
 ### The connector answers in text, without widgets

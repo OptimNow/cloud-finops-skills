@@ -549,7 +549,16 @@ rate is 1x unless the model card says otherwise (5x to 15x for recent Anthropic 
 OpenAI models, as of 28 October 2026). Billing is on actual tokens only, so an oversized
 `max_tokens` throttles early without raising the bill: size it from the
 `OutputTokenCount` distribution before requesting more quota or buying Provisioned
-Throughput. Sources:
+Throughput. Since 21 September 2026 the daily quota on bedrock-runtime is one
+**Cross-Model Max Tokens Per Day** pool per account and Region, shared by every
+supported model; it replaced the per-model daily quota, while tokens per minute stay
+per model. AWS estimates the count from on-demand pricing, so it varies with model,
+input/output ratio and cache use. One runaway job on any model can exhaust the day for
+every workload in that account and Region: keep sandboxes and batch experiments in
+their own account, and bound them with `max_tokens` and token alarms. Sources:
+<https://docs.aws.amazon.com/bedrock/latest/userguide/quotas-runtime.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html> (the change
+is dated there, read 11 November 2026),
 <https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html>,
 <https://docs.aws.amazon.com/bedrock/latest/userguide/quotas-token-burndown.html>
 
