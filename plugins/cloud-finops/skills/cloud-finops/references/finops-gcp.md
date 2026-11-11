@@ -127,12 +127,20 @@ GCP exposes three distinct exports to BigQuery, and they are not interchangeable
 | Export | What it contains | Use for |
 |---|---|---|
 | **Standard usage cost data** | Daily aggregated cost by service / SKU / project / label | Showback, budget tracking, executive reporting |
-| **Detailed usage cost data** | Resource-level line items (per-resource cost), backfilled from when enabled | Allocation, attribution, anomaly investigation, FinOps deep dives |
+| **Detailed usage cost data** | Resource-level line items (per-resource cost); history depends on dataset location (below) | Allocation, attribution, anomaly investigation, FinOps deep dives |
 | **Pricing data** | SKU price catalogue (list and discounted) | Validating CUD discounts, pricing-aware what-if analysis |
 
 **Important nuances:**
-- **Resource-level data is opt-in** and backfills only from the moment you enable it -
-  not historically. Enable it on Day 1 of any new GCP engagement.
+- **Resource-level data is opt-in, and history depends on the dataset location.** In a
+  multi-region dataset (US or EU) the standard, detailed and FOCUS exports add data
+  retroactively from the start of the previous month when first enabled (the initial
+  backfill can take up to five days); in a single-region dataset nothing is backfilled.
+  The pricing export is never backfilled, re-enabling an export does not repeat the
+  backfill, a period with the FOCUS export switched off is never filled, and a
+  dataset's location cannot be changed after creation. Enable every export on Day 1 of
+  a new GCP engagement, in a multi-region dataset unless residency rules require a
+  region ([set up Cloud Billing export](https://docs.cloud.google.com/billing/docs/how-to/export-data-bigquery-setup),
+  read 11 November 2026).
 - **Detailed export schema differs from standard.** Queries built against `gcp_billing_export_v1_*` (standard)
   do not run unchanged against `gcp_billing_export_resource_v1_*` (detailed); both schemas
   evolve over time.

@@ -56,6 +56,21 @@ tooling, build on CUR; the console is for ad-hoc views.
 - [ ] Enable resource IDs (required for tag-level allocation)
 - [ ] Select hourly granularity (daily is insufficient for anomaly detection)
 - [ ] Enable Athena integration for SQL-based analysis
+- [ ] Request history once the export exists. A new CUR 2.0 or FOCUS export starts at
+  its creation date; AWS backfills it only on a support case that names the export and
+  the billing periods wanted (AWS's Cloud Intelligence Dashboards guide quotes up to 14
+  months). No backfill reaches before the account was created, before it joined its
+  current organisation, or under a previous organisation structure, so request history
+  before moving accounts between organisations, not after
+  ([backfill limits](https://docs.aws.amazon.com/cur/latest/userguide/troubleshooting.html#backfill-data),
+  [CID Data Exports](https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/data-exports.html),
+  read 11 November 2026)
+- [ ] Tag activation is not retroactive, but the management account can backfill cost
+  allocation tags for up to 12 months (Cost allocation tags, Backfill tags; one request
+  per 24 hours). Values appear only for months in which the resource carried the tag,
+  and a backfill also removes a since-deactivated tag from past months
+  ([backfilling cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-allocation-backfill.html),
+  read 11 November 2026)
 
 ### AWS Data Exports for FOCUS 1.2
 

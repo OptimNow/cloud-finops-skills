@@ -25,6 +25,13 @@
 as_of: "2026-11-10"
 
 entries:
+  - date: "2026-09-21"
+    provider: "AWS"
+    service: "Bedrock quotas"
+    change: "The per-model daily token quota on bedrock-runtime is replaced by one Cross-Model Max Tokens Per Day pool per account and Region, counted from on-demand pricing. Tokens per minute stay per model, so one runaway job on any model can exhaust the day for every workload in that account."
+    file: "finops-bedrock"
+    section: "CloudWatch metrics for Bedrock"
+    source: "https://docs.aws.amazon.com/bedrock/latest/userguide/quotas-runtime.html"
   - date: "2027-01"
     provider: "Microsoft"
     service: "Microsoft 365 Copilot Business"
