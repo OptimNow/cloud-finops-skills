@@ -86,6 +86,17 @@ mcp-review@anthropic.com, drafted that day for the maintainer to send: the MCP A
 removed in 1.51.0, the `query` parameter of the two finders (1.50.0), and the check
 `get_live_figures` runs on the file it fetches.
 
+The edit was saved a second time the same day, with one sentence changed: the
+description now says `get_live_figures` fetches from `optimtoken.optimnow.io`. That
+answers the first of two suggestions that came with the approval of the 2026-11-06
+submission. The review had found "six tools" where seven are exposed, and asked that
+the description name the live service the seventh reaches, with the same correction
+in `additional_info`. That field is locked on a published listing, so the email asks
+the review team to change it. The second suggestion, optional, is to host the privacy
+policy on optimnow.io instead of a repository file. On 2026-11-11 the field still
+points at `PRIVACY.md`; whether to publish a page on the site is the maintainer's
+choice, not taken that day.
+
 **Connector listing published 2026-11-08** at <https://claude.ai/directory/optimnow-cloud-finops>, after
 the 2026-11-06 resubmission below. The plugin listing was already live. Both are now
 public; the README, INSTALLATION.md, `docs/CONCEPTS.md` and `mcp_server/README.md` link
@@ -346,7 +357,7 @@ before it are in this file's history.
 |---|---|---|
 | Name | 100 chars | `Cloud FinOps` |
 | One-liner | 200 chars | `Cloud Financial Management (FinOps) knowledge for Claude: cloud and AI cost guides, plus waste runbooks with detection queries for AWS, Azure and GCP. By practitioners, for practitioners.` |
-| Description | 2,000 chars | Below (1,986 by the portal's count) |
+| Description | 2,000 chars | Below (1,991 by the portal's count) |
 | Categories | 1 to 5 | Data & Analytics, Productivity, Other |
 | Works with | | Claude (web & mobile), Claude API, Claude Code, Claude Desktop |
 | Documentation URL | | `https://github.com/OptimNow/cloud-finops-skills/blob/main/mcp_server/README.md` |
@@ -365,7 +376,7 @@ the text afterwards):
 >
 > 44 waste runbooks. A runbook covers a named waste pattern, such as a commitment expiring with no decision, an oversized GPU instance or a zombie NAT gateway. It gives the symptoms, a detection query to run in your account, the fix and its risks.
 >
-> 7 read-only tools. A tool is a function Claude calls while answering. Of these, 6 list, search and read guides and runbooks, by your question or by FinOps Framework filters. The 7th, get_live_figures, reads the current figures of an OptimToken guide, OptimNow's price comparison site.
+> 7 read-only tools. A tool is a function Claude calls while answering. Of these, 6 list, search and read guides and runbooks, by your question or by FinOps Framework filters. The 7th, get_live_figures, fetches the current dated figures of a guide from OptimNow's own optimtoken.optimnow.io.
 >
 > What it does not do: it never connects to your cloud accounts or billing data, needs no account or credentials, and stores no conversation.
 >
@@ -390,6 +401,9 @@ Rules the maintainer set for this text on 2026-11-11, to keep at the next edit:
 - No "Kubernetes" among the detection targets of the one-liner: 3 of the 44 runbooks
   touch it, and the Kubernetes material is a guide.
 - No count in the one-liner, so that it does not go stale between edits.
+- Name the host a tool calls. The review of the 2026-11-06 submission asked that the
+  description say `get_live_figures` fetches from `optimtoken.optimnow.io`, so that
+  users and the calling agent know one tool reaches a live service.
 
 ### 2.4 Use cases
 
