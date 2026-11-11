@@ -47,6 +47,12 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   backfill (`finops-aws-billing.md`).
 - **Spotting keys that never cache** from provider usage data when there are no local
   agent logs (`cross-cloud-coding-agent-token-waste` playbook).
+- **A reported Azure price rise now carries its status where it is stated.** Partner
+  blogs report a separate rise of about 25% on v1 and v2 VM series from 1 February 2027;
+  no Microsoft page states it (checked 11 November 2026). The guide said so in a note at
+  the end of the passage, and an answer quoted the figure as Microsoft's. The figure and
+  its status now sit in one sentence, with what Microsoft did publish, and the digest row
+  says the rise is reported and unconfirmed (`finops-azure.md`, `finops-whats-new.md`).
 
 ### For maintainers
 
