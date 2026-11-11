@@ -39,6 +39,15 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 - **Spotting keys that never cache** from provider usage data when there are no local
   agent logs (`cross-cloud-coding-agent-token-waste` playbook).
 
+### For maintainers
+
+- **The weekly price check retries a throttled request.** Its first run in GitHub
+  Actions, on 11 November 2026, read 97 live prices, found no drift in 160 figures and
+  still went red: one Azure Retail Prices request out of 47 was answered "429 Too
+  Many Requests" and the script did not try again. It now retries a 429, a 5xx or a
+  dropped connection up to four times, waiting what the server asks, and the report
+  says how many requests were retried. Any other error fails at once, as before.
+
 ## 1.51.0 (10 November 2026)
 
 ### The connector answers in text, without widgets
