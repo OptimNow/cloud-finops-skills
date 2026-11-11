@@ -31,6 +31,9 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   five example questions, from an executive's to an engineer's. The listing no longer
   declares an MCP App, since the views went in 1.51.0. Submitted on 11 November 2026;
   the public page changes once the review approves it.
+- **A 46-second demo in the README.** The same NAT gateway question put to Claude
+  Opus 5.5 on 11 November 2026, alone and then with the plugin: what Claude alone
+  already gets right, and the 4 places where the answer differs. One run each.
 
 ### New and corrected content
 

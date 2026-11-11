@@ -307,6 +307,26 @@ prompt so answers stay structured and billing-grounded.
 
 ## Usage examples
 
+### One question, asked twice
+
+The same question put to Claude Opus 5.5 on 11 November 2026, first alone, then with
+the plugin installed: "Our AWS bill has NAT gateway charges but I do not think anything
+uses them - what should I do?"
+
+<a href="assets/demo-nat-gateway-asked-twice.mp4">
+  <img src="assets/demo-nat-gateway-asked-twice.png" alt="The same question to Claude, alone and with the Cloud FinOps plugin. Alone: read the bill line items in Cost Explorer. With the plugin: one Athena query that checks every gateway." width="380">
+</a>
+
+[Watch the 46-second video](assets/demo-nat-gateway-asked-twice.mp4).
+
+Claude alone gave sound advice, checked by hand in the console. With the plugin it
+read the runbook first, and the answer differs in 4 places: one Athena query that
+checks every gateway in one pass, 2 months of observation where Claude alone asked for
+30 days, a price that carries its date and its source, and a sentence saying it cannot
+see the account. Each version was run once: an example, not a measurement.
+
+### A longer walkthrough
+
 <div>
   <a href="https://www.loom.com/share/cc76d419adc64b1784e58621d6934d3e">
     <p>Cloud FinOps skill - Watch Video</p>

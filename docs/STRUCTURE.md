@@ -45,7 +45,10 @@ cloud-finops-skills/
 │                             the generated playbook-coverage.svg and
 │                             fcp-coverage.svg heat maps (embedded in
 │                             README.md; both CI-gated; brand palette, one
-│                             green accent each, sized to read at phone width)
+│                             green accent each, sized to read at phone width),
+│                             and the 46-second demo video with its poster
+│                             image (demo-nat-gateway-asked-twice.mp4 and .png,
+│                             embedded in README.md, "Usage examples")
 ├── skills/cloud-finops/   <- One README stub pointing at the new location, so the
 │                             old links do not 404. Outside the plugin folder
 ├── docs/
