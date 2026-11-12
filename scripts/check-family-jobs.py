@@ -31,7 +31,10 @@ What it never does: fix, merge, re-run or edit anything. Exit codes:
 
 Token: GH_TOKEN or GITHUB_TOKEN, else `gh auth token` when the CLI is signed in, else
 none. Without one the four public repositories are still read; the private one
-(OptimToken's site) is reported as not read.
+(OptimToken's site) is reported as not read. A token that a repository refuses is
+asked again without one, so a token scoped to a few repositories never hides a public
+one. In a cloud routine the token covers the repositories checked out for the run:
+the Monday routine checks out all five, which is what lets it read the private one.
 
   python scripts/check-family-jobs.py               report on stdout
   python scripts/check-family-jobs.py --output f.md also write it to a file
@@ -158,8 +161,7 @@ def find_token() -> str | None:
     return None
 
 
-def github(path: str, token: str | None) -> Any:
-    """GET one GitHub API path. Raises :class:`NotRead` with the reason."""
+def _get(path: str, token: str | None) -> Any:
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
@@ -168,14 +170,32 @@ def github(path: str, token: str | None) -> Any:
     if token:
         headers["Authorization"] = f"Bearer {token}"
     request = urllib.request.Request(API + path, headers=headers)
+    with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def github(path: str, token: str | None) -> Any:
+    """GET one GitHub API path. Raises :class:`NotRead` with the reason.
+
+    A token that is refused is not the end of it. A cloud routine's token covers the
+    repositories checked out for the run and nothing else: on 2026-11-12 it answered 403
+    for the three public repositories it had not been given, which an anonymous caller
+    reads freely. So a refusal with a token is asked again without one, and only a
+    repository that is closed to both (the site's, when it was not checked out) is
+    reported as not read.
+    """
     try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
-            return json.loads(response.read().decode("utf-8"))
+        return _get(path, token)
     except urllib.error.HTTPError as exc:
+        if token and exc.code in (401, 403, 404):
+            try:
+                return _get(path, None)
+            except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+                pass  # the first refusal is the one worth reporting
         if exc.code == 404:
             reason = "not found" if token else "not found without a token (a private repository reads so)"
-        elif exc.code in (403, 429):
-            reason = f"refused, HTTP {exc.code} (rate limit or missing permission)"
+        elif exc.code in (401, 403, 429):
+            reason = f"refused, HTTP {exc.code} (rate limit, or a token that does not cover this repository)"
         else:
             reason = f"HTTP {exc.code}"
         raise NotRead(reason) from None

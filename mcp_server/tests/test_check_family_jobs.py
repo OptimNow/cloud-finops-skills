@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import datetime as dt
 import importlib.util
+import io
 import sys
+import urllib.error
 from pathlib import Path
 
 import pytest
@@ -233,3 +235,59 @@ def test_only_runs_of_the_right_kind_count_as_the_latest(check, monkeypatch):
     monkeypatch.setattr(check, "github", lambda path, token: {"workflow_runs": runs})
     run = check.latest_finished_run(check.SITE, "mcp-parity.yml", ("schedule", "workflow_dispatch"), "token")
     assert run["created_at"].startswith("2026-11-15")
+
+
+# ------------------------------------------------------------- a token that is refused
+
+
+class _Body(io.BytesIO):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+
+def _refusing(check, monkeypatch, anonymous_answer):
+    """GitHub as a scoped token sees it: refused with the token, `anonymous_answer` without."""
+    asked = []
+
+    def urlopen(request, timeout=None):
+        with_token = request.get_header("Authorization") is not None
+        asked.append(with_token)
+        if with_token:
+            raise urllib.error.HTTPError(request.full_url, 403, "Forbidden", {}, None)
+        if isinstance(anonymous_answer, Exception):
+            raise anonymous_answer
+        return _Body(anonymous_answer)
+
+    monkeypatch.setattr(check.urllib.request, "urlopen", urlopen)
+    return asked
+
+
+def test_a_public_repository_a_scoped_token_refuses_is_read_without_the_token(check, monkeypatch):
+    """The routine's first run, 12 November 2026: 403 on three public repositories."""
+    asked = _refusing(check, monkeypatch, b'{"workflow_runs": []}')
+    assert check.github("/repos/OptimNow/ai-roi-calculator/actions/runs", "scoped") == {"workflow_runs": []}
+    assert asked == [True, False]
+
+
+def test_a_repository_closed_to_both_is_not_read_and_says_the_token_was_refused(check, monkeypatch):
+    gone = urllib.error.HTTPError("https://api.github.example", 404, "Not Found", {}, None)
+    asked = _refusing(check, monkeypatch, gone)
+    with pytest.raises(check.NotRead, match="HTTP 403"):
+        check.github("/repos/OptimNow/ai-pricing-hub/pulls", "scoped")
+    assert asked == [True, False]
+
+
+def test_without_a_token_nothing_is_asked_twice(check, monkeypatch):
+    calls = []
+
+    def urlopen(request, timeout=None):
+        calls.append(request.get_header("Authorization"))
+        raise urllib.error.HTTPError(request.full_url, 404, "Not Found", {}, None)
+
+    monkeypatch.setattr(check.urllib.request, "urlopen", urlopen)
+    with pytest.raises(check.NotRead, match="without a token"):
+        check.github("/repos/OptimNow/ai-pricing-hub/pulls", None)
+    assert calls == [None]
