@@ -34,6 +34,13 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 - **A 46-second demo in the README.** The same NAT gateway question put to Claude
   Opus 5.5 on 11 November 2026, alone and then with the plugin: what Claude alone
   already gets right, and the 4 places where the answer differs. One run each.
+- **The companion pricing connector's page is current again.** The OptimNow AI Pricing
+  Hub connector went from five tools to eight on 11 and 12 November 2026 (server
+  0.11.0): where to buy a model (`compare-model-hosts`), which quoted prices moved
+  (`track-llm-price-changes`) and the volume at which renting GPUs costs the same as an
+  API (`estimate-self-hosting-breakeven`). INSTALLATION lists the eight with their
+  parameters and the fields that date a figure, including the day of a fallback
+  snapshot. Nothing changes in the skill or in `cloud-finops-mcp`.
 
 ### New and corrected content
 
