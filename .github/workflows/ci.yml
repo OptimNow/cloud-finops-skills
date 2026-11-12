@@ -178,6 +178,15 @@ jobs:
       - name: Price manifest in step with the files (check-prices --offline)
         run: python scripts/check-prices.py --offline
 
+      # INSTALLATION.md lists the tools of two MCP servers that live in other
+      # repositories. The weekly companion-tools workflow compares those lists with
+      # the live servers; this run reads no network and only holds the page to the
+      # shape that workflow reads, so a reformatting cannot blind it. It also fails
+      # when DEPENDENCIES.md names another URL than the one the script asks.
+      # Standard library only.
+      - name: Companion tool lists still parse (check-companion-tools --offline)
+        run: python scripts/check-companion-tools.py --offline
+
       - name: Sync references into bundled data/
         working-directory: mcp_server
         run: python scripts/sync_references.py

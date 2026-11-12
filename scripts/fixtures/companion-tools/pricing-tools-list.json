@@ -1,0 +1,153 @@
+{
+  "recorded": "2026-11-12",
+  "server": {
+    "name": "ai-pricing-hub",
+    "version": "0.11.0"
+  },
+  "note": "A tools/list answer trimmed to what the check reads: each tool's name, the names of its input properties and its required list. Descriptions, property schemas, output schemas and annotations were removed.",
+  "response": {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "result": {
+      "tools": [
+        {
+          "name": "compare-llm-models",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "provider": {},
+              "category": {},
+              "openness": {},
+              "capability": {},
+              "maxInputPrice": {},
+              "maxOutputPrice": {},
+              "minElo": {},
+              "useCasePreset": {},
+              "volumePreset": {},
+              "sortBy": {},
+              "limit": {}
+            }
+          }
+        },
+        {
+          "name": "estimate-llm-cost",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "modelName": {},
+              "useCasePreset": {},
+              "customInputTokens": {},
+              "customOutputTokens": {},
+              "cacheHitRate": {},
+              "batchEligible": {},
+              "monthlyVolume": {}
+            }
+          }
+        },
+        {
+          "name": "compare-models-side-by-side",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "models": {},
+              "volumePreset": {}
+            },
+            "required": [
+              "models"
+            ]
+          }
+        },
+        {
+          "name": "recommend-llm-model",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "useCasePreset": {},
+              "volumePreset": {},
+              "maxMonthlyBudget": {},
+              "minElo": {},
+              "requiredCapability": {},
+              "openness": {}
+            },
+            "required": [
+              "useCasePreset"
+            ]
+          }
+        },
+        {
+          "name": "compare-compute-pricing",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "region": {},
+              "provider": {},
+              "category": {},
+              "minVCPUs": {},
+              "maxVCPUs": {},
+              "minMemory": {},
+              "maxMemory": {},
+              "processor": {},
+              "useCase": {},
+              "sortBy": {},
+              "limit": {}
+            }
+          }
+        },
+        {
+          "name": "compare-model-hosts",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "models": {},
+              "useCasePreset": {},
+              "volumePreset": {}
+            },
+            "required": [
+              "models"
+            ]
+          }
+        },
+        {
+          "name": "estimate-self-hosting-breakeven",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "model": {},
+              "instanceType": {},
+              "provider": {},
+              "region": {},
+              "hourlyRate": {},
+              "instanceCount": {},
+              "outputTokensPerSecond": {},
+              "monthlyOperationsCost": {},
+              "useCasePreset": {},
+              "customInputTokens": {},
+              "customOutputTokens": {},
+              "cacheHitRate": {},
+              "batchEligible": {},
+              "monthlyVolume": {}
+            },
+            "required": [
+              "model"
+            ]
+          }
+        },
+        {
+          "name": "track-llm-price-changes",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "models": {},
+              "direction": {},
+              "provider": {},
+              "includeFlagged": {},
+              "limit": {},
+              "useCasePreset": {},
+              "volumePreset": {}
+            }
+          }
+        }
+      ]
+    }
+  }
+}

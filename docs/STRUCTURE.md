@@ -38,7 +38,8 @@ cloud-finops-skills/
 │                             hosted connector on Fly.io, MCP Registry),
 │                             publish-mcp, publish-registry and deploy-hosted
 │                             (manual paths for one surface), mcp-install-smoke,
-│                             release, dependabot-automerge, price-drift (weekly)
+│                             release, dependabot-automerge, price-drift and
+│                             companion-tools (both weekly)
 ├── .github/ISSUE_TEMPLATE/ <- Two issue forms (wrong or incomplete answer,
 │                             question not covered) plus the chooser config; each
 │                             confirmed report becomes a coverage probe
@@ -219,10 +220,14 @@ cloud-finops-skills/
 │                             check-prices.py (price-manifest.yaml, every list
 │                             price and where it is written, against the live
 │                             price lists; --offline in CI, live weekly in
-│                             price-drift.yml), render-whats-new.py
+│                             price-drift.yml), check-companion-tools.py (the
+│                             companion connectors' tools as INSTALLATION.md
+│                             lists them, against each server's own tools/list;
+│                             --offline in CI, live weekly in
+│                             companion-tools.yml), render-whats-new.py
 │                             (provider-changes.yaml into finops-whats-new.md;
 │                             --check) and check-marketplace-version
-│                             - all twenty-six run by the `CI` workflow, and
+│                             - all twenty-seven run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
 │                             workflow. One script is not a CI guard:

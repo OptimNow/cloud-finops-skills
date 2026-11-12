@@ -14,7 +14,7 @@ what else do I need to look at?**
 | Repository | What it is | Runtime | Deployed as |
 |---|---|---|---|
 | [`cloud-sparkle-compare`](https://github.com/OptimNow/cloud-sparkle-compare) | **OptimToken** - the price catalogue, web app and public API | Node / Vite / React | [optimtoken.optimnow.io](https://optimtoken.optimnow.io) on Vercel |
-| [`ai-pricing-hub-mcp`](https://github.com/OptimNow/ai-pricing-hub-mcp) | OptimToken as MCP tools | Node / Skybridge | [optimtoken-mcp.optimnow.io](https://optimtoken-mcp.optimnow.io/mcp) on Fly.io (since 2026-10-07; Alpic before) |
+| [`ai-pricing-hub-mcp`](https://github.com/OptimNow/ai-pricing-hub-mcp) | OptimToken as MCP tools | Node / MCP SDK (tools only since 0.5.0; Skybridge before) | [optimtoken-mcp.optimnow.io](https://optimtoken-mcp.optimnow.io/mcp) on Fly.io (since 2026-10-07; Alpic before) |
 | [`ai-roi-calculator`](https://github.com/OptimNow/ai-roi-calculator) | AI ROI calculator web app, and the **engine + METHODOLOGY.md** | Node / React | [airoicalculator.optimnow.io](https://airoicalculator.optimnow.io) |
 | [`ai-roi-calculator-mcp`](https://github.com/OptimNow/ai-roi-calculator-mcp) | The ROI calculator as MCP tools | Node / Skybridge | [airoicalculator-mcp.optimnow.io](https://airoicalculator-mcp.optimnow.io/mcp) on Fly.io (since 2026-10-08; Alpic before) |
 | [`cloud-finops-skills`](https://github.com/OptimNow/cloud-finops-skills) | This repo. FinOps knowledge, and `cloud-finops-mcp` | Python | PyPI + Fly.io |
@@ -63,7 +63,9 @@ Read the arrow weight as coupling strength:
   the tightest coupling in the family, and the only one that can fail a build.
 - **`-->` runtime fetch.** The MCP servers call the OptimToken API when a tool runs. A
   change to the API response shape breaks them at request time, not at build time, which
-  means CI will not catch it.
+  means CI will not catch it. For `ai-pricing-hub-mcp` a daily job in
+  `cloud-sparkle-compare` reports the difference after the fact (see "The scheduled
+  jobs" below); nothing does for `ai-roi-calculator-mcp`.
 - **`-.->` scheduled data pull.** A snapshot copied on a cron, not a live call.
 - **`-..->` documentation only.** `cloud-finops-skills` names these tools and tells the
   model to call them. There is no code dependency in either direction: nothing in this
@@ -71,23 +73,27 @@ Read the arrow weight as coupling strength:
 
 ---
 
-## The Monday cascade
+## The scheduled jobs
 
-Price data propagates on a deliberate one-hour stagger. Each job runs after the one it
-depends on.
+The catalogue is refreshed every day. On Mondays the price data then propagates on a
+deliberate one-hour stagger, each job running after the one it depends on. Times read
+from the workflow files on 2026-11-12.
 
 | Time (UTC) | Repository | Job | What it does |
 |---|---|---|---|
-| Daily 05:00 | `cloud-sparkle-compare` | `refresh-llm-fallback` | Refreshes the OptimToken catalogue |
+| Daily 12:30 | `cloud-sparkle-compare` | `refresh-llm-fallback` | Refreshes the OptimToken catalogue |
+| Daily 14:10 | `cloud-sparkle-compare` | `mcp-parity` | Compares the logic `ai-pricing-hub-mcp` ports from the site, and the schema version of each route it reads, with the site's own. Opens an issue on a difference; does not block a merge |
+| Sat 12:20 | `cloud-finops-skills` | `companion-tools` | Compares the tools `INSTALLATION.md` lists for the two companion connectors with each server's own `tools/list`. Opens an issue on a difference; never edits a file |
 | Mon 05:30 | `cloud-sparkle-compare` | `refresh-bedrock-matrix` | Refreshes the Bedrock matrix |
 | Mon 06:00 | `ai-roi-calculator` | `refresh-model-snapshot` | Pulls the model snapshot from OptimToken |
 | Mon 07:00 | `ai-roi-calculator-mcp` | `sync-engine` | Pulls engine + snapshot from the calculator |
 
-**`ai-pricing-hub-mcp` is not on this cascade.** Its static fallback catalogue is
-regenerated only by running `npm run refresh-fallback` by hand. That matters, because the
+**`ai-pricing-hub-mcp` has no scheduled job of its own.** Its static fallback snapshots
+are regenerated only by running `npm run refresh-fallback` (models) and
+`npm run refresh-compute-fallback` (instances) by hand. That matters, because the
 fallback is what gets served whenever the live fetch fails, and an unrefreshed fallback
-ages silently. Read the `provenance` block's as-of timestamp and its `notice`, which
-states the snapshot's age, before trusting a tier-2 response.
+ages silently. Read the `provenance` block's `dataAsOf` and its `notice`, which
+states the day the snapshot was taken, before trusting a tier-2 response.
 
 ---
 
@@ -101,7 +107,8 @@ The riskiest repo in the family: everything downstream reads it.
 
 | If you change | Also review | Why |
 |---|---|---|
-| An API **response shape** (`/api/llm-models`, `/api/pricing`) - renamed field, changed nesting, changed `meta` block | `ai-pricing-hub-mcp`, `ai-roi-calculator-mcp` | Both parse these responses at runtime. Nothing fails at build time, so the first symptom is a tool silently falling back to stale data |
+| An API **response shape** (`/api/llm-models`, `/api/pricing`, `/api/model-hosts`, `/api/price-changes`) - renamed field, changed nesting, changed `meta` block, bumped `meta.schemaVersion` | `ai-pricing-hub-mcp` (all four routes), `ai-roi-calculator-mcp` (`/api/llm-models`) | Both parse these responses at runtime. Nothing fails at build time, so the first symptom is a tool silently falling back to stale data. `ai-pricing-hub-mcp` records the schema version it was last read against, per route (`SYNCED_SITE_SCHEMAS` in its `server/src/lib/site-schema.ts`), and the daily `mcp-parity` job opens an issue when the site has moved past it |
+| A rule the pricing MCP **ports** from the site: workload cost, efficiency score, FinOps Friendly badge, openness bucket, compute category and processor (the files listed under `paths` in `.github/workflows/mcp-parity.yml`) | `ai-pricing-hub-mcp` | Its copy is a port, not a shared module, so each side moves without the other. The daily `mcp-parity` job compares the two over the live catalogue and opens an issue until the server follows |
 | An API **URL or route** | Both MCP repos, plus `ai-roi-calculator` | Hard break |
 | Cache TTLs, timeouts, payload size | `ai-pricing-hub-mcp` | Its client timeout is tuned against these response times |
 | A guide's **`figures.json`** (the envelope keys `guide`, `url`, `snapshotDate`, `figures`, a figure key, a slug) or the "Figures as JSON" line format in `llms.txt` | `cloud-finops-skills` -> `mcp_server/src/cloud_finops_mcp/live_figures.py`, its fixtures, and the references that quote guide figures | `get_live_figures` fetches the file at request time and the references quote its keys. A missing `guide` or `figures` key turns every call into an error that falls back to the dated figure; a renamed figure key makes the quoted path in a reference wrong. The same error follows a file the tool's shape check refuses: a text value over 300 characters, a key over 80, more than 10,000 characters of keys and text, a line break, an angle bracket or a link in a label, a `url` or `page` off `optimtoken.optimnow.io`, a `snapshotDate` or `dateModified` that is not `YYYY-MM-DD`, a `guide` that is not the slug in the path |
@@ -120,17 +127,17 @@ The riskiest repo in the family: everything downstream reads it.
 | If you change | Also review | Why |
 |---|---|---|
 | Anything in `server/src/lib/` | **Stop** | It is generated. Change `ai-roi-calculator` instead, then re-sync |
-| Tool names, signatures, or output shape | `cloud-finops-skills` -> `INSTALLATION.md` | The companion-connector section lists the four tools and their parameters |
-| The deployment URL | `cloud-finops-skills` -> `INSTALLATION.md` | The connect command is published there |
+| Tool names, signatures, or output shape | `cloud-finops-skills` -> `INSTALLATION.md` | The companion-connector section lists the four tools by name. The weekly `companion-tools` job reports a name that no longer matches the server |
+| The deployment URL | `cloud-finops-skills` -> `INSTALLATION.md`, `scripts/check-companion-tools.py` and the table at the top of this file | The connect command is published in the first; the script asks that URL every week, and its `--offline` run in CI fails when this file names another |
 
 ### `ai-pricing-hub-mcp`
 
 | If you change | Also review | Why |
 |---|---|---|
 | The `provenance` block - tier semantics, field names, the stale notice | `cloud-finops-skills` -> `SKILL.md` / `POWER.md` "Price figures" rule 5, and `INSTALLATION.md` | The skill's dated-price doctrine instructs the model to read those exact fields |
-| Tool names, signatures, output shape | `cloud-finops-skills` -> `SKILL.md`, `POWER.md`, `INSTALLATION.md` | Tool names appear in the doctrine and the routing |
-| The deployment URL | `cloud-finops-skills` -> `README.md`, `INSTALLATION.md` | Published in both |
-| The static fallback catalogue | Nothing, but check the `provenance` as-of timestamp | See the cascade note above |
+| Tool names, signatures, output shape | `cloud-finops-skills` -> `INSTALLATION.md` (the companion-connector section lists every tool with its parameters, under the server version and date it was read at), and the two references that name a tool call, `finops-anthropic.md` and `finops-open-weight-vendors.md` | Hand-synced copies. On 2026-11-12 the list still said five tools while server 0.11.0 served eight; since then the weekly `companion-tools` job compares the list in `INSTALLATION.md` (names, parameters, optional marks) with the server's `tools/list` and opens an issue. It does not read the two references |
+| The deployment URL | `cloud-finops-skills` -> `README.md`, `INSTALLATION.md`, `scripts/check-companion-tools.py` and the table at the top of this file | Published in the first two; the script asks that URL every week, and its `--offline` run in CI fails when this file names another |
+| The static fallback catalogue | Nothing, but check the `provenance` as-of date | See the note under "The scheduled jobs" above |
 
 ### `cloud-finops-skills` (this repo)
 
@@ -153,10 +160,16 @@ Worth carrying in your head when reviewing anything here.
 1. **Runtime coupling is invisible to CI.** Only the ROI calculator to ROI MCP edge is
    enforced by a build. Every other cross-repo edge is a runtime fetch or a piece of
    documentation, so a breaking change ships green and surfaces as a degraded answer.
+   Since 2026-11-12 one edge is watched after the merge: the daily `mcp-parity` job in
+   `cloud-sparkle-compare` compares the pricing MCP with the site and opens an issue on
+   a difference. It reports; it does not block.
 2. **This repo's dependencies are mostly documentation, and documentation drifts
    silently.** Tool names, parameters, endpoint URLs and provenance field names are
-   quoted in `SKILL.md`, `POWER.md`, `INSTALLATION.md` and `README.md`. Nothing checks
-   them. When an MCP repo changes its surface, this repo does not find out. The one code
+   quoted in `SKILL.md`, `POWER.md`, `INSTALLATION.md` and `README.md`. One part is read
+   every week since 2026-11-12: `scripts/check-companion-tools.py` compares the tool
+   lists in `INSTALLATION.md` with the two servers' own `tools/list` and opens an issue
+   on a difference. Nothing checks the rest: endpoint URLs, provenance field names and
+   the tool calls two references quote. The one code
    dependency, `get_live_figures` on OptimToken's guide `figures.json`, degrades to an
    error and the dated figure in the reference when the file changes shape; its tests
    run on saved copies, so they do not see the change either.

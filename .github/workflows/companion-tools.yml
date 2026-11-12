@@ -1,0 +1,116 @@
+name: Companion tools
+
+# Weekly comparison of the companion connectors' tools, as INSTALLATION.md lists them,
+# with what the two servers serve: the OptimNow AI Pricing Hub (tool names, parameters
+# and their optional marks) and the AI ROI Calculator (tool names). Both lists are
+# copies kept by hand of servers that live in other repositories, and nothing in this
+# one sees them move: on 12 November 2026 the page listed five pricing tools while the
+# server served eight. This workflow asks each server for its `tools/list` every
+# Saturday and, when the page and a server differ, opens or updates one issue labelled
+# `companion-tools` with the report. It never edits a file: the maintainer reads the
+# server's own README and changes INSTALLATION.md in a docs PR.
+#
+# No secret: both servers are public and take no credential.
+#
+# Exit codes of scripts/check-companion-tools.py, and what each does here:
+#   0  the page and both servers agree. An issue this workflow opened is closed.
+#   1  they differ, a section of the page no longer parses, or a server answered a
+#      client error at its URL (it moved). The issue is opened or updated and the run
+#      fails, so it shows red in the Actions list.
+#   2  nothing differs and a server could not be read (timeout, 429, 5xx). A warning
+#      and a green run, and the issue is left as it is: an outage is not a difference,
+#      and a red run for one teaches everyone to ignore this job.
+
+on:
+  schedule:
+    # Saturdays 12:20 UTC, after the price-drift run of 12:00.
+    - cron: '20 12 * * 6'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: Compare the listed tools with the live servers
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: '3.12'
+
+      - name: Run the check
+        id: check
+        run: |
+          set +e
+          python scripts/check-companion-tools.py --output companion-tools-report.md
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          if [ -f companion-tools-report.md ]; then
+            cat companion-tools-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "check-companion-tools wrote no report (exit $code)" > companion-tools-report.md
+          fi
+          echo "check-companion-tools exited $code"
+
+      - name: Open or update the companion-tools issue
+        if: steps.check.outputs.exit_code != '0' && steps.check.outputs.exit_code != '2'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EXIT_CODE: ${{ steps.check.outputs.exit_code }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          gh label create companion-tools --force --color 5319E7 \
+            --description "INSTALLATION.md and a companion connector's live tool list differ"
+          today="$(date -u +%Y-%m-%d)"
+          title="Companion tools differ - $today"
+          {
+            echo "Weekly comparison of the tools INSTALLATION.md lists for the companion connectors with the servers' own \`tools/list\` ([run]($RUN_URL), exit code $EXIT_CODE)."
+            echo
+            echo "Nothing has been edited. Read the server's README for what changed, bring the \"Companion connector\" section of \`INSTALLATION.md\` in line (tools, parameters, the tool count and the server version it was read at) in a docs PR, and check the two references that name a pricing tool call (\`DEPENDENCIES.md\`, \"ai-pricing-hub-mcp\"). This issue closes on the next run that agrees."
+            echo
+            cat companion-tools-report.md
+          } > issue-body.md
+          existing="$(gh issue list --label companion-tools --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --title "$title" --body-file issue-body.md
+            echo "Updated issue #$existing"
+          else
+            gh issue create --title "$title" --label companion-tools --body-file issue-body.md
+          fi
+
+      - name: Close the issue once the page and the servers agree
+        if: steps.check.outputs.exit_code == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing="$(gh issue list --label companion-tools --state open --json number --jq '.[0].number // empty' || true)"
+          if [ -n "$existing" ]; then
+            gh issue close "$existing" --comment "The page and both servers agree again ([run]($RUN_URL))."
+            echo "Closed issue #$existing"
+          else
+            echo "No open companion-tools issue."
+          fi
+
+      - name: Warn when a server could not be read
+        if: steps.check.outputs.exit_code == '2'
+        run: |
+          echo "::warning::A companion server could not be read, so it was not compared this week. See the run summary."
+
+      - name: Fail the run when the page and a server differ
+        if: steps.check.outputs.exit_code != '0' && steps.check.outputs.exit_code != '2'
+        run: |
+          echo "::error::check-companion-tools exited ${{ steps.check.outputs.exit_code }}; see the companion-tools issue"
+          exit 1

@@ -438,29 +438,42 @@ this file: take it from the "Connect" section of
 - Clients with no native remote-MCP support: `npx mcp-remote <url>` (on Windows, wrap
   it: `"command": "cmd"`, `"args": ["/c", "npx", "mcp-remote", "<url>"]`).
 
-**Five tools (all read-only):**
+**Eight tools (all read-only), as of server 0.11.0 on 12 November 2026.** The server's
+own tool list is the authority: a client reads the names and parameters from it when it
+connects, so a tool added after that date works without this page changing.
 
-- `compare-llm-models(provider?, category?, openness?, capability?, maxInputPrice?, maxOutputPrice?, minElo?, useCasePreset?, volumePreset?, limit?)` - browse and filter the whole catalogue into a ranked table. Use when the user wants to see the field
-- `recommend-llm-model(useCasePreset, maxMonthlyBudget?, minElo?, requiredCapability?, openness?, volumePreset?)` - a ranked top 3 for one workload, each with a per-constraint satisfied/violated breakdown. Use when the user wants an answer rather than a table. An over-constrained query is reported as such and returns nearest misses
+- `compare-llm-models(provider?, category?, openness?, capability?, maxInputPrice?, maxOutputPrice?, minElo?, useCasePreset?, volumePreset?, sortBy?, limit?)` - browse and filter the whole catalogue into a ranked table, ordered by Arena ELO unless `sortBy` asks for efficiency, cost or price. Use when the user wants to see the field
+- `recommend-llm-model(useCasePreset, maxMonthlyBudget?, minElo?, requiredCapability?, openness?, volumePreset?)` - a ranked top 3 for one workload, each with a per-constraint satisfied/violated breakdown. Use when the user wants an answer rather than a table. An over-constrained query is reported as such and returns nearest misses. A model whose maker has announced its retirement is never recommended, and the ones that would have ranked are named
 - `compare-models-side-by-side(models, volumePreset?)` - 2 to 4 named models against all 8 use-case profiles. Use when the user names the models to weigh against each other
-- `estimate-llm-cost(modelName?, useCasePreset?, monthlyVolume?, customInputTokens?, customOutputTokens?)` - per-request and monthly cost for a model against a use-case token profile. The one to reach for when the user supplies their own token counts or a volume outside the 10k/100k/1m presets
-- `compare-compute-pricing(provider?, category?, processor?, useCase?, minVCPUs?, maxVCPUs?, minMemory?, maxMemory?, sortBy?, limit?)` - instance pricing across AWS, Azure, GCP, DigitalOcean, OCI, OVH, and Alibaba, including spot, Savings Plan, and reserved rates
+- `estimate-llm-cost(modelName?, useCasePreset?, monthlyVolume?, customInputTokens?, customOutputTokens?, cacheHitRate?, batchEligible?)` - per-request and monthly cost for a model against a use-case token profile. The one to reach for when the user supplies their own token counts, cache hit rate or batch eligibility, or a volume outside the 10k/100k/1m presets
+- `compare-model-hosts(models, useCasePreset?, volumePreset?)` - for 1 to 4 named models, every host that sells each with its rate, cheapest first, the model maker's own rate, any promotional listing, the platforms that list the model and its Amazon Bedrock regions. Use when the question is where to buy a model. An absent platform or region means not known, never "not sold there"
+- `track-llm-price-changes(models?, direction?, provider?, includeFlagged?, limit?, useCasePreset?, volumePreset?)` - the models whose quoted price moved by 1% or more over the last 7 days, or the price history of 1 to 4 named models since tracking began. A move flagged as a change of quoted host or as an outlier listing is returned apart from the price changes, and a move with no flag is not thereby a repricing by the model maker
+- `compare-compute-pricing(region?, provider?, category?, processor?, useCase?, minVCPUs?, maxVCPUs?, minMemory?, maxMemory?, sortBy?, limit?)` - instance pricing across AWS, Azure, GCP, DigitalOcean, OCI, OVH, and Alibaba: on-demand, spot, and the 1-year and 3-year commitment rates, each with its saving against on-demand
+- `estimate-self-hosting-breakeven(model, instanceType?, provider?, region?, hourlyRate?, instanceCount?, outputTokensPerSecond?, monthlyOperationsCost?, useCasePreset?, monthlyVolume?, customInputTokens?, customOutputTokens?, cacheHitRate?, batchEligible?)` - the monthly volume at which renting an instance costs the same as paying a model's API per token. It assumes no throughput and no staffing cost: without `outputTokensPerSecond` it states the tokens per second each break-even would require, and without `monthlyOperationsCost` the figures are hardware rent only
 
 **Read the provenance block before quoting anything it returns.** Every response carries
 one, and it is the thing that makes the dated-price rule workable:
 
 | Field | Why it matters |
 |---|---|
-| `provenance.tier` | `1` = fetched live from optimtoken.optimnow.io. `2` = served from a committed static snapshot because the upstream was unreachable |
-| `provenance.upstreamTimestamp` | The as-of date to put next to a price figure |
+| `provenance.tier` | `1` = fetched live from optimtoken.optimnow.io. `2` = served from a static snapshot of that site committed with the server, because the site could not be read |
+| `provenance.upstreamTimestamp` | On tier 1, the as-of date to put next to a price figure |
+| `provenance.dataAsOf` | On tier 2, the day the snapshot was taken: the date to put next to a figure quoted from it |
 | `provenance.eloAsOf` | The as-of date for the quality (ELO) scores, which move on a different cadence from prices |
-| `provenance.pricesVerified` | Whether the rates were reconciled against the vendor's own published pricing rather than taken from the upstream aggregator as-is |
-| `provenance.notice` | Present on tier 2, and states plainly that the pricing is stale, how old the snapshot is, and which filters were *not* applied |
+| `provenance.hostPricingAsOf`, `provenance.deprecationsVerifiedAt` | On the LLM tools, the dates of the per-host prices and of the retirement notices, each read on its own cadence. Tier 1 only: the snapshot carries neither |
+| `provenance.pricesVerified` | On the LLM tools, `true` on tier 1 only: the figures are the site's corrected prices as they are now. `false` means the snapshot of an earlier day |
+| `provenance.notice` | Present on tier 2, and states plainly that the pricing is stale, the day the snapshot was taken, and which filters were *not* applied. On a tier-1 compute answer it appears when a provider could not be read live or when a price column is served from static rates |
 
 A tier-2 response is still usable - it is a dated snapshot, not a guess - but it must be
 quoted as one. Do not present a tier-2 figure as a current price, and note that on tier 2
 the compute catalogue is a subset of the live one and carries no region dimension, so a
-region filter silently does not apply and a narrow query can come back empty.
+region filter silently does not apply and a narrow query can come back empty. The same
+caution holds on tier 1 when the site could not read a provider live:
+`provenance.catalogueIsSubset` is then `true`, `provenance.degradedProviders` names the
+provider, and an empty result means "not in the sample served", not "no such instance".
+
+`track-llm-price-changes` has no tier 2. It reads the site's price archive only and
+returns an error when the archive cannot be read, which is not "nothing moved".
 
 Source: https://github.com/OptimNow/ai-pricing-hub-mcp
 
