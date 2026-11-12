@@ -250,8 +250,8 @@ cloud-finops-skills/
 │                             SVGs) for Windows checkouts with
 │                             core.autocrlf=true
 └── pipeline/              <- Content update pipeline (gitignored, private)
-    ├── run_scan.py        <- Laptop scan entry point; the live scan is a weekly cloud routine since 2026-10-17
-    ├── run_monthly.bat    <- Task Scheduler wrapper (both scheduled tasks call it)
+    ├── run_scan.py        <- Scan entry point, run on the maintainer's laptop every Saturday since 2026-11-14
+    ├── run_monthly.bat    <- Task Scheduler wrapper (the weekly task calls it; the name predates the cadence)
     ├── run_apply.py.FROZEN <- Review and apply entry point, frozen since the
     │                          May 2026 truncation incident (see docs/ROADMAP.md P1)
     ├── run_report.py      <- Per-run report rendering

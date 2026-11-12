@@ -402,7 +402,7 @@ each is appropriate. Full policy in [PRIVACY.md](./PRIVACY.md).
 
 ## Maintenance
 
-The library is updated weekly. Every Saturday an automated scan checks around 35
+The library is updated weekly. Every Saturday an automated scan checks around 30
 sources: cloud and AI provider release notes, billing changelogs and pricing pages,
 plus FinOps community publications. Each change is confirmed on the provider's own
 documentation and reviewed by a practitioner before it is applied. Every merge to

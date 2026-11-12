@@ -5,23 +5,26 @@ keeps what an agent needs in every session and lists the sections below.
 
 ## Content update pipeline
 
-**Weekly since 2026-10-17.** The source scan now runs every Saturday as a private
-cloud routine over about 35 sources in two tiers (provider primary pages, and
-secondary leads that must be confirmed on a primary page). It replaces the
-fortnightly laptop scan described below and, like it, only proposes: nothing is
-applied without review. Its source list and run state live outside the repository.
-The rest of this section describes the laptop pipeline, kept for its tooling and
-history.
+**Weekly, every Saturday, since 2026-11-14.** The `pipeline/` folder contains a
+content scanner that the maintainer's laptop runs every Saturday at 9:00 AM (Paris
+time) through Windows Task Scheduler. It detects FinOps-relevant changes across about
+30 sources, opens a "Content update" issue and proposes updates to the reference
+files: nothing is applied without review. It is gitignored and not part of the public
+distribution. The task runs as soon as possible after a missed start and waits for the
+network, so a laptop closed or offline at 9:00 delays the scan instead of losing it.
 
-The `pipeline/` folder contains a **fortnightly** content scanner (1st and 15th
-of each month at 9:00 AM CET via Windows Task Scheduler) that detects
-FinOps-relevant changes across ~30 sources and proposes updates to the reference
-files. It is gitignored and not part of the public distribution.
+**Correction of 2026-11-12.** From October 2026 (PR #241) this section said that a
+private cloud routine had run the scan every Saturday since 2026-10-17, over about 35
+sources, and had replaced the laptop scan. No such routine exists: the maintainer checked his
+routines on 2026-11-12. The laptop scan had kept running on the 1st and the 15th and
+opened issues #250 (15 October) and #292 (1 November). Its two monthly tasks had no
+catch-up after a missed start and did not start on battery; one weekly task replaces
+them.
 
-**Why fortnightly.** The rhythm matches the scan's 15-day lookback window, so a
-monthly cadence leaves coverage blind spots. It was briefly monthly (May to
-August 2026, when each run needed 2-4 hours of human review) and restored to
-twice-monthly on 2026-08-10 for that reason.
+**Cadence history.** Twice-monthly at launch; monthly from May to August 2026, when
+each run needed 2-4 hours of human review; twice-monthly again from 2026-08-10, to
+match the scan's 15-day lookback window; weekly since 2026-11-14. The lookback now
+overlaps from one run to the next, and the scan skips what it has already processed.
 
 **Rotating AI-pricing re-verification pass.** The 15th-of-month run (the 1st
 until October 2026; see the "Fortnightly operating rhythm" section of
