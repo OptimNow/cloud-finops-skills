@@ -37,6 +37,12 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### New and corrected content
 
+- **Regulated placement in France.** The SREN law decree of 14 April 2026 and the
+  SecNumCloud 3.2 arrêté: which State data must sit on a qualified offer, the
+  derogation window, and what it changes for estimates (`finops-onboarding-workloads.md`).
+- **Price and test the exit.** The Data Act switching floor (notice, 30-day transition,
+  30-day retrieval) and why data ownership in a contract is not a tested exit
+  (`finops-on-prem-hybrid.md`).
 - **Claude Code telemetry as a chargeback key.** `OTEL_RESOURCE_ATTRIBUTES` for team
   and cost-centre keys, what is sent by default, and why its cost figure splits the
   invoice rather than replacing it; and why a Claude subscription is not a cheaper route

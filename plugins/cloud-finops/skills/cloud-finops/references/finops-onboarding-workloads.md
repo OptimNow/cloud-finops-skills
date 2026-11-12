@@ -115,6 +115,30 @@ on-premises.
 - **A one-time exercise.** The gate runs on every workload. Recurring
   bypasses are a leadership signal, not an engineering signal.
 
+### Regulated placement: French State data of particular sensitivity
+
+Some workloads cannot go to the cheapest region or provider at all, and the gate should
+record that before anyone prices the move. In France, decree n° 2026-272 of 14 April
+2026, implementing article 31 of the SREN law (n° 2024-449), applies to State
+administrations, State operators and six named public interest groups (GIP) whose data
+"d'une sensibilité particulière" runs on a cloud service from a private provider. That
+service must meet an ANSSI requirements framework, approved by the arrêté of 12 August
+2026 as SecNumCloud 3.2 (in force 15 August 2026). Conformity is shown by an ANSSI
+qualification or an EU or EEA certification ANSSI recognises as equivalent. A project
+already under way on a non-compliant service can get a derogation: at most 18 months
+from the date a compliant and "acceptable" offer is available in France, where
+acceptable means it meets the functional need taking its cost into account, or one
+renewable year while none exists.
+
+What changes for FinOps: the candidate set shrinks to qualified offers, so the rate
+card, the commitment instruments and the regions to compare are those offers', not the
+hyperscaler's; an estimate that assumes the cheapest region is wrong from the start; and
+a derogation is time-boxed, so the cost of the eventual move belongs in the forecast.
+Private-sector workloads are outside the decree unless a contract or a sector rule
+requires the qualification. Sources (Légifrance, read 12 November 2026):
+[décret n° 2026-272](https://www.legifrance.gouv.fr/eli/decret/2026/4/14/2026-272/jo/texte),
+[arrêté du 12 août 2026](https://www.legifrance.gouv.fr/eli/arrete/2026/8/12/PRMD2617964A/jo/texte).
+
 ---
 
 ## The 60-90 day forecast-then-commit rule
