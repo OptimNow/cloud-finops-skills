@@ -65,8 +65,13 @@ that release. Either way, confirm the served content itself:
 
 The hosted server is redeployed per release, not per merge (INSTALLATION.md), so
 content merged to `main` after the last tag is expected to be absent until the next
-release and `fly deploy`. It is not a defect. If the served content is older than the
-last tag, run `fly deploy` from the tagged commit first.
+release. It is not a defect. Since November 2026 the release workflow deploys each
+tag itself and runs the version check and the first row of this table against it
+(`deploy-hosted` job, `scripts/check-hosted-connector.py`); the other two rows are
+still yours. To run that check on its own, deploying nothing:
+`gh workflow run deploy-hosted.yml -f tag=vX.Y.Z -f verify_only=true`. If the served
+content is older than the last tag, the deploy of that release failed: run the same
+command without `verify_only` first.
 
 Then exercise each of the seven tools once through MCP Inspector
 (`npx @modelcontextprotocol/inspector`) or as a custom connector in Claude; the portal
@@ -319,8 +324,9 @@ How the capture behaves, as observed on 2026-11-06:
   is: make every edit including the new URL, "Update submission", then at once "Update
   the copy reviewers see" through a connector at the new URL, then check that Tool
   names still lists seven tools.
-- The capture is taken from whatever the server serves, so release and `fly deploy`
-  first, verify with section 0, then refresh it.
+- The capture is taken from whatever the server serves, so release first (the
+  release workflow deploys the hosted server), verify with section 0, then refresh
+  it.
 
 **The portal had changed by 2026-11-11.** What replaced the buttons above:
 
@@ -589,14 +595,17 @@ who add both see one set of tools.
   to re-review"). Adding a tool, rewording a description, changing what a tool sends
   or connecting a new endpoint all qualify. `get_live_figures` (2026-10-25) was all
   four at once: if the connector is listed when it deploys, report it from the
-  listing's page in the portal before or at the `fly deploy` that ships it.
+  listing's page in the portal before or at the deploy that ships it. Since November
+  2026 that deploy is a job of the release workflow and starts when the release PR
+  merges, so report before merging.
 - **1.51.0 removed the widgets: reported on 2026-11-11.** Five tools lost their
   `ui.resourceUri` link, the six `ui://` resources went, and `get_playbook`'s
   description lost its last sentence. Names, parameters and results are unchanged.
   The pass is recorded in section 0: "Has an MCP App" unticked, new one-liner and
   description, fresh tool capture, one Save. The update of 6 November 2026 was live
   on the 8th.
-- **The order of a pass, since 2026-11-11:** release and `fly deploy`; verify the
+- **The order of a pass, since 2026-11-11:** release (its workflow deploys the
+  hosted server; until November 2026 that was a `fly deploy` by hand); verify the
   server (section 0); in the full editor, make every edit, read "Has an MCP App",
   choose your connector under "Tools & prompts" so that a fresh capture is attached;
   Save once; check the Tools tab for the new date; then email

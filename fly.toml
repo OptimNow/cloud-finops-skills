@@ -1,5 +1,7 @@
-# Fly.io app for the hosted connector. `fly deploy` from the repo root builds
-# the Dockerfile and rolls the app; the public URL is
+# Fly.io app for the hosted connector. The release workflow deploys it from each
+# tag (the `deploy-hosted` job of auto-tag-on-plugin-bump.yml; deploy-hosted.yml
+# redeploys one tag by hand). `fly deploy` from the repo root does the same from
+# a laptop: it builds the Dockerfile and rolls the app. The public URL is
 # https://mcp.optimnow.io/mcp (custom domain: a CNAME to cloud-finops-mcp.fly.dev
 # plus a certificate issued with `fly certs add`; the docs name that URL and no
 # other). The cloud-finops-mcp.fly.dev host still answers but is deprecated.

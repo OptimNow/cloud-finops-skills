@@ -1023,29 +1023,48 @@ from how the directory works:
       `server.json` (two fields: top-level `version` and `packages[0].version`).
       `marketplace.json` is gated by `scripts/check-marketplace-version.sh` and
       `server.json` by the `verify-package` job in `auto-tag-on-plugin-bump.yml`;
-      `pyproject.toml` is auto-pinned to `plugin.json` at build time, so bump it
+      `pyproject.toml` is pinned to `plugin.json` both when the wheel is built
+      (the release workflow) and when the hosted image is built
+      (`mcp_server/scripts/pin_version.py`, run by the Dockerfile), so bump it
       for tidiness rather than correctness.
 - [ ] **Release PR only: no manual MCP Registry step.** Publishing `server.json`
       to the registry is automated by the `publish-registry` job in
-      `auto-tag-on-plugin-bump.yml` (GitHub OIDC, no secret). It runs after the
-      PyPI publish and waits for the version to be visible on PyPI, because the
-      registry validates the package before accepting the entry. Verify it landed
+      `auto-tag-on-plugin-bump.yml` (GitHub OIDC, no secret). It runs last: after
+      the PyPI publish, waiting for the version to be visible on PyPI because the
+      registry validates the package before accepting the entry, and after the
+      hosted connector has been deployed and checked (next item), because the
+      entry advertises the hosted URL. Verify it landed
       at <https://registry.modelcontextprotocol.io/v0/servers?search=finops>.
-- [ ] **Release PR only: redeploy the hosted MCP (Fly.io) after the tag, then verify
-      by calling it.** Nothing redeploys the connector on its own. On Alpic, where it
-      lived until September 2026, the 2026-08-19 audit found it serving 1.29.0
-      content (pre price-purge) while PyPI was at 1.31.0, and the 2026-08-27 review
-      found it *still* on 1.29.0, 33 references, with PyPI at 1.33.0 - four releases
-      behind; Alpic's shared free quota then took all three OptimNow connectors down
-      on 2026-09-09 (HTTP 402). Assume the redeploy did not happen unless you called
-      the endpoint and saw otherwise. After the PyPI publish, run `fly deploy` from
-      the repo root on the tagged commit (the image builds from the checkout), then
-      call the hosted endpoint (`https://mcp.optimnow.io/mcp`) and confirm
-      it serves the released content: the server's startup log names the bundle stamp
-      (`data/content_version.txt`, version + sync date, written by
-      `mcp_server/scripts/sync_references.py` since 1.32), or compare a `list_references` line count
-      against the tag. Do not tick this from the source alone - the audit found the
-      staleness only by calling the surface.
+- [ ] **Release PR only: the hosted MCP (Fly.io) redeploys with the release; read
+      the result.** Since November 2026 the `deploy-hosted` job in
+      `auto-tag-on-plugin-bump.yml` builds the image from the tagged commit, rolls
+      the Fly.io app `cloud-finops-mcp`, then calls `https://mcp.optimnow.io/mcp`
+      with `scripts/check-hosted-connector.py` and fails unless `serverInfo.version`
+      equals `plugin.json` and the names `list_references` and `list_playbooks`
+      return are the files of the tag. It runs beside the PyPI publish, without
+      waiting for the `pypi` approval, and the registry entry waits for both. It
+      replaced a `fly deploy` from a laptop that nothing enforced. On Alpic, where
+      the connector lived until September 2026, the 2026-08-19 audit found it
+      serving 1.29.0 content (pre price-purge) while PyPI was at 1.31.0, and the
+      2026-08-27 review found it *still* on 1.29.0, 33 references, with PyPI at
+      1.33.0 - four releases behind; Alpic's shared free quota then took all three
+      OptimNow connectors down on 2026-09-09 (HTTP 402). What is left to a person:
+      - **Before merging**, when the release changes a tool's name, description,
+        parameters or what it sends: report it in the directory portal first
+        (`docs/directory-submission.md`, section 4). The hosted server now changes
+        at the merge, not at a later `fly deploy`.
+      - **After merging**, look at the job. Red: its summary on the run page says
+        what is published and what is not. Fix the cause, then "Re-run failed
+        jobs" on that run, or `gh workflow run deploy-hosted.yml -f tag=vX.Y.Z`
+        followed by `gh workflow run publish-registry.yml`.
+      - **To go back a release**, deploy the earlier tag with the same command.
+        `-f verify_only=true` deploys nothing and only runs the check.
+      The job needs the `FLY_API_TOKEN` repository secret, a deploy token limited
+      to that app (`fly tokens create deploy --app cloud-finops-mcp`); when it
+      expires or is revoked the job says so and stops. The check compares the
+      version and the two catalogues, not the bodies or the tool descriptions:
+      section 0 of `docs/directory-submission.md` still covers those before a
+      listing review.
 - [ ] Release PR only: marketplace description in `.claude-plugin/marketplace.json`
       still follows the store-listing rule in step 6 of "How to add a new reference
       file" (under 180 words, four blocks, no file names or pattern-level detail).
@@ -1064,7 +1083,10 @@ from how the directory works:
       `mcp_server/tests/test_ui.py`), README.md, INSTALLATION.md,
       `mcp_server/README.md`, `server.json` (`remotes`, republished to the MCP
       Registry by the next release), llms.txt, PRIVACY.md, the `fly.toml`
-      comment and the two `docs/*-submission*.md` guides. `git grep` the old
+      comment, the two `docs/*-submission*.md` guides, and the three places the
+      deploy check reads it from (`DEFAULT_URL` in
+      `scripts/check-hosted-connector.py`, and the `--url` of its step in
+      `auto-tag-on-plugin-bump.yml` and in `deploy-hosted.yml`). `git grep` the old
       host before merging. The directory connector listing's URL is edited in
       the portal, not in the repo. Nothing in CI catches this. Canonical since
       2026-09-30: `https://mcp.optimnow.io/mcp` (the fly.dev host still answers

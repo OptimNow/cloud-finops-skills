@@ -26,13 +26,18 @@ cloud-finops-skills/
 ├── install.sh             <- One-liner installer script
 ├── server.json            <- MCP Registry manifest (carries the version TWICE)
 ├── Dockerfile             <- Image for the hosted MCP connector on Fly.io (builds
-│                             from this checkout; bundled data synced at build time)
+│                             from this checkout; bundled data synced and package
+│                             version pinned to plugin.json at build time)
 ├── fly.toml               <- Fly.io app config (app cloud-finops-mcp, region cdg,
-│                             scale-to-zero); .dockerignore trims the build context
+│                             scale-to-zero); .dockerignore trims the build context.
+│                             Deployed from each release tag by the release chain
 ├── .claude-plugin/        <- marketplace.json only (the plugin manifest lives in
 │                             plugins/cloud-finops/; both versions bump together)
-├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump,
-│                             publish-mcp, publish-registry, mcp-install-smoke,
+├── .github/workflows/     <- ci, marketplace-version-check, auto-tag-on-plugin-bump
+│                             (the release chain: tag, GitHub Release, PyPI,
+│                             hosted connector on Fly.io, MCP Registry),
+│                             publish-mcp, publish-registry and deploy-hosted
+│                             (manual paths for one surface), mcp-install-smoke,
 │                             release, dependabot-automerge, price-drift (weekly)
 ├── .github/ISSUE_TEMPLATE/ <- Two issue forms (wrong or incomplete answer,
 │                             question not covered) plus the chooser config; each
@@ -156,7 +161,11 @@ cloud-finops-skills/
 │                             stdio + streamable-HTTP transports; no MCP Apps
 │                             widget since 1.51.0: a tool that links one is
 │                             put behind claude.ai's opt-in step, see
-│                             docs/mcp-apps-lessons.md)
+│                             docs/mcp-apps-lessons.md). Its scripts/ holds
+│                             sync_references.py (copies the library into the
+│                             package at build time) and pin_version.py (sets
+│                             pyproject.toml to plugin.json's version when the
+│                             hosted image is built)
 ├── scripts/               <- `fcp-coverage.sh` and `playbook-coverage.sh`
 │                             (parse frontmatter, emit the two coverage
 │                             matrices; their --check modes diff the
@@ -216,7 +225,11 @@ cloud-finops-skills/
 │                             - all twenty-six run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
-│                             workflow
+│                             workflow. One script is not a CI guard:
+│                             check-hosted-connector.py calls the hosted
+│                             connector and compares its version and its two
+│                             catalogues with a checkout; the release chain and
+│                             deploy-hosted run it after each deploy
 ├── fcp-coverage.md        <- Generated FCP coverage matrix (22 caps; CI-gated)
 ├── playbook-coverage.md   <- Generated waste-playbook matrix (category x
 │                             scope, gaps listed; CI-gated)

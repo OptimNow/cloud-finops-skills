@@ -1,0 +1,149 @@
+name: Deploy the hosted connector to Fly.io
+
+# Manual path for the hosted connector (Fly.io app `cloud-finops-mcp`, served at
+# https://mcp.optimnow.io/mcp).
+#
+# The normal path is the `deploy-hosted` job in auto-tag-on-plugin-bump.yml,
+# which runs on every release. This workflow covers what that job cannot:
+#
+#   1. A deploy that failed during a release, once the cause is fixed.
+#   2. Going back to an earlier release: deploy its tag.
+#   3. Checking, without deploying anything, that the hosted server serves a
+#      given tag (`verify_only`).
+#   4. A tag pushed by hand, which release.yml and publish-mcp.yml pick up but
+#      the release chain does not.
+#
+# Run it with:
+#   gh workflow run deploy-hosted.yml -f tag=v1.51.0
+#   gh workflow run deploy-hosted.yml -f tag=v1.51.0 -f verify_only=true
+# or from the Actions tab: this workflow, then "Run workflow".
+#
+# It deploys a tag, never a branch. The image is built from the tagged commit:
+# its Dockerfile, its fly.toml, its content. The check that follows is this
+# workflow's own copy of scripts/check-hosted-connector.py, from the ref the
+# run is dispatched on, so a tag older than that script can still be deployed
+# and checked.
+#
+# It does not publish to the MCP Registry. After repairing a failed release,
+# run `gh workflow run publish-registry.yml` once this one is green.
+#
+# Needs the FLY_API_TOKEN repository secret (not for `verify_only`): a deploy
+# token limited to this one app, created with
+#   fly tokens create deploy --app cloud-finops-mcp
+#
+# The deploy steps are duplicated from the `deploy-hosted` job in
+# auto-tag-on-plugin-bump.yml: change both or neither.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to deploy, e.g. v1.51.0'
+        required: true
+        type: string
+      verify_only:
+        description: 'Deploy nothing: only check that the hosted server serves this tag'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy a tag and check what the hosted connector serves
+    runs-on: ubuntu-latest
+    # A rollout that hangs would otherwise hold the deploy lock for six hours.
+    timeout-minutes: 30
+    # Same group as the release chain's job: one rollout at a time, and never
+    # cancel one halfway through.
+    concurrency:
+      group: fly-deploy-cloud-finops-mcp
+      cancel-in-progress: false
+    steps:
+      # Same normalisation as publish-mcp.yml (a capital V or a missing prefix
+      # is tolerated), plus a shape check: only a release tag is deployed.
+      # The input reaches the shell through the environment, never by
+      # substitution into the script.
+      - name: Resolve and validate the tag
+        id: resolve
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          tag="${INPUT_TAG}"
+          tag="${tag#V}"
+          tag="${tag#v}"
+          tag="v${tag}"
+          if ! [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::'${INPUT_TAG}' is not a release tag. Expected the form v1.51.0."
+            exit 1
+          fi
+          if [[ "$tag" != "${INPUT_TAG}" ]]; then
+            echo "::notice::normalised tag input '${INPUT_TAG}' to '${tag}'"
+          fi
+          # Public repo, so an unauthenticated ls-remote answers "does this
+          # tag exist" without a checkout.
+          if ! git ls-remote --exit-code --tags \
+               "https://github.com/${GITHUB_REPOSITORY}" "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "::error::tag ${tag} does not exist in ${GITHUB_REPOSITORY}. Check the Releases page for the exact tag name."
+            exit 1
+          fi
+          echo "Resolved to ${tag}"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      # Two checkouts. This one is the ref the run was dispatched on, for the
+      # check script.
+      - name: Checkout this workflow's ref
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+
+      # This one is what gets deployed, and what the server is compared with.
+      - name: Checkout the tag into release/
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+        with:
+          ref: refs/tags/${{ steps.resolve.outputs.tag }}
+          path: release
+
+      # For the check at the end, which is standard library only.
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: '3.12'
+
+      # Fail with a sentence rather than with flyctl's authentication error.
+      - name: Check the Fly.io deploy token is set
+        if: ${{ !inputs.verify_only }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          if [[ -z "${FLY_API_TOKEN}" ]]; then
+            echo "::error::The FLY_API_TOKEN repository secret is empty or missing. Create a deploy token with 'fly tokens create deploy --app cloud-finops-mcp' and store it under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
+      # Action pinned by commit, flyctl pinned by version, no checksum on the
+      # download: the reasons are beside the twin step in
+      # auto-tag-on-plugin-bump.yml. Bump the version in both files together.
+      - name: Set up flyctl
+        if: ${{ !inputs.verify_only }}
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1  # 1.6
+        with:
+          version: 0.5.1
+
+      # --remote-only builds the tag's Dockerfile on Fly.io's builder (app and
+      # settings come from the tag's fly.toml), then replaces the running
+      # machine. The image is labelled with the tag.
+      - name: Build the image from the tag and roll the machine
+        if: ${{ !inputs.verify_only }}
+        working-directory: release
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          TAG: ${{ steps.resolve.outputs.tag }}
+        run: flyctl deploy --remote-only --image-label "$TAG"
+
+      # serverInfo.version must equal the tag's plugin.json, and the names
+      # list_references and list_playbooks return must be the tag's files.
+      # The script retries: the machine starts cold after a deploy.
+      - name: Check the hosted connector serves this tag
+        run: python scripts/check-hosted-connector.py --repo-root release --url https://mcp.optimnow.io/mcp

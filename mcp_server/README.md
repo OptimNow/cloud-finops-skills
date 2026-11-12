@@ -380,8 +380,9 @@ The PyPI package version tracks the skill release. The trigger is a
 the `auto-tag-on-plugin-bump` workflow reads the new version, creates the
 matching `vX.Y.Z` tag, and publishes both the skill release zip and a new
 `cloud-finops-mcp` wheel, so the bundled references match what the rest of the
-repo ships. Versions must be full three-part semver (`v1.27.0`); the workflow
-rejects anything else.
+repo ships. The same workflow redeploys the hosted connector from that tag and
+checks the version and the catalogue it answers. Versions must be full
+three-part semver (`v1.27.0`); the workflow rejects anything else.
 
 Because a `plugin.json` bump publishes, content PRs never touch it. Version
 bumps live in dedicated release PRs that move four files together: `plugin.json`,

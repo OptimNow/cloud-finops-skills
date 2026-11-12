@@ -329,9 +329,11 @@ In Claude Code that is `claude mcp remove cloud-finops` followed by the `claude 
 line above; in Claude.ai / Desktop, remove the custom connector and add it again with
 the new URL.
 
-This is the same code as the package below, deployed on Fly.io and redeployed on each
-release - not a live mirror of `main`. The content version it is actually serving is
-named in the server's startup stamp, so you can confirm it rather than assume it.
+This is the same code as the package below, deployed on Fly.io - not a live mirror of
+`main`. The release workflow redeploys it from each release tag, then checks by
+calling it that it answers with the new version and lists the guides and runbooks of
+that tag. You can confirm what it serves rather than assume it: the `initialize`
+reply carries the release in `serverInfo.version`.
 Prefer the hosted server unless you need it to run offline or pinned to a version.
 
 #### Local package
