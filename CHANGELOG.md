@@ -91,6 +91,16 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   Many Requests" and the script did not try again. It now retries a 429, a 5xx or a
   dropped connection up to four times, waiting what the server asks, and the report
   says how many requests were retried. Any other error fails at once, as before.
+- **The hosted connector is redeployed by the release, and checked.** Until now
+  `mcp.optimnow.io` moved to a new version when someone ran `fly deploy` after the tag,
+  and in August 2026 it had been found four releases behind. The release workflow now
+  builds the image from the tag, rolls the Fly.io app, then calls the public address:
+  the version it announces must be the release, and the guides and runbooks it lists
+  must be the files of the tag. The MCP Registry entry, which names that address, is
+  published only after this passes. A second workflow, `deploy-hosted.yml`, redeploys
+  one tag by hand, to repair a failed deploy or to go back a release. The image also
+  sets its own package version from `plugin.json`, where it used to trust a field
+  bumped by hand. First real run: the next release.
 
 ## 1.51.0 (10 November 2026)
 

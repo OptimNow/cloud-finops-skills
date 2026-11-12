@@ -1,4 +1,6 @@
-# Image for the hosted connector on Fly.io (`fly deploy` from the repo root).
+# Image for the hosted connector on Fly.io. The release workflow builds it from
+# each tagged commit (the `deploy-hosted` job of auto-tag-on-plugin-bump.yml);
+# `fly deploy` from the repo root builds the same image by hand.
 #
 # Builds from this checkout rather than from the PyPI wheel so that a
 # connector-URL or content change ships on the next deploy without waiting
@@ -19,8 +21,16 @@ COPY plugins/cloud-finops/skills/cloud-finops/references/ plugins/cloud-finops/s
 COPY plugins/cloud-finops/skills/cloud-finops/playbooks/ plugins/cloud-finops/skills/cloud-finops/playbooks/
 COPY mcp_server/ mcp_server/
 
+# serverInfo.version is the installed package's version, which pip reads from
+# mcp_server/pyproject.toml. A release bumps plugin.json; pyproject.toml is
+# bumped beside it by hand and nothing fails when it is forgotten, because the
+# release workflow rewrites the field before it builds the wheel. This image is
+# not built from that wheel, so pin the field here too, then check what pip
+# installed: the server announces plugin.json's version whoever builds the image.
 RUN python mcp_server/scripts/sync_references.py \
+ && python mcp_server/scripts/pin_version.py \
  && pip install ./mcp_server \
+ && python mcp_server/scripts/pin_version.py --verify-installed \
  && python -c "import cloud_finops_mcp.metadata as m; n = len(list(m.DATA_DIR.glob('*.md'))); assert n >= 30, n; print('bundled references:', n)" \
  && cat mcp_server/src/cloud_finops_mcp/data/content_version.txt
 

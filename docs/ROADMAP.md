@@ -67,8 +67,9 @@ becomes a routing item, not a reason to write more.
    grep as a review prompt, and the cross-repo table in `CLAUDE.md` for any
    pricing-hub or ROI-calculator claim touched since the last pass.
 
-**Once a quarter, on a 1st:** a release PR after the content lots, a Fly
-redeploy verified by calling the endpoint, and a re-read of this file to
+**Once a quarter, on a 1st:** a release PR after the content lots (its workflow
+redeploys the hosted connector and checks it by calling the endpoint), and a
+re-read of this file to
 re-rank the list below against what engagements actually asked.
 
 ### Ranked content list (recoverable spend first, demand evidence second, matrix zeros last)

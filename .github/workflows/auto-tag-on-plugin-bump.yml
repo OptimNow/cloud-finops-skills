@@ -3,12 +3,25 @@ name: Auto-tag and release on plugin.json bump
 # When a push to main changes plugins/cloud-finops/.claude-plugin/plugin.json, read the version
 # field, create a matching v<version> tag (if one does not already exist),
 # build the cloud-finops-v<version>.zip artefact, create the GitHub Release
-# with the zip attached, publish the wheel to PyPI, and announce the new
-# version to the MCP Registry.
+# with the zip attached, publish the wheel to PyPI, redeploy the hosted
+# connector on Fly.io and check what it serves, and announce the new version
+# to the MCP Registry.
 #
 # The registry step was added in August 2026: it had been a manual step and
 # had already drifted (registry on 1.29.0, PyPI and server.json on 1.30.0).
-# Every distribution surface now moves from this one plugin.json bump.
+# The hosted deploy was added in November 2026: it was the last manual step
+# (`fly deploy` from a laptop after the tag), and the hosted server had been
+# found four releases behind. Every distribution surface now moves from this
+# one plugin.json bump.
+#
+# The jobs, in order. An arrow means "starts only if the job before it passed":
+#
+#   verify-drift -> verify-package -> tag-and-release
+#   tag-and-release -> build-mcp -> publish-mcp --+
+#   tag-and-release -> deploy-hosted -------------+-> publish-registry
+#
+# PyPI and the hosted connector move side by side. The registry entry names
+# both (the package version and the hosted URL), so it waits for the two.
 #
 # Why we don't just push the tag and let release.yml fire:
 # GitHub blocks workflows triggered by GITHUB_TOKEN events to prevent
@@ -422,6 +435,135 @@ jobs:
         with:
           packages-dir: dist/
 
+  # Roll the hosted connector (Fly.io app `cloud-finops-mcp`, served at
+  # https://mcp.optimnow.io/mcp) to the tagged commit, then call it and fail
+  # unless it answers with this release.
+  #
+  # Until November 2026 this was `fly deploy` from a laptop after the tag, a
+  # checklist line that nothing enforced: the August 2026 audits found the
+  # hosted server four releases behind, twice.
+  #
+  # Where it sits in the chain, and why:
+  #   - After tag-and-release: the image is built from the tagged commit, and
+  #     the tag is what a later manual redeploy names.
+  #   - Beside build-mcp and publish-mcp, not after them. The image is built
+  #     from the checkout, not from the PyPI wheel, so the two share nothing.
+  #     A PyPI failure (2026-05-15, 2026-08-16) should not leave the hosted
+  #     server on the old release, and a Fly.io failure should not hold back
+  #     the package. It does not wait for the `pypi` environment approval
+  #     either: that gate exists because a PyPI upload cannot be withdrawn,
+  #     and a deploy can (deploy-hosted.yml redeploys any earlier tag).
+  #   - Before publish-registry, which needs this job. The registry entry
+  #     advertises the hosted URL (`remotes` in server.json) beside the
+  #     version, so it goes out only once that URL serves the version.
+  #
+  # Needs the FLY_API_TOKEN repository secret: a deploy token limited to this
+  # one app, created with
+  #   fly tokens create deploy --app cloud-finops-mcp
+  #
+  # A failure here leaves the tag and the GitHub Release in place, PyPI
+  # untouched by it (the publish-mcp job says where the package stands) and
+  # the registry entry unpublished. The last step writes that on the run page
+  # with the way back.
+  #
+  # The deploy steps are duplicated in deploy-hosted.yml, the manual path for
+  # one tag: change both or neither. What "serves this release" means is
+  # written once, in scripts/check-hosted-connector.py.
+  deploy-hosted:
+    name: Deploy the hosted connector and check what it serves
+    needs: tag-and-release
+    if: needs.tag-and-release.outputs.skip == 'false'
+    runs-on: ubuntu-latest
+    # A rollout that hangs would otherwise hold the deploy lock for six hours.
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    # One rollout at a time across this job and deploy-hosted.yml, and never
+    # cancel one halfway through.
+    concurrency:
+      group: fly-deploy-cloud-finops-mcp
+      cancel-in-progress: false
+    steps:
+      - name: Checkout tagged commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+        with:
+          ref: ${{ needs.tag-and-release.outputs.tag }}
+
+      # For the check at the end, which is standard library only.
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: '3.12'
+
+      # Fail with a sentence rather than with flyctl's authentication error.
+      - name: Check the Fly.io deploy token is set
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          if [[ -z "${FLY_API_TOKEN}" ]]; then
+            echo "::error::The FLY_API_TOKEN repository secret is empty or missing. Create a deploy token with 'fly tokens create deploy --app cloud-finops-mcp' and store it under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
+      # The action is pinned by commit like every other one in this file.
+      # flyctl itself is pinned to a version rather than left on the action's
+      # default `latest`, which would let the binary that holds the deploy
+      # token change between two releases with no diff. 0.5.1 (2026-10-29) is
+      # the version the maintainer's machine had on 2026-11-12, when deploys
+      # were still done by hand.
+      #
+      # Unlike mcp-publisher below, the download is not checked against a
+      # checksum: the action fetches whatever URL Fly.io's API returns for
+      # that version. Accepted because the binary comes from the platform the
+      # token belongs to, and the token can deploy this one app and nothing
+      # else. Bump the version here and in deploy-hosted.yml together, when a
+      # deploy asks for a newer flyctl.
+      - name: Set up flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1  # 1.6
+        with:
+          version: 0.5.1
+
+      # --remote-only builds the Dockerfile on Fly.io's builder from this
+      # checkout (app and settings come from fly.toml), then replaces the
+      # running machine. The image is labelled with the tag, so `fly image
+      # show` names the release that is live.
+      - name: Build the image from the tag and roll the machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          TAG: ${{ needs.tag-and-release.outputs.tag }}
+        run: flyctl deploy --remote-only --image-label "$TAG"
+
+      # A deploy that exits 0 has not necessarily put this release live. Ask
+      # the public URL: serverInfo.version must equal plugin.json, and the
+      # names list_references and list_playbooks return must be the files of
+      # this checkout. The script retries, because the machine starts cold
+      # after a deploy (scale-to-zero, and a deploy discards the suspend
+      # snapshot).
+      - name: Check the hosted connector serves this tag
+        run: python scripts/check-hosted-connector.py --url https://mcp.optimnow.io/mcp
+
+      - name: Say what is published and what is not
+        if: failure()
+        env:
+          TAG: ${{ needs.tag-and-release.outputs.tag }}
+        run: |
+          {
+            echo "### Release ${TAG}: the hosted connector is not confirmed"
+            echo
+            echo "| Surface | Where it stands |"
+            echo "|---|---|"
+            echo "| Git tag and GitHub Release ${TAG} | Published, before this job ran. |"
+            echo "| PyPI package | Not affected by this failure. The publish-mcp job of this run says whether it is published. |"
+            echo "| Hosted connector, mcp.optimnow.io | Not confirmed on ${TAG}. It may still serve the previous release: the steps above say what it answered. |"
+            echo "| MCP Registry entry | Not published. It waits for this job. |"
+            echo
+            echo "Once the cause is fixed, finish the release one of two ways:"
+            echo
+            echo "- **Re-run failed jobs** on this run. It deploys again, then publishes the registry entry."
+            echo "- \`gh workflow run deploy-hosted.yml -f tag=${TAG}\`, and when that run is green, \`gh workflow run publish-registry.yml\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error title=Hosted connector not confirmed on ${TAG}::The tag and the GitHub Release exist. PyPI is not affected (see the publish-mcp job). The MCP Registry entry is NOT published. Fix the cause, then use 'Re-run failed jobs' on this run, or run deploy-hosted.yml for ${TAG} followed by publish-registry.yml."
+
   # Announce the new version to the MCP Registry.
   #
   # Until this job existed, registry publishing was a manual step that nothing
@@ -429,13 +571,18 @@ jobs:
   # server.json were on 1.30.0. The registry is a discovery surface, so a
   # stale entry means every consumer browsing it installs an old version.
   #
+  # It runs last, after both things the entry names are true: the package is
+  # on PyPI at this version (publish-mcp) and the hosted URL in `remotes`
+  # serves this version (deploy-hosted). If either job fails, this one is
+  # skipped and the registry keeps the previous entry.
+  #
   # Auth is GitHub OIDC, which requires no secret: the registry grants the
   # `io.github.OptimNow/*` namespace to workflows running in an OptimNow repo,
   # which is exactly the namespace server.json declares. `id-token: write` is
   # what makes the OIDC token available.
   publish-registry:
     name: Publish server.json to the MCP Registry
-    needs: [tag-and-release, publish-mcp]
+    needs: [tag-and-release, publish-mcp, deploy-hosted]
     runs-on: ubuntu-latest
     permissions:
       contents: read
