@@ -266,10 +266,10 @@ mechanisms now reduce it:
   read 20 October 2026).
 
 **Price and test the exit before you need it.** Owning the data in the contract does
-not mean you can get it out and use it: Betty Sfez (cabinet June) and Jacky Galicher (JG
-Consultants) make the point in a 2026 interview, and recommend that each critical
-dependency has a named owner, a costed and dated exit, and a data recovery that is
-tested periodically. The Data Act sets the floor for EU customers: the provider has at
+not mean you can get it out and use it, as Betty Sfez (cabinet June) points out; Jacky
+Galicher (JG Consultants) adds that each critical dependency needs a named owner, a
+costed and dated exit, and a data recovery that is tested periodically
+([Décideurs Magazine, 12 November 2026](https://www.decideurs-magazine.com/digital-marketing/65683-souverainete-numerique-comment-reduire-la-dette-de-dependance-a-l-ere-des-cybermenaces-2.html)). The Data Act sets the floor for EU customers: the provider has at
 most two months to prepare after notice, the transition is capped at 30 calendar days
 (a provider can extend it to seven months for technical infeasibility, notified within
 14 working days), and data stays retrievable for at least 30 calendar days after the
