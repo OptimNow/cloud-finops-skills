@@ -683,6 +683,19 @@ Two data sources expose this without a third-party tool:
   token and metadata signals unless you explicitly opt in. Because OTel is tool-agnostic, one
   pipeline can cover Claude Code alongside other agents.
 
+  Three settings decide whether the stream can carry a chargeback. **Team keys:**
+  `OTEL_RESOURCE_ATTRIBUTES` adds custom attributes to every metric and event
+  (`department=engineering,team.id=platform,cost_center=eng-123`: comma-separated
+  key=value pairs, no spaces, other characters URL-encoded); set it in the managed
+  settings so it cannot drift per laptop. **Personal data:** `user.email` is always sent
+  when available; prompt text, tool parameters and tool output stay redacted unless
+  `OTEL_LOG_USER_PROMPTS`, `OTEL_LOG_TOOL_DETAILS` or `OTEL_LOG_TOOL_CONTENT` is set to 1,
+  which is a privacy decision, not a FinOps one. **Cost basis:** `claude_code.cost.usage`
+  is an estimate, which Anthropic labels an approximation: use it as the key that splits
+  the invoice by team, never as the invoice
+  ([monitoring usage](https://code.claude.com/docs/en/monitoring-usage), read 12 November
+  2026).
+
 ---
 
 ## Cross-tool spend overlap
@@ -771,6 +784,14 @@ the wrong side of the line from where governance attention usually goes:
   [cross-cloud-agent-loop-burn](../playbooks/cross-cloud-agent-loop-burn.md) playbook) or
   a background job left running bills per token until someone notices, and the overage
   lands 24-48 hours later on the provider bill rather than in a vendor dashboard.
+- **A subscription is not a cheaper way to run API workloads.** Anthropic states that
+  Pro, Max and Ultra usage limits assume ordinary, individual use, and that developers
+  building products or services, the Agent SDK included, must use API key
+  authentication; routing requests through subscription credentials on behalf of users
+  is not permitted. A plan to move shared pipelines or a product's traffic onto Max seats
+  to cap spend breaks the terms, so price those workloads at API rates
+  ([legal and compliance](https://code.claude.com/docs/en/legal-and-compliance), read
+  12 November 2026).
 
 Put the hard controls where the unbounded risk is. Subscription tiers need seat hygiene
 and right-sizing (bounded problems). API keys and agentic workloads need per-key or
