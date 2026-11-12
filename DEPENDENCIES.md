@@ -83,6 +83,7 @@ from the workflow files on 2026-11-12.
 |---|---|---|---|
 | Daily 12:30 | `cloud-sparkle-compare` | `refresh-llm-fallback` | Refreshes the OptimToken catalogue |
 | Daily 14:10 | `cloud-sparkle-compare` | `mcp-parity` | Compares the logic `ai-pricing-hub-mcp` ports from the site, and the schema version of each route it reads, with the site's own. Opens an issue on a difference; does not block a merge |
+| Sat 12:20 | `cloud-finops-skills` | `companion-tools` | Compares the tools `INSTALLATION.md` lists for the two companion connectors with each server's own `tools/list`. Opens an issue on a difference; never edits a file |
 | Mon 05:30 | `cloud-sparkle-compare` | `refresh-bedrock-matrix` | Refreshes the Bedrock matrix |
 | Mon 06:00 | `ai-roi-calculator` | `refresh-model-snapshot` | Pulls the model snapshot from OptimToken |
 | Mon 07:00 | `ai-roi-calculator-mcp` | `sync-engine` | Pulls engine + snapshot from the calculator |
@@ -126,16 +127,16 @@ The riskiest repo in the family: everything downstream reads it.
 | If you change | Also review | Why |
 |---|---|---|
 | Anything in `server/src/lib/` | **Stop** | It is generated. Change `ai-roi-calculator` instead, then re-sync |
-| Tool names, signatures, or output shape | `cloud-finops-skills` -> `INSTALLATION.md` | The companion-connector section lists the four tools and their parameters |
-| The deployment URL | `cloud-finops-skills` -> `INSTALLATION.md` | The connect command is published there |
+| Tool names, signatures, or output shape | `cloud-finops-skills` -> `INSTALLATION.md` | The companion-connector section lists the four tools by name. The weekly `companion-tools` job reports a name that no longer matches the server |
+| The deployment URL | `cloud-finops-skills` -> `INSTALLATION.md`, `scripts/check-companion-tools.py` and the table at the top of this file | The connect command is published in the first; the script asks that URL every week, and its `--offline` run in CI fails when this file names another |
 
 ### `ai-pricing-hub-mcp`
 
 | If you change | Also review | Why |
 |---|---|---|
 | The `provenance` block - tier semantics, field names, the stale notice | `cloud-finops-skills` -> `SKILL.md` / `POWER.md` "Price figures" rule 5, and `INSTALLATION.md` | The skill's dated-price doctrine instructs the model to read those exact fields |
-| Tool names, signatures, output shape | `cloud-finops-skills` -> `INSTALLATION.md` (the companion-connector section lists every tool with its parameters, under the server version and date it was read at), and the two references that name a tool call, `finops-anthropic.md` and `finops-open-weight-vendors.md` | Hand-synced copies that nothing checks: on 2026-11-12 the list still said five tools while server 0.11.0 served eight |
-| The deployment URL | `cloud-finops-skills` -> `README.md`, `INSTALLATION.md` | Published in both |
+| Tool names, signatures, output shape | `cloud-finops-skills` -> `INSTALLATION.md` (the companion-connector section lists every tool with its parameters, under the server version and date it was read at), and the two references that name a tool call, `finops-anthropic.md` and `finops-open-weight-vendors.md` | Hand-synced copies. On 2026-11-12 the list still said five tools while server 0.11.0 served eight; since then the weekly `companion-tools` job compares the list in `INSTALLATION.md` (names, parameters, optional marks) with the server's `tools/list` and opens an issue. It does not read the two references |
+| The deployment URL | `cloud-finops-skills` -> `README.md`, `INSTALLATION.md`, `scripts/check-companion-tools.py` and the table at the top of this file | Published in the first two; the script asks that URL every week, and its `--offline` run in CI fails when this file names another |
 | The static fallback catalogue | Nothing, but check the `provenance` as-of date | See the note under "The scheduled jobs" above |
 
 ### `cloud-finops-skills` (this repo)
@@ -164,8 +165,11 @@ Worth carrying in your head when reviewing anything here.
    a difference. It reports; it does not block.
 2. **This repo's dependencies are mostly documentation, and documentation drifts
    silently.** Tool names, parameters, endpoint URLs and provenance field names are
-   quoted in `SKILL.md`, `POWER.md`, `INSTALLATION.md` and `README.md`. Nothing checks
-   them. When an MCP repo changes its surface, this repo does not find out. The one code
+   quoted in `SKILL.md`, `POWER.md`, `INSTALLATION.md` and `README.md`. One part is read
+   every week since 2026-11-12: `scripts/check-companion-tools.py` compares the tool
+   lists in `INSTALLATION.md` with the two servers' own `tools/list` and opens an issue
+   on a difference. Nothing checks the rest: endpoint URLs, provenance field names and
+   the tool calls two references quote. The one code
    dependency, `get_live_figures` on OptimToken's guide `figures.json`, degrades to an
    error and the dated figure in the reference when the file changes shape; its tests
    run on saved copies, so they do not see the change either.

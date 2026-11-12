@@ -1,0 +1,138 @@
+{
+  "recorded": "2026-11-12",
+  "server": {
+    "name": "ai-roi-calculator",
+    "version": "1.5.0"
+  },
+  "note": "A tools/list answer trimmed to what the check reads: each tool's name, the names of its input properties and its required list. Descriptions, property schemas, output schemas and annotations were removed.",
+  "response": {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "result": {
+      "tools": [
+        {
+          "name": "calculate-roi-v4",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "preset": {},
+              "model": {},
+              "useCaseName": {},
+              "unitName": {},
+              "monthlyVolume": {},
+              "successRate": {},
+              "analysisHorizonMonths": {},
+              "integrationCost": {},
+              "trainingTuningCost": {},
+              "changeManagementCost": {},
+              "amortizationMonths": {},
+              "primaryModel": {},
+              "secondaryModel": {},
+              "routingSimplePercent": {},
+              "cacheHitRate": {},
+              "cachedTokenDiscount": {},
+              "batchProcessing": {},
+              "orchestrationCostPerUnit": {},
+              "retrievalCostPerUnit": {},
+              "toolApiCostPerUnit": {},
+              "loggingMonitoringCostPerUnit": {},
+              "safetyGuardrailsCostPerUnit": {},
+              "networkEgressCostPerUnit": {},
+              "storageCostPerUnit": {},
+              "retryRate": {},
+              "overheadMultiplier": {},
+              "valueMethod": {},
+              "baselineHumanCostPerUnit": {},
+              "deflectionRate": {},
+              "residualHumanReviewRate": {},
+              "residualReviewCostPerUnit": {},
+              "baselineConversionRate": {},
+              "conversionUpliftAbsolute": {},
+              "averageOrderValue": {},
+              "grossMargin": {},
+              "baselineChurnRate": {},
+              "churnReductionAbsolute": {},
+              "annualValuePerCustomer": {},
+              "customersImpactedPerMonth": {},
+              "pricePerSubscriberPerMonth": {},
+              "subscribers": {},
+              "nonAiCOGSPerSubscriber": {}
+            }
+          }
+        },
+        {
+          "name": "lookup-model-price",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "model": {},
+              "limit": {}
+            }
+          }
+        },
+        {
+          "name": "load-preset",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "preset": {}
+            },
+            "required": [
+              "preset"
+            ]
+          }
+        },
+        {
+          "name": "sensitivity-analysis",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "preset": {},
+              "model": {},
+              "useCaseName": {},
+              "unitName": {},
+              "monthlyVolume": {},
+              "successRate": {},
+              "analysisHorizonMonths": {},
+              "integrationCost": {},
+              "trainingTuningCost": {},
+              "changeManagementCost": {},
+              "amortizationMonths": {},
+              "primaryModel": {},
+              "secondaryModel": {},
+              "routingSimplePercent": {},
+              "cacheHitRate": {},
+              "cachedTokenDiscount": {},
+              "batchProcessing": {},
+              "orchestrationCostPerUnit": {},
+              "retrievalCostPerUnit": {},
+              "toolApiCostPerUnit": {},
+              "loggingMonitoringCostPerUnit": {},
+              "safetyGuardrailsCostPerUnit": {},
+              "networkEgressCostPerUnit": {},
+              "storageCostPerUnit": {},
+              "retryRate": {},
+              "overheadMultiplier": {},
+              "valueMethod": {},
+              "baselineHumanCostPerUnit": {},
+              "deflectionRate": {},
+              "residualHumanReviewRate": {},
+              "residualReviewCostPerUnit": {},
+              "baselineConversionRate": {},
+              "conversionUpliftAbsolute": {},
+              "averageOrderValue": {},
+              "grossMargin": {},
+              "baselineChurnRate": {},
+              "churnReductionAbsolute": {},
+              "annualValuePerCustomer": {},
+              "customersImpactedPerMonth": {},
+              "pricePerSubscriberPerMonth": {},
+              "subscribers": {},
+              "nonAiCOGSPerSubscriber": {}
+            }
+          }
+        }
+      ]
+    }
+  }
+}

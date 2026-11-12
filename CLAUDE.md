@@ -57,8 +57,8 @@ Good test patterns:
 
 ## Cross-repo dependencies (check before every PR)
 
-Nothing downstream depends on this repo; the dependencies run inward and are prose nobody verifies
-(tool names, endpoint URLs, `provenance` fields) plus one code path, `get_live_figures` in
+Nothing downstream depends on this repo; the dependencies run inward and are prose no PR check verifies
+(tool names, read weekly by `scripts/check-companion-tools.py`; endpoint URLs; `provenance` fields) plus one code path, `get_live_figures` in
 `mcp_server/src/cloud_finops_mcp/live_figures.py`, which relays a fetched file to the model only
 when it is numbers and short labels (`_validate`). Before a PR that touches any of them, use the
 "if I change X" table in [`DEPENDENCIES.md`](DEPENDENCIES.md). Two standing rules:
