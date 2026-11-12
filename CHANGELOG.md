@@ -44,6 +44,10 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### For maintainers
 
+- **One reading of every scheduled job.** `scripts/check-family-jobs.py` reads the
+  scheduled jobs of the five OptimNow repositories, the pull requests and alarm issues
+  they left and the three hosted servers, and prints first what needs a hand. What it
+  cannot read it reports as not read, never as fine. A Monday-morning routine runs it.
 - **A weekly check on the companion connectors' tool lists.** `INSTALLATION.md` lists
   the tools of the AI Pricing Hub and AI ROI Calculator connectors by hand, and it had
   fallen three tools behind. `scripts/check-companion-tools.py` now compares both lists

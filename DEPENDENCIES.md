@@ -171,7 +171,10 @@ Worth carrying in your head when reviewing anything here.
    documentation, so a breaking change ships green and surfaces as a degraded answer.
    Since 2026-11-12 one edge is watched after the merge: the daily `mcp-parity` job in
    `cloud-sparkle-compare` compares the pricing MCP with the site and opens an issue on
-   a difference. It reports; it does not block.
+   a difference. It reports; it does not block. And one command reads every scheduled
+   job of the five repositories and what each left for a human:
+   `python scripts/check-family-jobs.py` (in this repository; a Monday-morning routine
+   runs it).
 2. **This repo's dependencies are mostly documentation, and documentation drifts
    silently.** Tool names, parameters, endpoint URLs and provenance field names are
    quoted in `SKILL.md`, `POWER.md`, `INSTALLATION.md` and `README.md`. One part is read
