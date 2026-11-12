@@ -265,6 +265,18 @@ mechanisms now reduce it:
   ([European Commission, Data Act explained](https://digital-strategy.ec.europa.eu/en/factpages/data-act-explained),
   read 20 October 2026).
 
+**Price and test the exit before you need it.** Owning the data in the contract does
+not mean you can get it out and use it: Betty Sfez (cabinet June) and Jacky Galicher (JG
+Consultants) make the point in a 2026 interview, and recommend that each critical
+dependency has a named owner, a costed and dated exit, and a data recovery that is
+tested periodically. The Data Act sets the floor for EU customers: the provider has at
+most two months to prepare after notice, the transition is capped at 30 calendar days
+(a provider can extend it to seven months for technical infeasibility, notified within
+14 working days), and data stays retrievable for at least 30 calendar days after the
+switch ([Bundesnetzagentur, Data Act switching](https://bundesnetzagentur.de/EN/Areas/Digitalisation/DataAct/background/3-provider/start.html),
+read 12 November 2026). Check what the contract lists as exportable, export a sample in
+that format, and keep the exit cost and duration in the business case.
+
 In both cases the waiver covers the move, not the steady state. A hybrid design that
 keeps sending data back to a cloud every day still pays regular data transfer. Budget
 the exit as a project with an end date, and model the run-state network cost separately
