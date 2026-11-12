@@ -37,6 +37,10 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### New and corrected content
 
+- **Claude Code telemetry as a chargeback key.** `OTEL_RESOURCE_ATTRIBUTES` for team
+  and cost-centre keys, what is sent by default, and why its cost figure splits the
+  invoice rather than replacing it; and why a Claude subscription is not a cheaper route
+  for API workloads (`finops-ai-dev-tools.md`).
 - **GCP billing export history depends on the dataset location.** Corrected: a
   multi-region dataset backfills from the start of the previous month, a single-region
   one does not, and the pricing export never does (`finops-gcp.md`).
