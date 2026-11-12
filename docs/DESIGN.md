@@ -556,6 +556,57 @@ delete-volume` through.
 
 ---
 
+### The hosted deploy joins the release chain, behind one approval (2026-11-12)
+
+**What was wrong.** The hosted connector was redeployed with `fly deploy` from a laptop
+after each tag. Nothing enforced it and nothing checked the result: the August 2026
+audits found the server four releases behind, twice.
+
+**What a release is, unchanged.** A change of `version` in `plugin.json` reaching
+`main`, in a release PR the maintainer decides to open and merge. A content PR starts
+nothing. The deploy follows each version, not each merge: `ai-pricing-hub-mcp` deploys
+on every push to its default branch, this repository does not, because INSTALLATION.md
+promises a hosted server on the last release, not a mirror of `main`.
+
+**The chain is one line, with one gate.** Tag and GitHub Release, PyPI publish, hosted
+deploy and its check, registry entry. The deploy was first built beside the PyPI
+publish, on the argument that the image is built from the checkout and shares nothing
+with the wheel, and that a deploy can be undone where a PyPI upload cannot. The
+maintainer chose the same day to put it behind the `pypi` approval instead: one
+approval for everything a release puts in front of users. The accepted price is that a
+PyPI failure (there were two, 2026-05-15 and 2026-08-16) or an approval never given
+leaves the hosted server on the previous release until `deploy-hosted.yml` is run for
+the tag.
+
+**The version the server announces came from a file nothing checked.**
+`serverInfo.version` is the installed package's version, read by pip from
+`mcp_server/pyproject.toml` when the image is built. The release workflow rewrites that
+field only when it builds the wheel. It matched `plugin.json` at each of the last 25
+tags, by discipline. A gate in `verify-package` was the obvious fix and would have been
+a trap: the release workflow starts on a change to `plugin.json` only, so the PR that
+repairs a forgotten `pyproject.toml` bump would not restart the release. The Dockerfile
+pins the field itself (`mcp_server/scripts/pin_version.py`) and then checks what pip
+installed, so the image is right whoever builds it.
+
+**A deploy that exits 0 is not a release that is live.** The job ends by asking the
+public URL (`scripts/check-hosted-connector.py`): the version, and the names and totals
+of the two catalogues against the files of the tag. It does not compare bodies or tool
+descriptions; section 0 of `docs/directory-submission.md` still does, before a listing
+review. The registry entry advertises the hosted URL, so it is published only after
+this check.
+
+**How it was tested without releasing anything.** The check was run against the live
+server; the image was built locally from a tree whose `pyproject.toml` had been set
+back to 1.0.0, once with the new Dockerfile (the container answered the `plugin.json`
+version) and once with the old one (it answered 1.0.0 and the check refused it); the
+shell of the workflow steps was extracted from the YAML and run with test inputs; and
+`actionlint` read both files. After the merge, `deploy-hosted.yml` was run twice on
+`v1.51.0`, the release already live: once with `verify_only`, once as a real redeploy
+(the deploy token, flyctl 0.5.1 on a GitHub runner, Fly.io's builder). Both passed at
+the first attempt of the check. Not exercised until the next release: the new
+Dockerfile on Fly.io's builder, and the chain's own wiring from the approval to the
+registry entry.
+
 ## Roadmap
 
 Moved to [`docs/ROADMAP.md`](ROADMAP.md): deliberately-deferred work, the reasoning
@@ -1062,9 +1113,12 @@ from how the directory works:
       the Fly.io app `cloud-finops-mcp`, then calls `https://mcp.optimnow.io/mcp`
       with `scripts/check-hosted-connector.py` and fails unless `serverInfo.version`
       equals `plugin.json` and the names `list_references` and `list_playbooks`
-      return are the files of the tag. It runs beside the PyPI publish, without
-      waiting for the `pypi` approval, and the registry entry waits for both. It
-      replaced a `fly deploy` from a laptop that nothing enforced. On Alpic, where
+      return are the files of the tag. It starts after the PyPI publish, so behind
+      the `pypi` approval: that one approval gates the package, the hosted server
+      and the registry entry (the maintainer's choice of 2026-11-12, see "Lessons
+      learned"). If the PyPI publish fails or is not approved, the deploy does not
+      start: repair the package first (`publish-mcp.yml`), then deploy the tag by
+      hand. It replaced a `fly deploy` from a laptop that nothing enforced. On Alpic, where
       the connector lived until September 2026, the 2026-08-19 audit found it
       serving 1.29.0 content (pre price-purge) while PyPI was at 1.31.0, and the
       2026-08-27 review found it *still* on 1.29.0, 33 references, with PyPI at
@@ -1073,8 +1127,9 @@ from how the directory works:
       - **Before merging**, when the release changes a tool's name, description,
         parameters or what it sends: report it in the directory portal first
         (`docs/directory-submission.md`, section 4). The hosted server now changes
-        at the merge, not at a later `fly deploy`.
-      - **After merging**, look at the job. Red: its summary on the run page says
+        minutes after the PyPI approval, not at a later `fly deploy`.
+      - **After merging**, approve the `pypi` environment as before, then look at
+        the `deploy-hosted` job. Red: its summary on the run page says
         what is published and what is not. Fix the cause, then "Re-run failed
         jobs" on that run, or `gh workflow run deploy-hosted.yml -f tag=vX.Y.Z`
         followed by `gh workflow run publish-registry.yml`.
