@@ -42,6 +42,15 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   parameters and the fields that date a figure, including the day of a fallback
   snapshot. Nothing changes in the skill or in `cloud-finops-mcp`.
 
+### For maintainers
+
+- **A weekly check on the companion connectors' tool lists.** `INSTALLATION.md` lists
+  the tools of the AI Pricing Hub and AI ROI Calculator connectors by hand, and it had
+  fallen three tools behind. `scripts/check-companion-tools.py` now compares both lists
+  with the servers' own `tools/list` every Saturday and opens an issue when they
+  differ; it never edits the page. In CI it runs offline and only checks that the page
+  still parses.
+
 ### New and corrected content
 
 - **Fractional GPUs in the GPU rightsizing runbook.** The `g6f` sizes (1/8 to 1/2 of an

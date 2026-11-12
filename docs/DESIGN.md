@@ -127,6 +127,27 @@ says which ones and why. The AI price tables (model rates, seat prices) are not 
 manifest in either form: they are being reduced to ratios with a pointer to the AI
 Pricing Hub.
 
+**Companion tools check (since 2026-11-12).** `INSTALLATION.md` lists by hand the tools
+of two MCP servers that live in other repositories: the AI Pricing Hub, each tool with
+its parameters, and the AI ROI Calculator, by name. On 2026-11-12 the page listed five
+pricing tools while the server, at 0.11.0, served eight, and no check had failed.
+`scripts/check-companion-tools.py` asks each server for its `tools/list` and compares
+names, and for the pricing server parameters and their optional marks;
+`.github/workflows/companion-tools.yml` runs it every Saturday and opens or updates one
+issue labelled `companion-tools` on a difference, then closes it on the first run that
+agrees. What it never does: edit the page. Three choices to keep. A server that cannot
+be read (timeout, 429, 5xx) exits 2, a warning on a green run, because an outage is
+not a difference; a client error at the URL (404, 410) exits 1, because a server that
+moved would otherwise warn every week and be read by nobody. The CI run is `--offline`
+and reads no network: it only holds the page to the shape the weekly run parses (the
+bullets, the stated count) and the script's URLs to the ones `DEPENDENCIES.md` names,
+so a pull request never fails because another repository shipped. And the page keeps
+the server version it was read at, which the report prints beside the live one. After
+editing either list, run `python scripts/check-companion-tools.py` before the PR. The
+tests (`mcp_server/tests/test_check_companion_tools.py`) run on two recorded answers in
+`scripts/fixtures/companion-tools/` and on their own copy of the page, so they do not
+move when the page does.
+
 ---
 
 ## Lessons learned
@@ -1072,7 +1093,10 @@ from how the directory works:
 - [ ] **Cross-repo impact checked.** If the PR quotes another OptimNow repo's tool
       names, parameters, endpoint URLs, `provenance` fields, or ROI methodology, it was
       verified against that repo. See "Cross-repo dependencies" above and
-      [`DEPENDENCIES.md`](../DEPENDENCIES.md). Nothing in CI catches this class of drift
+      [`DEPENDENCIES.md`](../DEPENDENCIES.md). Nothing in CI catches this class of drift.
+      One part is read weekly, not at merge: after editing a "Companion connector" tool
+      list in `INSTALLATION.md`, run `python scripts/check-companion-tools.py`, which
+      compares it with the live servers ("Companion tools check" above)
 - [ ] **MCP tool surface changed? Move all three copies together.** Renaming a tool,
       changing a parameter, or adding one touches `docs/CONCEPTS.md` (the canonical
       description of what the seven tools do, moved there from README.md in October
