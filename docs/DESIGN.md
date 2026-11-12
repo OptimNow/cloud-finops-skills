@@ -151,6 +151,26 @@ tests (`mcp_server/tests/test_check_companion_tools.py`) run on two recorded ans
 `scripts/fixtures/companion-tools/` and on their own copy of the page, so they do not
 move when the page does.
 
+**Family jobs check (since 2026-11-12).** The five OptimNow repositories run a dozen
+scheduled jobs (`DEPENDENCIES.md`, "The scheduled jobs"), and each reports trouble its own
+way: a red run, an issue with a label, a pull request assigned to the maintainer. On
+2026-11-12 two weekly pull requests had been open for 17 days and a deploy had stopped
+behind a red default branch, unseen: a failed scheduled run sends no mail anyone reads.
+`python scripts/check-family-jobs.py` reads all of it in one pass, through the GitHub
+API and four public endpoints, and prints first what needs a hand: a job whose last run
+failed or is older than its cadence allows, a red default branch, a pull request a job
+opened, an open alarm issue, a hosted server that does not answer, a stale catalogue.
+Its first run found one such item nobody had seen (the weekly ELO refresh had failed
+three days earlier). Three choices to keep. "Not read" is its own section and its own
+exit code (2), never "fine": without a token the private repository of the site cannot
+be read, and the report says so line by line. It changes nothing: no re-run, no merge,
+no issue. And it is not a CI step, because a pull request here must not go red over
+another repository's Monday. A job added or renamed in any of the five repositories is
+added to `JOBS` in the script; nothing else tells it. A Monday-morning cloud routine,
+set up by the maintainer, runs the script from a checkout of this repository and relays
+the result to him in French, changing nothing either; its prompt is the docstring's
+contract in a paragraph, and the script, not the routine, decides what is wrong.
+
 ---
 
 ## Lessons learned

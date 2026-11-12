@@ -230,11 +230,16 @@ cloud-finops-skills/
 │                             - all twenty-seven run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its
 │                             own path-filtered `marketplace-version-check`
-│                             workflow. One script is not a CI guard:
+│                             workflow. Two scripts are not CI guards:
 │                             check-hosted-connector.py calls the hosted
 │                             connector and compares its version and its two
 │                             catalogues with a checkout; the release chain and
-│                             deploy-hosted run it after each deploy
+│                             deploy-hosted run it after each deploy.
+│                             check-family-jobs.py reads every scheduled job of
+│                             the five OptimNow repositories (last run, default
+│                             branch, pull requests and alarm issues a job left,
+│                             live servers) and says what needs a hand; run by
+│                             hand or by the Monday-morning routine
 ├── fcp-coverage.md        <- Generated FCP coverage matrix (22 caps; CI-gated)
 ├── playbook-coverage.md   <- Generated waste-playbook matrix (category x
 │                             scope, gaps listed; CI-gated)
