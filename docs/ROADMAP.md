@@ -16,8 +16,9 @@ maintainer file.
 
 ## Fortnightly operating rhythm (adopted 2026-10-01)
 
-Since 2026-10-17 the source scan runs weekly, every Saturday (see the "Content
-update pipeline" section of `CLAUDE.md`); its digest is triaged within the week.
+Since 2026-11-14 the source scan runs weekly, every Saturday (see the "Content
+update pipeline" section of `docs/DESIGN.md`, which also corrects the date this line
+gave until then); its issue is triaged within the week.
 The lots below stay on the 1st and the 15th. From October 2026 each half-month also carries one *lot*,
 alternating in shape so that no single kind of debt accumulates. Every lot
 assumes hand-written content from primary sources: the applier stays frozen,

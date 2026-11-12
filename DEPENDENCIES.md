@@ -85,15 +85,24 @@ from the workflow files on 2026-11-12.
 | Daily 14:10 | `cloud-sparkle-compare` | `mcp-parity` | Compares the logic `ai-pricing-hub-mcp` ports from the site, and the schema version of each route it reads, with the site's own. Opens an issue on a difference; does not block a merge |
 | Sat 12:20 | `cloud-finops-skills` | `companion-tools` | Compares the tools `INSTALLATION.md` lists for the two companion connectors with each server's own `tools/list`. Opens an issue on a difference; never edits a file |
 | Mon 05:30 | `cloud-sparkle-compare` | `refresh-bedrock-matrix` | Refreshes the Bedrock matrix |
-| Mon 06:00 | `ai-roi-calculator` | `refresh-model-snapshot` | Pulls the model snapshot from OptimToken |
-| Mon 07:00 | `ai-roi-calculator-mcp` | `sync-engine` | Pulls engine + snapshot from the calculator |
+| Mon 06:00 | `ai-roi-calculator` | `refresh-model-snapshot` | Pulls the model snapshot from OptimToken, tests it and pushes it to `main` |
+| Mon 07:00 | `ai-roi-calculator-mcp` | `sync-engine` | Pulls engine + snapshot from the calculator, tests them and, when only prices moved, pushes to `master`, which deploys the server |
+| Mon 13:30 | `ai-pricing-hub-mcp` | `refresh-fallback` | Re-snapshots its two static fallbacks from OptimToken, tests them and pushes to `master`, which deploys the server |
 
-**`ai-pricing-hub-mcp` has no scheduled job of its own.** Its static fallback snapshots
-are regenerated only by running `npm run refresh-fallback` (models) and
-`npm run refresh-compute-fallback` (instances) by hand. That matters, because the
-fallback is what gets served whenever the live fetch fails, and an unrefreshed fallback
-ages silently. Read the `provenance` block's `dataAsOf` and its `notice`, which
-states the day the snapshot was taken, before trusting a tier-2 response.
+**The three Monday jobs land by themselves since 2026-11-12.** Each one pushes to its
+default branch with a deploy key that the branch ruleset lets through, the arrangement
+`cloud-sparkle-compare` has had since 2026-10-31. Until then the two ROI jobs opened a
+pull request that their ruleset made unmergeable without a human (the one of 26 October
+sat open for 17 days), and the pricing MCP's snapshots were refreshed by hand. A green
+run means the change is on the default branch. A red run means a pull request assigned
+to the maintainer is waiting: the engine moved beyond its prices, a refresh was refused,
+or the key or its ruleset entry is gone.
+
+**The pricing MCP's fallback is at most a week old, not current.** It is what gets served
+whenever the live fetch fails. Read the `provenance` block's `dataAsOf` and its `notice`,
+which states the day the snapshot was taken, before trusting a tier-2 response. 19 of its
+137 compute rows exist only in the site's private static catalogue and are still refreshed
+by hand.
 
 ---
 

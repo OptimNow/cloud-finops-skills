@@ -50,6 +50,11 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   with the servers' own `tools/list` every Saturday and opens an issue when they
   differ; it never edits the page. In CI it runs offline and only checks that the page
   still parses.
+- **The weekly source scan is the laptop's, and the docs now say so.** Since October the
+  README and `docs/DESIGN.md` described a cloud routine scanning about 35 sources every
+  Saturday. It did not exist: the scan kept running from the maintainer's laptop on the
+  1st and the 15th, over about 30 sources. From 14 November 2026 it runs every Saturday
+  at 9:00 and catches up when the laptop was closed or offline at that hour.
 
 ### New and corrected content
 
