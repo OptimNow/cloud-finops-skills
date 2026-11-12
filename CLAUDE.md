@@ -35,7 +35,7 @@ Full annotated tree, every reference file, CI-gated: [`docs/STRUCTURE.md`](docs/
 - `plugins/cloud-finops/skills/cloud-finops/` - the skill: `SKILL.md`, `POWER.md`, `references/`, `playbooks/`
 - `plugins/cloud-finops/.claude-plugin/plugin.json` - the version holder (bumps with marketplace.json, pyproject, server.json x2)
 - `mcp_server/` - the `cloud-finops-mcp` PyPI package (seven tools); `Dockerfile` + `fly.toml` for the hosted connector
-- `scripts/` - CI guards and generators; `.github/workflows/` - CI, release and publish chains
+- `scripts/` - CI guards and generators; `.github/workflows/` - CI, the release chain (see "Releases and the hosted connector") and its manual paths
 - `docs/` - `DESIGN.md` (rules, checklist), `ROADMAP.md`, `CONCEPTS.md`, `OVERLAYS.md`, `STRUCTURE.md`
 - Root: `INSTALLATION.md`, `README.md`, `llms.txt`, `DEPENDENCIES.md`, `CHANGELOG.md`
 - `pipeline/` - gitignored and private: the content pipeline, the probe battery and its harnesses, and
@@ -65,6 +65,35 @@ when it is numbers and short labels (`_validate`). Before a PR that touches any 
 
 - **Never copy a formula or a rate into this repo.** Route to the tool that owns it.
 - **Price figures are not maintained here at all.** See Content rules, "Write mechanics, not price figures".
+
+## Releases and the hosted connector
+
+A release is a change of `version` in `plugins/cloud-finops/.claude-plugin/plugin.json` reaching
+`main`, and nothing else. A content PR never touches it, and the maintainer decides when a release
+PR exists. That merge starts `.github/workflows/auto-tag-on-plugin-bump.yml`, one line of jobs:
+
+1. Tag and GitHub Release.
+2. PyPI publish, which waits for the maintainer's approval of the `pypi` environment.
+3. Deploy of the hosted connector to Fly.io from the tag, then a check of what
+   `https://mcp.optimnow.io/mcp` serves (`scripts/check-hosted-connector.py`: the version, and the
+   names and totals of the two catalogues against the files of the tag).
+4. MCP Registry entry, only if step 3 passed.
+
+Rules that follow:
+
+- **Never bump a version, push a tag, run `fly deploy` or start a release or deploy workflow as part
+  of other work.** Each one publishes. Prepare a release PR only when the maintainer asks for one.
+- **No `fly deploy` by hand after a release.** Read the `deploy-hosted` job. To repair a failed
+  deploy or go back a release: `gh workflow run deploy-hosted.yml -f tag=vX.Y.Z`
+  (`-f verify_only=true` deploys nothing and only runs the check).
+- **The `FLY_API_TOKEN` secret is the maintainer's to create and rotate.** Never ask for its value.
+- The hosted image takes its version from `plugin.json` when it is built
+  (`mcp_server/scripts/pin_version.py`), so `pyproject.toml` does not decide what the server announces.
+- A release that changes a tool's name, description, parameters or what it sends is reported in the
+  Claude directory portal before the release PR merges (`docs/directory-submission.md`, section 4).
+
+The checklist and the recovery steps are in "Pull request checklist" in `docs/DESIGN.md`; why the
+chain has this shape is in "Lessons learned", entry of 2026-11-12.
 
 ## Where the rest lives
 

@@ -596,8 +596,9 @@ who add both see one set of tools.
   or connecting a new endpoint all qualify. `get_live_figures` (2026-10-25) was all
   four at once: if the connector is listed when it deploys, report it from the
   listing's page in the portal before or at the deploy that ships it. Since November
-  2026 that deploy is a job of the release workflow and starts when the release PR
-  merges, so report before merging.
+  2026 that deploy is a job of the release workflow and starts once the PyPI publish
+  of the release is approved, so report before merging the release PR, or at the
+  latest before giving that approval.
 - **1.51.0 removed the widgets: reported on 2026-11-11.** Five tools lost their
   `ui.resourceUri` link, the six `ui://` resources went, and `get_playbook`'s
   description lost its last sentence. Names, parameters and results are unchanged.

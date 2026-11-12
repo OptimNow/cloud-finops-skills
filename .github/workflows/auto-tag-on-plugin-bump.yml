@@ -16,12 +16,13 @@ name: Auto-tag and release on plugin.json bump
 #
 # The jobs, in order. An arrow means "starts only if the job before it passed":
 #
-#   verify-drift -> verify-package -> tag-and-release
-#   tag-and-release -> build-mcp -> publish-mcp --+
-#   tag-and-release -> deploy-hosted -------------+-> publish-registry
+#   verify-drift -> verify-package -> tag-and-release -> build-mcp
+#     -> publish-mcp -> deploy-hosted -> publish-registry
 #
-# PyPI and the hosted connector move side by side. The registry entry names
-# both (the package version and the hosted URL), so it waits for the two.
+# One line, one gate. publish-mcp waits for the maintainer's approval (the
+# `pypi` environment), so nothing after the tag and the GitHub Release
+# reaches a user before that approval: not the PyPI package, not the hosted
+# connector, not the registry entry.
 #
 # Why we don't just push the tag and let release.yml fire:
 # GitHub blocks workflows triggered by GITHUB_TOKEN events to prevent
@@ -444,15 +445,14 @@ jobs:
   # hosted server four releases behind, twice.
   #
   # Where it sits in the chain, and why:
-  #   - After tag-and-release: the image is built from the tagged commit, and
-  #     the tag is what a later manual redeploy names.
-  #   - Beside build-mcp and publish-mcp, not after them. The image is built
-  #     from the checkout, not from the PyPI wheel, so the two share nothing.
-  #     A PyPI failure (2026-05-15, 2026-08-16) should not leave the hosted
-  #     server on the old release, and a Fly.io failure should not hold back
-  #     the package. It does not wait for the `pypi` environment approval
-  #     either: that gate exists because a PyPI upload cannot be withdrawn,
-  #     and a deploy can (deploy-hosted.yml redeploys any earlier tag).
+  #   - After publish-mcp, so behind the `pypi` environment approval. The
+  #     image is built from the tagged commit, not from the PyPI wheel, so
+  #     it could run beside the PyPI publish, and for one day it did. The
+  #     maintainer chose on 2026-11-12 to keep a single gate: one approval
+  #     for everything a release puts in front of users. The price is that
+  #     a PyPI failure (2026-05-15, 2026-08-16) or an approval never given
+  #     leaves the hosted server on the previous release. Once the package
+  #     is sorted out, deploy-hosted.yml deploys the tag by hand.
   #   - Before publish-registry, which needs this job. The registry entry
   #     advertises the hosted URL (`remotes` in server.json) beside the
   #     version, so it goes out only once that URL serves the version.
@@ -461,17 +461,18 @@ jobs:
   # one app, created with
   #   fly tokens create deploy --app cloud-finops-mcp
   #
-  # A failure here leaves the tag and the GitHub Release in place, PyPI
-  # untouched by it (the publish-mcp job says where the package stands) and
-  # the registry entry unpublished. The last step writes that on the run page
-  # with the way back.
+  # A failure here means the tag, the GitHub Release and the PyPI package are
+  # published and the registry entry is not. The last step writes that on the
+  # run page with the way back.
   #
   # The deploy steps are duplicated in deploy-hosted.yml, the manual path for
   # one tag: change both or neither. What "serves this release" means is
   # written once, in scripts/check-hosted-connector.py.
   deploy-hosted:
     name: Deploy the hosted connector and check what it serves
-    needs: tag-and-release
+    # publish-mcp is what puts this job behind the approval. tag-and-release
+    # stays in the list because its outputs (the tag) are read below.
+    needs: [tag-and-release, publish-mcp]
     if: needs.tag-and-release.outputs.skip == 'false'
     runs-on: ubuntu-latest
     # A rollout that hangs would otherwise hold the deploy lock for six hours.
@@ -553,7 +554,7 @@ jobs:
             echo "| Surface | Where it stands |"
             echo "|---|---|"
             echo "| Git tag and GitHub Release ${TAG} | Published, before this job ran. |"
-            echo "| PyPI package | Not affected by this failure. The publish-mcp job of this run says whether it is published. |"
+            echo "| PyPI package | Published. This job starts only after the PyPI publish has passed. |"
             echo "| Hosted connector, mcp.optimnow.io | Not confirmed on ${TAG}. It may still serve the previous release: the steps above say what it answered. |"
             echo "| MCP Registry entry | Not published. It waits for this job. |"
             echo
@@ -562,7 +563,7 @@ jobs:
             echo "- **Re-run failed jobs** on this run. It deploys again, then publishes the registry entry."
             echo "- \`gh workflow run deploy-hosted.yml -f tag=${TAG}\`, and when that run is green, \`gh workflow run publish-registry.yml\`."
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "::error title=Hosted connector not confirmed on ${TAG}::The tag and the GitHub Release exist. PyPI is not affected (see the publish-mcp job). The MCP Registry entry is NOT published. Fix the cause, then use 'Re-run failed jobs' on this run, or run deploy-hosted.yml for ${TAG} followed by publish-registry.yml."
+          echo "::error title=Hosted connector not confirmed on ${TAG}::The tag, the GitHub Release and the PyPI package are published. The MCP Registry entry is NOT published. Fix the cause, then use 'Re-run failed jobs' on this run, or run deploy-hosted.yml for ${TAG} followed by publish-registry.yml."
 
   # Announce the new version to the MCP Registry.
   #

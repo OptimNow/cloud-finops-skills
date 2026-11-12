@@ -6,7 +6,8 @@ name: Deploy the hosted connector to Fly.io
 # The normal path is the `deploy-hosted` job in auto-tag-on-plugin-bump.yml,
 # which runs on every release. This workflow covers what that job cannot:
 #
-#   1. A deploy that failed during a release, once the cause is fixed.
+#   1. A deploy that failed during a release, once the cause is fixed, or one
+#      that never started because the PyPI publish before it failed.
 #   2. Going back to an earlier release: deploy its tag.
 #   3. Checking, without deploying anything, that the hosted server serves a
 #      given tag (`verify_only`).
