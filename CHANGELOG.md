@@ -37,6 +37,9 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### New and corrected content
 
+- **Fractional GPUs in the GPU rightsizing runbook.** The `g6f` sizes (1/8 to 1/2 of an
+  L4), their GRID-only driver, and the GRID and DCV licences included on EC2 for
+  workstation comparisons (`aws-gpu-instance-oversized` playbook).
 - **Regulated placement in France.** The SREN law decree of 14 April 2026 and the
   SecNumCloud 3.2 arrêté: which State data must sit on a qualified offer, the
   derogation window, and what it changes for estimates (`finops-onboarding-workloads.md`).

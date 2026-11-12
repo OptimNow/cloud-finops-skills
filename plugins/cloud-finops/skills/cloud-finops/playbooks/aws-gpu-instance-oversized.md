@@ -99,7 +99,20 @@ rightsize candidate.
    first (`g5.12xlarge` → `g5.4xlarge` → `g5.xlarge`), then cross-family
    if memory or compute profile changes (G5 → G6 for L4 efficiency; P4d →
    G5 if A100 perf is overkill; G5 → Inf2 if model is supported on AWS
-   Neuron).
+   Neuron). Below one full GPU, the fractional G6 sizes split an NVIDIA L4:
+   `g6f.large` and `g6f.xlarge` carry 1/8 (3 GB), `g6f.2xlarge` 1/4 (6 GB),
+   `g6f.4xlarge` and `gr6f.4xlarge` 1/2 (12 GB), for inference or graphics
+   that do not fill an L4. They run the NVIDIA GRID driver only (no Tesla or
+   gaming driver), so an AMI built on the Tesla driver has to be rebuilt
+   before the move. For graphics workstations, the GRID virtual workstation
+   licence and the Amazon DCV remote display are included on EC2 at no extra
+   charge, where both are paid for on premises: leave them out of a cloud
+   versus on-premises workstation comparison and the cloud side looks dearer
+   ([EC2 G6](https://aws.amazon.com/ec2/instance-types/g6/),
+   [NVIDIA drivers by instance type](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-nvidia-driver.html),
+   [GRID drivers](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/nvidia-GRID-driver.html),
+   [Amazon DCV](https://docs.aws.amazon.com/dcv/latest/adminguide/what-is-dcv.html),
+   read 12 November 2026).
 2. **Benchmark on the target.** Run the production workload (same model,
    same batch size, same load pattern) on the target instance for 24-48
    hours. Compare `ModelLatency` p50/p95/p99 and `ThroughputPerInstance`.
