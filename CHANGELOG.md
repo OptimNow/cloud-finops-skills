@@ -62,6 +62,10 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### New and corrected content
 
+- **Fast mode routes corrected.** Fable 5.2 and Mythos 5.2 fast mode run on Vertex AI and
+  on Anthropic-hosted Foundry deployments, which the risk section had ruled out; on
+  Foundry the speed is set by a `-fast` deployment, not by the request
+  (`finops-anthropic.md`).
 - **Fractional GPUs in the GPU rightsizing runbook.** The `g6f` sizes (1/8 to 1/2 of an
   L4), their GRID-only driver, and the GRID and DCV licences included on EC2 for
   workstation comparisons (`aws-gpu-instance-oversized` playbook).
