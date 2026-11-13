@@ -19,6 +19,9 @@ What it reads, through the GitHub REST API and four public endpoints:
     not land its change and waits for a human;
   - open issues carrying an alarm label (`price-drift`, `companion-tools`, `mcp-parity`,
     `price-anomaly`, ...), and the open `content-update` issues waiting for triage;
+  - in those five repositories and in seven smaller ones: every open issue or pull
+    request written by someone else (not the owner, not a bot) that the owner has not
+    answered, and, in the seven, the latest run of each workflow on the default branch;
   - the three hosted MCP servers (do they answer, with which version) and the day of
     the OptimToken catalogue.
 
@@ -31,7 +34,10 @@ What it never does: fix, merge, re-run or edit anything. Exit codes:
 
 Token: GH_TOKEN or GITHUB_TOKEN, else `gh auth token` when the CLI is signed in, else
 none. Without one the four public repositories are still read; the private one
-(OptimToken's site) is reported as not read.
+(OptimToken's site) is reported as not read. A token that a repository refuses is
+asked again without one, so a token scoped to a few repositories never hides a public
+one. In a cloud routine the token covers the repositories checked out for the run:
+the Monday routine checks out all five, which is what lets it read the private one.
 
   python scripts/check-family-jobs.py               report on stdout
   python scripts/check-family-jobs.py --output f.md also write it to a file
@@ -87,6 +93,25 @@ CALCULATOR = Repo("OptimNow/ai-roi-calculator", "ROI calculator", "main")
 CALCULATOR_MCP = Repo("OptimNow/ai-roi-calculator-mcp", "ROI calculator MCP", "master")
 SKILL = Repo("OptimNow/cloud-finops-skills", "Cloud FinOps skill", "main", ("price-drift", "companion-tools"))
 REPOS = (SITE, PRICING_MCP, CALCULATOR, CALCULATOR_MCP, SKILL)
+
+# Seven smaller repositories of the same account. They have no scheduled job on
+# 2026-11-13 (one has a CI and a PyPI publish, the others nothing of their own), so
+# they are read for two things only: a workflow whose last run on the default branch
+# failed, and what other people opened there. A scheduled job added to one of them
+# belongs in JOBS, with its cadence.
+OTHER_REPOS = tuple(
+    Repo(f"OptimNow/{name}", name, "main")
+    for name in (
+        "tagging-policy-generator",
+        "finopsselfassessment",
+        "ai-self-assessment",
+        "awesome-finops-jmfontaine",
+        "cost-per-task",
+        "finops-mcp-resources",
+        "awesome-remote-mcp-servers",
+    )
+)
+OWNER = "OptimNow"  # what this login wrote or answered is not "someone else waiting"
 
 
 @dataclass(frozen=True)
@@ -158,8 +183,7 @@ def find_token() -> str | None:
     return None
 
 
-def github(path: str, token: str | None) -> Any:
-    """GET one GitHub API path. Raises :class:`NotRead` with the reason."""
+def _get(path: str, token: str | None) -> Any:
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
@@ -168,14 +192,32 @@ def github(path: str, token: str | None) -> Any:
     if token:
         headers["Authorization"] = f"Bearer {token}"
     request = urllib.request.Request(API + path, headers=headers)
+    with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def github(path: str, token: str | None) -> Any:
+    """GET one GitHub API path. Raises :class:`NotRead` with the reason.
+
+    A token that is refused is not the end of it. A cloud routine's token covers the
+    repositories checked out for the run and nothing else: on 2026-11-12 it answered 403
+    for the three public repositories it had not been given, which an anonymous caller
+    reads freely. So a refusal with a token is asked again without one, and only a
+    repository that is closed to both (the site's, when it was not checked out) is
+    reported as not read.
+    """
     try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
-            return json.loads(response.read().decode("utf-8"))
+        return _get(path, token)
     except urllib.error.HTTPError as exc:
+        if token and exc.code in (401, 403, 404):
+            try:
+                return _get(path, None)
+            except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+                pass  # the first refusal is the one worth reporting
         if exc.code == 404:
             reason = "not found" if token else "not found without a token (a private repository reads so)"
-        elif exc.code in (403, 429):
-            reason = f"refused, HTTP {exc.code} (rate limit or missing permission)"
+        elif exc.code in (401, 403, 429):
+            reason = f"refused, HTTP {exc.code} (rate limit, or a token that does not cover this repository)"
         else:
             reason = f"HTTP {exc.code}"
         raise NotRead(reason) from None
@@ -197,27 +239,59 @@ def latest_finished_run(repo: Repo, workflow: str, events: tuple[str, ...], toke
     return None
 
 
-def workflow_registered(repo: Repo, workflow: str, token: str | None) -> dt.datetime | None:
-    """When GitHub first saw this workflow file, or None when it does not say."""
+def workflow_info(repo: Repo, workflow: str, token: str | None) -> tuple[dt.datetime | None, str]:
+    """When GitHub first saw this workflow file, and its state ("active",
+    "disabled_inactivity", "disabled_manually", ...). `(None, "")` when it does not say."""
     try:
-        return parse_time(github(f"/repos/{repo.slug}/actions/workflows/{workflow}", token)["created_at"])
+        data = github(f"/repos/{repo.slug}/actions/workflows/{workflow}", token)
+        return parse_time(data["created_at"]), str(data.get("state") or "")
     except (NotRead, KeyError, ValueError):
-        return None
+        return None, ""
+
+
+def is_someone_else(user: dict | None) -> bool:
+    """Not the owner and not an automation: a person whose issue is waiting for an answer."""
+    user = user or {}
+    login = str(user.get("login") or "")
+    return bool(login) and login != OWNER and user.get("type") != "Bot" and not login.endswith("[bot]")
+
+
+def owner_answered(repo: Repo, item: dict, token: str | None) -> bool:
+    """Has the owner commented on this issue or pull request, or reviewed the pull request?"""
+    number = item["number"]
+    comments = github(f"/repos/{repo.slug}/issues/{number}/comments?per_page=100", token)
+    if any((c.get("user") or {}).get("login") == OWNER for c in comments):
+        return True
+    if "pull_request" in item:
+        reviews = github(f"/repos/{repo.slug}/pulls/{number}/reviews?per_page=100", token)
+        return any((r.get("user") or {}).get("login") == OWNER for r in reviews)
+    return False
 
 
 # ----------------------------------------------------------------------------- judging
 
 
-def judge_job(job: Job, run: dict | None, now: dt.datetime, registered: dt.datetime | None = None) -> Finding:
+def judge_job(
+    job: Job,
+    run: dict | None,
+    now: dt.datetime,
+    registered: dt.datetime | None = None,
+    state: str = "",
+) -> Finding:
     """`registered` is when GitHub first saw the workflow file; it only matters when
-    there is no run: a job added this week has not had its turn yet."""
+    there is no run: a job added this week has not had its turn yet. `state` is what
+    GitHub says of the workflow: it switches a scheduled one off after 60 days without
+    activity in the repository, and a job that is off is the reason it is late."""
     where = f"{job.repo.label}: {job.what} (`{job.workflow}`)"
+    off = ""
+    if state not in ("", "active"):
+        off = f" GitHub has this workflow as `{state}`: it will not run until it is enabled again."
     if run is None:
-        if registered is not None and now - registered <= dt.timedelta(days=job.max_age_days):
+        if not off and registered is not None and now - registered <= dt.timedelta(days=job.max_age_days):
             return Finding(
                 "ok", where, "not due yet", f"added on {registered.strftime('%Y-%m-%d')}, no run so far"
             )
-        return Finding("hand", where, "never ran", "no finished run on the default branch")
+        return Finding("hand", where, "never ran", "no finished run on the default branch." + off)
     started = parse_time(run["created_at"])
     age = now - started
     day = started.strftime("%Y-%m-%d")
@@ -226,7 +300,11 @@ def judge_job(job: Job, run: dict | None, now: dt.datetime, registered: dt.datet
         return Finding("hand", where, "last run failed", f"{run.get('conclusion')} on {day}", url)
     if age > dt.timedelta(days=job.max_age_days):
         return Finding(
-            "hand", where, "late", f"last run {day}, {age.days} days ago; expected within {job.max_age_days}", url
+            "hand",
+            where,
+            "late",
+            f"last run {day}, {age.days} days ago; expected within {job.max_age_days}." + off,
+            url,
         )
     return Finding("ok", where, "ran", f"success on {day}", url)
 
@@ -279,6 +357,29 @@ def judge_alarms(repo: Repo, label: str, issues: list[dict], now: dt.datetime) -
             )
         )
     return findings
+
+
+def judge_other_workflow(repo: Repo, workflow: dict, run: dict | None) -> Finding | None:
+    """One workflow of a smaller repository: only its last run on the default branch."""
+    name = str(workflow.get("path") or "").rsplit("/", 1)[-1]
+    where = f"{repo.label}: `{name}` on `{repo.branch}`"
+    if run is None:
+        return None  # nothing ran on the default branch: nothing to say
+    day = parse_time(run["created_at"]).strftime("%Y-%m-%d")
+    if run.get("conclusion") != "success":
+        return Finding("hand", where, "last run failed", f"{run.get('conclusion')} on {day}", run.get("html_url", ""))
+    return Finding("ok", where, "green", f"success on {day}", run.get("html_url", ""))
+
+
+def judge_external(repo: Repo, item: dict, answered: bool, now: dt.datetime) -> Finding:
+    """An open issue or pull request written by someone else."""
+    kind = "pull request" if "pull_request" in item else "issue"
+    days = (now - parse_time(item["created_at"])).days
+    where = f"{repo.label}: {kind} #{item['number']} by {item['user']['login']}"
+    detail = f"\"{item['title']}\", open for {days} day(s)"
+    if answered:
+        return Finding("ok", where, "open, and you have answered", detail, item.get("html_url", ""))
+    return Finding("hand", where, "someone is waiting for your answer", detail, item.get("html_url", ""))
 
 
 def judge_triage(issues: list[dict], now: dt.datetime) -> Finding:
@@ -370,8 +471,12 @@ def collect(now: dt.datetime, token: str | None) -> list[Finding]:
         where = f"{job.repo.label}: {job.what} (`{job.workflow}`)"
         try:
             run = latest_finished_run(job.repo, job.workflow, ("schedule", "workflow_dispatch"), token)
-            registered = workflow_registered(job.repo, job.workflow, token) if run is None else None
-            findings.append(judge_job(job, run, now, registered))
+            finding = judge_job(job, run, now)
+            if finding.level == "hand" and finding.what in ("late", "never ran"):
+                # Only then is it worth one more call: is the job new, or switched off?
+                registered, state = workflow_info(job.repo, job.workflow, token)
+                finding = judge_job(job, run, now, registered, state)
+            findings.append(finding)
         except NotRead as exc:
             findings.append(Finding("unread", where, "not read", str(exc)))
 
@@ -394,6 +499,38 @@ def collect(now: dt.datetime, token: str | None) -> list[Finding]:
                 findings.extend(judge_alarms(repo, label, github(f"/repos/{repo.slug}/issues?{query}", token), now))
             except NotRead as exc:
                 findings.append(Finding("unread", f"{repo.label}: `{label}` issues", "not read", str(exc)))
+
+    for repo in OTHER_REPOS:
+        try:
+            workflows = github(f"/repos/{repo.slug}/actions/workflows?per_page=100", token).get("workflows", [])
+        except NotRead as exc:
+            findings.append(Finding("unread", f"{repo.label}: workflows", "not read", str(exc)))
+            continue
+        for workflow in workflows:
+            # GitHub's own (Dependabot, the dependency graph) live under dynamic/: not ours.
+            path = str(workflow.get("path") or "")
+            if not path.startswith(".github/workflows/") or workflow.get("state") != "active":
+                continue
+            name = path.rsplit("/", 1)[-1]
+            try:
+                run = latest_finished_run(repo, name, ("push", "schedule", "workflow_dispatch"), token)
+            except NotRead as exc:
+                findings.append(Finding("unread", f"{repo.label}: `{name}`", "not read", str(exc)))
+                continue
+            finding = judge_other_workflow(repo, workflow, run)
+            if finding:
+                findings.append(finding)
+
+    for repo in REPOS + OTHER_REPOS:
+        try:
+            items = github(f"/repos/{repo.slug}/issues?state=open&per_page=100", token)
+            for item in items:
+                if is_someone_else(item.get("user")):
+                    findings.append(judge_external(repo, item, owner_answered(repo, item, token), now))
+        except NotRead as exc:
+            findings.append(
+                Finding("unread", f"{repo.label}: issues and pull requests by others", "not read", str(exc))
+            )
 
     try:
         query = urllib.parse.urlencode({"state": "open", "labels": TRIAGE_LABEL, "per_page": 50})
