@@ -181,6 +181,14 @@ the published Fast and Standard rates (pricing page read 31 October 2026, unchan
   routes (Anthropic managed, and Google managed at Google's prices) and Foundry
   deployments hosted on Anthropic. Neither model's fast mode is on Amazon Bedrock or
   Claude Platform on AWS, so a Bedrock-based estate cannot use it at all.
+- **On Microsoft Foundry the deployment, not the request, sets the speed.** Fast mode has
+  its own model IDs ending in `-fast` (`claude-opus-5-5-fast`, `claude-fable-5-2-fast`,
+  `claude-mythos-5-2-fast`); requests go to a deployment of that model and leave out
+  `speed`, and a request that sets `speed` on a standard deployment returns an error. The
+  control is therefore who may create a `-fast` deployment, and falling back on a 429
+  means retrying on the standard deployment, which misses the prompt cache
+  (<https://platform.claude.com/docs/en/build-with-claude/fast-mode>, read 13 November
+  2026).
 - **The access request no longer gates Opus 5.5.** Any key in the Start tier or above
   can send `speed: "fast"` and pay 2x, so the allow-list has to live in the gateway or
   client configuration, not in Anthropic's approval step. `usage.speed` in each
@@ -385,10 +393,13 @@ on 7 February 2026.
   retroactive repricing, but the mechanism is a lost cache, not a recharge of
   earlier requests.
 - **Mostly outside cloud provider routes**: Fast mode is unavailable on Amazon Bedrock
-  and Google Vertex AI. On Microsoft Foundry it exists only for Opus 5.5 on Azure-hosted
-  deployments (since 15 October 2026), and on Google Cloud only for Opus 5.5 through the
-  Anthropic-managed route (since 22 October 2026). Elsewhere it fragments spend away
-  from consolidated cloud agreements toward direct Anthropic invoices.
+  and Claude Platform on AWS. Elsewhere it depends on the model: Opus 5.5 fast mode runs
+  on Microsoft Foundry deployments hosted on Azure (since 15 October 2026) and on Claude
+  Models on Google Cloud (Anthropic managed, since 22 October 2026); Fable 5.2 and Mythos
+  5.2 fast mode run on both Google Cloud routes, the Google-managed one (Vertex AI) at
+  Google's prices, and on Foundry deployments hosted on Anthropic (the model table on the
+  fast mode page, read 13 November 2026). Where the route is missing, it fragments spend
+  away from consolidated cloud agreements toward direct Anthropic invoices.
 
 ### Context window pricing - per-model, not uniform
 
@@ -614,8 +625,9 @@ A forecast based solely on base token pricing is insufficient:
 
 ### Provider strategy
 
-Fast mode's exclusion from Bedrock and Vertex (and, on Foundry, from every model but
-Opus 5.5 on Azure-hosted deployments) is a deliberate channel choice. If your strategy relies on CSP-consolidated billing and commitment vehicles,
+Fast mode's exclusion from Bedrock and Claude Platform on AWS, and its model-by-model
+reach on Google Cloud and Foundry (Opus 5.5 not on Vertex AI; Fable 5.2 and Mythos 5.2
+not on Azure-hosted Foundry deployments), is a deliberate channel choice. If your strategy relies on CSP-consolidated billing and commitment vehicles,
 this feature gap introduces spend fragmentation that governance must account for.
 Managed Agents further fragment spend as they represent a distinct service tier.
 
