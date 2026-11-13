@@ -166,17 +166,28 @@ exit code (2), never "fine": without a token the private repository of the site 
 be read, and the report says so line by line. It changes nothing: no re-run, no merge,
 no issue. And it is not a CI step, because a pull request here must not go red over
 another repository's Monday. A job added or renamed in any of the five repositories is
-added to `JOBS` in the script; nothing else tells it. A cloud routine, "Point de contrôle
-des routines", runs the script every Monday at 07:30 Paris time and relays the result to
-the maintainer in French, with a mobile notification, changing nothing either; the
-script, not the routine, decides what is wrong. The routine checks out all five
-repositories, and that list is load-bearing: a routine's GitHub token covers the
-repositories checked out for the run and no other. Its first run, with this repository
-alone, read 8 lines of 28 and reported the other 20 as not read, public repositories
-included; with the five, it reads everything. Since then the script asks again without
-the token when a token is refused, so a public repository is read either way, and only
-the site's private one depends on the list. At 07:30 the Monday jobs of 07:00 and 13:30
-UTC have not run: the script judges their run of the week before.
+added to `JOBS` in the script; nothing else tells it. Since 2026-11-13 the script also
+reads what a daily routine of August 2026 ("Digest quotidien GitHub Actions") used to
+read by hand, and that routine is retired: in the five repositories and in seven smaller
+ones of the account, every open issue or pull request written by someone other than the
+owner or a bot that the owner has not answered, and, in the seven, the last run of each
+workflow on the default branch. That digest read a 24-hour window, so it reported a
+failure once and forgot it; it left the site's repository out of its list, so the ELO
+failure could not reach it; and its instructions set aside every pull request opened by
+a bot, so it saw the one of 26 October for 17 days and called it out of scope. The
+script reads state, not a window: what is wrong stays in the report until it is fixed.
+One cloud routine, "Point de contrôle des routines", runs the script every day at 07:30
+Paris time and relays the result to the maintainer in French, changing nothing either.
+It sends a mobile notification only when something needs a hand or could not be read,
+and on Mondays also when all is well, so that silence on the other days means fine and
+not broken. The script, not the routine, decides what is wrong. The routine checks out
+the twelve repositories, and that list is load-bearing: a routine's GitHub token covers
+the repositories checked out for the run and no other. Its first run, with this
+repository alone, read 8 lines of 28 and reported the other 20 as not read, public
+repositories included. Since then the script asks again without the token when a token
+is refused, so a public repository is read either way, and only the site's private one
+depends on the list. A Monday job that runs after 07:30 (07:00 and 13:30 UTC) is judged
+on its run of the week before that morning, and on its own run the morning after.
 
 ---
 

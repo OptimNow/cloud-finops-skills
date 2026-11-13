@@ -147,13 +147,38 @@ def test_the_catalogue_is_stale_once_its_host_prices_are_three_days_old(check):
 # ------------------------------------------------------------------------ the whole run
 
 
-def _scripted(check, monkeypatch, *, private_unreadable=False, failing=None, bot_pull_in=None):
-    """Replace every outside call. All jobs ran this morning unless told otherwise."""
+def _scripted(
+    check,
+    monkeypatch,
+    *,
+    private_unreadable=False,
+    failing=None,
+    bot_pull_in=None,
+    other_workflows=None,
+    issues_in=None,
+    owner_comments=(),
+):
+    """Replace every outside call. All jobs ran this morning unless told otherwise.
+
+    `other_workflows` maps a repository slug to the workflows GitHub lists for it,
+    `issues_in` maps a slug to its open issues, and `owner_comments` holds the numbers
+    of the issues the owner has commented on.
+    """
 
     def github(path, token):
         # With its slash: the site's slug is a prefix of the pricing MCP's.
         if private_unreadable and f"/repos/{check.SITE.slug}/" in path:
             raise check.NotRead("not found without a token (a private repository reads so)")
+        slug = path.split("/repos/")[1].split("/actions")[0].split("/issues")[0].split("/pulls")[0]
+        if path.endswith("/actions/workflows?per_page=100"):
+            return {"workflows": (other_workflows or {}).get(slug, [])}
+        if "/comments" in path:
+            number = int(path.split("/issues/")[1].split("/")[0])
+            return [{"user": {"login": check.OWNER}}] if number in owner_comments else []
+        if "/reviews" in path:
+            return []
+        if path.endswith("/issues?state=open&per_page=100"):
+            return (issues_in or {}).get(slug, [])
         if "/actions/workflows/" in path and "/runs" in path:
             workflow = path.split("/actions/workflows/")[1].split("/")[0]
             event = "push" if workflow == "ci.yml" else "schedule"
@@ -204,8 +229,9 @@ def test_a_private_repository_that_cannot_be_read_is_never_reported_as_fine(chec
     findings = check.collect(NOW, None)
     report = check.render(findings, NOW, with_token=False)
     unread = [f for f in findings if f.level == "unread"]
-    # five jobs, the CI, the pull requests and each alarm label of the site
-    assert len(unread) == 5 + 1 + 1 + len(check.SITE.alarm_labels)
+    # five jobs, the CI, the pull requests, each alarm label of the site, and what
+    # other people opened there
+    assert len(unread) == 5 + 1 + 1 + len(check.SITE.alarm_labels) + 1
     assert check.exit_code(findings) == check.EXIT_NOT_READ
     assert "**Nothing wrong was seen, but not everything could be read.**" in report
     assert "## Not read (not the same as fine)" in report
@@ -291,3 +317,114 @@ def test_without_a_token_nothing_is_asked_twice(check, monkeypatch):
     with pytest.raises(check.NotRead, match="without a token"):
         check.github("/repos/OptimNow/ai-pricing-hub/pulls", None)
     assert calls == [None]
+
+
+# ------------------------------------------- what the daily digest used to read by hand
+
+
+def _issue(number, login, kind="User", pull=False, day="2026-11-10"):
+    item = {
+        "number": number,
+        "title": f"Item {number}",
+        "user": {"login": login, "type": kind},
+        "created_at": f"{day}T09:00:00Z",
+        "html_url": f"https://github.example/issues/{number}",
+    }
+    if pull:
+        item["pull_request"] = {}
+    return item
+
+
+def test_only_a_person_other_than_the_owner_counts_as_someone_else(check):
+    assert check.is_someone_else({"login": "helixoft", "type": "User"})
+    assert not check.is_someone_else({"login": check.OWNER, "type": "User"})
+    assert not check.is_someone_else({"login": "dependabot[bot]", "type": "Bot"})
+    assert not check.is_someone_else({"login": "some-app[bot]", "type": "User"})  # the suffix is enough
+    assert not check.is_someone_else(None)
+
+
+def test_an_issue_by_someone_else_waits_until_the_owner_answers(check, monkeypatch):
+    skill = check.SKILL.slug
+    issues = {
+        skill: [
+            _issue(11, "helixoft"),                      # nobody answered
+            _issue(12, "crmvet", pull=True),             # the owner commented
+            _issue(13, "dependabot[bot]", "Bot", True),  # a bot: not someone waiting
+            _issue(14, check.OWNER),                     # the owner's own
+        ]
+    }
+    _scripted(check, monkeypatch, issues_in=issues, owner_comments=(12,))
+    findings = check.collect(NOW, "token")
+    external = {f.where: f for f in findings if " by " in f.where}
+    assert set(external) == {
+        "Cloud FinOps skill: issue #11 by helixoft",
+        "Cloud FinOps skill: pull request #12 by crmvet",
+    }
+    waiting = external["Cloud FinOps skill: issue #11 by helixoft"]
+    assert (waiting.level, waiting.what) == ("hand", "someone is waiting for your answer")
+    assert "open for 5 day(s)" in waiting.detail  # opened on the 10th at 09:00, read on the 16th at 08:12
+    assert external["Cloud FinOps skill: pull request #12 by crmvet"].level == "ok"
+    assert check.exit_code(findings) == check.EXIT_NEEDS_A_HAND
+
+
+def test_a_review_by_the_owner_answers_a_pull_request(check, monkeypatch):
+    def github(path, token):
+        if "/comments" in path:
+            return [{"user": {"login": "someone"}}]
+        if "/reviews" in path:
+            return [{"user": {"login": check.OWNER}}]
+        raise AssertionError(path)
+
+    monkeypatch.setattr(check, "github", github)
+    assert check.owner_answered(check.SKILL, _issue(5, "crmvet", pull=True), "token")
+    assert not check.owner_answered(check.SKILL, _issue(6, "crmvet"), "token")  # an issue has no review
+
+
+def test_a_smaller_repository_is_read_for_its_own_workflows_only(check, monkeypatch):
+    repo = next(r for r in check.OTHER_REPOS if r.label == "cost-per-task")
+    workflows = {
+        repo.slug: [
+            {"path": ".github/workflows/ci.yml", "state": "active"},
+            {"path": ".github/workflows/old.yml", "state": "disabled_manually"},
+            {"path": "dynamic/dependabot/dependabot-updates", "state": "active"},
+        ]
+    }
+    _scripted(check, monkeypatch, other_workflows=workflows, failing="ci.yml")
+    findings = [f for f in check.collect(NOW, "token") if f.where.startswith("cost-per-task")]
+    assert [(f.where, f.level, f.what) for f in findings] == [
+        ("cost-per-task: `ci.yml` on `main`", "hand", "last run failed")
+    ]
+
+
+def test_a_workflow_with_no_run_on_the_default_branch_says_nothing(check):
+    repo = check.OTHER_REPOS[0]
+    assert check.judge_other_workflow(repo, {"path": ".github/workflows/ci.yml"}, None) is None
+    green = check.judge_other_workflow(repo, {"path": ".github/workflows/ci.yml"}, _run("2026-11-08", event="push"))
+    assert (green.level, green.what) == ("ok", "green")
+
+
+def test_a_late_job_that_github_switched_off_says_so(check):
+    """GitHub disables a scheduled workflow after 60 days without activity in the repository."""
+    late = check.judge_job(_weekly(check), _run("2026-10-05"), NOW, None, "disabled_inactivity")
+    assert late.what == "late"
+    assert "GitHub has this workflow as `disabled_inactivity`" in late.detail
+    # A job that is off is not "new, not due yet", however recently it was added.
+    added = NOW - dt.timedelta(days=2)
+    assert check.judge_job(_weekly(check), None, NOW, added, "disabled_manually").what == "never ran"
+    assert "GitHub has" not in check.judge_job(_weekly(check), _run("2026-10-05"), NOW, None, "active").detail
+
+
+def test_the_state_of_a_workflow_is_asked_only_when_a_job_is_late_or_never_ran(check, monkeypatch):
+    _scripted(check, monkeypatch)
+    asked = []
+    monkeypatch.setattr(check, "workflow_info", lambda repo, workflow, token: asked.append(workflow) or (None, ""))
+    check.collect(NOW, "token")
+    assert asked == []  # every job ran this morning: no extra call
+
+    late = {"workflow_runs": [_run("2026-10-05")]}
+    original = check.github
+    monkeypatch.setattr(
+        check, "github", lambda path, token: late if "/sync-engine.yml/runs" in path else original(path, token)
+    )
+    check.collect(NOW, "token")
+    assert asked == ["sync-engine.yml"]
