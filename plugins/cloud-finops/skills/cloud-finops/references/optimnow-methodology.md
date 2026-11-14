@@ -139,6 +139,19 @@ Quick wins are the first step of a progressive approach that moves from visible 
 to embedded governance. The discipline of starting small
 and compounding gains is what separates lasting programs from one-off audits.
 
+### Size stacked savings in cascade
+When several levers apply to the same resource, each saving is computed on what the
+previous lever left, never added to the others. Take a VM at 1,000 a month with a
+licence benefit worth 40%, a start/stop schedule worth 70% and a rightsizing worth
+50%: added up, the three would save 1,600 on a bill of 1,000. In cascade the licence
+benefit leaves 600, the schedule saves 420 of it, the rightsizing 90 of the remaining
+180: 910 in total (illustrative round figures). A business case that sums standalone
+savings overstates the total and is found out at the first month-end.
+
+Order the levers from the least risky to the most: a licence setting that needs no
+restart and reverses in a click, then the schedule, then rightsizing, priced on the
+hours the schedule leaves and not on a full month.
+
 ### Challenge assumptions, not just costs
 The FinOps interventions with the largest effect are often the ones that question
 whether a workload, architecture, or AI feature should exist in its current form before

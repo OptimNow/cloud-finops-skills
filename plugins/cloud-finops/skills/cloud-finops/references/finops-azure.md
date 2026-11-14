@@ -105,11 +105,15 @@ up to 70% cost reduction on non-production compute.
   has frozen it: no further development beyond keeping its components on supported
   versions. The Automation-based v1 is deprecated)
 - Azure Automation Runbooks (most customisable)
+- Scheduled Actions API (`Microsoft.ComputeSchedule`): one-off Start, Deallocate or
+  Hibernate on a batch of VMs, with nothing to deploy. It runs one operation, so
+  something still has to call it each day
 - Infrastructure as Code (Terraform `azurerm_dev_test_global_vm_shutdown_schedule` for a
   standalone VM; `azurerm_dev_test_schedule` only manages schedules inside a DevTest
   Lab. In Bicep, the `Microsoft.DevTestLab/schedules` resource)
 
-Sources: [Start/Stop VMs v2 overview](https://learn.microsoft.com/en-us/azure/azure-functions/start-stop-v2/overview)
+Sources: [Start/Stop VMs v2 overview](https://learn.microsoft.com/en-us/azure/azure-functions/start-stop-v2/overview),
+the [ComputeSchedule API](https://learn.microsoft.com/en-us/rest/api/computeschedule/)
 and the [azurerm provider page](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/dev_test_global_vm_shutdown_schedule),
 read 14 November 2026.
 
@@ -126,6 +130,20 @@ read 9 November 2026).
 **Tagging strategy for automation:** Use `startTime` and `stopTime` tags on VMs.
 Automation reads tags to determine schedule. This allows per-VM scheduling without
 modifying the automation logic.
+
+**Measuring the hours a VM runs.** Resource Graph gives the power state now, not over a
+month. For history, read the VM availability platform metric: 1 while the VM runs, 0
+when it is unavailable, which includes a shutdown from inside the guest (the VM stays
+allocated and billed), and no data once it is stopped from Azure. The hours at 1 over
+30 days are the uptime a schedule tag should explain
+([VM monitoring data reference](https://learn.microsoft.com/en-us/azure/virtual-machines/monitor-vm-reference#vm-availability-metric),
+read 14 November 2026).
+
+**Availability sets.** A deallocated VM gives up its capacity. Restarting part of an
+availability set counts as adding VMs to it: the request has to be served by the
+original cluster and can fail on capacity. Put the whole set on the same schedule
+([allocation failures](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/allocation-failure),
+read 14 November 2026).
 
 ### VM generation upgrades
 
@@ -244,6 +262,12 @@ those recommendations. If Advisor's evaluation never produced a recommendation f
 given VM (e.g. a 12% steady-state CPU VM that Advisor's logic skipped), no rule change
 makes it appear.
 
+**The lookback period is the setting that does change the analysis.** Advisor reads
+the last 7 days by default; the configuration offers 14, 21, 30, 60 and 90 days, and
+the list takes up to 48 hours to refresh after a change. Seven days misses a
+month-end close or a weekly batch, so set 30 days or more before acting on a resize
+list.
+
 **The right pattern to extend coverage** is a custom Azure Monitor or Resource Graph
 query that surfaces the band Advisor's logic skips. The KQL example below complements
 Advisor - it does not replace or "tune" it.
@@ -284,12 +308,20 @@ dimensions over the same window:
 | Dimension | Source metric | Red flag |
 |---|---|---|
 | CPU | `Percentage CPU` (host) or guest `% Processor Time` | P95 > 70% (do not downsize) |
-| Memory | Guest `\Memory\Available MBytes` or `Committed Bytes In Use` | P95 > 85% utilisation (do not downsize) |
+| Memory | `Available Memory Percentage` / `Available Memory Bytes` (platform metrics, no agent) or guest `\Memory\Available MBytes` | P95 > 85% utilisation (do not downsize) |
 | Disk IOPS | `Data Disk IOPS Consumed Percentage` | P95 > 80% (consider disk SKU change, not VM) |
 | Network | `Network In/Out Total` | Sustained at SKU bandwidth ceiling (do not downsize) |
 
 A VM with 8% CPU but 95% memory pressure will OOM on a downsize - the cost saving
 is reversed by an outage. This is a common cause of rightsizing rollbacks.
+
+Two checks before applying a resize. Advisor verifies that its target SKU keeps the
+Accelerated Networking and Premium Storage capabilities and exists in the region; it
+documents no check on data disk or NIC counts, so compare those limits yourself. And
+a resize restarts the VM, with a deallocation first when the target size is not
+available on the hardware cluster hosting it: plan it as a disruptive change
+([resize a VM](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/resize-vm),
+read 14 November 2026).
 
 ### B-series caveat - the credit bank trap
 
@@ -362,6 +394,11 @@ raised: it can go up at any time, which restarts the 31 days, but not down, exce
 within 6 hours of the change. Tiers cover Analytics Logs ingestion only; Basic and
 Auxiliary ingestion is billed at flat rates outside them.
 
+Several workspaces that each sit under the break-even can share one tier through a
+dedicated cluster: linked workspaces are billed on the cluster's commitment tier. A
+cluster needs at least 100 GB/day, has no pay-as-you-go option and bills from the day
+it is created, linked workspaces or not.
+
 **Source:** https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs (read 14 November 2026)
 
 ### Lever 2: Table-level tier choice
@@ -382,7 +419,9 @@ per-table eligibility before assuming Auxiliary is available.
 
 **Realistic candidates for Basic** (where Auxiliary is not yet available for built-in
 tables):
-- `ContainerLogV2` on AKS (high volume)
+- `ContainerLogV2` on AKS (high volume). Support for the v1 `ContainerLog` table
+  retired on 30 September 2026, and v1 never accepted the Basic plan
+  ([Container insights log schema](https://learn.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-logs-schema))
 - `AppTraces` at debug level
 - Resource-specific tables such as `AKSAudit`, `AKSControlPlane`, `StorageBlobLogs`
   and `AZFWNetworkRule`
@@ -465,6 +504,14 @@ Decision rule: if a table is queried less than once per quarter beyond its first
 30 days, archive it. If it is queried weekly, keep it in Analytics retention - the
 search-job cost will exceed the retention saving.
 
+Retention is set per table, independently of the workspace default. 31 days of
+analytics retention are included in the ingestion price, so setting a table below 31
+days saves nothing; Application Insights tables keep 90 days at no charge. The paid
+range runs to 730 days, and total retention with the long-term tier to 12 years. Keep
+the workspace at the included period and extend only the tables that compliance names
+([data retention](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-retention-configure),
+read 14 November 2026).
+
 ### Sentinel-on-LA layering
 
 Microsoft Sentinel charges a **Sentinel premium** on top of the Log Analytics
@@ -541,6 +588,11 @@ trade saving for stability, often too conservatively:
 For non-production, the aggressive column is usually safe. For production with
 strict SLOs, stay closer to defaults and lean on pod rightsizing for savings.
 
+The profile is cluster-wide: it applies to every autoscaled node pool and cannot be
+set per pool. What is per pool is the minimum and maximum node count, the first thing
+to read on a pool that never shrinks. A minimum left at the creation-time count is a
+floor paid around the clock.
+
 **Source:** https://learn.microsoft.com/en-us/azure/aks/cluster-autoscaler-overview
 
 ### Node pool segregation
@@ -569,8 +621,15 @@ Use **taints and tolerations** to steer pods. The Spot taint forces explicit opt
 so general workloads cannot pile onto cheap Spot nodes that evict during traffic
 peaks.
 
-**Sources:** [system node pools](https://learn.microsoft.com/en-us/azure/aks/use-system-pools)
-and [Spot node pools](https://learn.microsoft.com/en-us/azure/aks/spot-node-pool),
+**Tags for cost separation.** Tags set on a node pool reach its scale set and each
+instance; tags set on the cluster do not reach the node pools. Disks and file shares
+created through a StorageClass take their tags from its `tags` parameter, when the
+volume is provisioned and not afterwards. Tag each pool, and set the StorageClass
+tags, before relying on tags to split a cluster's bill.
+
+**Sources:** [system node pools](https://learn.microsoft.com/en-us/azure/aks/use-system-pools),
+[Spot node pools](https://learn.microsoft.com/en-us/azure/aks/spot-node-pool)
+and [AKS tags](https://learn.microsoft.com/en-us/azure/aks/use-tags),
 read 14 November 2026; https://learn.microsoft.com/en-us/azure/aks/use-multiple-node-pools
 
 ### Pod-level rightsizing
@@ -605,6 +664,15 @@ Many small nodes vs few big nodes - both are wrong defaults. The trade-off:
 Rule of thumb: aim for **80%+ node utilisation** at steady state. Prefer mid-size
 SKUs (8-16 vCPU) for general workloads. Move to larger SKUs only when individual
 pods are large enough to benefit from the headroom.
+
+**The OS disk is a per-node line.** Where the node SKU supports it and no size is
+set, AKS provisions an ephemeral OS disk, which carries no disk charge. Otherwise
+each node gets a managed Premium disk whose default size follows the vCPU count:
+128 GB up to 7 vCPUs, 256 GB from 8, 512 GB from 16 and 1,024 GB from 64. On an
+autoscaled pool of large nodes that is one more line per node: choose a SKU whose
+local storage holds an ephemeral disk, or set a smaller size explicitly
+([AKS storage concepts](https://learn.microsoft.com/en-us/azure/aks/concepts-storage),
+read 14 November 2026).
 
 ### Azure Linux 3 vs Ubuntu
 

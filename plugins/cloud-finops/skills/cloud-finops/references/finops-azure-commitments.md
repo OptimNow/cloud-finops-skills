@@ -291,7 +291,13 @@ workloads, savings plans for evolving or dynamic ones.
 Beyond the table and the decision tree: the eviction notice is 30 seconds (2 minutes on
 AWS). Choose the eviction policy (Deallocate keeps the disk, Delete is cheapest), cap
 the maximum price at the pay-as-you-go rate, and track eviction rates by family and
-region.
+region. B-series and promo sizes cannot run as Spot. Before choosing a size and a
+region, read the Spot Placement Score (High, Medium or Low, for up to eight regions
+and five sizes) and the price history and eviction rates Azure publishes per size and
+region, in the portal and in the Resource Graph `SpotResources` table
+([Spot VMs](https://learn.microsoft.com/en-us/azure/virtual-machines/spot-vms),
+[Spot Placement Score](https://learn.microsoft.com/en-us/azure/virtual-machine-scale-sets/spot-placement-score),
+read 14 November 2026).
 
 ### Instance size flexibility ratios come from the API, not the CSV
 
@@ -931,6 +937,8 @@ expiries together.
 - [ ] Existing commitment utilisation is >80% before purchasing more
 - [ ] MACC burndown trajectory reviewed - commitment purchase aligns with drawdown
 - [ ] Finance has approved the capital outlay (for Upfront payments)
+- [ ] Bought through a partner (MCA Partner): who buys, exchanges and cancels is
+      settled, see "Who can buy a commitment under MCA Partner" in `finops-azure-billing.md`
 
 ---
 

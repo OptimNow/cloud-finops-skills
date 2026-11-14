@@ -43,6 +43,7 @@ Each question below is answered by a file that exists in this repository today.
 | Question | File |
 |---|---|
 | Which of our Savings Plans and reservations expire in the next 90 days, and what should we decide before they do? | [aws-expiring-commitment-no-decision](plugins/cloud-finops/skills/cloud-finops/playbooks/aws-expiring-commitment-no-decision.md)<br>[azure-unused-reservation](plugins/cloud-finops/skills/cloud-finops/playbooks/azure-unused-reservation.md)<br>[finops-aws-commitments.md](plugins/cloud-finops/skills/cloud-finops/references/finops-aws-commitments.md) |
+| Which of our Azure Windows and SQL Server VMs pay for a licence we already own? | [azure-hybrid-benefit-unclaimed](plugins/cloud-finops/skills/cloud-finops/playbooks/azure-hybrid-benefit-unclaimed.md)<br>[finops-itam.md](plugins/cloud-finops/skills/cloud-finops/references/finops-itam.md) |
 | A third of our bill is unallocated. How do we reach a defensible allocation of shared costs? | [finops-allocation-showback.md](plugins/cloud-finops/skills/cloud-finops/references/finops-allocation-showback.md) |
 | We run half our workloads in our own data centres. How do we give app teams a monthly bill for on-prem capacity they will accept? | [finops-on-prem-hybrid.md](plugins/cloud-finops/skills/cloud-finops/references/finops-on-prem-hybrid.md) |
 | Who should own commitment purchases, and which meetings do we need to run the practice? | [finops-practice-operations.md](plugins/cloud-finops/skills/cloud-finops/references/finops-practice-operations.md) |
@@ -65,6 +66,7 @@ Each question below is answered by a file that exists in this repository today.
 | Question | File |
 |---|---|
 | Our NAT gateway bill is higher than the compute it serves. Where does it come from and what do we change? | [aws-nat-gateway-endpoint-substitution](plugins/cloud-finops/skills/cloud-finops/playbooks/aws-nat-gateway-endpoint-substitution.md)<br>[aws-zombie-nat-gateway](plugins/cloud-finops/skills/cloud-finops/playbooks/aws-zombie-nat-gateway.md) |
+| Which of our Azure PostgreSQL and MySQL servers are being charged for extended support? | [azure-database-extended-support](plugins/cloud-finops/skills/cloud-finops/playbooks/azure-database-extended-support.md)<br>[finops-azure-data.md](plugins/cloud-finops/skills/cloud-finops/references/finops-azure-data.md) |
 | Our Log Analytics ingestion doubled. Which tables and which settings do we check first? | [azure-log-analytics-sprawl](plugins/cloud-finops/skills/cloud-finops/playbooks/azure-log-analytics-sprawl.md)<br>[finops-azure.md](plugins/cloud-finops/skills/cloud-finops/references/finops-azure.md) |
 | Our monthly bill jumped from $12K to $38K after a developer enabled Fast mode in Claude Code. How do I get this under control? | [finops-anthropic.md](plugins/cloud-finops/skills/cloud-finops/references/finops-anthropic.md) |
 | How do we split the cost of a shared Kubernetes cluster between teams? | [finops-kubernetes.md](plugins/cloud-finops/skills/cloud-finops/references/finops-kubernetes.md) |
@@ -235,7 +237,7 @@ detection query you run in your own account, the fix in safest-first order, and 
 mistake to avoid. The library files them by provider and by waste category, and each
 one carries a confidence level that says whether a single signal is enough to act.
 
-![Waste runbook coverage: 44 runbooks across 8 waste categories and 4 scopes](assets/playbook-coverage.svg)
+![Waste runbook coverage: 46 runbooks across 8 waste categories and 4 scopes](assets/playbook-coverage.svg)
 
 ---
 

@@ -42,6 +42,25 @@ Azure pricing page before sizing a business case.
 
 ## Detection
 
+Start across the estate, before opening any single workspace:
+
+```kusto
+// Resource Graph - pricing set-up of every workspace
+resources
+| where type == "microsoft.operationalinsights/workspaces"
+| extend sku = tostring(properties.sku.name),
+         tierGb = toint(properties.sku.capacityReservationLevel),
+         retentionDays = toint(properties.retentionInDays),
+         dailyCapGb = todouble(properties.workspaceCapping.dailyQuotaGb)
+| project name, resourceGroup, subscriptionId, location, sku, tierGb, retentionDays, dailyCapGb
+```
+
+`PerGB2018` is pay-as-you-go, `CapacityReservation` a commitment tier
+(`tierGb` gives its level) and `LACluster` a workspace billed on a
+dedicated cluster. A `dailyCapGb` of -1 means no cap. Property names are
+those of the Workspaces REST reference (read 14 November 2026); this query
+was not run against a live estate.
+
 ```kusto
 // Top tables by ingestion volume, last 30 days (run inside the workspace)
 Usage

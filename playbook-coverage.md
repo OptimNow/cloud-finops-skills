@@ -18,19 +18,19 @@ the token and agent playbooks and understates AI coverage.
 | orphaned | 4 | 4 | 2 | 1 | 11 |
 | idle | 5 | 2 | 1 | - | 8 |
 | overprovisioned | 7 | 3 | 3 | - | 13 |
-| commitment-mismatch | 2 | 1 | 1 | - | 4 |
+| commitment-mismatch | 2 | 2 | 1 | - | 5 |
 | schedule-blindness | - | - | - | 1 | 1 |
-| modernization | 3 | - | - | - | 3 |
+| modernization | 3 | 1 | - | - | 4 |
 | ai-ml-inefficiency | - | - | - | 2 | 2 |
 | egress | 2 | - | - | - | 2 |
-| **total** | 23 | 10 | 7 | 4 | 44 |
+| **total** | 23 | 12 | 7 | 4 | 46 |
 
 ## Confidence distribution
 
 | confidence | playbooks |
 |---|---|
-| obvious | 16 |
-| likely | 21 |
+| obvious | 17 |
+| likely | 22 |
 | possible | 7 |
 
 ## Gaps (zero cells)
@@ -41,7 +41,6 @@ the token and agent playbooks and understates AI coverage.
 - schedule-blindness x aws
 - schedule-blindness x azure
 - schedule-blindness x gcp
-- modernization x azure
 - modernization x gcp
 - modernization x cross-cloud
 - ai-ml-inefficiency x aws

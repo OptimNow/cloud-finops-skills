@@ -16,6 +16,28 @@ yet tagged.
 
 ### New and corrected content
 
+- **Two new Azure runbooks.** `azure-hybrid-benefit-unclaimed` finds the Windows
+  Server, SQL Server, RHEL and SLES VMs that pay for a licence the organisation
+  already owns, with one Resource Graph query per licence switch.
+  `azure-database-extended-support` finds the PostgreSQL and MySQL flexible servers
+  billed the extended support surcharge since September and October 2026, and those
+  that join them on 1 February 2027. The catalogue now holds 46 runbooks.
+- **Azure mechanics added after the same Microsoft Learn pass.** Backup: which
+  recovery points can move to the archive tier, and what Instant Restore snapshots
+  cost under the Standard and Enhanced policies. Databases: SQL Managed Instance stop
+  and start, the serverless billing basis, storage billed on the configured maximum,
+  Flexible Server storage that never shrinks (`finops-azure-data.md`). Compute and
+  AKS: the Scheduled Actions API, the VM availability metric, memory metrics without
+  an agent, Advisor's lookback period, the per-node OS disk and tag propagation in AKS,
+  Log Analytics retention per table and dedicated clusters (`finops-azure.md`).
+  Billing: three traps of the Retail Prices API, what Policy tag inheritance
+  overwrites and which role it needs, who can buy a commitment through a partner
+  (`finops-azure-billing.md`). Licensing: the separate SQL Server licence switch on
+  VMs and the Linux values (`finops-itam.md`).
+- **Sizing stacked savings in cascade.** `optimnow-methodology.md` now states the
+  rule and its order: each lever is computed on what the previous one left, licence
+  setting first, then schedule, then rightsizing.
+
 - **Azure corrections after a pass against Microsoft Learn (14 November 2026).**
   Log Analytics: usage above a commitment tier is billed at the tier's own rate, not
   pay-as-you-go, so a tier pays from its break-even volume; `Heartbeat` and
