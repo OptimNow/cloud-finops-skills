@@ -12,6 +12,26 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 An "Unreleased" section, when there is one, lists what is merged to `main` and not
 yet tagged.
 
+## Unreleased
+
+### New and corrected content
+
+- **Azure corrections after a pass against Microsoft Learn (14 November 2026).**
+  Log Analytics: usage above a commitment tier is billed at the tier's own rate, not
+  pay-as-you-go, so a tier pays from its break-even volume; `Heartbeat` and
+  `AzureActivity` are free to ingest, `AzureDiagnostics` and `W3CIISLog` cannot move
+  to the Basic plan, and the daily cap alerts nobody by default and now stops
+  security tables too (`finops-azure.md`, `azure-log-analytics-sprawl`). AKS: a
+  system node pool needs at least 4 vCPUs and cannot use B-series or Spot, and the
+  "Spot pools without taints" query, which could never return a row, is gone
+  (`finops-azure.md`). Start/stop: the Terraform resource for VM auto-shutdown and
+  the status of Start/Stop VMs v2 are corrected (`finops-azure.md`,
+  `cross-cloud-schedule-blindness`). App Service reservations cover Premium v3 and
+  later and Isolated v2 (`finops-azure-commitments.md`). The policy library no longer
+  blocks Premium SSD v2 or every public IP, and one FOCUS export replaces the actual
+  plus amortized pair (`finops-azure-billing.md`). A VM on an ephemeral OS disk cannot
+  be deallocated on a schedule (`finops-azure-data.md`).
+
 ## 1.52.0 (14 November 2026)
 
 ### New and corrected content

@@ -291,12 +291,18 @@ Ephemeral OS disks are stored on the VM's local cache or temp disk - **no manage
 disk charge**. Trade-offs:
 
 - Free (no managed disk billing for the OS disk)
-- Lost on VM reallocation, deallocation, or stop-deallocate
-- Available only on certain VM SKUs and only for OS disks (not data disks)
+- The VM cannot be stopped-deallocated at all, so a start/stop schedule does not
+  apply to it: the off-hours lever is delete and recreate (scale the set to zero).
+  OS disk data is lost on reimage, redeploy or resize
+- Available only where the OS image fits the VM size's cache or local disk, and only
+  for OS disks (not data disks)
 
 Appropriate for stateless VM scale sets, container hosts, and immutable-image
-workloads. Not appropriate for VMs that need to survive deallocation, or workloads
-that store anything on the OS disk.
+workloads. Not appropriate for VMs that must be deallocated on a schedule, or
+workloads that store anything on the OS disk.
+
+Source: [Ephemeral OS disks](https://learn.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks),
+read 14 November 2026.
 
 ### Premium SSD v2 vs Premium SSD v1 vs Standard SSD
 

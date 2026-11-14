@@ -98,8 +98,9 @@ ORDER BY cost_30d DESC;
 1. **AWS Instance Scheduler** (CloudFormation template provided by AWS)
    or **EventBridge + Lambda** for stop/start by tag. Common schedule:
    M-F 8am-7pm local time, weekends off. Saves ~67% (55 of 168 hours on).
-2. **Azure Automation Start/Stop VMs during off-hours** (Microsoft-
-   provided runbook). Same logic: tag + schedule.
+2. **Azure Start/Stop VMs v2** (Microsoft-provided, built on Azure
+   Functions and Logic Apps; the Automation-based v1 is deprecated).
+   Same logic: tag + schedule.
 3. **GCP Instance Schedules** (native feature) - attach a schedule to
    instances by label.
 4. **For Kubernetes / managed services**: scale node pools to zero on

@@ -53,9 +53,9 @@ tooling, build on scheduled exports to Azure Storage; the portal is for ad-hoc v
   (use for team-level showback and allocation)
 
 **Export setup checklist:**
-- [ ] Configure FOCUS exports at **Billing Account** or **Billing Profile** scope (Management Group is not supported for FOCUS exports)
+- [ ] Configure FOCUS exports at **Billing Account** or **Billing Profile** scope for the organisation-wide view. FOCUS exports also exist at invoice section, EA department and account, subscription and resource group scope, the route when billing-scope access is missing; Management Group is not supported for FOCUS exports
 - [ ] For legacy actual/amortized exports, MG scope is supported but with limitations - keep them on subscription or billing-profile scope for cleanest behaviour
-- [ ] Select both actual and amortized cost exports
+- [ ] One FOCUS export carries billed and amortised cost in the same row, so it replaces the actual plus amortized pair (Microsoft gives 49% fewer rows than the two together, [What is FOCUS?](https://learn.microsoft.com/en-us/cloud-computing/finops/focus/what-is-focus), read 14 November 2026). Keep the two legacy exports only for tooling that still reads them
 - [ ] Set daily granularity
 - [ ] Export to Azure Data Lake Storage Gen2 for Power BI integration
 - [ ] Consider FinOps Hubs (Microsoft FinOps Toolkit) for automated ingestion and normalisation
@@ -461,10 +461,10 @@ policies:
 | Audit tag compliance | `audit` | Visibility into tagging gaps |
 | Inherit tags from resource group | `modify` | Automatic tag propagation |
 | Allowed VM SKUs | `deny` | Prevent expensive GPU/M-series in dev |
-| Allowed disk SKUs | `deny` | Block UltraSSD/PremiumV2 in non-prod |
+| Allowed disk SKUs | `deny` | Block Ultra Disk in non-prod. Leave Premium SSD v2 allowed: it is often the cheaper premium option (see `finops-azure-data.md`) |
 | Allowed storage SKUs | `deny` | Restrict to Standard_LRS/ZRS |
 | Deny expensive SQL tiers | `deny` | Only allow Basic/Standard/GeneralPurpose |
-| Deny public IPs | `deny` | Use Bastion/VPN instead (cost + security) |
+| No public IPs on network interfaces | `deny` | Built-in "Network interfaces should not have public IPs": VMs go through Bastion or VPN (cost + security). Do not deny the public IP resource type itself: VPN Gateway and Azure Firewall each require one |
 | Restrict regions | `deny` | Enforce approved regions |
 | Enforce VM shutdown schedule | `audit` | Flag VMs without auto-shutdown tags |
 
