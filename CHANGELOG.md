@@ -62,6 +62,17 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### New and corrected content
 
+- **Corrections from the 14 November news digest.** BigQuery principal-based
+  reservation assignments are GA, with project caps and opt-in compute cost attribution
+  (`finops-gcp.md`); AgentCore Runtime V2 is now the default for new runtimes
+  (`finops-agentic.md`); on Claude paid plans usage past the limit bills at API rates,
+  Fable runs on credits from the first request on Pro and standard seats, and credits
+  bought from 7 December 2026 expire after 12 months (`finops-ai-dev-tools.md`).
+- **Dated changes.** Gemini 4 Carbon and Argon promotional pricing ends 30 November 2026,
+  Hydrogen gains a cache-write meter on 12 January 2027, and Gemini 4 long completions
+  bill on timeout (`finops-vertexai.md`); six Copilot models retire on 14 December 2026;
+  Fabric unified SQL pools from January 2027 (`finops-fabric.md`); AWS Marketplace trials
+  convert to paid automatically (`finops-sam.md`).
 - **Fast mode routes corrected.** Fable 5.2 and Mythos 5.2 fast mode run on Vertex AI and
   on Anthropic-hosted Foundry deployments, which the risk section had ruled out; on
   Foundry the speed is set by a `-fast` deployment, not by the request

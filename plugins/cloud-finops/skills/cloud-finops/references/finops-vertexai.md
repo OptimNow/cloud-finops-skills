@@ -174,6 +174,12 @@ Four points that matter more than the numbers:
 - **Priority preserves the output:input ratio.** Because it is a flat 1.8x on everything,
   it does not change which model is cheapest - it changes whether you can afford the tier
   at all.
+- **A failed long generation can still bill.** Gemini 4 can generate completions up to
+  1M tokens, and since 13 November 2026 a completion longer than 32K tokens is charged
+  for retrievable token usage even when the request fails on a client or server timeout.
+  A client timeout set below the expected decode time, followed by a retry, now pays for
+  the same output twice: set timeouts above the decode time and alert on token volume
+  from failed requests (pricing page, read 14 November 2026).
 
 **Governance point:** decide explicitly who may enable Priority, and keep it out of batch
 jobs and CI. A 1.8x multiplier applied to a nightly evaluation run is pure waste - those
@@ -201,6 +207,13 @@ that expires in 30 days only converts to savings if you have matching spend in t
 window - treat it as a discount on continuing usage, not as a rebate.
 
 Neither mechanism alters Provisioned Throughput commitment burndown rates.
+
+**Gemini 4 Carbon and Argon follow the same pattern a month earlier.** On the Agent
+Platform both carry promotional pricing through **30 November 2026**, delivered as a 50%
+credit back on net spend (the Cyber Permissive variants are excluded), and bill at
+twice that net rate from **1 December 2026**: at constant volume the December bill for
+them doubles. Gemini 4 Hydrogen gains a cache-write meter on **12 January 2027**, so a
+cost model that priced its caching as reads only needs a write line from that date (Gemini 4 rows of the pricing page, read 14 November 2026).
 
 <!-- Maintainer note: remove this subsection after January 2027, once both windows have
 closed and the repricing has landed in actuals. -->

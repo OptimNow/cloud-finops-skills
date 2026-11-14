@@ -201,9 +201,14 @@ Sources: [AWS What's New, 12 October 2026](https://aws.amazon.com/about-aws/what
 
 **AgentCore Runtime V2: a higher rate on fewer GB-hours.** Runtime bills per second
 on active CPU (zero during I/O waits) and on memory held for the session's whole life.
-On V1, memory allocated at a peak stays billed until the session ends. V2, chosen with
-`platformVersion` set to `V2` on create or update, reclaims memory idle for 120 seconds
-throughout the session, at higher CPU and memory rates than V1. AWS's position is that
+On V1, memory allocated at a peak stays billed until the session ends. V2 reclaims
+memory idle for 120 seconds throughout the session, at higher CPU and memory rates than
+V1. Since 12 November 2026 V2 is the default for new runtimes in 19 commercial Regions;
+existing runtimes stay on V1 until moved, and a new runtime stays on V1 only if
+`platformVersion` is set to `V1`
+([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/new-agentcore-runtime-default/),
+read 14 November 2026). Agents that hold memory steadily should now be pinned to V1
+deliberately. AWS's position is that
 the smaller footprint outweighs the higher rate for most agents; that holds for agents
 with a short memory peak and long idle stretches, not for agents that hold their memory
 steadily. Compare GB-hours times rate on a measured session profile, not the two rate

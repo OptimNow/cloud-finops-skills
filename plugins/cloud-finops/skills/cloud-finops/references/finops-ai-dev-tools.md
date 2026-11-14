@@ -227,8 +227,18 @@ prices.*
 
 Annual billing on Pro takes about 15% off the monthly price.
 
-On subscription plans, usage is included up to the plan limit. You do not see per-token
-charges, but you hit rate limits when the budget is consumed.
+On subscription plans, usage is included up to the plan limit. Past it, a user with
+usage credits turned on keeps working at standard API rates, billed as a separate
+charge, until the monthly spend limit they set or the credit balance runs out; without
+credits, they hit the limit. Fable models sit outside the plan limits on Pro, Team
+standard and seat-based Enterprise standard seats, so they run on usage credits from
+the first request; on Max, Ultra and premium seats Fable may use up to 50% of the
+weekly limit before credits apply. Credits are non-refundable, and credits bought on or
+after 7 December 2026 expire 12 months after purchase (earlier purchases do not), so
+buy them in small top-ups rather than one annual block
+([usage credits](https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans),
+[Fable on your plan](https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan),
+read 14 November 2026).
 
 ### API key access (BYOK)
 
@@ -394,6 +404,16 @@ seat prices.*
 | Max | 10x Pro | Top individual tier; credits worth 2x the seat price |
 | Business | About 2x Pro, per seat | Admin controls, audit logs, IP indemnity |
 | Enterprise | About 2x Business, per seat | Requires GitHub Enterprise Cloud, itself about half the Enterprise seat again; ~3,900 credits/user |
+
+**Six models retire on 14 December 2026** across all Copilot experiences: Claude Fable 5,
+Claude Haiku 4.5, Gemini 3.8 Flash, Gemini 4 Argon, Grok 4.6 and Kimi K3. The suggested
+replacements (Fable 5.2, Haiku 5.5, Gemini 4 Hydrogen, Gemini 4 Carbon, Grok 4.7; none yet
+for Kimi K3) switch on automatically on Business and Enterprise unless default
+enablement is off, and each bills at its own model cost under AI credits, so re-baseline
+credit burn for teams that pinned a retiring model. Haiku 4.5 stays for individual
+annual-plan subscribers
+([GitHub changelog, 13 November 2026](https://github.blog/changelog/2026-11-13-upcoming-deprecation-of-selected-github-copilot-models-in-december),
+read 14 November 2026).
 
 Overage beyond the monthly allocation used to be charged at a flat $0.04 per premium
 request until 1 June 2026. That rate is retired - see the transition note below before
