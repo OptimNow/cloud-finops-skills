@@ -90,11 +90,9 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 - **Effort levels on Claude models.** How the effort setting, always-on thinking and the
   prompt cache decide what a task costs, and why the per-token ratio does not rank
   models by cost per task (`finops-anthropic.md`).
-- **Four practice notes.** Baselines per workload for AI anomalies
-  (`finops-anomaly-management.md`), where tags stop for AI and API spend
-  (`finops-tagging.md`), token volume as an adoption signal and not a target
-  (`finops-ai-value-management.md`), and the order of fixes for GPU utilisation on
-  Kubernetes (`finops-kubernetes.md`).
+- **Two allocation and detection notes.** Unit signals to baseline per workload for AI
+  anomalies (`finops-anomaly-management.md`), and where tags stop for AI and API spend
+  (`finops-tagging.md`).
 - **Fast mode routes corrected.** Fable 5.2 and Mythos 5.2 fast mode run on Vertex AI and
   on Anthropic-hosted Foundry deployments, which the risk section had ruled out; on
   Foundry the speed is set by a `-fast` deployment, not by the request

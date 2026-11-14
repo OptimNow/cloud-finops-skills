@@ -326,11 +326,7 @@ each workload and owner on ratios that move before the bill does: tokens per req
 the cache-read share of input (a drop means a prefix stopped caching), the thinking
 share of output (`usage.output_tokens_details.thinking_tokens` on the Claude API; it
 rises with an effort or model change, see `finops-anthropic.md`, "Modifiers") and, for
-agents, cost per completed run. An alert names the workload, the owner, the deviation
-in currency and in %, the start time and the last deploy or prompt change, because the
-first triage question is what changed. Map the surfaces a cloud anomaly monitor does
-not read (direct provider contracts, coding tools, AI inside SaaS) before trusting a
-quiet dashboard.
+agents, cost per completed run.
 
 **Volume or mix.** When AI spend jumps, check whether token volume moved with it before
 treating the jump as an anomaly: spend rising faster than tokens means the blended rate

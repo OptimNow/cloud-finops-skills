@@ -160,18 +160,6 @@ optimisation.
 Unit economics enable comparison across AI investments and anchor the value conversation
 at a level that is meaningful to business stakeholders.
 
-**Token volume is an adoption signal, not a target.** Ranking or rewarding people on
-tokens consumed ("tokenmaxxing") turns a cost driver into a goal. Usage can be raised
-by oversized context, agents run on trivial tasks and retry loops, none of which ships
-anything, so the metric stops measuring value the day it is rewarded. Press reports of
-April and May 2026 describe large technology companies withdrawing internal token
-leaderboards after employees inflated their usage (summarised by
-[Finout, 9 November 2026](https://www.finout.io/blog/what-is-tokenmaxxing-a-practical-guide-to-measuring-ai-by-outcomes);
-press-reported, not verified here). Keep volume as an adoption trend during rollout,
-show each team its own spend instead of a ranking, and report upward the task and
-business-value rows of the table above. When a team's usage jumps, ask what outcome
-moved before asking it to cut.
-
 **The ratio now has a name in the wider discipline.** The Tokenomics Foundation's working
 definition (v0.5.2, September 2026) frames AI economics as converting energy and capital
 into AI capabilities and consuming them to realise measurable business value, and its
