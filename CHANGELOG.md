@@ -9,56 +9,10 @@ repository, so content reaches it at merge. The **Claude Code marketplace instal
 (`cloud-finops@optimnow`) is pinned by the version in `plugin.json`, so it moves at
 each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 **PyPI package**. The **installer** copies the repository as it is when you run it.
-"Unreleased" below means merged to `main`, not yet tagged.
+An "Unreleased" section, when there is one, lists what is merged to `main` and not
+yet tagged.
 
-## Unreleased
-
-### Install and listings
-
-- **The advice on plugin and connector now rests on a measurement.** On claude.ai in
-  November 2026, with both installed, Claude did not call the connector in any of 34
-  chats, and every answer that used the library took it from the plugin: the pair
-  behaves as the plugin alone. The
-  connector on its own answered 15 of 16 test questions from the library with Claude
-  Opus 5.5 and 7 with Claude Sonnet 5.5, against 16 and 13 for the plugin. The plugin's
-  listing text, the README, CONCEPTS and INSTALLATION now say so, where they said that
-  no measurement existed. So: on Claude, the plugin; the connector for assistants that
-  cannot load it.
-- CONCEPTS no longer offers the connector "for the views": they went in 1.51.0.
-- **The connector's listing in the Claude directory is being updated.** A new
-  one-liner and description: what Cloud Financial Management is, what a guide, a
-  runbook and a tool are, the current counts (48 guides, 44 runbooks, 7 tools) and
-  five example questions, from an executive's to an engineer's. The listing no longer
-  declares an MCP App, since the views went in 1.51.0. Submitted on 11 November 2026;
-  the public page changes once the review approves it.
-- **A 46-second demo in the README.** The same NAT gateway question put to Claude
-  Opus 5.5 on 11 November 2026, alone and then with the plugin: what Claude alone
-  already gets right, and the 4 places where the answer differs. One run each.
-- **The companion pricing connector's page is current again.** The OptimNow AI Pricing
-  Hub connector went from five tools to eight on 11 and 12 November 2026 (server
-  0.11.0): where to buy a model (`compare-model-hosts`), which quoted prices moved
-  (`track-llm-price-changes`) and the volume at which renting GPUs costs the same as an
-  API (`estimate-self-hosting-breakeven`). INSTALLATION lists the eight with their
-  parameters and the fields that date a figure, including the day of a fallback
-  snapshot. Nothing changes in the skill or in `cloud-finops-mcp`.
-
-### For maintainers
-
-- **One reading of every scheduled job.** `scripts/check-family-jobs.py` reads the
-  scheduled jobs of the five OptimNow repositories, the pull requests and alarm issues
-  they left and the three hosted servers, and prints first what needs a hand. What it
-  cannot read it reports as not read, never as fine. A Monday-morning routine runs it.
-- **A weekly check on the companion connectors' tool lists.** `INSTALLATION.md` lists
-  the tools of the AI Pricing Hub and AI ROI Calculator connectors by hand, and it had
-  fallen three tools behind. `scripts/check-companion-tools.py` now compares both lists
-  with the servers' own `tools/list` every Saturday and opens an issue when they
-  differ; it never edits the page. In CI it runs offline and only checks that the page
-  still parses.
-- **The weekly source scan is the laptop's, and the docs now say so.** Since October the
-  README and `docs/DESIGN.md` described a cloud routine scanning about 35 sources every
-  Saturday. It did not exist: the scan kept running from the maintainer's laptop on the
-  1st and the 15th, over about 30 sources. From 14 November 2026 it runs every Saturday
-  at 9:00 and catches up when the laptop was closed or offline at that hour.
+## 1.52.0 (14 November 2026)
 
 ### New and corrected content
 
@@ -133,6 +87,53 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   its status now sit in one sentence, with what Microsoft did publish, and the digest row
   says the rise is reported and unconfirmed (`finops-azure.md`, `finops-whats-new.md`).
 
+### Install and listings
+
+- **The advice on plugin and connector now rests on a measurement.** On claude.ai in
+  November 2026, with both installed, Claude did not call the connector in any of 34
+  chats, and every answer that used the library took it from the plugin: the pair
+  behaves as the plugin alone. The
+  connector on its own answered 15 of 16 test questions from the library with Claude
+  Opus 5.5 and 7 with Claude Sonnet 5.5, against 16 and 13 for the plugin. The plugin's
+  listing text, the README, CONCEPTS and INSTALLATION now say so, where they said that
+  no measurement existed. So: on Claude, the plugin; the connector for assistants that
+  cannot load it.
+- CONCEPTS no longer offers the connector "for the views": they went in 1.51.0.
+- **The connector's listing in the Claude directory is being updated.** A new
+  one-liner and description: what Cloud Financial Management is, what a guide, a
+  runbook and a tool are, the current counts (48 guides, 44 runbooks, 7 tools) and
+  five example questions, from an executive's to an engineer's. The listing no longer
+  declares an MCP App, since the views went in 1.51.0. Submitted on 11 November 2026;
+  the public page changes once the review approves it.
+- **A 46-second demo in the README.** The same NAT gateway question put to Claude
+  Opus 5.5 on 11 November 2026, alone and then with the plugin: what Claude alone
+  already gets right, and the 4 places where the answer differs. One run each.
+- **The companion pricing connector's page is current again.** The OptimNow AI Pricing
+  Hub connector went from five tools to eight on 11 and 12 November 2026 (server
+  0.11.0): where to buy a model (`compare-model-hosts`), which quoted prices moved
+  (`track-llm-price-changes`) and the volume at which renting GPUs costs the same as an
+  API (`estimate-self-hosting-breakeven`). INSTALLATION lists the eight with their
+  parameters and the fields that date a figure, including the day of a fallback
+  snapshot. Nothing changes in the skill or in `cloud-finops-mcp`.
+
+### Upgrading
+
+- **Claude directory plugin**: the new content and the new Azure guide are already there
+  if your copy follows the directory; otherwise update or reinstall the plugin.
+- **Claude Code marketplace** (`cloud-finops@optimnow`): run
+  `/plugin update cloud-finops@optimnow` once this version is tagged.
+- **Hosted connector** (`https://mcp.optimnow.io/mcp`): nothing to do. The new guide
+  `finops-azure-data` appears in its catalogue when this version is deployed, which the
+  release now does itself.
+- **If you call a guide by name**: the backup, storage and database sections left
+  `finops-azure` for `finops-azure-data`. A saved `get_reference` call that names
+  `finops-azure` with one of those sections now gets the list of sections that remain,
+  not the text: name the new guide, or let `find_references` route the question.
+- **PyPI package**: `pip install -U cloud-finops-mcp`.
+- **ChatGPT and Gemini**: run the installer again and re-upload the knowledge files,
+  which now include the new Azure guide. On ChatGPT, paste the new `instructions.md`
+  too: its routing table has a row for it.
+
 ### For maintainers
 
 - **The weekly price check retries a throttled request.** Its first run in GitHub
@@ -153,6 +154,21 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   image also sets its own package version from `plugin.json`, where it used to trust a
   field bumped by hand. The manual workflow redeployed 1.51.0 on 12 November 2026 as a
   rehearsal; the release chain itself first runs at the next release.
+- **One reading of every scheduled job.** `scripts/check-family-jobs.py` reads the
+  scheduled jobs of the five OptimNow repositories, the pull requests and alarm issues
+  they left and the three hosted servers, and prints first what needs a hand. What it
+  cannot read it reports as not read, never as fine. A Monday-morning routine runs it.
+- **A weekly check on the companion connectors' tool lists.** `INSTALLATION.md` lists
+  the tools of the AI Pricing Hub and AI ROI Calculator connectors by hand, and it had
+  fallen three tools behind. `scripts/check-companion-tools.py` now compares both lists
+  with the servers' own `tools/list` every Saturday and opens an issue when they
+  differ; it never edits the page. In CI it runs offline and only checks that the page
+  still parses.
+- **The weekly source scan is the laptop's, and the docs now say so.** Since October the
+  README and `docs/DESIGN.md` described a cloud routine scanning about 35 sources every
+  Saturday. It did not exist: the scan kept running from the maintainer's laptop on the
+  1st and the 15th, over about 30 sources. From 14 November 2026 it runs every Saturday
+  at 9:00 and catches up when the laptop was closed or offline at that hour.
 
 ## 1.51.0 (10 November 2026)
 

@@ -75,7 +75,7 @@ body:
     attributes:
       label: When, and which version if you know it
       description: The date you asked is enough. The plugin version is shown in the Claude directory; the package version is the output of `pip show cloud-finops-mcp`.
-      placeholder: 2026-11-10, plugin 1.51.0
+      placeholder: 2026-11-14, plugin 1.52.0
   - type: checkboxes
     id: confidentiality
     attributes:
