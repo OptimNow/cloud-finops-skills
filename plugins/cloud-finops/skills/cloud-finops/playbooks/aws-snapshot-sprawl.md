@@ -99,6 +99,13 @@ Source: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapsh
 (manual snapshots are not subject to the backup retention period and do not
 expire; read 14 October 2026).
 
+Since 2 November 2026 RDS backup storage is billed per snapshot: in Cost Explorer
+and the CUR each snapshot is its own line, with the snapshot ARN as resource ID, so
+the list above can be ranked by cost and not only by age. Allocation rules that
+matched a DB instance ARN no longer catch snapshot charges
+(https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html,
+read 14 November 2026).
+
 ## Fix
 
 1. Tag every snapshot with `owner`, `purpose`, and `retention-until` as a

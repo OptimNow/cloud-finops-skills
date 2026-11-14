@@ -78,6 +78,17 @@ The model is identical. The price, the contract, and the jurisdiction are not.
 | **Third-party host** (Together AI, Fireworks, Baseten, DeepInfra; AWS Bedrock for selected open-weight models) | The **serving**: SLA, data-processing location, an existing procurement relationship, consolidated billing | Per token, host's rate card. On Bedrock, it lands on the AWS invoice and inside the AWS commercial relationship | Host |
 | **Self-hosting** on rented or owned GPUs | The weights, running on capacity you control | Per GPU-hour, 24/7 regardless of utilisation | You |
 
+A model catalogue on a cloud is the third channel, not the second. DeepSeek-V4-Pro,
+V4-Flash and V4.1-Flash are in Amazon SageMaker JumpStart since 11 November 2026 (MIT
+licence): JumpStart deploys the weights to an endpoint billed by the instance-hour,
+running or idle (`finops-aws.md`, "The billed-while-idle trap"), with no per-token
+price. Size the fleet from total parameters, not active ones: a Mixture-of-Experts
+model activates a fraction of its weights per token (49B of 1.6T on V4-Pro, 13B of
+284B on V4-Flash, per the AWS announcement), which predicts speed, while the memory
+to hold the model follows the total
+([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/01/deepseek-v4-pro-v4-flash-v4.1-flash-on-sagemaker-jumpstart/),
+read 14 November 2026).
+
 Two distinctions worth holding firmly, because clients routinely collapse them:
 
 - **A third-party host is not GPU rental.** Together, Fireworks and Bedrock sell tokens

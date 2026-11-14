@@ -195,6 +195,20 @@ Storage accounts can accumulate blob data that is no longer actively accessed - 
 - Analyse blob-level access patterns using logs or metrics to confirm that data has not been read or written over a defined lookback period
 - Determine whether the data is still relevant to any active workload, process, or compliance requirement
 
+Azure Storage Discovery gives the aggregate view behind the first two bullets (which
+accounts hold how much, in which tier, how old and how active) without a per-account
+inventory. Its advanced capacity insights (access patterns, data age, storage tier,
+object size distribution, retention state, versioning) are in public preview since
+October 2026; the pricing page does not yet say which plan carries them. The plan
+decides what the rest costs: Free gives capacity trends
+with 15 days of history; Standard adds transaction and configuration insights and 18
+months of retention, billed per storage account and per object analysed, per workspace,
+so an account placed in two paid workspaces is billed in both. Scope a paid workspace to
+the accounts under review
+([Azure update 578655](https://azure.microsoft.com/updates?id=578655);
+[Storage Discovery pricing](https://learn.microsoft.com/en-us/azure/storage-discovery/pricing),
+read 14 November 2026).
+
 **SFTP Feature Enabled On Azure Storage Account Without Usage**
 Service: Azure Storage Account | Type: Inefficient Configuration
 

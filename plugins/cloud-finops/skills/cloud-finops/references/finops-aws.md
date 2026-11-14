@@ -164,7 +164,7 @@ Compute Savings Plans, us-east-1 (all read 16 October 2026).
 
 ### GPU instance rightsizing
 
-GPU instances (G4dn, G5, G6, P3, P4d/P4de, P5/P5e/P5en, Inf2, Trn1) are
+GPU instances (G4dn, G5, G6, G7, P3, P4d/P4de, P5/P5e/P5en, Inf2, Trn1) are
 the highest-dollar rightsizing candidates in any AWS account running ML.
 GPU rightsizing is **not** the same problem as CPU rightsizing because the
 basic `nvidia-smi` / CloudWatch `GPUUtilization` metric reports whether
@@ -192,6 +192,16 @@ The five GPU rightsizing patterns with a dedicated playbook:
 - **Outdated GPU generation** - P3 (V100) or G4dn (T4) workloads that
   would run cheaper per inference on G5, G6, P4d, or P5.
   [aws-outdated-gpu-generation](../playbooks/aws-outdated-gpu-generation.md)
+
+**G7 is a Regional question before it is a price question.** G7 (NVIDIA RTX PRO 4500
+Blackwell, 32 GB per GPU, up to 8 GPUs) is sold On-Demand, Spot and under Savings
+Plans; on 10 November 2026 it reached London, Mumbai, Sydney and São Paulo, after
+Oregon, N. Virginia, Ohio, Spain, Frankfurt and Stockholm. AWS states up to 4.6x the
+AI inference performance of G6, a claim to benchmark per workload. A G6 fleet outside
+those Regions cannot move yet, and a Compute Savings Plan follows the move while an
+EC2 Instance Savings Plan on the G6 family does not
+([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-g7-additional-regions/),
+read 14 November 2026).
 
 **EKS Auto Mode / ECS Managed Instances GPU fee reduction.** As of 1 July
 2026, AWS reduced the EKS Auto Mode management fee for GPU and accelerated
@@ -344,6 +354,14 @@ Database services often represent 20-40% of cloud spend, yet many organisations 
   the storage provisioned, on new and existing instances
   ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-rds-oracle-sqlserver-autoscaling-additional-storage-volumes),
   read 9 November 2026)
+- SQL Server `tempdb` paid for as provisioned EBS IOPS and carried in every snapshot:
+  on the M8id and R8id classes (RDS for SQL Server, since 12 November 2026, 13 Regions
+  at launch) RDS places tempdb data and log files on the local NVMe instance store
+  automatically, and snapshots leave them out, so they use less backup storage. Data
+  and log files stay on EBS. Re-size the EBS IOPS after the move; the licence still
+  weighs more than the instance on this engine ("Commitment and licensing" below)
+  ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/rds-sqlserver-supports-m8id-r8id-instances),
+  read 14 November 2026)
 - Neptune storage that never shrinks after deletes: fragmented indexes keep
   `VolumeBytesUsed` high and raise I/O; the online index rebuild (engine 1.5.0.0,
   provisioned writer instances) reclaims it with reads and writes continuing
@@ -356,7 +374,14 @@ Database services often represent 20-40% of cloud spend, yet many organisations 
 - Observability data kept in hot search storage: time series collections on the next
   generation of OpenSearch Serverless add a warm tier with a configurable hot-to-warm
   age, up to 100 TB hot per collection; the warm rate is on the pricing page, not in the
-  announcement ([AWS What's New, 28 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/time-series-collection-next-generation-opensearch-serverless/))
+  announcement ([AWS What's New, 28 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/time-series-collection-next-generation-opensearch-serverless/)).
+  Since 11 November 2026 intelligent ingestion loads logs from S3 into such a collection
+  as a one-time job or a continuous stream, with no ingestion pipeline to run and
+  billing only while it processes (seven Regions at launch). Tiering is time-based, so
+  a document without a valid timestamp is rejected: load a sample of real data before
+  retiring the pipeline it replaces
+  ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-opensearch-serverless-nextgen-time-series-intelligent-ingestion),
+  read 14 November 2026)
 - Solution: regular storage audits, lifecycle policies, compression strategies
 
 **4. Backup retention overkill**

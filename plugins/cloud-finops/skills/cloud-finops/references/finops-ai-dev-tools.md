@@ -327,6 +327,15 @@ access, and the page holds the seat prices). On ChatGPT Enterprise the agreement
 whether usage draws workspace credits or bills in USD by token; see `finops-sam.md`,
  "Consumption-billed AI workspaces".
 
+**The included allowance moves without a price change.** On 29 October 2026 OpenAI
+doubled the Work and Codex allowance of the Pro 100 and Pro 500 plans, cancelled a
+reduction it had announced for Pro 200, and raised the allowance of Business Premium;
+the release note mentions no change in plan price. A plan-size or credit top-up
+decision taken on the earlier limits should be re-run: the same seat now absorbs more
+usage before credits are drawn
+([OpenAI release notes](https://openai.com/products/release-notes#CL-20261029-CHAT-562),
+read 14 November 2026).
+
 **Fast mode on the subscription path is a consumption multiplier.** Signed in with
 ChatGPT, Codex offers a Fast mode on supported models that draws included plan limits at
 2.5x the Standard rate, and purchased credits or Enterprise pay-as-you-go usage at 2x (as

@@ -488,11 +488,31 @@ since November 2026: **project caps** (GA, same editions) limit slots and concur
 per project inside a reservation, the ceiling the shared pool lacked; and opt-in
 **compute cost attribution** (Preview) charges billed editions compute directly to the
 query projects that consume the administration project's reservation, which replaces
-a label-based split of the reservation bill for chargeback.
+a label-based split of the reservation bill for chargeback. It does not empty the
+administration project: unused baseline, unassigned commitments and unused autoscaler
+slots stay there, as a residual to allocate by rule, and a query project on another
+billing account is not attributed at all. It is set per administration project and
+location and applies from the next billing day.
 
-Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments and the
+Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments,
+https://docs.cloud.google.com/bigquery/docs/reservations-monitoring and the
 [BigQuery release notes](https://docs.cloud.google.com/bigquery/docs/release-notes)
 (9 and 11 November 2026 entries, read 14 November 2026).
+
+#### Cross-cloud queries - cache the remote reads
+
+A BigQuery query over data left in Amazon S3 or Azure storage pays the other cloud's
+egress on every read. Lakehouse **cross-cloud caching**, GA since 2 November 2026,
+keeps the file blocks it fetched in the Google Cloud region where the query runs, so
+repeat reads, by any query, are served locally. It is off by default: enable it on the
+Lakehouse federated catalog or the BigQuery cross-cloud connection. Google adds no
+charge for it and manages retention and eviction, so the saving depends on how often
+the same blocks are re-read and how often the source files change. Two limits: the
+cache is a copy at rest in the query region (check residency before enabling), and it
+does not support customer-managed keys. Measure it per job in `objectStorageStats`
+(`cacheBytesRead` against `objectStorageBytesRead`)
+([cross-cloud data access](https://docs.cloud.google.com/lakehouse/docs/about-cross-cloud-data-access),
+read 14 November 2026).
 
 #### Daily token quotas for generative AI SQL functions - native spend guardrail
 
