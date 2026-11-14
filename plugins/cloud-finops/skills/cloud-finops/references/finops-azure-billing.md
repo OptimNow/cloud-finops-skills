@@ -31,9 +31,9 @@ questions:
 > the Retail Prices API, the FinOps Toolkit and FinOps hubs, Resource Graph, the MCA
 > billing scope hierarchy and reservation ownership, cost allocation, tagging and Azure
 > Policy, budgets, the EA-to-MCA transition, and agent access to cost data (the ARM MCP
-> server, FinOps hubs agents). Usage optimisation (rightsizing, Log Analytics, backup,
-> AKS, databases, storage, networking) is in `finops-azure.md`; commitments are in
-> `finops-azure-commitments.md`.
+> server, FinOps hubs agents). Usage optimisation is in `finops-azure.md` (rightsizing,
+> Log Analytics, AKS, networking) and `finops-azure-data.md` (backup, storage,
+> databases); commitments are in `finops-azure-commitments.md`.
 >
 > Distilled from OptimNow Azure FinOps engagement experience and primary Microsoft
 > sources (Cost Management documentation, FinOps Toolkit).

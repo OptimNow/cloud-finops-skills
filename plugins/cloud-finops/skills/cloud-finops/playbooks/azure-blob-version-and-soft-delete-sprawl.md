@@ -153,7 +153,7 @@ expiry) and
   detection style and the same blocker list shape
 - `playbooks/azure-snapshot-sprawl.md` - the managed-disk side of
   retention sprawl
-- `references/finops-azure.md` - "Soft delete and versioning - default-on
+- `references/finops-azure-data.md` - "Soft delete and versioning - default-on
   cost traps" and the lifecycle rule examples
 - `references/finops-waste-detection-playbooks.md` - the eight-category
   taxonomy this pattern fits ("orphaned")

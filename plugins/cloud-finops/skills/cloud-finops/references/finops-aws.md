@@ -324,7 +324,7 @@ Detection and remediation playbook:
 
 ## Database cost optimisation
 
-Database services often represent 20-40% of cloud spend, yet many organisations treat them as black boxes from a cost perspective. This section covers the AWS surface. For the equivalent treatments elsewhere, see "Database optimisation patterns" in `finops-azure.md` and "Databases Optimization Patterns" in `finops-gcp.md`.
+Database services often represent 20-40% of cloud spend, yet many organisations treat them as black boxes from a cost perspective. This section covers the AWS surface. For the equivalent treatments elsewhere, see "Database optimisation patterns" in `finops-azure-data.md` and "Databases Optimization Patterns" in `finops-gcp.md`.
 
 ### Common database cost drivers
 
