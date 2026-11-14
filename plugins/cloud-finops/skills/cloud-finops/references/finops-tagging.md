@@ -197,6 +197,17 @@ account, service, region, resource ID, or existing tag values.
 - When governance automation requires reading actual resource tags (MCP tools, Config rules,
   and security tools read physical tags, not billing-layer virtual tags)
 
+**Where tags stop: AI and API spend.** A direct Anthropic or OpenAI contract is billed
+outside the cloud account and carries no resource tag, and on a shared Bedrock, Foundry
+or Vertex AI endpoint a tag names who owns the resource, not who consumed it. The
+allocation key there is set at the call, not on a resource: the provider's own boundary
+(one workspace or project per team, one API key per service), an application inference
+profile on Bedrock, or metadata attached by a gateway. A key shared by three
+applications cannot be split afterwards by any tag, virtual or physical. The method is
+in `finops-for-ai.md`, "Phase 1: Establish AI cost visibility" and "Unallocated % as an
+AI allocation KPI"; live detection, which billing data is too late for, is in
+`finops-anomaly-management.md`, "AI and token-workload anomalies".
+
 ---
 
 ## MCP-based tagging automation

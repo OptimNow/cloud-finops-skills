@@ -118,6 +118,17 @@ against current AWS pricing documentation):
 **FinOps principle:** model selection is the cost decision with the widest range.
 Benchmark task quality across model tiers before defaulting to the most capable model.
 
+**Gated models are not a forecast input until access is granted.** OpenAI's
+cybersecurity models, Daybreak Red (GPT-5.6 Cyber) and Daybreak Blue (GPT-5.6 Sol),
+are served on bedrock-runtime since 10 November 2026, through US and Global
+cross-Region inference profiles only, and only after enrolment in OpenAI's Daybreak
+access programme and a request through the AWS account team. Being on bedrock-runtime,
+their spend is attributed with Application Inference Profiles, like any other model on
+that endpoint ("Endpoint first, mechanism second" below). Check the pricing page for
+the profile chosen: the GPT-5.6 family carries a 10% premium outside Global routing
+([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/openai-gpt-daybreak-on-amazon-bedrock-runtime/),
+read 14 November 2026).
+
 ### Batch inference discount
 
 AWS Bedrock Batch Inference processes requests asynchronously with up to 50% discount

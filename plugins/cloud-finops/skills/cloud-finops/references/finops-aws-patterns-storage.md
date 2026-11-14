@@ -42,6 +42,18 @@ When file systems are launched with Provisioned Throughput, teams often overesti
 - For workloads with low and predictable throughput, consider switching to Elastic Throughput
 - For dev/test systems cloned from production, adjust throughput settings independently
 
+FSx for Lustre Intelligent-Tiering has the same floor in a harder form: provisioned
+throughput capacity and metadata IOPS are billed whatever the data stored, and on this
+storage class throughput can only be increased, never decreased, and metadata IOPS
+cannot be decreased either. Since 12 November 2026 the minimum for a **new** file system
+is 1,000 MBps and 1,500 metadata IOPS, down from 4,000 MBps and 6,000 IOPS (a 75% lower
+entry cost, per AWS). A file system created at the old minimum keeps it: reaching the
+new floor means creating a file system and moving the data, so size a new one at the
+minimum and scale up on measured throughput
+([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/fsx-lustre-intelligent-tiering-lower-throughput/);
+[managing throughput capacity](https://docs.aws.amazon.com/fsx/latest/LustreGuide/managing-throughput-capacity.html),
+read 14 November 2026).
+
 **Excessive Listbucket Api Calls To An S3 Bucket**
 Service: AWS S3 | Type: Inefficient Architecture
 
@@ -219,6 +231,16 @@ EBS Snapshot Archive is a lower-cost storage tier for rarely accessed snapshots 
 - Archive eligible snapshots using the `ModifySnapshotTier` API, AWS CLI, or console
 - Confirm organisational retention policies before archiving
 - Ensure teams understand how to restore archived snapshots and the longer retrieval times involved
+
+Since 12 November 2026 the archive tier also reaches EBS backups held in an AWS Backup
+**logically air-gapped vault**, where immutable compliance copies used to stay in warm
+storage for their whole retention. Three conditions shape the saving: the backup rule
+must run monthly or less often, the total retention must be at least 90 days longer
+than the time in warm storage, and an archived backup can no longer be copied to another
+vault or Region, so take any cross-account or cross-Region copy while it is still warm
+([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/aws-backup-lag-vault-ebs-archive/);
+[logically air-gapped vault](https://docs.aws.amazon.com/aws-backup/latest/devguide/logicallyairgappedvault.html),
+read 14 November 2026).
 
 **Lack Of Deduplication And Change Block Tracking In Aws Backup**
 Service: AWS Backup | Type: Underutilization

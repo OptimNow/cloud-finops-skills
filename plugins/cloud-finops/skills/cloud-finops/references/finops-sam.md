@@ -88,6 +88,7 @@ An AI workspace subscription can carry a usage meter on top of the seat. On Chat
 - Read the agreement before modelling: it decides whether the meter is credits or USD tokens
 - Set the controls OpenAI provides: monthly user limits (workspace default, group or individual) and a workspace overage limit. Alerts notify but do not stop spending, and "No limit" is not a zero-spend cap
 - Budget the seat and the consumption as separate lines
+- Since 9 November 2026 ChatGPT Enterprise is also sold through AWS Marketplace, by private offer only (no list price). The charge lands on the AWS bill as a Marketplace line and eligible spend counts toward an EDP or PPA commitment, subject to the agreement; the product, its seat-plus-consumption model and its support stay with OpenAI. The purchase route moves the invoice and the commitment drawdown, not the unit economics: keep the workspace in the SaaS inventory, or it is tracked in neither place, and read the counting rule and cap in `finops-cloud-contracts.md`, "Marketplace private offers as a commitment lever" ([OpenAI](https://openai.com/index/chatgpt-enterprise-aws-marketplace/); [AWS Marketplace listing](https://aws.amazon.com/marketplace/pp/prodview-sscra4m7iracg), read 14 November 2026)
 
 Sources: <https://learn.chatgpt.com/docs/enterprise/chatgpt-work-usage-and-cost>, <https://learn.chatgpt.com/docs/pricing>. The Enterprise token rate card (help.openai.com article 20001415) could not be reached for verification on 24 October 2026; read it for what each surface costs.
 

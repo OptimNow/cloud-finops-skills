@@ -473,6 +473,31 @@ the "GPU instance rightsizing" section of `finops-aws.md` carries the same
 fee-reduction note alongside the DCGM metric guidance and the five GPU
 rightsizing playbooks to run before resizing a node pool.
 
+**GPU utilisation: the order of fixes.** A GPU request is a whole device by default, so
+a pod that uses a fraction of a card strands the rest and no node autoscaler sees it.
+Work in this order, each step measured on DCGM metrics, not on `nvidia-smi`:
+
+1. **Right-size requests** from measured p95 GPU memory and activity, with the CPU and
+   memory requests around them, which decide the node size.
+2. **Share devices**: MIG for hardware isolation (slice geometry is fixed, resizing
+   drains pods), MPS for density with soft isolation, time-slicing for development and
+   bursty batch only, since it isolates neither memory nor compute
+   ([aws-mig-candidate](../playbooks/aws-mig-candidate.md)).
+3. **Schedule on topology**: Dynamic Resource Allocation is stable since Kubernetes
+   1.34 ([kubernetes.io](https://kubernetes.io/blog/2025/09/01/kubernetes-v1-34-dra-updates/)),
+   but driver and managed-service support varies; confirm it before relying on
+   ResourceClaims.
+4. **Autoscale and consolidate** GPU nodes only once requests are accurate. A scale-up
+   costs minutes of instance launch, driver start and model load, so keep an On-Demand
+   floor for latency-bound inference.
+5. **Queue batch and training** with Kueue (quota per ClusterQueue, all workers admitted
+   together), so a partial allocation does not hold GPUs idle.
+
+One vendor dataset puts average sustained GPU utilisation in production clusters at
+about 5% before optimisation (Cast AI, 2026 State of Kubernetes Optimization Report,
+cited in its [November 2026 guide](https://cast.ai/blog/increase-gpu-utilization-kubernetes/);
+a vendor sample, not a benchmark). Measure the estate's own figure before quoting it.
+
 ### Idle node cost
 
 Even with rightsizing and autoscaling, the cluster will have some idle

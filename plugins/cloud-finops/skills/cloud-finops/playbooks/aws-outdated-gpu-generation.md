@@ -72,7 +72,10 @@ to enumerate live instances and tag-check ownership.
 1. **Pick the right next generation** based on workload profile, not on
    "the latest":
    - Inference, small/medium models: **G4dn → G5** (A10G, 24 GB) or
-     **G4dn → G6** (L4, 24 GB, more energy-efficient)
+     **G4dn → G6** (L4, 24 GB, more energy-efficient); **G7** (RTX PRO 4500
+     Blackwell, 32 GB per GPU) where the Region offers it: not every Region
+     as of 10 November 2026 (list in `references/finops-aws.md`, "GPU instance
+     rightsizing"), so check availability before planning the move
    - Inference, LLMs / large models: **P3 → P4d** (A100 40 GB) or **P3
      → G5.12xl** depending on memory needs
    - Training, mid-scale: **P3 → P4d** (A100, NVLink, BF16)

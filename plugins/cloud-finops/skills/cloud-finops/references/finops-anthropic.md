@@ -251,6 +251,35 @@ after the last cache breakpoint, so total input = `cache_read_input_tokens` +
 `input_tokens` alone undercounts a cached workload and cannot price it, because each of
 the three fields carries a different multiplier (prompt caching docs, 27 October 2026).
 
+**Effort sets the token count the rate card is multiplied by.** `output_config.effort`
+(`low`, `medium`, `high`, `xhigh`, `max`) steers every output token: thinking, tool
+calls and response text. Thinking bills as output tokens at the full count generated,
+whatever the response displays; `usage.output_tokens_details.thinking_tokens` gives its
+share. It is soft guidance, not a token budget. Three mechanics move a forecast:
+
+- **The default differs by model and by surface.** The API defaults to `high` on most
+  models, Fable 5.2 included, and to `medium` on Opus 5.5 and Haiku 5.5; Claude apps
+  and Claude Code run Fable 5.2 at `medium`. The same model costs differently per task
+  depending on where it is called, and a request that omits `effort` runs one level
+  lower after a move from Opus 5 to Opus 5.5.
+- **Thinking cannot be switched off on Fable 5.2 and Opus 5.5.** Effort and
+  `max_tokens` are the spend controls left, and `max_tokens` caps one request,
+  thinking included, not a whole agent turn.
+- **Changing the top-level effort mid-conversation can invalidate the prompt cache**,
+  because the value is rendered into the prompt. Hold it constant in a cached session,
+  or use a per-message effort change (beta), which keeps the cache.
+
+This is why the per-token ratios above do not rank models by cost. At 2x the Opus 5.5
+token rate, Anthropic reports Fable 5.2 at roughly half the cost per task of Opus 5.5
+at `high` effort on one coding benchmark, and under a tenth at `low` on another
+evaluation (vendor benchmarks of 9 November 2026, not a forecast for another workload).
+Run an effort sweep on the workload's own evals, set effort explicitly per workload,
+and track cost per completed task (`finops-agentic.md`). Sources:
+[effort](https://platform.claude.com/docs/en/build-with-claude/effort),
+[steering thinking](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
+and the [Fable 5.2 announcement](https://www.anthropic.com/claude-fable-and-mythos-5-2),
+read 14 November 2026.
+
 ### Refusals and fallback billing
 
 Since 24 September 2026, a refusal that arrives **before any output** is billed at the

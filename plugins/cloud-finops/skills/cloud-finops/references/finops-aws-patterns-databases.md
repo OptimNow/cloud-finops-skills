@@ -80,7 +80,16 @@ The optimisation sequence matters. Follow this order:
    below 40%, transition from general-purpose (m-family) to memory-optimised
    (r-family) instances. Also evaluate Graviton-based instances (e.g. db.r6g, db.r7g)
    which offer up to 35% better performance and up to 52% better cost-effectiveness
-   for open-source database engines
+   for open-source database engines. Graviton5 `db.r9g` instances are available since
+   12 November 2026 for Aurora (PostgreSQL, MySQL) and RDS for PostgreSQL, MySQL and
+   MariaDB, in four Regions at launch (N. Virginia, Ohio, Oregon, Frankfurt); AWS
+   states up to 22% better price-performance than Graviton4 at On-Demand rates, a
+   claim to benchmark on the workload. A Reserved Instance is size-flexible inside
+   its family only, so an `r8g` RI does not follow the instance to `r9g`: plan the
+   move at RI expiry, and check that the Database Savings Plan lists `r9g` before
+   counting on it (decision tree below)
+   ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-aurora-rds-postgresql-mysql-mariadb-r9g-instances/),
+   read 14 November 2026)
 
 5. **Right-size storage** - before committing to Provisioned IOPS (io1/io2), test
    General Purpose gp3. For the majority of workloads, gp3 delivers satisfactory
@@ -643,6 +652,19 @@ Manual snapshots are not subject to the backup retention period and do not
 expire (source: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html);
 the detection query for untagged manual snapshots is in
 [aws-snapshot-sprawl](../playbooks/aws-snapshot-sprawl.md).
+
+Since 2 November 2026 RDS bills backup storage **per snapshot**: each DB snapshot and
+cluster snapshot is its own line in Cost Explorer and the CUR, with the snapshot ARN in
+`ResourceId`, including snapshots whose source instance is deleted. Prices and totals do
+not change, and snapshots can now carry cost allocation tags, so the oldest and largest
+can be ranked by cost. Two things break quietly. Any Cost Category, Budgets filter or
+chargeback job that matched a DB instance ARN no longer catches snapshot charges: point
+it at snapshot ARNs or tag the snapshots. And the free allowance (100% of provisioned
+storage per Region) is spread as one percentage discount across all snapshots, so
+per-instance totals differ from those of earlier months while the account total is the same
+([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-rds-per-snapshot-billing/);
+[backup storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html),
+read 14 November 2026).
 
 **No Lifecycle Management For Temporarily Stopped Rds Instances**
 Service: AWS RDS | Type: Unused Resource
