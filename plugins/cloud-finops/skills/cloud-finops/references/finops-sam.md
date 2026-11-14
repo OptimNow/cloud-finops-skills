@@ -110,6 +110,7 @@ SaaS contracts that renew automatically without a usage review, pricing renegoti
 - Require a usage review and business justification before every renewal above a defined spend threshold
 - Use actual usage data as negotiation leverage during renewal conversations
 - Track auto-renewal clauses, price-lock guarantees, and true-up requirements as contract metadata
+- Watch marketplace trials too: since 10 November 2026 a seller can make a 7-to-90-day free trial of a usage-based SaaS product on AWS Marketplace convert automatically to a paid subscription at the seller's usage-based price, with reminder emails and free cancellation before conversion. A trial an engineer starts becomes metered spend on the AWS bill: restrict `aws-marketplace:Subscribe` to a procurement role or a Private Marketplace, and review open trials and their conversion dates monthly ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/aws-marketplace-free-trial-conversion/), read 14 November 2026)
 
 **Tier Mismatch**
 Type: Licensing Waste

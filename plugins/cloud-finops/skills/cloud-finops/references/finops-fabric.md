@@ -326,6 +326,7 @@ capacity sizing and reservations are downstream.
 | Reservation decision | Only after usage baseline is stable for 60-90 days post-cleanup |
 | Monitoring | Capacity utilisation, spikes, throttling events, trend - all surfaced via the Fabric Capacity Metrics app |
 | Escalation | Finance + platform owner + workspace owner in the same review cadence; do not silo by function |
+| Warehouse SQL pools (from January 2027) | New workspaces get one unified, read-optimised SQL pool that can use up to 100% of capacity compute for SELECT and non-SELECT work, against a 50% default per workload type today; Microsoft notes this can raise compute consumption. Existing workspaces keep their configuration. Cap pool percentages on new workspaces before the change shows up in CU use, and move API clients off `customSQLPoolsEnabled` by mid-December 2026 ([Fabric Updates blog, 9 November 2026](https://community.fabric.microsoft.com/t5/Fabric-Updates-Blog/Unifying-SQL-Pools-Upcoming-changes-to-UI-and-APIs/ba-p/5397390), read 14 November 2026) |
 
 **A worked sizing example (illustrative, as presented at FinOps X 2026).** A
 Texas community foundation with a two-person BI team received a 2025 vendor

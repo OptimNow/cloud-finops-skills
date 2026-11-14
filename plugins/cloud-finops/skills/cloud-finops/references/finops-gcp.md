@@ -460,9 +460,9 @@ usage" reflex - is a common BigQuery commitment failure.
 
 #### Principal-based reservation assignments - native slot attribution
 
-As of July 2026, BigQuery reservation assignments support an optional
-**`principal` property** (in Preview per Google's documentation), allowing queries
-to be routed to specific reservations
+BigQuery reservation assignments support an optional **`principal` property**,
+generally available since 11 November 2026 on the Enterprise and Enterprise Plus
+editions, allowing queries to be routed to specific reservations
 based on the calling user, service account, or third-party identity. This gives
 FinOps teams a native mechanism to attribute BigQuery slot consumption to specific
 principals/teams, directly addressing the shared-reservation attribution problem
@@ -483,10 +483,16 @@ billing model. Principal-based assignments add a third, cleaner attribution mech
 was driving the waste factor, principal-based assignments let you segment the
 baseline per team/service account. Combine with the waste-factor lens above to
 identify which principal is over-consuming committed slots, and to enforce
-per-principal budget guardrails inside a single shared reservation.
+per-principal budget guardrails inside a single shared reservation. Two companions
+since November 2026: **project caps** (GA, same editions) limit slots and concurrency
+per project inside a reservation, the ceiling the shared pool lacked; and opt-in
+**compute cost attribution** (Preview) charges billed editions compute directly to the
+query projects that consume the administration project's reservation, which replaces
+a label-based split of the reservation bill for chargeback.
 
-Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments (primary),
-https://finopsweekly.com/news/gcp-updates-2026-07-02/ (secondary source - verify against Google Cloud docs)
+Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments and the
+[BigQuery release notes](https://docs.cloud.google.com/bigquery/docs/release-notes)
+(9 and 11 November 2026 entries, read 14 November 2026).
 
 #### Daily token quotas for generative AI SQL functions - native spend guardrail
 
