@@ -661,7 +661,8 @@ Use these knowledge files for the following query types:
 | AWS Savings Plans, Reserved Instances, Spot, commitment strategy, EDP | finops-aws-commitments.md |
 | AWS optimisation pattern catalogue | finops-aws-patterns.md |
 | AWS Bedrock model pricing, Application Inference Profiles, prompt caching | finops-bedrock.md |
-| Azure rightsizing, AKS, Log Analytics, storage, networking | finops-azure.md |
+| Azure rightsizing, AKS, Log Analytics, networking | finops-azure.md |
+| Azure backup, storage, SQL, Cosmos DB | finops-azure-data.md |
 | Azure exports, allocation, Policy, budgets, MCA | finops-azure-billing.md |
 | Azure Reservations, Savings Plans, AHB, MACC, commitment strategy | finops-azure-commitments.md |
 | Azure optimisation pattern catalogue | finops-azure-patterns.md |
@@ -808,8 +809,8 @@ build_gemini_grouped_knowledge() {
     "$refs/finops-aws-patterns-databases.md" "$refs/finops-aws-patterns-networking.md" \
     "$refs/finops-aws-patterns-other.md" "$refs/finops-bedrock.md"
   cat_required "$outdir/azure.md" \
-    "$refs/finops-azure.md" "$refs/finops-azure-billing.md" \
-    "$refs/finops-azure-commitments.md" \
+    "$refs/finops-azure.md" "$refs/finops-azure-data.md" \
+    "$refs/finops-azure-billing.md" "$refs/finops-azure-commitments.md" \
     "$refs/finops-azure-patterns.md" "$refs/finops-azure-openai.md"
   cat_required "$outdir/gcp.md" \
     "$refs/finops-gcp.md" "$refs/finops-vertexai.md"

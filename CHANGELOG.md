@@ -62,6 +62,12 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 
 ### New and corrected content
 
+- **Azure storage, backup and databases have their own guide.** `finops-azure.md` had
+  reached its size budget, so every Azure question loaded all of it. Its sections on
+  backup and snapshots, storage tiering and databases (Azure SQL, Flexible Server,
+  Cosmos DB) move, unchanged, to `finops-azure-data.md`; rightsizing, Log Analytics,
+  AKS and networking stay. A backup or database question now loads about 6,000 tokens
+  instead of about 15,000.
 - **Corrections from the 14 November news digest.** BigQuery principal-based
   reservation assignments are GA, with project caps and opt-in compute cost attribution
   (`finops-gcp.md`); AgentCore Runtime V2 is now the default for new runtimes

@@ -170,7 +170,7 @@ until they are met):
   two-stage detection and the same three gates
 - `playbooks/azure-log-analytics-sprawl.md` - the Log Analytics side of
   retention and archive tiering
-- `references/finops-azure.md` - "Storage tiering and lifecycle (beyond
+- `references/finops-azure-data.md` - "Storage tiering and lifecycle (beyond
   backup)", the tier decision table and the Bicep rule examples
 - `references/finops-waste-detection-playbooks.md` - the taxonomy and the
   realised-versus-potential savings distinction this playbook leans on

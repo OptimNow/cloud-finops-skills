@@ -35,13 +35,13 @@
 <text x="16" y="340" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#2C2C2C">Optimize Usage &amp; Cost</text>
 <rect x="24" y="355" width="14" height="14" rx="3" fill="#2C2C2C"/>
 <text x="48" y="366" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#2C2C2C">Architecting &amp; Workload Placement</text>
-<text x="422" y="366" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">3 primary + 17 secondary</text>
+<text x="422" y="366" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">3 primary + 18 secondary</text>
 <rect x="24" y="379" width="14" height="14" rx="3" fill="#2C2C2C"/>
 <text x="48" y="390" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#2C2C2C">Usage Optimization</text>
-<text x="422" y="390" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">16 primary + 11 secondary</text>
+<text x="422" y="390" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">17 primary + 11 secondary</text>
 <rect x="24" y="403" width="14" height="14" rx="3" fill="#2C2C2C"/>
 <text x="48" y="414" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#2C2C2C">Rate Optimization</text>
-<text x="422" y="414" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">9 primary + 8 secondary</text>
+<text x="422" y="414" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">9 primary + 9 secondary</text>
 <rect x="24" y="427" width="14" height="14" rx="3" fill="#2C2C2C"/>
 <text x="48" y="438" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#2C2C2C">Licensing &amp; SaaS</text>
 <text x="422" y="438" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2C2C2C" text-anchor="end">2 primary + 3 secondary</text>

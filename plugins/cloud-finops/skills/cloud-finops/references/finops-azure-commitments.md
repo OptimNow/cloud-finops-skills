@@ -30,7 +30,8 @@ questions:
 > decision trees, portfolio liquidity under the 1 February 2027 exchange retirement,
 > phased purchasing, and MACC alignment (MACC negotiation is in
 > `finops-cloud-contracts.md`). For Azure billing data, allocation and governance, see
-> `finops-azure-billing.md`; for rightsizing and service optimisation, `finops-azure.md`.
+> `finops-azure-billing.md`; for rightsizing and service optimisation, `finops-azure.md`
+> and `finops-azure-data.md` (backup, storage, databases).
 
 ---
 
@@ -713,7 +714,7 @@ margin, and under a MACC its 12-20% tiers lose most of their value (see "Net dis
 under a MACC with an Azure Commitment Discount").
 
 Database usage optimisation (serverless auto-pause, Flexible Server start/stop, elastic
-pools, Cosmos DB autoscale) is in `finops-azure.md`, "Database optimisation patterns".
+pools, Cosmos DB autoscale) is in `finops-azure-data.md`, "Database optimisation patterns".
 
 ---
 

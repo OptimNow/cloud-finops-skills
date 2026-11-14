@@ -95,8 +95,9 @@ per GB, so tier dominates the ordering.
 
 ## See also
 
-- `references/finops-azure.md` - Azure storage billing mechanics, Disk
-  tiers, MCA contractual mechanics
+- `references/finops-azure-data.md` - Azure storage billing mechanics, Disk
+  tiers
+- `references/finops-azure-billing.md` - MCA contractual mechanics
 - `references/finops-waste-detection-playbooks.md` - "orphaned" category
   rubric
 

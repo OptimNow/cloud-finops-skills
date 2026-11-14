@@ -115,7 +115,7 @@ activity log tell you which tool made it.
   same two-signal logic over EBS
 - `playbooks/azure-orphan-disks.md` - the upstream orphan: a deleted
   VM's disk today is an orphaned snapshot's gone source next quarter
-- `references/finops-azure.md` - Azure storage billing mechanics
+- `references/finops-azure-data.md` - Azure storage billing mechanics
 - `references/finops-waste-detection-playbooks.md` - "orphaned"
   category rubric
 

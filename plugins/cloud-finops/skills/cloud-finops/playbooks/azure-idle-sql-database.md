@@ -113,7 +113,7 @@ AzureMetrics
 
 ## See also
 
-- `references/finops-azure.md` - Azure SQL Database tier economics,
+- `references/finops-azure-data.md` - Azure SQL Database tier economics,
   Serverless vs Provisioned, Hyperscale architecture
 - `references/finops-waste-detection-playbooks.md` - "idle" category
   rubric

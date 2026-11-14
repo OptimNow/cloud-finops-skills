@@ -117,7 +117,9 @@ cloud-finops-skills/
 │       ├── finops-aws-patterns-other.md    <- AWS logging, Config, CloudTrail, EDP, Marketplace
 │       ├── finops-bedrock.md               <- AWS Bedrock
 │       ├── finops-azure.md                 <- Azure usage optimisation (rightsizing, AKS,
-│       │                                     Log Analytics, storage, networking)
+│       │                                     Log Analytics, networking)
+│       ├── finops-azure-data.md            <- Azure backup, storage tiering and databases
+│       │                                     (split from finops-azure.md 2026-11-14)
 │       ├── finops-azure-billing.md         <- Azure billing data, allocation, tagging and
 │       │                                     Policy, budgets, EA-to-MCA (split 2026-10-22)
 │       ├── finops-azure-commitments.md     <- Azure RIs / SPs / AHB, liquidity, MACC
