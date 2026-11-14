@@ -22,10 +22,11 @@ Log Analytics charges by **GB ingested** (at the East US list rate read in
 November 2026, $2.30/GB Pay-As-You-Go for Analytics Logs, discounted with
 Commitment Tiers) plus retention beyond the included period. The default
 for many resource types is to send **everything** - diagnostic settings on
-App Service, AKS audit logs, Azure Activity Logs, NSG flow logs. Within
+App Service, AKS audit logs, NSG flow logs (the Activity Log itself is free
+to ingest). Within
 months, most of the ingestion volume (80% is indicative, not a benchmark)
 is high-churn telemetry that nobody queries, and the bill is dominated by
-table types like `AzureDiagnostics`, `ContainerLog`, `AppPlatformLogs`.
+table types like `AzureDiagnostics`, `ContainerLogV2`, `AppPlatformLogs`.
 The per-GB figure is illustrative and varies by region; verify against the
 Azure pricing page before sizing a business case.
 
@@ -40,6 +41,25 @@ Azure pricing page before sizing a business case.
   steeper slope than overall cloud spend
 
 ## Detection
+
+Start across the estate, before opening any single workspace:
+
+```kusto
+// Resource Graph - pricing set-up of every workspace
+resources
+| where type == "microsoft.operationalinsights/workspaces"
+| extend sku = tostring(properties.sku.name),
+         tierGb = toint(properties.sku.capacityReservationLevel),
+         retentionDays = toint(properties.retentionInDays),
+         dailyCapGb = todouble(properties.workspaceCapping.dailyQuotaGb)
+| project name, resourceGroup, subscriptionId, location, sku, tierGb, retentionDays, dailyCapGb
+```
+
+`PerGB2018` is pay-as-you-go, `CapacityReservation` a commitment tier
+(`tierGb` gives its level) and `LACluster` a workspace billed on a
+dedicated cluster. A `dailyCapGb` of -1 means no cap. Property names are
+those of the Workspaces REST reference (read 14 November 2026); this query
+was not run against a live estate.
 
 ```kusto
 // Top tables by ingestion volume, last 30 days (run inside the workspace)
@@ -66,7 +86,8 @@ table(topTable)
 1. **Lever 1 - Tier**: split tables between **Analytics** (queryable,
    expensive) and **Basic Logs** (cheaper, limited query). Move tables
    that are kept for forensic-only access (NSG flow logs, AKS verbose
-   container logs) to Basic.
+   container logs) to Basic. `AzureDiagnostics` itself cannot move: switch
+   the diagnostic setting to resource-specific tables first.
 2. **Lever 2 - Filter at source**: configure diagnostic settings to
    send only the relevant log categories (e.g. AKS audit + control-plane
    ONLY, not container logs which can go to a separate, cheaper
@@ -78,9 +99,12 @@ table(topTable)
    days. Audit which tables need 365+ days; archive the rest to Storage
    Account Archive tier (about $0.001/GB-month at the East US list rate read
    in November 2026, illustrative; check the pricing page) via export.
-5. **Lever 5 - Commitment tier**: if the steady-state volume is > 100
-   GB/day, switch from Pay-As-You-Go to a Commitment Tier - up to ~30%
-   discount.
+5. **Lever 5 - Commitment tier**: usage above a tier is billed at the
+   tier's own rate, so the 100 GB/day tier pays from its break-even
+   volume (tier level x (1 - discount), about 85 GB/day at a 15%
+   discount), not from 100 GB/day. Switch from Pay-As-You-Go when most
+   days sit above it - up to ~30% discount on the higher tiers. The tier
+   then holds for 31 days.
 
 ## Anti-pattern
 

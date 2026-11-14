@@ -172,15 +172,53 @@ resources
 
 ### Vault Archive tier mechanics
 
-Items in Recovery Services Vault can move to Archive after roughly 3 months of
-retention. Constraints to know:
+Not every recovery point can move to Archive, and the eligibility rules decide how
+much of a vault the saving applies to:
 
+- **Azure VM backups** - only monthly and yearly recovery points, at least 3 months
+  old, with at least 6 months of retention left and no unexpired daily or weekly
+  point depending on them. Daily and weekly points never move, so a policy with no
+  monthly or yearly retention has nothing to archive.
+- **SQL Server and SAP HANA in Azure VMs** - full backups only (no logs, no
+  differentials), at least 45 days old, with at least 6 months of retention left.
+- **Vault redundancy** - Archive is not supported on vaults configured with ZRS.
+- **Minimum stay** - 180 days in Archive. Deleting earlier is charged pro rata for
+  the remaining days, and a policy change that shortens retention can trigger it.
 - **Restore latency** - hours, sometimes a full business day. Not for active
   incident recovery; appropriate for audit and compliance copies.
-- **Minimum retention in Archive** - 180 days. Early deletion incurs charges for
-  the unmet portion.
-- **Not all backup types support Archive** - confirm per workload type (Azure VM
-  backup, SQL in VM, file share, etc.) before assuming the saving applies.
+
+The move is a setting of the backup policy (smart tiering), not a manual job: either
+the points Azure Backup recommends, for VM backups, or every eligible point after a
+set age. Prefer the recommended set on VMs. A point archived from a VM backup is
+stored independently of the others, so total backup storage can go up when every
+eligible point of a low-churn VM is archived.
+
+Sources: [archive tier support](https://learn.microsoft.com/en-us/azure/backup/archive-tier-support)
+and [use archive tier](https://learn.microsoft.com/en-us/azure/backup/use-archive-tier-support),
+read 14 November 2026.
+
+### What an Azure VM backup bills
+
+Three lines, of which only one follows retention:
+
+- **Protected instance** - a fee per backed-up VM, sized on the data stored on its
+  disks, not on their provisioned size. Shortening retention does not move it.
+- **Backup storage** - the GB kept in the vault, at the vault's redundancy. This is
+  the line retention and Archive act on. It keeps billing after protection is stopped
+  for as long as recovery points are kept.
+- **Instant Restore snapshots** - before a recovery point reaches the vault, snapshots
+  are kept beside the disks and billed as snapshot storage, outside the vault meters.
+  The Standard policy keeps them 2 days by default (1 to 5), the Enhanced policy 7 days
+  (1 to 30). Under Standard they are incremental; under Enhanced the first one is a
+  full copy of the disks. For a 100 GB VM with 2% daily change and 5 days of
+  snapshots, Microsoft's own example bills 10 GB on Standard and 108 GB on Enhanced.
+
+On large or high-churn VMs, read the snapshot retention of the policy before blaming
+the vault.
+
+Sources: [Azure VM backup costs](https://learn.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction#backup-costs)
+and [Instant Restore](https://learn.microsoft.com/en-us/azure/backup/backup-instant-restore-capability),
+read 14 November 2026.
 
 ### Retention-tuning conversation framework
 
@@ -291,12 +329,18 @@ Ephemeral OS disks are stored on the VM's local cache or temp disk - **no manage
 disk charge**. Trade-offs:
 
 - Free (no managed disk billing for the OS disk)
-- Lost on VM reallocation, deallocation, or stop-deallocate
-- Available only on certain VM SKUs and only for OS disks (not data disks)
+- The VM cannot be stopped-deallocated at all, so a start/stop schedule does not
+  apply to it: the off-hours lever is delete and recreate (scale the set to zero).
+  OS disk data is lost on reimage, redeploy or resize
+- Available only where the OS image fits the VM size's cache or local disk, and only
+  for OS disks (not data disks)
 
 Appropriate for stateless VM scale sets, container hosts, and immutable-image
-workloads. Not appropriate for VMs that need to survive deallocation, or workloads
-that store anything on the OS disk.
+workloads. Not appropriate for VMs that must be deallocated on a schedule, or
+workloads that store anything on the OS disk.
+
+Source: [Ephemeral OS disks](https://learn.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks),
+read 14 November 2026.
 
 ### Premium SSD v2 vs Premium SSD v1 vs Standard SSD
 
@@ -364,6 +408,15 @@ zero compute charge** after an idle period:
   common blocker in practice. A database that never pauses only saves the autoscale gap,
   so check these before counting the pause in a business case
 
+**Billing basis.** Compute is billed per second on the greater of CPU used and memory
+used, with a floor at the configured minimum, and the database stays on that floor
+through the auto-pause delay after activity ends. Azure Hybrid Benefit and
+reservations do not apply to serverless. A database busy most of the day can
+therefore cost more on serverless than on a provisioned tier that carries those
+discounts; serverless pays on databases idle most of the time
+([serverless billing](https://learn.microsoft.com/en-us/azure/azure-sql/database/serverless-tier-billing),
+read 14 November 2026).
+
 **Best fit:** dev/test databases, intermittent internal tools, departmental apps,
 QA environments.
 
@@ -406,6 +459,15 @@ Pooling is most effective when database peaks are uncorrelated (different time
 zones, different business functions, dev mixed with batch). When all databases
 peak together, the pool size collapses to the sum and savings disappear.
 
+### Azure SQL storage bills the configured maximum
+
+In the General Purpose and Business Critical tiers, a database or an elastic pool is
+charged for its configured maximum data size, used or not, plus an automatic 30% on
+top for the log file. An over-set maximum is a small, safe lever: lower it to the
+used size plus headroom. Hyperscale is charged for allocated data storage only
+([vCore service tiers](https://learn.microsoft.com/en-us/azure/azure-sql/database/service-tiers-sql-database-vcore),
+read 14 November 2026).
+
 ### Hyperscale tier
 
 For Azure SQL databases above ~1 TB or with read-heavy workloads, the Hyperscale
@@ -434,14 +496,60 @@ shutdown. The constraint is auto-restart:
 - **Postgres Flexible** - server **auto-restarts after 7 days** stopped. This is a
   Microsoft platform constraint and is **not configurable**.
 - **MySQL Flexible** - server **auto-restarts after 30 days** stopped.
+- **High availability and replicas** - a PostgreSQL server with high availability can
+  be stopped: primary and standby stop together. MySQL does not support stop and
+  start on a server with read replicas, source or replica: the replica has to be
+  dropped or promoted first.
+- **Storage only grows** - on both engines storage can be scaled up, never down, and
+  storage auto-grow makes each increase permanent. Size it deliberately on a server
+  that will spend most of its time stopped.
 
-**Source:** https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-server-stop-start
+**Sources:** https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-server-stop-start;
+[PostgreSQL limits](https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/concepts-limits),
+[PostgreSQL high availability](https://learn.microsoft.com/en-us/azure/postgresql/high-availability/concepts-high-availability),
+[MySQL limitations](https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-limitations)
+and [MySQL storage](https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-service-tiers-storage),
+read 14 November 2026.
 
 This caps how aggressively start/stop can be used as a cost lever for non-prod.
 For Postgres, the practical pattern is **stop on Friday evening, restart Monday
 morning via automation** - within the 7-day window. For longer dormancy
 (seasonal, infrequent dev), the stop is wasted - either keep running with smaller
 SKU, or destroy and recreate from backup.
+
+### SQL Managed Instance stop and start
+
+A managed instance in the General Purpose tier can be stopped, by hand or on a
+defined schedule. While stopped it bills neither compute nor licence, only data and
+backup storage. Instances in a failover group, with zone redundancy, in an instance
+pool or using Managed Instance link cannot be stopped
+([stop and start an instance](https://learn.microsoft.com/en-us/azure/azure-sql/managed-instance/instance-stop-start-how-to),
+read 14 November 2026).
+
+### Paid extended support on Flexible Server versions
+
+Azure bills a surcharge on Flexible Servers left on a major version that has passed
+the end of standard support. Enrolment is automatic:
+
+| Engine and version | Standard support ends | Extended support runs |
+|---|---|---|
+| PostgreSQL 11 | 31 July 2026 | 1 August 2026 to 31 March 2027 |
+| PostgreSQL 12 | 31 July 2026 | 1 August 2026 to 13 November 2027 |
+| PostgreSQL 13 | 31 July 2026 | 1 August 2026 to 12 November 2028 |
+| PostgreSQL 14 | 31 January 2027 | 1 February 2027 to 11 November 2029 |
+| MySQL 5.7 | 30 September 2026 | 1 October 2026 to 31 March 2029 |
+| MySQL 8.0 | 31 January 2027 | 1 February 2027 to 31 May 2029 |
+
+PostgreSQL 11, 12 and 13 had a one-month grace period: their billing started on
+1 September 2026. The only exit is a major-version upgrade. MySQL bills the surcharge
+per vCore-hour, so read replicas and high-availability standbys add to it. A
+PostgreSQL server that is stopped is not charged. The rates are on the pricing pages.
+Detection and the upgrade order are in
+[azure-database-extended-support](../playbooks/azure-database-extended-support.md).
+
+Sources: [PostgreSQL extended support](https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/extended-support)
+and [MySQL version policy](https://learn.microsoft.com/en-us/azure/mysql/concepts-version-policy),
+read 14 November 2026.
 
 ### Cosmos DB - autoscale vs manual throughput
 

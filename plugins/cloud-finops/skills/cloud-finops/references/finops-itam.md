@@ -275,7 +275,13 @@ products, and each provider exposes it differently:
   calculator. Which VMs claim the benefit is the `licenseType` property on the resource
   (Resource Graph: `where type =~ 'microsoft.compute/virtualmachines' | extend lic = tostring(properties.licenseType)`);
   the FinOps Toolkit's Azure Hybrid Benefit workbook does this fleet-wide (see
-  `finops-azure-commitments.md`). Centrally managed Azure Hybrid Benefit assigns SQL
+  `finops-azure-commitments.md`). That one property misses three cases: a Windows
+  desktop VM carries `Windows_Client`, also a licensed state; SQL Server on a VM has
+  its own switch, `sqlServerLicenseType` on the SQL virtual machine resource (`PAYG`,
+  `AHUB`, or `DR` for the free passive replica), so a VM can claim the Windows benefit
+  and still pay the SQL licence meter; and on RHEL and SLES the benefit is the value
+  `RHEL_BYOS` or `SLES_BYOS`. The queries and the fix order are in the playbook
+  `azure-hybrid-benefit-unclaimed`. Centrally managed Azure Hybrid Benefit assigns SQL
   licences at subscription or billing-account scope on EA and MCA, and bills anything
   above the assignment at pay-as-you-go
   ([centrally managed AHB](https://learn.microsoft.com/en-us/azure/cost-management-billing/scope-level/overview-azure-hybrid-benefit-scope)).

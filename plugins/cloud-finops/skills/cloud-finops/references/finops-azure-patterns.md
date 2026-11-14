@@ -58,6 +58,7 @@ Teams often choose the Premium or App Service Plan for Azure Functions to avoid 
 - Where VNet integration was the reason for Premium, evaluate Flex Consumption: it supports virtual network integration and scales to zero, and bills execution time plus a baseline only for the always-ready instances you configure. It is Linux only, holds one app per plan, and an app cannot be migrated in place: create a new Flex Consumption app and redeploy ([Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), read 10 November 2026)
 - Do not move Linux apps to the classic Consumption plan: Linux hosting on it retires on 30 September 2028 and gets no new features or language versions ([Consumption plan (legacy)](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan), read 10 November 2026)
 - Pilot plan downgrades in non-production or latency-tolerant environments, and estimate the saving before switching
+- Choose the Flex Consumption instance size deliberately (512, 2,048 or 4,096 MB): on-demand execution is billed in GB-seconds of the memory provisioned while an instance is active, so an oversized instance multiplies the bill, and always-ready instances carry no free grant ([Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), read 14 November 2026)
 
 **Missing Scheduled Shutdown For Non Production Azure Virtual Machines**
 Service: Azure Virtual Machines | Type: Inefficient Configuration

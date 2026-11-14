@@ -53,9 +53,9 @@ tooling, build on scheduled exports to Azure Storage; the portal is for ad-hoc v
   (use for team-level showback and allocation)
 
 **Export setup checklist:**
-- [ ] Configure FOCUS exports at **Billing Account** or **Billing Profile** scope (Management Group is not supported for FOCUS exports)
+- [ ] Configure FOCUS exports at **Billing Account** or **Billing Profile** scope for the organisation-wide view. FOCUS exports also exist at invoice section, EA department and account, subscription and resource group scope, the route when billing-scope access is missing; Management Group is not supported for FOCUS exports
 - [ ] For legacy actual/amortized exports, MG scope is supported but with limitations - keep them on subscription or billing-profile scope for cleanest behaviour
-- [ ] Select both actual and amortized cost exports
+- [ ] One FOCUS export carries billed and amortised cost in the same row, so it replaces the actual plus amortized pair (Microsoft gives 49% fewer rows than the two together, [What is FOCUS?](https://learn.microsoft.com/en-us/cloud-computing/finops/focus/what-is-focus), read 14 November 2026). Keep the two legacy exports only for tooling that still reads them
 - [ ] Set daily granularity
 - [ ] Export to Azure Data Lake Storage Gen2 for Power BI integration
 - [ ] Consider FinOps Hubs (Microsoft FinOps Toolkit) for automated ingestion and normalisation
@@ -178,6 +178,21 @@ A naive Power BI refresh or Python pull will report success while having pulled
 40-60% of the actual price catalogue. The result is wrong unit-economics
 calculations downstream.
 
+**Rows that read wrong while the call succeeds** (checked on the live API on
+14 November 2026):
+
+- A `Reservation` row carries the price of the whole term in `retailPrice` (`1 Year`
+  or `3 Years` in `reservationTerm`) while `unitOfMeasure` still says `1 Hour`. Divide
+  by 8,760 or 26,280 before comparing it with a pay-as-you-go rate.
+- One `armSkuName` returns several `Consumption` rows: Linux, Windows (`productName`
+  ends in "Windows"), Spot and Low Priority (a suffix in `skuName` and `meterName`),
+  plus `DevTestConsumption` rows. Taking the first item returns an arbitrary one.
+- Savings plan rates are not a price type. They come as a `savingsPlan` array on the
+  consumption row, and only with `api-version=2023-01-01-preview`
+  ([Retail Prices API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices)).
+- A storage meter name such as "Hot LRS Data Stored" is shared by several products
+  (Blob, Data Lake Storage Gen2, Files): filter on `productName` as well.
+
 **Defensive pattern:**
 
 1. Use `$filter` to narrow the query (by `serviceFamily`, `armRegionName`,
@@ -223,7 +238,11 @@ governance.
    separate invoices.
 3. **Reservations sit on the Billing Profile.** They do not belong to an Invoice
    Section - this has direct consequences for chargeback (see "MCA reservation
-   ownership and the chargeback trap" below).
+   ownership and the chargeback trap" below). A subscription can be moved to another
+   invoice section, effective on the next invoice; a reservation or a savings plan
+   cannot, and needs a transfer request
+   ([invoice sections](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/mca-section-invoice),
+   read 14 November 2026).
 
 **MCA visibility gap to plan for at kickoff.** Under EA, a Subscription Owner with
 enrollment access can create exports and budgets at higher scopes. **Under MCA, a
@@ -284,7 +303,10 @@ switched on, using the tags as they stand that day; earlier months keep their ol
 records, and purchases or resources that emit no usage get nothing. Where a
 resource carries the same tag key, the resource's value wins unless the setting is
 changed to prefer the inherited one. Azure Policy's `modify` effect, by contrast,
-writes the tag onto the resource. Use the setting for allocation from day one, and
+writes the tag onto the resource, and resolves a conflict the other way: the built-in
+"Inherit a tag from the resource group" uses `addOrReplace` and overwrites a
+different value on the resource, where only its "if missing" variant (`add`) leaves
+it alone. Use the setting for allocation from day one, and
 Policy where the tag must exist on the resource. Source:
 [Group and allocate costs using tag inheritance](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/enable-tag-inheritance),
 read 6 November 2026.
@@ -349,7 +371,20 @@ Validate at policy deploy time with `allowedValues`.
 `AuditIfNotExists` is the read-only sibling to `DeployIfNotExists` - use to flag
 where remediation is needed without auto-deploying.
 
-**Source:** https://learn.microsoft.com/en-us/azure/governance/policy/concepts/effects
+**What a `Modify` or `DeployIfNotExists` assignment needs.** A managed identity
+holding the roles the definition lists. The built-in tag inheritance policies ask for
+Contributor, and the roles are granted automatically only when the assignment is made
+in the portal; from code they are granted by hand. A Contributor grant at management
+group scope is what a security review questions, so raise it before the rollout, not
+during. The definition's `mode` matters as well: `indexed` evaluates only resource
+types that support tags and location, so a tag policy that must cover resource groups
+needs `all`.
+
+**Sources:** https://learn.microsoft.com/en-us/azure/governance/policy/concepts/effects;
+[remediation](https://learn.microsoft.com/en-us/azure/governance/policy/how-to/remediate-resources),
+[definition structure](https://learn.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure-basics)
+and the [built-in tag definitions](https://github.com/Azure/azure-policy/tree/master/built-in-policies/policyDefinitions/Tags),
+read 14 November 2026.
 
 ### Audit-mode rollout pattern
 
@@ -461,10 +496,10 @@ policies:
 | Audit tag compliance | `audit` | Visibility into tagging gaps |
 | Inherit tags from resource group | `modify` | Automatic tag propagation |
 | Allowed VM SKUs | `deny` | Prevent expensive GPU/M-series in dev |
-| Allowed disk SKUs | `deny` | Block UltraSSD/PremiumV2 in non-prod |
+| Allowed disk SKUs | `deny` | Block Ultra Disk in non-prod. Leave Premium SSD v2 allowed: it is often the cheaper premium option (see `finops-azure-data.md`) |
 | Allowed storage SKUs | `deny` | Restrict to Standard_LRS/ZRS |
 | Deny expensive SQL tiers | `deny` | Only allow Basic/Standard/GeneralPurpose |
-| Deny public IPs | `deny` | Use Bastion/VPN instead (cost + security) |
+| No public IPs on network interfaces | `deny` | Built-in "Network interfaces should not have public IPs": VMs go through Bastion or VPN (cost + security). Do not deny the public IP resource type itself: VPN Gateway and Azure Firewall each require one |
 | Restrict regions | `deny` | Enforce approved regions |
 | Enforce VM shutdown schedule | `audit` | Flag VMs without auto-shutdown tags |
 
@@ -534,6 +569,15 @@ and the answer changes who owns the billing relationship.
 **Day 1 question to ask the customer:** "Did you sign the Azure agreement directly
 with Microsoft, or through a partner?" If partner, chargeback questions route through
 the partner's tooling first. If direct, the standard Cost Management surfaces apply.
+
+**Who can buy a commitment under MCA Partner.** By default only the partner buys
+reservations and savings plans. The partner can switch on customer permissions in
+Partner Center ("Allow customer to purchase", set per service), after which the
+customer buys in the Azure portal while the partner still pays Microsoft. Exchange,
+cancellation, renewal and scope changes stay with the partner either way. Ask this
+before putting dates on a commitment plan: the lead time is the partner's
+([customer permissions](https://learn.microsoft.com/en-us/partner-center/customers/give-customers-permission),
+read 14 November 2026).
 
 **What a partner customer sees in Cost Management.** Customer-tenant users see costs
 only after the partner's admin agent enables the cost visibility policy, which is off

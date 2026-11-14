@@ -53,6 +53,8 @@ in its frontmatter.
 | [azure-app-service-overprovisioned](azure-app-service-overprovisioned.md) | App Service Plan Overprovisioned | overprovisioned | likely |
 | [azure-blob-cold-data-in-hot](azure-blob-cold-data-in-hot.md) | Blob Cold Data Sitting in Hot | overprovisioned | possible |
 | [azure-blob-version-and-soft-delete-sprawl](azure-blob-version-and-soft-delete-sprawl.md) | Blob Version and Soft-Delete Sprawl | orphaned | likely |
+| [azure-database-extended-support](azure-database-extended-support.md) | Database Extended Support Surcharge | modernization | obvious |
+| [azure-hybrid-benefit-unclaimed](azure-hybrid-benefit-unclaimed.md) | Unclaimed Azure Hybrid Benefit | commitment-mismatch | likely |
 | [azure-idle-sql-database](azure-idle-sql-database.md) | Idle SQL Database | idle | likely |
 | [azure-idle-vm](azure-idle-vm.md) | Idle VM (Stopped but Not Deallocated) | idle | obvious |
 | [azure-log-analytics-sprawl](azure-log-analytics-sprawl.md) | Log Analytics Ingestion Sprawl | overprovisioned | likely |
@@ -88,7 +90,10 @@ provider (`aws-expiring-commitment-no-decision`, `azure-unused-reservation`,
 stays in the commitments reference files, which those playbooks link. AWS adds
 `aws-spot-candidate`: Spot is not a commitment, but it is filed here because
 its detection is the same coverage-gap query (On-Demand spend with no
-commitment behind it) and Spot is the first layer of the rate strategy.
+commitment behind it) and Spot is the first layer of the rate strategy. Azure
+adds `azure-hybrid-benefit-unclaimed`: a licence under Software Assurance is
+a commitment already paid for, and the pattern is the same mismatch between
+it and the usage that should consume it.
 
 Object-storage lifecycle is served by the same split on every provider: a
 garbage-collection playbook at `likely` (retained versions, soft-deleted

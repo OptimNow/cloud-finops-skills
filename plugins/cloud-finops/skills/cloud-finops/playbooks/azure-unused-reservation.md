@@ -45,6 +45,16 @@ Portal path (no setup needed): **Cost Management + Billing > Reservations**
 ascending. Requires Reservation Reader (or higher) on the reservation
 order.
 
+To be told instead of looking: **Cost Management > Cost alerts** has a
+native *Reservation utilization* alert rule, created at EA billing
+account, MCA billing profile or partner customer scope
+([reservation utilization alerts](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/reservation-utilization-alerts),
+read 14 November 2026). Microsoft documents no such alert for savings
+plans. They are a different resource provider
+(`Microsoft.BillingBenefits`), so the reservation commands below do not
+list them: use `az billing-benefits savings-plan list` for the inventory
+and the Benefit Utilization Summaries API for utilisation.
+
 ```bash
 # CLI inventory of reservations with scope and state. Requires the
 # `az account` extension access to reservation orders (Reservation
@@ -76,7 +86,10 @@ rules).
 
 1. Check scope first: flipping a reservation from a dead subscription
    scope to **shared scope** is free, instant, reversible, and fixes the
-   most common cause outright.
+   most common cause outright. On a VM reservation, read the *Optimize
+   for* setting as well: one bought for capacity priority instead of
+   instance size flexibility does not follow the estate to another size
+   of the family, and the setting can be changed after purchase.
 2. If the covered SKU is gone: while exchange remains available for the
    service, exchange into the family and region the estate runs.
    Reservations bought before 1 February 2027 keep one final exchange
@@ -84,7 +97,13 @@ rules).
 3. If neither scope nor exchange can restore utilisation: refund
    (cancellation) within Microsoft's refund terms - plan against the
    documented cap and fee clause rather than assuming a free exit - or
-   trade in against a compute savings plan where eligible.
+   trade in against a compute savings plan where eligible. The cap is
+   USD 50,000 of cancelled commitment per rolling 12 months, per billing
+   profile or EA enrolment, and refunds that come from an exchange do not
+   count against it. The Calculate Refund API returns the headroom
+   directly (`consumedRefundsTotal` against `maxRefundLimit`)
+   ([exchange and refund rules](https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations),
+   read 14 November 2026).
 4. Feed the root cause back into purchase practice: buy shared-scope by
    default unless there is a governance reason not to, and put reservation
    utilisation on the same monthly review as the commitment register.

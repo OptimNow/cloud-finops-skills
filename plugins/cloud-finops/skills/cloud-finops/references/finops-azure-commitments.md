@@ -47,8 +47,8 @@ to be layered, not chosen in isolation.
 
 | Instrument | Discount depth | Flexibility | Commitment type | Term | Covers |
 |---|---|---|---|---|---|
-| Azure Reservation | Up to 72% | Lowest - locked to VM family, region, size | Capacity-based (specific SKU) | 1yr or 3yr (see note) | VMs, Dedicated Hosts, App Service (Isolated), specific services |
-| Azure Savings Plan for Compute | Up to 65% | High - any VM family, region, size | Spend-based ($/hr) | 1yr or 3yr | VMs, Dedicated Hosts, Container Instances, App Service (Premium v3 / Isolated v2) |
+| Azure Reservation | Up to 72% | Lowest - locked to VM family, region, size | Capacity-based (specific SKU) | 1yr or 3yr (see note) | VMs, Dedicated Hosts, App Service (Premium v3 and later, Isolated v2), specific services |
+| Azure Savings Plan for Compute | Up to 65% | High - any VM family, region, size | Spend-based ($/hr) | 1yr or 3yr | VMs, Dedicated Hosts, Container Instances, Container Apps, App Service (Premium v3 / Isolated v2), Functions Premium |
 | Azure Hybrid Benefit (AHB) | Up to 40% (Windows), 55% (SQL) | Highest - no commitment, no lock-in | Licensing overlay | None | VMs, SQL Database, SQL MI, Red Hat/SUSE Linux |
 | Spot Virtual Machines | Up to 90% | Variable - can be evicted with 30s notice | None (market-priced) | None | VMs, VMSS, AKS node pools |
 
@@ -69,9 +69,13 @@ to be layered, not chosen in isolation.
    compliance tracking across the fleet.
 
 2. **Savings Plans for Compute cover more than VMs.** Unlike Reservations (which are
-   resource-specific), Compute Savings Plans also cover Container Instances and App
-   Service Premium v3 / Isolated v2. If you run a mix of VMs, containers, and App
-   Service, a Compute Savings Plan is the only instrument that covers all three.
+   resource-specific), Compute Savings Plans also cover Container Instances, Container
+   Apps, the Functions Premium plan and App Service Premium v3 / Isolated v2. If you
+   run a mix of VMs, containers, and App Service, a Compute Savings Plan is the only
+   instrument that covers all three. App Service reservations exist for Premium v3
+   and later and for Isolated v2 only ([savings plans](https://learn.microsoft.com/en-us/azure/cost-management-billing/savings-plan/savings-plan-overview),
+   [App Service reserved instances](https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/prepay-app-service),
+   read 14 November 2026).
 
 3. **Reservations offer deeper discounts but less flexibility.** A Reservation locks to
    a specific VM family and region. If you change instance family or region mid-term, the
@@ -201,7 +205,7 @@ START: What Azure compute service runs the workload?
 │   │
 │   ├── Premium v3 / Isolated v2 → Savings Plan for Compute applies
 │   │   - Only relevant if App Service spend is significant (>$2K/month)
-│   │   - Reservations also available for Isolated tier
+│   │   - Reservations also available for both (Premium v3 and later, Isolated v2)
 │   │
 │   └── Legacy plans (V2) → migrate to V3 first for better price-performance,
 │       then evaluate commitment on the new tier
@@ -287,7 +291,13 @@ workloads, savings plans for evolving or dynamic ones.
 Beyond the table and the decision tree: the eviction notice is 30 seconds (2 minutes on
 AWS). Choose the eviction policy (Deallocate keeps the disk, Delete is cheapest), cap
 the maximum price at the pay-as-you-go rate, and track eviction rates by family and
-region.
+region. B-series and promo sizes cannot run as Spot. Before choosing a size and a
+region, read the Spot Placement Score (High, Medium or Low, for up to eight regions
+and five sizes) and the price history and eviction rates Azure publishes per size and
+region, in the portal and in the Resource Graph `SpotResources` table
+([Spot VMs](https://learn.microsoft.com/en-us/azure/virtual-machines/spot-vms),
+[Spot Placement Score](https://learn.microsoft.com/en-us/azure/virtual-machine-scale-sets/spot-placement-score),
+read 14 November 2026).
 
 ### Instance size flexibility ratios come from the API, not the CSV
 
@@ -927,6 +937,8 @@ expiries together.
 - [ ] Existing commitment utilisation is >80% before purchasing more
 - [ ] MACC burndown trajectory reviewed - commitment purchase aligns with drawdown
 - [ ] Finance has approved the capital outlay (for Upfront payments)
+- [ ] Bought through a partner (MCA Partner): who buys, exchanges and cancels is
+      settled, see "Who can buy a commitment under MCA Partner" in `finops-azure-billing.md`
 
 ---
 
