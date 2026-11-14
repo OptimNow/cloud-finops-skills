@@ -34,7 +34,7 @@ Full annotated tree, every reference file, CI-gated: [`docs/STRUCTURE.md`](docs/
 
 - `plugins/cloud-finops/skills/cloud-finops/` - the skill: `SKILL.md`, `POWER.md`, `references/`, `playbooks/`
 - `plugins/cloud-finops/.claude-plugin/plugin.json` - the version holder (bumps with marketplace.json, pyproject, server.json x2)
-- `mcp_server/` - the `cloud-finops-mcp` PyPI package (seven tools); `Dockerfile` + `fly.toml` for the hosted connector
+- `mcp_server/` - the `cloud-finops-mcp` PyPI package (seven tools); `Dockerfile` + `fly.toml`, at the repository root, for the hosted connector
 - `scripts/` - CI guards and generators; `.github/workflows/` - CI, the release chain (see "Releases and the hosted connector") and its manual paths
 - `docs/` - `DESIGN.md` (rules, checklist), `ROADMAP.md`, `CONCEPTS.md`, `OVERLAYS.md`, `STRUCTURE.md`
 - Root: `INSTALLATION.md`, `README.md`, `llms.txt`, `DEPENDENCIES.md`, `CHANGELOG.md`
