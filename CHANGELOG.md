@@ -73,6 +73,26 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
   bill on timeout (`finops-vertexai.md`); six Copilot models retire on 14 December 2026;
   Fabric unified SQL pools from January 2027 (`finops-fabric.md`); AWS Marketplace trials
   convert to paid automatically (`finops-sam.md`).
+- **The 14 November content scan (issue 367).** Billing changes that break existing
+  rules or floors: RDS backup storage is billed per snapshot, so allocation rules that
+  matched a DB instance ARN no longer catch it (`finops-aws-patterns-databases.md`, the
+  snapshot runbook); FSx for Lustre Intelligent-Tiering has a lower minimum that only new
+  file systems get, and logically air-gapped vaults can archive EBS backups
+  (`finops-aws-patterns-storage.md`); custom billing views accept Billing Conductor and
+  billing transfer views as sources (`finops-aws-billing.md`). New options to price:
+  Graviton5 `db.r9g`, tempdb on local NVMe for RDS SQL Server, G7 in more Regions,
+  pipeline-free ingestion on OpenSearch Serverless (`finops-aws.md`), Daybreak models on
+  bedrock-runtime (`finops-bedrock.md`), DeepSeek V4 on SageMaker JumpStart
+  (`finops-open-weight-vendors.md`), ChatGPT Enterprise through AWS Marketplace
+  (`finops-sam.md`), doubled Codex allowances on ChatGPT Pro (`finops-ai-dev-tools.md`),
+  BigQuery cross-cloud caching and the limits of compute cost attribution
+  (`finops-gcp.md`), Azure Storage Discovery plans (`finops-azure-patterns.md`).
+- **Effort levels on Claude models.** How the effort setting, always-on thinking and the
+  prompt cache decide what a task costs, and why the per-token ratio does not rank
+  models by cost per task (`finops-anthropic.md`).
+- **Two allocation and detection notes.** Unit signals to baseline per workload for AI
+  anomalies (`finops-anomaly-management.md`), and where tags stop for AI and API spend
+  (`finops-tagging.md`).
 - **Fast mode routes corrected.** Fable 5.2 and Mythos 5.2 fast mode run on Vertex AI and
   on Anthropic-hosted Foundry deployments, which the risk section had ruled out; on
   Foundry the speed is set by a `-fast` deployment, not by the request

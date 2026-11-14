@@ -320,6 +320,14 @@ usage telemetry, not billing data.** The usage surfaces to watch:
   to 72 hours on pay-as-you-go
   ([Understand Cost Management data](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/understand-cost-mgt-data)).
 
+**Baseline per workload, on unit signals.** An account total hides a feature-level
+spike: one agent doubling its spend moves a large AI bill by a few points. Baseline
+each workload and owner on ratios that move before the bill does: tokens per request,
+the cache-read share of input (a drop means a prefix stopped caching), the thinking
+share of output (`usage.output_tokens_details.thinking_tokens` on the Claude API; it
+rises with an effort or model change, see `finops-anthropic.md`, "Modifiers") and, for
+agents, cost per completed run.
+
 **Volume or mix.** When AI spend jumps, check whether token volume moved with it before
 treating the jump as an anomaly: spend rising faster than tokens means the blended rate
 per token rose (a model, routing or caching change), not more usage (`finops-for-ai.md`,

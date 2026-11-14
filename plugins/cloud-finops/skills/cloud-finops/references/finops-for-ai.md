@@ -734,7 +734,8 @@ deployments:
 - Few-shot examples anchor output format and length
 - **Reasoning/chain-of-thought only where justified** (compliance, high-stakes
   accuracy) - reasoning tokens are output tokens; disable or pick non-reasoning
-  models for routine tasks
+  models for routine tasks. Where reasoning cannot be disabled (Claude Fable 5.2 and
+  Opus 5.5), the lever is the effort level: `finops-anthropic.md`, "Modifiers"
 - **Task decomposition** - route sub-tasks to smaller models; reserve the large model
   for synthesis (this is the supervisor/worker agentic pattern priced correctly)
 

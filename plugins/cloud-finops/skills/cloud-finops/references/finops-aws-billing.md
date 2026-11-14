@@ -772,6 +772,16 @@ A billing view is an AWS resource that controls which accounts' cost and usage d
   ([multi-source custom billing views announcement](https://aws.amazon.com/blogs/aws-cloud-financial-management/introducing-multi-source-custom-billing-views-unified-cost-management-across-multiple-organizations-on-aws/)).
 - Budgets can be scoped to a billing view, including a multi-source view (same
   announcement).
+- Since 10 November 2026, AWS-managed views can be sources too: Billing Conductor
+  **billing group views** (the pro forma cost of each billing group), **billing
+  transfer views** (the cost transferred to you per end customer) and **transfer
+  showback views** (the cost each end customer sees). One custom view can combine
+  several of them, with filters, for chargeback across business units or for a
+  reseller's total, and is shared through AWS RAM like any other. Access is unchanged:
+  a managed view is usable as a source only where you could already read it. No
+  additional cost, all commercial Regions
+  ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/aws-billing-and-cost-management-multi-source-custom-billing-views),
+  read 14 November 2026).
 
 **Key behaviours:**
 
