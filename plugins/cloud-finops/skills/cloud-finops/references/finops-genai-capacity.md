@@ -107,6 +107,22 @@ You have reserved a pool of capacity units (PTUs) but have not deployed models a
   while waiting for model availability
 - See Azure section for details
 
+### Idle by design: the access hedge
+
+When provider capacity is scarce, idle reserved capacity can be a deliberate hedge
+against losing access, not waste. Forrester frames FinOps under scarcity as deciding
+who gets limited capacity, when and for which initiative, rather than only cutting
+cost ([Tracy Woo, 3 November 2026](https://www.forrester.com/blogs/ai-capacity-scarcity-shifts-the-goals-of-finops/),
+an analyst view). Treat the hedge as a decision, never as a default:
+
+- Price it: the idle cost per month against the cost of delay if the capacity is lost
+- Report it on its own line, so it is neither counted as waste nor hidden in run cost
+- Give it an owner and a review date, and release it when capacity eases
+- Allocate the pool by business priority through an explicit request process
+
+Without these four, "we may lose access" becomes the reason no idle reservation is
+ever released.
+
 ---
 
 ## Spillover

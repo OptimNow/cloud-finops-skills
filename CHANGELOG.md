@@ -16,6 +16,10 @@ yet tagged.
 
 ### New and corrected content
 
+- **GenAI capacity: idle reserved capacity held as an access hedge.** `finops-genai-capacity.md`
+  now separates deliberate idle capacity, kept because provider capacity is scarce, from
+  waste: price the hedge against the cost of losing access, report it on its own line,
+  give it an owner and a review date, and allocate the pool by business priority.
 - **FOCUS consolidators: the CID dashboards carry a per-user charge.** The build,
   borrow or buy table in `finops-focus.md` now says that the Quick Sight layer of AWS
   Cloud Intelligence Dashboards is billed per author and per reader each month, or as
