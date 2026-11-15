@@ -52,6 +52,13 @@ becomes a routing item, not a reason to write more.
    it sat before October 2026, to the 15th, so that each half-month carries
    one heavy step; the "Content update pipeline" section of `CLAUDE.md` says
    the same, and the maintainer-local doctrine needs the same edit.
+   Clusters verified, newest first, so the next run takes a different one:
+   - 2026-11-15: Google Cloud (`finops-gcp.md` down to the pattern catalogue,
+     `finops-vertexai.md`). Not covered: the pattern catalogue of `finops-gcp.md`, the
+     Gemini 3 and 2.5 output ratios and the Gemini Developer API paragraphs of
+     `finops-vertexai.md`. Oldest dates left elsewhere: April 2026 in
+     `finops-aws-billing.md` and `finops-azure-billing.md`, July 2026 in
+     `finops-aws-commitments.md`, `finops-anthropic.md` and `finops-agentic.md`.
 3. One probe cycle: the four controls (P11, P12, P13, P31) plus one probe
    targeting the lot shipped on the 1st, on both surfaces, with the
    visible-evidence discipline. Record the verdicts in

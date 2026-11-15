@@ -126,7 +126,17 @@ and it describes that enforcement as approximate. Since 1 November 2026 a Unity 
 budget also counts spend from task-specific AI Functions (`ai_parse_document`,
 `ai_extract`, `ai_classify`) in batch and real-time runs, so a threshold sized for chat or
 agent traffic can now alert on, or block, a document-processing job; size it with both in
-view ([November 2026 release notes](https://docs.databricks.com/aws/en/release-notes/product/2026/november)). The runtime caps a FinOps
+view ([November 2026 release notes](https://docs.databricks.com/aws/en/release-notes/product/2026/november)). Since
+10 November 2026 a threshold can also send an HTTP POST to a webhook (Beta; an account
+admin first enables the Account-level Webhook Destinations preview, and it is not
+offered in government or regulated environments). The payload carries the budget, the
+threshold, the current spend and an `event_id` to discard duplicates, which is enough
+to open a ticket or post to a channel without polling `system.billing.usage`. It does
+not change what a budget is: a standard budget still reads list price before credits
+and negotiated discounts and can lag usage by up to 24 hours, so an automation hung on
+the webhook reacts late and must not be the control that stops spend
+([budgets](https://docs.databricks.com/aws/en/admin/account-settings/budgets), read
+15 November 2026). The runtime caps a FinOps
 team expects (idle timeout, hourly burn, allowed instance types) live in
 compute policies, covered under "Allocation and Governance" below.
 

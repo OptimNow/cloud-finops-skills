@@ -280,7 +280,7 @@ https://docs.snowflake.com/en/user-guide/snowflake-copilot (all read 16 October
 
 **Per-user quotas.** A quota object (`CREATE SNOWFLAKE.CORE.QUOTA`) caps the credits
 each user can spend in AI domains: AI functions, Snowflake Intelligence (now Snowflake
-CoWork), Cortex Agents, Cortex Code (now Snowflake CoCo) and the AI Gateway (preview).
+CoWork), Cortex Agents, Cortex Code (now Snowflake CoCo) and the AI Gateway.
 Warehouse spend can be tracked in a separate quota (one quota cannot mix warehouse and
 AI domains), but warehouses are never blocked. Daily, weekly and monthly cycles can be
 set on the same quota and are evaluated independently; once block enforcement is
@@ -295,19 +295,37 @@ above it to alert on the total, since a budget alerts but never blocks. The quot
 the right control for the "one analyst ran an agent loop overnight" pattern, which a
 scope-level budget only catches once the whole team has paid for it.
 
-**Cortex AI Gateway (public preview, 15 September 2026).** The gateway is a governed
+Two additions, both GA on 11 November 2026, remove the need for one quota per
+exception. A **limit override** gives named users a different per-cycle limit on an
+existing quota, with an optional expiry after which they return to the default
+(`CALL my_quota!SET_USER_QUOTA_OVERRIDE(['ALICE'], 2500, 'MONTHLY', '2026-12-01')`): use
+it for a month-end run or a pilot, and set the expiry so the exception does not become
+the limit. **Role scope** selects a quota's users by the roles granted to them
+directly, beside user tags and names, so the scope follows grants and revocations made
+by the identity provider; the release note does not say that a role inherited through
+another role counts, so test it before relying on a parent role. Tag exclusions now
+also apply to quotas scoped by tag.
+
+**Cortex AI Gateway (inference, observability and cost management GA since 3 November
+2026).** The gateway is a governed
 endpoint through which applications and third-party agents reach models, accepting
 OpenAI Chat Completions and Anthropic Messages request formats. Its consumption is
 recorded per request (gateway, user, model, tokens) in
 `SNOWFLAKE.ACCOUNT_USAGE.AI_GATEWAY_USAGE_HISTORY`, which is the attribution source
 for showback. Snowflake's guidance is to govern it by adding the gateway to a custom
-budget as a shared resource and capping individuals with per-user quotas. Treat it as
-preview: check the release notes for changes before building chargeback on the view.
+budget as a shared resource and capping individuals with per-user quotas. Those three
+parts (the usage view, shared resource budgets, per-user quotas) are what went GA; the
+gateway's tools and its trace analytics tab are still in preview.
 
 Sources: https://docs.snowflake.com/en/user-guide/budgets/per-user-quotas,
 https://docs.snowflake.com/en/release-notes/2026/other/2026-09-16-weekly-per-user-quota-limits,
 https://docs.snowflake.com/en/release-notes/2026/other/2026-09-15-cortex-ai-gateway
-(read 2 October 2026).
+(read 2 October 2026); for the November 2026 changes,
+https://docs.snowflake.com/en/release-notes/2026/other/2026-11-03-cortex-ai-gateway-ga,
+https://docs.snowflake.com/en/release-notes/2026/other/2026-11-11-per-user-quota-limit-overrides
+and
+https://docs.snowflake.com/en/release-notes/2026/other/2026-11-11-per-user-quota-role-scope
+(read 15 November 2026).
 
 **Where Cortex consumption is recorded.** Each surface has its own
 `SNOWFLAKE.ACCOUNT_USAGE` view, all with one year of retention:

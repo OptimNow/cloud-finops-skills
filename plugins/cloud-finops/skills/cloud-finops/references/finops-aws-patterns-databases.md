@@ -357,6 +357,38 @@ give unused reserved capacity an owner. Sources:
 https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/capacity-reservations.getting-started.html,
 https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/capacity-reservations.pricing-billing.html
 
+### DynamoDB bulk put items - a load billed outside table capacity
+
+Since 5 November 2026 DynamoDB can load files already in S3 into an **existing** table
+as a managed, asynchronous operation (bulk put items). It has its own meter, so it
+changes how a backfill, a daily refresh or a migration should be costed:
+
+- **It does not consume the table's read or write capacity.** The load is billed per GB
+  written to the table and to each secondary index, at a rate that depends on the
+  performance tier and the table class. A provisioned table no longer needs its write
+  capacity raised for the load, and an on-demand table no longer pays write request
+  units for it: compare the bulk put cost with the write units the same load would
+  have consumed before choosing.
+- **Two tiers.** Standard is the default and is priced for background loads with
+  flexible timing; Accelerated finishes the same operation faster at a higher rate.
+  Accelerated is a choice per operation, so a pipeline that sets it by default pays the
+  premium on loads nobody is waiting for.
+- **Small items and indexes multiply the bill.** Each item is billed with a 1 KB
+  minimum (larger items at their exact size), and each secondary index write is billed
+  separately with its own 1 KB minimum. A table of 200-byte items with three indexes
+  is billed on about 4 KB per item, not 200 bytes.
+- **Rejected writes can still bill.** Items that fail a condition check are billed;
+  items that fail validation before a write is attempted are not. An insert-only
+  refresh that re-sends the whole dataset pays for every item it declines to overwrite.
+- **A bucket in another Region adds cross-Region data transfer**, and the S3 storage
+  and requests are charged separately.
+
+It is not the older import from S3, which creates a new table and is priced on the
+uncompressed size of the source files. Sources:
+[AWS What's New, 5 November 2026](https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-dynamodb-now-supports-bulk-put-items/)
+and the [DynamoDB on-demand pricing page](https://aws.amazon.com/dynamodb/pricing/on-demand/)
+(both read 15 November 2026); rates are on the pricing page.
+
 ---
 
 ## Databases Optimization Patterns (33)
