@@ -71,6 +71,17 @@ tooling, build on CUR; the console is for ad-hoc views.
   and a backfill also removes a since-deactivated tag from past months
   ([backfilling cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-allocation-backfill.html),
   read 11 November 2026)
+- [ ] Managed services differ in whether an environment's tags reach the compute behind
+  it, and that decides whether the service can be allocated by tag at all. Amazon MWAA
+  gained it on 4 November 2026: an environment's tags now propagate to its workers,
+  schedulers and web servers when the environment is created, or when an existing one
+  is next updated, so Airflow spend splits by team in Cost Explorer and the CUR once
+  the key is activated as a cost allocation tag. Tag the shared Airflow environments
+  and update the existing ones. A backfill does not split the months before
+  propagation: the compute rows of those months carry no tag, whatever the environment
+  itself carried, so earlier Airflow spend still needs a split by another key
+  ([AWS What's New, 4 November 2026](https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-mwaa-cost-allocation-tags/),
+  read 15 November 2026)
 
 ### AWS Data Exports for FOCUS 1.2
 

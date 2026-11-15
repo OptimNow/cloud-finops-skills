@@ -80,6 +80,7 @@ standard tier:
 
 | SKU group | Output : input |
 |---|---|
+| Gemini 4 Hydrogen, Carbon and Argon (read 15 November 2026) | 5x, one band whatever the prompt size |
 | Gemini 3.8 / 3.7 / 3.6 Flash | 5x |
 | Gemini 3.5 Flash | 6x |
 | Gemini 3.1 Flash-Lite (text input) | 6x |
@@ -95,6 +96,9 @@ near 8x. Read the multiplier per SKU rather than per tier. High output-ratio wor
 (agentic tasks, long-form generation) carry disproportionately higher costs, so a model
 swap that looks cheaper on the input rate can be more expensive in production.
 
+The Gemini 3 and 2.5 rows were read on 20 September 2026 and not recomputed since; the
+tier multipliers below were confirmed on 15 November 2026.
+
 Sources: https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing,
 https://ai.google.dev/gemini-api/docs/pricing
 
@@ -105,7 +109,7 @@ https://ai.google.dev/gemini-api/docs/pricing
 ### On-demand pricing structure
 
 Vertex AI on-demand pricing for Gemini generative models is per-million tokens
-(verified August 2026). **Historical note:** Gemini 1.0/1.5-era surfaces billed some
+(confirmed 15 November 2026 for the Gemini 4, 3 and 2.5 families). **Historical note:** Gemini 1.0/1.5-era surfaces billed some
 SKUs per 1,000 characters rather than per token; those surfaces are retired and no
 character-billed Gemini SKU remains on the current pricing page. If you encounter
 character-based line items in an old billing export, that is the era they date from -
@@ -131,7 +135,8 @@ Benchmark task quality across model tiers before defaulting to the most capable 
 ### Batch prediction discount
 
 Vertex AI Batch Prediction processes requests asynchronously at discounted token rates
-(typically 50% off on-demand). Use for:
+(50% of the standard rate on the Gemini 4, 3 and 2.5 rows of the pricing page, read
+15 November 2026). Use for:
 - Bulk document processing and enrichment
 - Offline classification pipelines
 - Non-latency-sensitive evaluation workflows
@@ -141,8 +146,9 @@ Vertex AI Batch Prediction processes requests asynchronously at discounted token
 ### Service tiers and endpoint multipliers
 
 Model choice sets the base rate. These multipliers then stack on top of it, and they are
-where a well-chosen model still produces a surprising bill. All verified 20 September
-2026 against the Agent Platform pricing page.
+where a well-chosen model still produces a surprising bill. Verified 20 September 2026
+against the Agent Platform pricing page; the Priority, Batch, regional and tuned-endpoint
+rows were read again on 15 November 2026, when the tuned-endpoint row was corrected.
 
 | Lever | Effect on the standard rate | Notes |
 |---|---|---|
@@ -151,7 +157,7 @@ where a well-chosen model still produces a surprising bill. All verified 20 Sept
 | Batch | **50%** | Asynchronous, up to 24-hour turnaround |
 | Non-global (regional) endpoint | **+10%** | GA Gemini 3 and later, from 1 July 2026; also applies to non-global Provisioned Throughput |
 | Prompt above 200K tokens (Pro SKUs) | **2x input, 1.5x output** | The whole request reprices, not just the excess |
-| Tuned model endpoint | **1.5x** the base model | Gemini 3 and later only; older Gemini tuned endpoints stay at the base price |
+| Tuned model endpoint | **1.5x** the base model on a non-global endpoint; the base price on the global endpoint | Gemini 3 and later; older Gemini tuned endpoints stay at the base price |
 
 Four points that matter more than the numbers:
 
@@ -234,16 +240,19 @@ and can switch between models within that publisher's portfolio.
 
 - **Publisher-locked, model-flexible:** you can switch between Gemini models within
   the same reservation (a GSU is standard across Google models that support
-  Provisioned Throughput), but not from a Google model to an Anthropic model.
-  *Sourcing note:* the intra-publisher switch rule comes from a FinOps Foundation
-  working-group paper, not Google primary docs - confirm against the current
-  Provisioned Throughput purchase docs before quoting in an engagement.
-- **Capacity floor, not ceiling:** terms run 1 week to 1 year and unused throughput
-  does not carry over; treat reserved capacity as non-reducible mid-term (an explicit
-  no-downsize rule is not stated in Google primary docs - verify before committing).
-  Efficiency gains reduce your effective cost per output, but the reservation
-  commitment remains at the original size.
-- **Default spillover to pay-as-you-go** (verified 20 September 2026). If a request
+  Provisioned Throughput), but not from a Google model to an Anthropic model, nor from
+  a Google model to an open model. Google's purchase page states it: "Model changes are
+  limited to a specific publisher" (read 15 November 2026).
+- **Capacity floor, not ceiling:** terms are 1 week (Google models only), 1 month,
+  3 months or 1 year, the fee is not cancellable during the term and is owed whatever
+  the usage, and unused throughput does not carry over. An increase in GSUs applies on
+  approval; a **decrease applies only at auto-renewal, for the next term**, so capacity
+  cannot be reduced mid-term. Efficiency gains reduce your effective cost per output,
+  but the commitment stays at its size until the term ends
+  ([purchase Provisioned Throughput](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/provisioned-throughput/purchase-provisioned-throughput),
+  read 15 November 2026).
+- **Default spillover to pay-as-you-go** (verified 20 September 2026, confirmed
+  15 November 2026). If a request
   exceeds the remaining Provisioned Throughput quota, **the entire request** is
   processed on-demand and billed at the pay-as-you-go rate; it shows as *spillover* on
   the monitoring dashboards. Request headers override this, and the header name survived
@@ -310,17 +319,26 @@ families, including the long-context bands, the 1.8x Priority multiplier, the 50
 Flex/Batch discount and the 90% cache-read discount. The choice is a governance and
 capacity decision, not a rate one.
 
-Three real differences sit underneath the identical headline rates:
+Two real differences sit underneath the identical headline rates, and a third, on
+grounding, has narrowed to the older models:
 
 - **Explicit cache storage is cheaper on the Developer API until 1 January 2027.** On
   the 3.8 / 3.7 / 3.6 Flash SKUs it bills at half the Agent Platform rate per token-hour
   through 31 December 2026, then converges. A cache-heavy workload is cheaper
   through the Developer API today, and stops being so in January.
-- **Grounding bills on a different unit.** The Developer API charges per *search query*,
-  and a single prompt may issue several. Vertex AI charges per *grounded prompt* - one
-  charge even when Gemini issues multiple queries - with a separate free daily
-  allowance. For agentic search workloads these produce materially different bills from
-  identical traffic, and the per-query model is the one that scales badly.
+- **Grounding now bills per query on current models.** On the Agent
+  Platform, Grounding with Google Search for the Gemini 3 and Gemini 4 families is
+  charged for each individual search query, and one prompt may issue several; a monthly
+  allowance of queries, aggregated across those models, is free. Only the Gemini 2.0
+  and 2.5 rows still charge per *grounded prompt* (one charge however many queries it
+  issues), with a daily free allowance. An earlier version of this file gave the
+  per-prompt unit as the Vertex AI rule; it is the legacy one. A workload that moves
+  from 2.5 to a 3 or 4 model changes grounding unit as well as token rate, and an
+  agentic search loop is where the per-query unit scales badly: track queries per
+  prompt (Agent Platform pricing page, "Pricing with grounding", read 15 November 2026).
+  The per-query unit is the one this file gave for the Developer API, which was not
+  read again that day, so the two doors differ on grounding only for the 2.0 and 2.5
+  rows until that page is checked.
 - **The free tier is not free of consequences** (below).
 
 ### Gemini Developer API specifics
@@ -427,8 +445,8 @@ For Vertex AI:
 
 **AI Cost Summary Agent:** GCP's AI Cost Summary Agent provides dedicated AI spend
 analysis across Gemini API and Vertex AI services through a Billing Overview widget
-(check current preview/GA status in the Cloud Billing docs before relying on it in
-an engagement). This native tool addresses the AI cost
+(in preview since 27 April 2026 and still in preview on 15 November 2026, per the Cloud
+Billing release notes). This native tool addresses the AI cost
 visibility gap, offering spend attribution and insights specifically for AI workloads.
 
 **Originating products attribution (Cloud Billing):** as of August 2026, Cloud Billing
@@ -532,13 +550,13 @@ contract, cost per generated email) for margin modelling as usage scales.
 Vertex AI supports **explicit context caching** for selected Gemini models.
 Equivalent in spirit to Anthropic / Bedrock prompt caching - cache a stable context
 once, reuse it across many requests at a steeply discounted input-token rate - but
-the pricing shape differs (verified August 2026):
+the pricing shape differs:
 
 **Mechanics** (verified 20 September 2026):
 - **Two kinds of caching, and one of them is free.** *Implicit* caching is on by default
-  for every GCP project and gives the same 90% discount on cached tokens **with no
-  storage charge at all**. *Explicit* caching is the one you declare and manage, and the
-  one that bills for storage. Before designing an explicit cache, check whether implicit
+  for every GCP project and bills cached tokens at the same rate as an explicit cache
+  hit (below) **with no storage charge at all**. *Explicit* caching is the one you
+  declare and manage, and the one that bills for storage. Before designing an explicit cache, check whether implicit
   hits are already covering the workload - placing large, stable content at the start of
   the prompt and sending similar-prefix requests close together is enough to raise the
   implicit hit rate, at zero storage cost.
@@ -550,8 +568,10 @@ the pricing shape differs (verified August 2026):
   and the one most often missed: a large cache held for hours can outweigh the read
   savings if traffic is thin. Current rates are on the pricing page; the ratio is the
   durable part.
-- Cache hit (read): 90% off the standard input rate on 2.5-generation and later
-  models (75% on 2.0-era models).
+- Cache hit (read): 90% off the standard input rate on 2.5-generation and Gemini 3
+  models (75% on 2.0-era models), and 95% off on the Gemini 4 rows (cache read at
+  0.05x input, read 15 November 2026). Gemini 4 Hydrogen gains a cache-write meter at
+  1.25x input on 12 January 2027, which ends "no write premium" for that model.
 - TTL: default **60 minutes**, extendable through the API. Minimum lifetime 1 minute,
   no maximum. Maximum cacheable blob or text payload 10 MB.
 - **Minimum cache size is now model-dependent** - the old flat 2,048-token floor only

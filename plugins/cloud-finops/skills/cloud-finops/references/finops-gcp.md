@@ -60,15 +60,12 @@ For attribution and custom tooling, build on the BigQuery billing export.
 
 ### AI Cost Summary Agent - native AI spend visibility
 
-As of May 2026, GCP launched the **AI Cost Summary Agent** in preview, providing
-dedicated AI spend analysis across Gemini API and Vertex AI services through a
+The **AI Cost Summary Agent** has been in preview since 27 April 2026 (still preview
+on 15 November 2026, per the
+[Cloud Billing release notes](https://docs.cloud.google.com/billing/docs/release-notes)),
+providing dedicated AI spend analysis across Gemini API and Vertex AI services through a
 Billing Overview widget. This addresses the AI cost visibility gap that FinOps teams
 face when managing AI workloads on GCP.
-
-**Key capabilities:**
-- Aggregated AI spend across Gemini API and Vertex AI services
-- Native tooling for AI spend attribution without third-party tools
-- Integrated into the Cloud Billing console for unified cost management
 
 **Gemini Enterprise Pay-as-you-go edition - consumption alongside subscription.**
 On 26 August 2026 Google announced a **Gemini Enterprise Pay-as-you-go** edition
@@ -80,42 +77,22 @@ broadly soon", so check eligibility before planning around it. This gives FinOps
 teams a choice of billing shape for agent workloads rather than a single seat-based
 commitment.
 
-- **Subscription (per-seat)**: predictable cost; best where a stable, known
-  population of users runs agents regularly, and where flat budgeting matters more
-  than usage sensitivity. Idle seats are the waste to watch.
-- **Pay-as-you-go**: cost scales with actual usage; best for spiky, exploratory or
-  uneven adoption where many seats would sit idle, or where new agent workloads have
-  uncertain demand. Unbounded usage is the risk to watch.
+Seats waste money when they sit idle and consumption does when it is unbounded: start
+new or variable agent workloads on pay-as-you-go behind a budget and a spend cap, and
+move to seats once per-seat cost is consistently below the observed run-rate.
 
-**Choosing between them, with budget guardrails:** default to pay-as-you-go for new
-or variable agent workloads and pair it with a budget, threshold alerts and anomaly
-detection so unpredictable usage cannot silently overrun the budget. Move to a
-subscription edition once adoption stabilises and per-seat cost is consistently
-below the observed consumption run-rate. Reassess the mix as adoption matures. See
-`finops-agentic.md` under cost governance for agent spend flexibility.
-
-**Two controls from the same 26 August 2026 announcement.** *Gemini Enterprise Flexible
-Savings Plans* (FSPs) are spend-based committed use discounts on generative AI
-consumption - 10% for 1 year, 20% for 3 years, no minimum or maximum, drawing down an
-existing Google Cloud EA. They are the commitment lever for the pay-as-you-go edition,
-and they cover token spend, which no other GCP commitment instrument does. Note that the
-seat subscriptions themselves draw down an FSP *without* earning an incremental
-discount, so a plan sized against total Gemini Enterprise spend can be satisfied by
-subscriptions while discounting none of it. Separately, **project-level monthly spend
-limits** in the Cloud Billing console pause an agent's API calls at the limit, with
-alerts at 50%, 80% and 100%. Full mechanics, eligibility boundaries and the FSP-versus-
-Provisioned-Throughput decision are in `finops-vertexai.md`. Sources:
+The same announcement brought *Gemini Enterprise Flexible Savings Plans* (10% for
+1 year, 20% for 3 years on generative AI consumption; seat subscriptions draw one down
+without earning the discount) and project-level monthly spend limits. Both are covered
+in `finops-vertexai.md`. Sources:
 https://cloud.google.com/blog/products/ai-machine-learning/flexible-billing-and-cost-controls-for-agents-on-google-cloud
 (primary, 26 August 2026), https://docs.cloud.google.com/gemini/enterprise/docs/editions.
 
-**Originating products filter and Gemini Enterprise preset report.** As of August 2026,
+**Originating products filter and Gemini Enterprise preset report.** On 7 August 2026
 Cloud Billing added an **"Originating products"** filter/group-by dimension in Billing
-Reports, plus a **Gemini Enterprise preset report**. Together these give more precise
-native attribution of AI-related consumption (including Gemini Enterprise usage)
-directly in Billing Reports, further reducing reliance on third-party tooling for AI
-spend attribution. Use the "Originating products" group-by to segment AI-related
-consumption across services, and the Gemini Enterprise preset as a ready-made starting
-point for Gemini Enterprise cost visibility.
+Reports, plus a preset report, **"Gemini Enterprise costs by SKU"** (release notes,
+confirmed 15 November 2026). Use the group-by to segment AI-related consumption across
+services; it is console-only (see `finops-vertexai.md`).
 
 For detailed AI cost optimisation strategies, see `finops-vertexai.md` and
 `finops-for-ai.md`.
@@ -149,7 +126,9 @@ GCP exposes three distinct exports to BigQuery, and they are not interchangeable
   amounts as negative and add them to cost: net cost is
   `SUM(cost) + SUM(IFNULL((SELECT SUM(c.amount) FROM UNNEST(credits) c), 0))`. A query
   that reads only `cost` reports cost before CUDs, SUDs and promotions, and one that
-  subtracts credits flips their sign. The credit types are `COMMITTED_USAGE_DISCOUNT`,
+  subtracts credits flips their sign. The exception is usage moved to the consumption
+  model of spend-based CUDs (below): its `cost` is already at the discounted rate, with
+  no CUD credit beside it. The credit types are `COMMITTED_USAGE_DISCOUNT`,
   `COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE`, `SUSTAINED_USAGE_DISCOUNT`, `FREE_TIER`,
   `PROMOTION`, `DISCOUNT`, `RESELLER_MARGIN`, `SUBSCRIPTION_BENEFIT` and
   `FEE_UTILIZATION_OFFSET`. To reproduce a console view, the Billing Reports "Generate
@@ -163,8 +142,9 @@ https://docs.cloud.google.com/billing/docs/how-to/bq-examples
 
 Custom Google Cloud contracts often carry **conditional incentives**: credits that are
 only earned if a spend or usage milestone is hit inside a set window. The Cloud Billing
-console now has an **Incentives** page (Billing navigation menu, as of September 2026)
-that tracks them in one place: spend-based milestone credits, Incremental Workload
+console has an **Incentives** page (Billing navigation menu; it replaced the Spend-based
+Milestones tab of the Credits page on 4 September 2026, mechanics below confirmed
+15 November 2026) that tracks them in one place: spend-based milestone credits, Incremental Workload
 Credits (multi-milestone programmes tracking incremental spend), and Rapid Migration and
 Modernization Program (RaMP) incentives. Each milestone shows its end date, spend target,
 progress, reward, and a status of Active, Achieved, Upcoming or **Missed**.
@@ -205,13 +185,22 @@ specific columns the FOCUS spec does not surface.
 
 For multi-cloud customers normalising AWS / Azure / GCP cost in one warehouse, the
 FOCUS export is the path that aligns with AWS Data Exports for FOCUS 1.2 and
-Azure Cost Management's FOCUS 1.2 support. As of October 2026 GCP offers a dedicated
-FOCUS export to a Google-provided immutable BigQuery dataset, in preview for both 1.0
-and 1.2, with a published conformance-gap report; the earlier SQL view over the
-standard export mapped to 1.0 only. Cross-provider normalisation (Tags shape,
-precision, column drift, invoice timing) is covered in `finops-focus.md`.
+Azure Cost Management's FOCUS 1.2 support. GCP offers a dedicated FOCUS export to a
+Google-provided immutable BigQuery dataset
+(`gcp_billing_immutable_<BILLING_ACCOUNT_ID>_<Location>`), still in preview on
+15 November 2026, with a conformance report covering FOCUS 1.0, 1.1 and 1.2; the earlier
+SQL view over the standard export mapped to 1.0 only. Read the gaps table before
+building on it: Tags is not provided as a standard column (labels arrive in the
+provider columns `x_Labels`, `x_SystemLabels`, `x_ProjectLabels` and `x_Tags`), Charge
+Category carries no "Purchase" or "Credit" value (credits are in `x_Credits`), and
+Service Category, Resource Type, Charge Frequency and Invoice ID are among the columns
+not provided. A cross-cloud query that groups on `Tags` or `ServiceCategory` returns
+nothing for the GCP rows. Cross-provider normalisation (Tags shape, precision, column
+drift, invoice timing) is covered in `finops-focus.md`.
 
-Source: https://cloud.google.com/billing/docs/how-to/export-data-bigquery-focus
+Sources: https://docs.cloud.google.com/billing/docs/how-to/export-data-bigquery-focus-setup,
+https://docs.cloud.google.com/billing/docs/how-to/export-data-bigquery-tables/focus-export
+(both read 15 November 2026)
 
 ### Cloud Billing Pricing API
 
@@ -234,22 +223,34 @@ mechanism.
 
 ### Sustained Use Discounts (SUDs) - free, automatic, often missed
 
-SUDs apply automatically to Compute Engine VMs that run a significant portion of
-the month. **No commitment, no purchase, no enrolment.** GCP discounts the on-demand
-rate retroactively based on monthly run-time per VM family per region.
+SUDs apply automatically to Compute Engine usage that runs more than a quarter of the
+month. **No commitment, no purchase, no enrolment.** Usage is aggregated per resource,
+machine family and region across the Cloud Billing account, not per VM.
 
-- Up to ~20% discount for a VM running 100% of a calendar month (general-purpose
-  families)
-- Discount is calculated per-resource and applied automatically on the next invoice
-- Visible in BigQuery billing export as a separate line item with credit type
-  `SUSTAINED_USAGE_DISCOUNT`
+- **Only some machine series earn one.** The maximum is 30% for N1 (predefined and
+  custom), M1, M2, the f1-micro and g1-small shared-core types and GPUs attached to N1
+  VMs, and 20% for N2, N2D and C2. A series not on Google's list earns nothing: E2 and
+  the newer general-purpose and compute series (N4, C3, C4 and their variants) are not
+  on it, and GPUs on accelerator-optimised machines are excluded by name. An estate
+  that has moved from N1 to E2 or N4 has no SUD left to count on.
+- **The discount is incremental, by quarter of the month.** Each further 25% of the
+  month is billed at a lower rate, so the full 30% or 20% is reached only at 100% of
+  the month, and a resource that runs half the month gets about a third of the maximum.
+- **In the BigQuery export it is a credit, not a row:** an entry of type
+  `SUSTAINED_USAGE_DISCOUNT` in the `credits` field of the usage row (see "Credits are
+  not separate rows" above).
+- **A resource takes one kind of discount at a time.** Usage covered by a commitment
+  earns no SUD; only the overage above it can. The one exception is the sole-tenant
+  node premium, which still earns a SUD when the node's vCPUs and memory are under a
+  commitment.
 
-**Practical implication:** SUDs reduce the apparent saving from a 1-year CUD purchase
-because the SUD discount is already baked into the on-demand rate the CUD compares
-against. When sizing a CUD, model against the SUD-effective rate, not the headline
-on-demand rate, to avoid overstating CUD savings.
+**Practical implication:** on an eligible series, SUDs reduce the apparent saving from a
+1-year CUD, because the usage the CUD would cover already earns the SUD. When sizing a
+CUD, compare against the SUD-effective rate, not the headline on-demand rate; on an
+ineligible series the on-demand rate is the right baseline.
 
-Source: https://cloud.google.com/compute/docs/sustained-use-discounts
+Source: https://docs.cloud.google.com/compute/docs/sustained-use-discounts (read
+15 November 2026)
 
 ### Committed Use Discounts (CUDs) - resource-based vs spend-based
 
@@ -258,7 +259,11 @@ GCP CUDs come in two distinct flavours that are easy to conflate:
 | CUD type | Commits to | Discount depth | Flexibility | Term |
 |---|---|---|---|---|
 | **Resource-based CUD** | Specific vCPU + memory in a region | Up to 55% (3yr); up to 70% for memory-optimised series | Low - locked to machine series and region | 1yr or 3yr |
-| **Spend-based / Flexible CUD** | $/hr spend on Compute Engine | **Up to 28% (1yr) or 46% (3yr)** | High - any machine series in any region | 1yr or 3yr |
+| **Spend-based / Compute flexible CUD** | $/hr spend across Compute Engine, GKE and Cloud Run, bought on the Cloud Billing account | **28% (1yr) and 46% (3yr)** on most general-purpose and compute series; 28% and 54% on C4N and M4N; M1 to M4 get **no 1-year discount** and 63% (3yr); 17% and 38% on H3 and H4D; GPUs 21% and 43% on G2, 16% and 42% on G4 | High - eligible machine series in any region | 1yr or 3yr |
+
+Flexible rates vary by machine series (Google's table, read 15 November 2026): a 1-year
+flexible commitment sized on an M1 to M4 fleet discounts nothing, and one sized on HPC
+(H3, H4D) or G2 and G4 GPU usage at the general 28% or 46% overstates the saving.
 
 **Block storage commitments** (GA 22 October 2026) are a resource-based category for
 Hyperdisk Balanced and Hyperdisk Throughput **Exapool** capacity only: Persistent Disk,
@@ -269,7 +274,25 @@ the full term whether or not the Exapool capacity is provisioned, and cannot be 
 Sources: <https://docs.cloud.google.com/compute/docs/instances/signing-up-committed-use-discounts>
 and, for the resource-based discount ceilings in the table,
 <https://docs.cloud.google.com/compute/docs/instances/committed-use-discounts-overview>
-(both updated 26 October 2026).
+(both updated 26 October 2026; the ceilings and the flexible rates were read again on
+15 November 2026).
+
+**Spend-based CUDs now bill as a discounted rate, not a credit.** Google is moving
+spend-based CUDs (compute flexible, Cloud SQL, BigQuery, Spanner, Bigtable, AlloyDB,
+Memorystore, Dataflow, Firestore and others) to a consumption model on a date shown per
+account as a notification on the Billing Overview page. Three things change for
+whoever reads the bill. The commitment is expressed in **discounted spend** (what you
+pay), where the legacy model committed an on-demand amount, so the same hourly figure
+covers more usage than before. Covered usage is billed at the discounted rate under a
+`Consumption Model` such as "Compute Flexible CUD - 1 Year" and no longer at list price
+with a CUD credit, so a query that measures CUD savings by summing
+`COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE` credits no longer finds them on migrated usage. And the
+commitment fee appears as its own SKU, offset by a `FEE_UTILIZATION_OFFSET` credit to
+the extent the commitment is used: what remains on the fee SKU is the cost of the
+unused commitment. VMware Engine and NetApp Volumes CUDs stay on the credit model, and
+resource-based CUDs are not concerned
+([spend-based CUDs](https://docs.cloud.google.com/docs/cuds-multiprice), read
+15 November 2026).
 
 The live row-by-row commitment comparison
 (<https://optimtoken.optimnow.io/guides/savings-plans-vs-reserved-instances> for the page,
@@ -310,14 +333,17 @@ The **architectural drift trap** (already in the patterns section below) is the
 GCP commitment failure OptimNow sees most often: organisations buy resource-based
 CUDs early, then migrate workloads to GKE Autopilot or Cloud Run, leaving the CUDs
 underused. Spend-based CUDs avoid this category of failure at the cost of about 9
-percentage points of discount depth on 3-year terms for most machine series (46% vs 55%;
-the gap is wider on memory-optimised series, where resource-based CUDs reach 70%).
+percentage points of discount depth on 3-year terms for most machine series (46% vs 55%).
+On the memory-optimised M1 to M4 series the 3-year gap is 7 points (63% vs 70%), but a
+1-year flexible commitment earns nothing there, so 1-year coverage of those series has
+to be resource-based. M4N is not in that group: its flexible rates are those of C4N
+(28% and 54%).
 
 **Layering recommendation (analogous to AWS / Azure layering):**
 
 ```
 Layer 1: Spot VMs (interruptible workloads)
-  ↓ removes 60-91% of compute cost on the spike layer
+  ↓ removes up to 91% of compute cost on the spike layer
 Layer 2: Spend-based CUDs (broad baseline across machine series)
   ↓ covers the predictable floor; survives migration
 Layer 3: Resource-based CUDs (only for high-conviction stable workloads)
@@ -327,28 +353,37 @@ Layer 4: SUDs (automatic - no action)
 Layer 5: On-Demand (variable / new workloads)
 ```
 
-CUDs cover **Compute Engine, GKE (via the underlying nodes), Cloud SQL, Cloud Run
-(spend-based only), and Memorystore** depending on the CUD type. They do **not**
-cover Cloud Functions, BigQuery, GCS, or Pub/Sub - those services have their own
-commitment models (BigQuery slot reservations, etc.).
+Resource-based CUDs exist for **Compute Engine only** (GKE Standard nodes are Compute
+Engine VMs, so they are covered). One compute flexible CUD covers eligible spend on
+**Compute Engine, GKE and Cloud Run**; the separate Cloud Run and GKE Autopilot
+spend-based CUDs can no longer be purchased. Other services have their own spend-based
+CUD, bought per service: Cloud SQL, Memorystore, Spanner, Bigtable, AlloyDB, BigQuery,
+Dataflow and Firestore among them. Cloud Storage and Pub/Sub have none
+([committed use discounts](https://docs.cloud.google.com/docs/cuds), read
+15 November 2026).
 
-**CUD Sharing - the CUD setting most often left off.** By default, CUD
-discounts apply only **within the project that purchased them**. To pool CUDs across an
-organisation - the typical multi-team / multi-project scenario - you must
-explicitly enable **CUD Sharing** at the **billing-account level**. Without it,
-one project burns its CUDs to zero while sibling projects pay PAYG, and the
-billing-account-level coverage looks healthy in aggregate while individual
-project-level utilisation is poor. Day-1 audit on any GCP commitment engagement:
-verify whether CUD Sharing is enabled. Source:
-https://cloud.google.com/billing/docs/how-to/cud-analysis
+**CUD Sharing - check it on every older billing account.** A resource-based CUD
+applies either to the project that purchased it or, with **CUD Sharing** enabled on
+the Cloud Billing account, to every project the account pays for. Billing accounts
+created on or after 16 June 2026 have sharing enabled by default; an account created
+before that date keeps whatever was configured, so check it; do not assume. Without
+it, one project leaves part of its commitment unused while sibling projects pay
+on-demand, and coverage looks healthy in aggregate while project-level utilisation is
+poor. Day-1 audit on any GCP commitment engagement: verify whether CUD Sharing is
+enabled, and which attribution applies (resource-based CUDs support proportional and
+prioritised attribution; spend-based CUDs, which are bought at the billing account,
+proportional only). Sources:
+https://docs.cloud.google.com/compute/docs/instances/committed-use-discounts-overview,
+https://docs.cloud.google.com/docs/cuds (read 15 November 2026)
 
-**Flexible GPU commitments across services.** As of August 2026, flexible GPU
-commitments can now apply across services (not just within a single service),
-broadening Flex CUD coverage for GPU-accelerated workloads such as AI/ML training and
-inference. This lets teams commit to GPU spend once and have the discount apply across
-qualifying services, improving commitment durability for evolving AI architectures.
+**GPUs under a compute flexible CUD: G2 and G4 only.** A compute flexible commitment
+covers GPUs only when they are used with the G2 and G4 machine series; GPUs on other
+series need a resource-based hardware commitment. Flexible commitments neither require
+nor support attached reservations, so they carry no capacity assurance: pair them with
+a standalone reservation where G2 or G4 capacity must be guaranteed (read
+15 November 2026).
 
-Sources: https://cloud.google.com/compute/docs/instances/committed-use-discounts-overview, https://cloud.google.com/compute/docs/instances/signing-up-flexible-committed-use-discounts
+Source: https://docs.cloud.google.com/compute/docs/instances/committed-use-discounts-overview
 
 ### Compute SKU billing - vCPU and memory bill separately
 
@@ -373,9 +408,13 @@ Source: https://cloud.google.com/compute/all-pricing
 
 ### Spot VMs
 
-Spot VMs (which superseded Preemptible VMs) offer **60-91% discount** off on-demand
-pricing in exchange for:
-- 30-second termination notice on preemption
+Spot VMs (which superseded Preemptible VMs) are priced at **up to 91% off** the
+on-demand price (Google states the ceiling only; the discount varies by machine type
+and region and moves over time) in exchange for:
+- Preemption at any time. The shutdown period is best effort and up to 30 seconds. By
+  default there is no notice before it; a **120-second preemption notice** can be set
+  when the VM is created, which Google recommends for any workload that needs more than
+  30 seconds to checkpoint or drain
 - No SLA, no live migration
 
 **No 24-hour maximum runtime.** Spot VMs can run indefinitely until preempted - the
@@ -387,7 +426,8 @@ Use for: batch jobs, ML training with checkpointing, CI/CD, fault-tolerant tiers
 Avoid for: stateful workloads, latency-sensitive APIs, anything that cannot tolerate
 abrupt termination.
 
-Source: https://cloud.google.com/compute/docs/instances/spot
+Source: https://docs.cloud.google.com/compute/docs/instances/spot (read
+15 November 2026)
 
 ### BigQuery commitments (separate from Compute CUDs)
 
@@ -409,6 +449,12 @@ implemented as a series of **60-second slot commitments stitched together**. Thi
 is why the autoscaler bills a 60-second minimum per scale-up and why "scale to
 zero" has a 1-minute floor. Useful mental model when an engineering team is
 surprised that a sub-minute query left billed slots running for a full minute.
+Slots scale in multiples of 50, billed per second with that one-minute minimum.
+**Fluid scaling**, an opt-in set per reservation, removes the minimum: scaled slots
+are billed per second, still in 50-slot steps. It suits reservations that serve many
+short, spiky queries, where the minimum is a large share of the autoscaling bill
+([slots autoscaling](https://docs.cloud.google.com/bigquery/docs/slots-autoscaling-intro),
+read 15 November 2026).
 
 #### Two commitment levers
 
@@ -536,6 +582,12 @@ https://docs.cloud.google.com/bigquery/docs/release-notes#August_31_2026 (releas
 note). See `finops-for-ai.md` for the broader proactive guardrail and token-budget
 enforcement guidance; this is the GCP-native example of platform-level token
 budget enforcement.
+
+The discounts in this section were recomputed as ratios from the
+[BigQuery pricing page](https://cloud.google.com/bigquery/pricing) on 15 November 2026
+and are unchanged. When a slot commitment expires with no renewal plan, its
+reservations remain and their baseline slots go on being billed until someone deletes
+them ([commitments](https://docs.cloud.google.com/bigquery/docs/reservations-commitments)).
 
 **Frame for clients**: BigQuery commitments trade flexibility for
 predictability, and often performance for predictability. The right

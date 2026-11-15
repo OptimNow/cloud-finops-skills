@@ -48,11 +48,21 @@ effective rate the CUD competes against.
 -- region, last 30 days. Credits are entries in the repeated credits field
 -- of the usage rows (credits.type = 'COMMITTED_USAGE_DISCOUNT'), not
 -- separate rows and not discounts on the commitment fee line itself.
+-- Spend-based commitments are out of scope and their fees must stay out of
+-- the ratio: a legacy one is offset by COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE
+-- credits, and one moved to the consumption model by a FEE_UTILIZATION_OFFSET
+-- credit on its own fee row. The NOT EXISTS below drops the second kind
+-- while it is in use. A legacy spend-based fee, or a consumption-model fee
+-- that is entirely unused (no offset), can still appear: read
+-- sku.description for any region with a low ratio before treating it as a
+-- resource-based mismatch.
 WITH fees AS (
   SELECT location.region AS region,
          SUM(cost) AS commitment_fee
   FROM `billing_dataset.gcp_billing_export_v1_XXXXXX`
-  WHERE sku.description LIKE 'Commitment%'
+  WHERE LOWER(sku.description) LIKE 'commitment%'
+    AND NOT EXISTS (SELECT 1 FROM UNNEST(credits) AS o
+                    WHERE o.type = 'FEE_UTILIZATION_OFFSET')
     AND usage_start_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)
   GROUP BY 1
 ),

@@ -53,6 +53,24 @@ yet tagged.
   blocks Premium SSD v2 or every public IP, and one FOCUS export replaces the actual
   plus amortized pair (`finops-azure-billing.md`). A VM on an ephemeral OS disk cannot
   be deallocated on a schedule (`finops-azure-data.md`).
+- **Google Cloud guide corrected after a full read of Google's pages (15 November
+  2026).** Sustained use discounts: 30% on N1, M1 and M2, 20% on N2, N2D and C2, and
+  none on E2 or the newer series, where the guide said about 20% for general-purpose
+  families. Compute flexible CUDs: rates by machine series, with no 1-year discount on
+  M1 to M4 and lower rates on H3, H4D and G2 and G4 GPUs; GPUs covered on G2 and G4 only; the move of spend-based CUDs from
+  credits to a discounted rate and what it does to a savings query. CUD sharing is on
+  by default only for billing accounts created since 16 June 2026. Spot VMs: no notice
+  by default, a 120-second notice on request. BigQuery fluid scaling. What the FOCUS
+  export leaves out (`finops-gcp.md`).
+- **Vertex AI guide corrected the same day.** Grounding with Google Search is charged
+  per query on Gemini 3 and 4, not per prompt; a tuned endpoint costs 1.5x only on a
+  non-global endpoint; Gemini 4 cache reads are 95% off; Provisioned Throughput can be
+  reduced only at renewal (`finops-vertexai.md`).
+- **Four provider changes of early November 2026.** DynamoDB bulk put items and its
+  separate meter (`finops-aws-patterns-databases.md`); MWAA tags now reach the compute
+  (`finops-aws-billing.md`); Snowflake's AI Gateway is GA, cost controls included, and per-user
+  quotas take overrides and role scope (`finops-snowflake.md`); Databricks budgets can
+  call a webhook (`finops-databricks.md`).
 
 ## 1.52.0 (14 November 2026)
 
