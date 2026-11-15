@@ -126,7 +126,9 @@ GCP exposes three distinct exports to BigQuery, and they are not interchangeable
   amounts as negative and add them to cost: net cost is
   `SUM(cost) + SUM(IFNULL((SELECT SUM(c.amount) FROM UNNEST(credits) c), 0))`. A query
   that reads only `cost` reports cost before CUDs, SUDs and promotions, and one that
-  subtracts credits flips their sign. The credit types are `COMMITTED_USAGE_DISCOUNT`,
+  subtracts credits flips their sign. The exception is usage moved to the consumption
+  model of spend-based CUDs (below): its `cost` is already at the discounted rate, with
+  no CUD credit beside it. The credit types are `COMMITTED_USAGE_DISCOUNT`,
   `COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE`, `SUSTAINED_USAGE_DISCOUNT`, `FREE_TIER`,
   `PROMOTION`, `DISCOUNT`, `RESELLER_MARGIN`, `SUBSCRIPTION_BENEFIT` and
   `FEE_UTILIZATION_OFFSET`. To reproduce a console view, the Billing Reports "Generate
@@ -238,7 +240,9 @@ machine family and region across the Cloud Billing account, not per VM.
   `SUSTAINED_USAGE_DISCOUNT` in the `credits` field of the usage row (see "Credits are
   not separate rows" above).
 - **A resource takes one kind of discount at a time.** Usage covered by a commitment
-  earns no SUD; only the overage above it can.
+  earns no SUD; only the overage above it can. The one exception is the sole-tenant
+  node premium, which still earns a SUD when the node's vCPUs and memory are under a
+  commitment.
 
 **Practical implication:** on an eligible series, SUDs reduce the apparent saving from a
 1-year CUD, because the usage the CUD would cover already earns the SUD. When sizing a
@@ -255,10 +259,11 @@ GCP CUDs come in two distinct flavours that are easy to conflate:
 | CUD type | Commits to | Discount depth | Flexibility | Term |
 |---|---|---|---|---|
 | **Resource-based CUD** | Specific vCPU + memory in a region | Up to 55% (3yr); up to 70% for memory-optimised series | Low - locked to machine series and region | 1yr or 3yr |
-| **Spend-based / Compute flexible CUD** | $/hr spend across Compute Engine, GKE and Cloud Run, bought on the Cloud Billing account | **28% (1yr) and 46% (3yr)** on most series; 54% (3yr) on C4N and M4N; M1 to M4 get **no 1-year discount** and 63% (3yr) | High - eligible machine series in any region | 1yr or 3yr |
+| **Spend-based / Compute flexible CUD** | $/hr spend across Compute Engine, GKE and Cloud Run, bought on the Cloud Billing account | **28% (1yr) and 46% (3yr)** on most general-purpose and compute series; 28% and 54% on C4N and M4N; M1 to M4 get **no 1-year discount** and 63% (3yr); 17% and 38% on H3 and H4D; GPUs 21% and 43% on G2, 16% and 42% on G4 | High - eligible machine series in any region | 1yr or 3yr |
 
 Flexible rates vary by machine series (Google's table, read 15 November 2026): a 1-year
-flexible commitment sized on an M-series fleet discounts nothing.
+flexible commitment sized on an M1 to M4 fleet discounts nothing, and one sized on HPC
+(H3, H4D) or G2 and G4 GPU usage at the general 28% or 46% overstates the saving.
 
 **Block storage commitments** (GA 22 October 2026) are a resource-based category for
 Hyperdisk Balanced and Hyperdisk Throughput **Exapool** capacity only: Persistent Disk,
@@ -329,9 +334,10 @@ GCP commitment failure OptimNow sees most often: organisations buy resource-base
 CUDs early, then migrate workloads to GKE Autopilot or Cloud Run, leaving the CUDs
 underused. Spend-based CUDs avoid this category of failure at the cost of about 9
 percentage points of discount depth on 3-year terms for most machine series (46% vs 55%).
-On the memory-optimised M series the 3-year gap is 7 points (63% vs 70%), but a 1-year
-flexible commitment earns nothing there, so 1-year M-series coverage has to be
-resource-based.
+On the memory-optimised M1 to M4 series the 3-year gap is 7 points (63% vs 70%), but a
+1-year flexible commitment earns nothing there, so 1-year coverage of those series has
+to be resource-based. M4N is not in that group: its flexible rates are those of C4N
+(28% and 54%).
 
 **Layering recommendation (analogous to AWS / Azure layering):**
 

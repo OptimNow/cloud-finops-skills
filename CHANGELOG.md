@@ -57,7 +57,7 @@ yet tagged.
   2026).** Sustained use discounts: 30% on N1, M1 and M2, 20% on N2, N2D and C2, and
   none on E2 or the newer series, where the guide said about 20% for general-purpose
   families. Compute flexible CUDs: rates by machine series, with no 1-year discount on
-  the M series; GPUs covered on G2 and G4 only; the move of spend-based CUDs from
+  M1 to M4 and lower rates on H3, H4D and G2 and G4 GPUs; GPUs covered on G2 and G4 only; the move of spend-based CUDs from
   credits to a discounted rate and what it does to a savings query. CUD sharing is on
   by default only for billing accounts created since 16 June 2026. Spot VMs: no notice
   by default, a 120-second notice on request. BigQuery fluid scaling. What the FOCUS
@@ -68,7 +68,7 @@ yet tagged.
   reduced only at renewal (`finops-vertexai.md`).
 - **Four provider changes of early November 2026.** DynamoDB bulk put items and its
   separate meter (`finops-aws-patterns-databases.md`); MWAA tags now reach the compute
-  (`finops-aws-billing.md`); Snowflake's AI Gateway cost controls are GA and per-user
+  (`finops-aws-billing.md`); Snowflake's AI Gateway is GA, cost controls included, and per-user
   quotas take overrides and role scope (`finops-snowflake.md`); Databricks budgets can
   call a webhook (`finops-databricks.md`).
 

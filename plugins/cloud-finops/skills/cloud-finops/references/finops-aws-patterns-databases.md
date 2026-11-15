@@ -357,7 +357,9 @@ give unused reserved capacity an owner. Sources:
 https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/capacity-reservations.getting-started.html,
 https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/capacity-reservations.pricing-billing.html
 
-### DynamoDB bulk put items - a load billed outside table capacity
+---
+
+## DynamoDB bulk put items - a load billed outside table capacity
 
 Since 5 November 2026 DynamoDB can load files already in S3 into an **existing** table
 as a managed, asynchronous operation (bulk put items). It has its own meter, so it

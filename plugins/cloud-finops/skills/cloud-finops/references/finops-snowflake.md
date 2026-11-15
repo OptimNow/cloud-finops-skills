@@ -313,9 +313,11 @@ OpenAI Chat Completions and Anthropic Messages request formats. Its consumption 
 recorded per request (gateway, user, model, tokens) in
 `SNOWFLAKE.ACCOUNT_USAGE.AI_GATEWAY_USAGE_HISTORY`, which is the attribution source
 for showback. Snowflake's guidance is to govern it by adding the gateway to a custom
-budget as a shared resource and capping individuals with per-user quotas. Those three
-parts (the usage view, shared resource budgets, per-user quotas) are what went GA; the
-gateway's tools and its trace analytics tab are still in preview.
+budget as a shared resource and capping individuals with per-user quotas. The GA
+covers inference through the gateway, its observability (traces in
+`AGENT_TRACE_TABLE`) and those cost controls (the usage view, shared resource budgets,
+per-user quotas); the gateway's tools and its trace analytics tab are still in
+preview.
 
 Sources: https://docs.snowflake.com/en/user-guide/budgets/per-user-quotas,
 https://docs.snowflake.com/en/release-notes/2026/other/2026-09-16-weekly-per-user-quota-limits,

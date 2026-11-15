@@ -319,13 +319,14 @@ families, including the long-context bands, the 1.8x Priority multiplier, the 50
 Flex/Batch discount and the 90% cache-read discount. The choice is a governance and
 capacity decision, not a rate one.
 
-Three real differences sit underneath the identical headline rates:
+Two real differences sit underneath the identical headline rates, and a third, on
+grounding, has narrowed to the older models:
 
 - **Explicit cache storage is cheaper on the Developer API until 1 January 2027.** On
   the 3.8 / 3.7 / 3.6 Flash SKUs it bills at half the Agent Platform rate per token-hour
   through 31 December 2026, then converges. A cache-heavy workload is cheaper
   through the Developer API today, and stops being so in January.
-- **Grounding bills per query on current models, on both doors.** On the Agent
+- **Grounding now bills per query on current models.** On the Agent
   Platform, Grounding with Google Search for the Gemini 3 and Gemini 4 families is
   charged for each individual search query, and one prompt may issue several; a monthly
   allowance of queries, aggregated across those models, is free. Only the Gemini 2.0
@@ -335,6 +336,9 @@ Three real differences sit underneath the identical headline rates:
   from 2.5 to a 3 or 4 model changes grounding unit as well as token rate, and an
   agentic search loop is where the per-query unit scales badly: track queries per
   prompt (Agent Platform pricing page, "Pricing with grounding", read 15 November 2026).
+  The per-query unit is the one this file gave for the Developer API, which was not
+  read again that day, so the two doors differ on grounding only for the 2.0 and 2.5
+  rows until that page is checked.
 - **The free tier is not free of consequences** (below).
 
 ### Gemini Developer API specifics
@@ -550,9 +554,9 @@ the pricing shape differs:
 
 **Mechanics** (verified 20 September 2026):
 - **Two kinds of caching, and one of them is free.** *Implicit* caching is on by default
-  for every GCP project and gives the same 90% discount on cached tokens **with no
-  storage charge at all**. *Explicit* caching is the one you declare and manage, and the
-  one that bills for storage. Before designing an explicit cache, check whether implicit
+  for every GCP project and bills cached tokens at the same rate as an explicit cache
+  hit (below) **with no storage charge at all**. *Explicit* caching is the one you
+  declare and manage, and the one that bills for storage. Before designing an explicit cache, check whether implicit
   hits are already covering the workload - placing large, stable content at the start of
   the prompt and sending similar-prefix requests close together is enough to raise the
   implicit hit rate, at zero storage cost.
