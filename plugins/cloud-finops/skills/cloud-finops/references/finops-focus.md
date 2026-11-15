@@ -471,7 +471,7 @@ divergence catalogue above for the providers it covers.
 
 | Option | Covers | What it gives | Constraints to know before choosing |
 |---|---|---|---|
-| **AWS Cloud Intelligence Dashboards (CID), FOCUS Dashboard** | AWS natively; collectors for Azure, GCP and OCI | A consolidation view in Athena that unions FOCUS tables of **different versions** (1.0 and 1.2 in one view), Quick dashboards on top, Terraform and CloudFormation deployment | Lives in AWS; the other providers' collectors pull via API with credentials in Secrets Manager rather than federation; first Data Exports delivery takes 24 to 48 hours; AWS's own FAQ says FOCUS is not the dataset for cost optimisation detail (see below) |
+| **AWS Cloud Intelligence Dashboards (CID), FOCUS Dashboard** | AWS natively; collectors for Azure, GCP and OCI | A consolidation view in Athena that unions FOCUS tables of **different versions** (1.0 and 1.2 in one view), Quick dashboards on top, Terraform and CloudFormation deployment | Lives in AWS; the other providers' collectors pull via API with credentials in Secrets Manager rather than federation; first Data Exports delivery takes 24 to 48 hours; the Quick Sight layer is billed per author and per reader each month (or as reader-session capacity), so the audience size is a running cost; AWS's own FAQ says FOCUS is not the dataset for cost optimisation detail (see below) |
 | **Microsoft FinOps toolkit, FinOps hubs** | Azure natively; documented Google Cloud ingestion via Data Factory | Storage, Data Explorer or Fabric back end, Power BI reports aligned to FOCUS, FOCUS 1.2 preview support | Requires FOCUS exports, so pay-as-you-go (MOSA) subscriptions are unsupported from hubs 0.2; the price export must run before the cost export or the ETL re-runs to fill prices; direct Power BI reports do not scale to large or long histories (Data Explorer or Fabric is the documented answer); 1.2 support renamed columns (`InvoiceId`, `PricingCurrency`, `SkuMeter`), which broke reports built on 1.0 names |
 
 Practitioners who chose one and said so: Australian Retirement Trust (FinOps hubs,
@@ -484,6 +484,8 @@ BigQuery or Databricks and the data team owns it.
 
 Sources: CID FOCUS Dashboard
 (<https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/focus-dashboard.html>),
+Quick Sight pricing, read 15 November 2026
+(<https://aws.amazon.com/quick/quicksight/pricing/>),
 FinOps hubs overview
 (<https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/finops-hubs-overview>).
 

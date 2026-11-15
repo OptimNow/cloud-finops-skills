@@ -16,6 +16,10 @@ yet tagged.
 
 ### New and corrected content
 
+- **FOCUS consolidators: the CID dashboards carry a per-user charge.** The build,
+  borrow or buy table in `finops-focus.md` now says that the Quick Sight layer of AWS
+  Cloud Intelligence Dashboards is billed per author and per reader each month, or as
+  reader-session capacity, so the audience size is a running cost of that option.
 - **Two new Azure runbooks.** `azure-hybrid-benefit-unclaimed` finds the Windows
   Server, SQL Server, RHEL and SLES VMs that pay for a licence the organisation
   already owns, with one Resource Graph query per licence switch.
