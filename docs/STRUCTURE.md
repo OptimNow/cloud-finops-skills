@@ -142,7 +142,8 @@ cloud-finops-skills/
 │       ├── finops-allocation-showback.md   <- Allocation methodology + showback
 │       ├── finops-chargeback.md            <- Chargeback + Finance/accounting prerequisites
 │       ├── finops-practice-operations.md   <- Practice operations: operating model, RACI, forums, ITFM
-│       ├── finops-whats-new.md             <- Rolling 90-day digest of verified provider changes (generated block)
+│       ├── finops-whats-new.md             <- Rolling 90-day digest of verified provider changes: scheduled, this month and last (generated block)
+│       ├── finops-whats-new-earlier.md     <- Earlier months of the same 90-day digest (generated block)
 │       ├── finops-onboarding-workloads.md  <- Migration-time cost hygiene, M&A, divestiture
 │       ├── finops-kubernetes.md            <- K8s cross-cluster discipline (EKS/GKE/AKS)
 │       ├── finops-on-prem-hybrid.md        <- On-prem and hybrid: internal bill, hybrid platforms, exit fees
@@ -227,7 +228,8 @@ cloud-finops-skills/
 │                             lists them, against each server's own tools/list;
 │                             --offline in CI, live weekly in
 │                             companion-tools.yml), render-whats-new.py
-│                             (provider-changes.yaml into finops-whats-new.md;
+│                             (provider-changes.yaml into finops-whats-new.md
+│                             and finops-whats-new-earlier.md;
 │                             --check) and check-marketplace-version
 │                             - all twenty-seven run by the `CI` workflow, and
 │                             check-marketplace-version additionally has its

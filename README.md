@@ -413,9 +413,12 @@ release ships the same content to the Claude Code marketplace install, PyPI, the
 Registry and the hosted connector. Watch or star the
 repository to be notified, and read [CHANGELOG.md](./CHANGELOG.md) for what each
 version changes for you, in plain words. The provider changes verified over the last
-90 days, and those already scheduled, are in one dated file,
-[finops-whats-new.md](plugins/cloud-finops/skills/cloud-finops/references/finops-whats-new.md):
-ask "what changed in cloud billing last month?" and the answer comes from it.
+90 days, and those already scheduled, are in a dated digest:
+[finops-whats-new.md](plugins/cloud-finops/skills/cloud-finops/references/finops-whats-new.md)
+for the scheduled changes and the current and previous month, and
+[finops-whats-new-earlier.md](plugins/cloud-finops/skills/cloud-finops/references/finops-whats-new-earlier.md)
+for the months before. Ask "what changed in cloud billing last month?" and the answer
+comes from the first.
 
 ---
 

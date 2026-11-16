@@ -5,9 +5,13 @@
 library applied after reading it on the provider's own page: its date, who made it,
 what it changes on the bill, and the guide and section that carry the mechanics.
 This script validates every entry and rewrites the block between two HTML markers
-in `references/finops-whats-new.md`: the changes already scheduled, then one table
-per month for the last 90 days before the file's `as_of` date. Older entries stay
-in the YAML as the archive and leave the rendered digest on their own.
+in two files. `references/finops-whats-new.md` gets the changes already scheduled,
+then one table for the month of `as_of` and one for the month before it.
+`references/finops-whats-new-earlier.md` gets one table for each earlier month of
+the 90 days before `as_of`. The split keeps each file inside the 15,000-token budget
+of scripts/check-reference-size.sh (one file passed it in November 2026) while
+both file names stay fixed, so no listing has to change when a month turns. Older
+entries stay in the YAML as the archive and leave the rendered digest on their own.
 
 The window is counted from `as_of`, never from today's date, so the output is the
 same on every machine and CI does not go red because time passed: the digest is as
@@ -16,8 +20,8 @@ scripts/business-coverage.sh and scripts/render-questions-readme.py: the data fi
 is the source of truth, the markdown is generated, and CI fails on a stale block.
 
 Usage:
-    python scripts/render-whats-new.py           Rewrite the block in the reference
-    python scripts/render-whats-new.py --check   Exit 1 if the block is stale
+    python scripts/render-whats-new.py           Rewrite the block in both files
+    python scripts/render-whats-new.py --check   Exit 1 if either block is stale
 
 Exit code 2 means the data file itself is wrong (the message says which entry).
 Needs PyYAML (installed with the MCP server's dev extras).
@@ -34,9 +38,13 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SKILL = REPO_ROOT / "plugins" / "cloud-finops" / "skills" / "cloud-finops"
 DATA = REPO_ROOT / "scripts" / "provider-changes.yaml"
 DIGEST = SKILL / "references" / "finops-whats-new.md"
+EARLIER = SKILL / "references" / "finops-whats-new-earlier.md"
 START = "<!-- whats-new:start -->"
 END = "<!-- whats-new:end -->"
 WINDOW_DAYS = 90
+# Months kept in DIGEST: the month of as_of and the one before it, so "what
+# changed last month" is answered there even on the first day of a month.
+RECENT_MONTHS = 2
 MAX_CHANGE_CHARS = 320
 
 # The vendors and bodies an entry may name. A closed list, so a typo ("Azur",
@@ -191,7 +199,7 @@ def load() -> tuple[dt.date, list[dict]]:
         if re.search(r"\bpercent\b", change, re.IGNORECASE):
             fail_run(f"{label}: `change` says 'percent'; write %")
         name = str(entry["file"])
-        if name == DIGEST.stem or name not in known:
+        if name in (DIGEST.stem, EARLIER.stem) or name not in known:
             fail_run(f"{label}: file {name!r} is not a reference or a runbook")
         section = entry.get("section")
         if section:
@@ -240,37 +248,11 @@ def long_date(day: dt.date) -> str:
     return f"{day.day} {MONTHS[day.month - 1]} {day.year}"
 
 
-def render() -> tuple[str, dict[str, int]]:
-    as_of, entries = load()
-    floor = as_of - dt.timedelta(days=WINDOW_DAYS)
-    scheduled = sorted((e for e in entries if e["when"].is_after(as_of)), key=lambda e: (e["when"].year, e["when"].month, e["when"].day or 32))
-    recent = [e for e in entries if not e["when"].is_after(as_of) and e["when"].first >= floor.replace(day=1) and (e["when"].day is None or e["when"].first >= floor)]
-    older = len(entries) - len(scheduled) - len(recent)
-
-    lines = [
-        START,
-        "",
-        f"**Digest as of {long_date(as_of)}:** {len(recent)} verified changes dated since "
-        f"{long_date(floor)}, and {len(scheduled)} already scheduled after that date. A provider "
-        f"announcement made after {long_date(as_of)} is not in this file.",
-        "",
-        "## Scheduled changes",
-        "",
-    ]
-    if scheduled:
-        lines += [
-            f"Dates ahead of {long_date(as_of)}, soonest first.",
-            "",
-            "| When | Who | What is scheduled | Read more |",
-            "|---|---|---|---|",
-            *(row(e, with_year=True) for e in scheduled),
-        ]
-    else:
-        lines.append(f"No change scheduled after {long_date(as_of)} is recorded.")
-
+def month_tables(entries: list[dict]) -> list[str]:
     months: dict[tuple[int, int], list[dict]] = {}
-    for entry in recent:
+    for entry in entries:
         months.setdefault((entry["when"].year, entry["when"].month), []).append(entry)
+    lines: list[str] = []
     for year, month in sorted(months, reverse=True):
         rows = sorted(months[(year, month)], key=lambda e: e["when"].sort_key(), reverse=True)
         lines += [
@@ -283,31 +265,98 @@ def render() -> tuple[str, dict[str, int]]:
             "|---|---|---|---|",
             *(row(e, with_year=False) for e in rows),
         ]
-    lines += ["", END]
-    return "\n".join(lines), {"recent": len(recent), "scheduled": len(scheduled), "older": older}
+    return lines
+
+
+def render() -> tuple[str, str, dict[str, int]]:
+    as_of, entries = load()
+    floor = as_of - dt.timedelta(days=WINDOW_DAYS)
+    split = as_of.replace(day=1)
+    for _ in range(RECENT_MONTHS - 1):
+        split = (split - dt.timedelta(days=1)).replace(day=1)
+    before_split = split - dt.timedelta(days=1)
+    scheduled = sorted((e for e in entries if e["when"].is_after(as_of)), key=lambda e: (e["when"].year, e["when"].month, e["when"].day or 32))
+    window = [e for e in entries if not e["when"].is_after(as_of) and e["when"].first >= floor.replace(day=1) and (e["when"].day is None or e["when"].first >= floor)]
+    recent = [e for e in window if e["when"].first >= split]
+    earlier = [e for e in window if e["when"].first < split]
+    older = len(entries) - len(scheduled) - len(window)
+
+    main_lines = [
+        START,
+        "",
+        f"**Digest as of {long_date(as_of)}:** {len(recent)} verified changes dated since "
+        f"{long_date(split)}, and {len(scheduled)} already scheduled after {long_date(as_of)}. "
+        f"The {len(earlier)} changes dated from {long_date(floor)} to {long_date(before_split)} "
+        f"are in `{EARLIER.name}`. A provider announcement made after {long_date(as_of)} is "
+        "not in this file.",
+        "",
+        "## Scheduled changes",
+        "",
+    ]
+    if scheduled:
+        main_lines += [
+            f"Dates ahead of {long_date(as_of)}, soonest first.",
+            "",
+            "| When | Who | What is scheduled | Read more |",
+            "|---|---|---|---|",
+            *(row(e, with_year=True) for e in scheduled),
+        ]
+    else:
+        main_lines.append(f"No change scheduled after {long_date(as_of)} is recorded.")
+    main_lines += month_tables(recent)
+    main_lines += ["", END]
+
+    earlier_lines = [
+        START,
+        "",
+        f"**Digest as of {long_date(as_of)}:** {len(earlier)} verified changes dated from "
+        f"{long_date(floor)} to {long_date(before_split)}. The changes dated since "
+        f"{long_date(split)}, and those already scheduled, are in `{DIGEST.name}`.",
+    ]
+    if earlier:
+        earlier_lines += month_tables(earlier)
+    else:
+        earlier_lines += ["", f"No verified change is dated from {long_date(floor)} to {long_date(before_split)}."]
+    earlier_lines += ["", END]
+    counts = {"recent": len(recent), "earlier": len(earlier), "scheduled": len(scheduled), "older": older}
+    return "\n".join(main_lines), "\n".join(earlier_lines), counts
+
+
+def splice(path: Path, block: str) -> tuple[str, str]:
+    """The file as it is, and the file with its generated block replaced."""
+    text = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+    start, end = text.find(START), text.find(END)
+    if start == -1 or end == -1 or end < start:
+        fail_run(f"{path.name} has no {START} / {END} markers in order.")
+    return text, text[:start] + block + text[end + len(END) :]
 
 
 def main(argv: list[str]) -> int:
     check = "--check" in argv[1:]
-    text = DIGEST.read_text(encoding="utf-8").replace("\r\n", "\n")
-    start, end = text.find(START), text.find(END)
-    if start == -1 or end == -1 or end < start:
-        fail_run(f"{DIGEST.name} has no {START} / {END} markers in order.")
-    block, counts = render()
-    new_text = text[:start] + block + text[end + len(END) :]
-    summary = f"{counts['recent']} recent, {counts['scheduled']} scheduled, {counts['older']} past the {WINDOW_DAYS}-day window"
-    if new_text == text:
-        print(f"OK: {DIGEST.name} is in sync with {DATA.name} ({summary}).")
+    main_block, earlier_block, counts = render()
+    summary = (
+        f"{counts['recent']} recent, {counts['earlier']} earlier, {counts['scheduled']} scheduled, "
+        f"{counts['older']} past the {WINDOW_DAYS}-day window"
+    )
+    stale: list[tuple[Path, str]] = []
+    for path, block in ((DIGEST, main_block), (EARLIER, earlier_block)):
+        old, new = splice(path, block)
+        if old != new:
+            stale.append((path, new))
+    if not stale:
+        print(f"OK: {DIGEST.name} and {EARLIER.name} are in sync with {DATA.name} ({summary}).")
         return 0
+    names = " and ".join(path.name for path, _ in stale)
     if check:
         print(
-            f"FAIL: {DIGEST.name} is stale. Run `python scripts/render-whats-new.py` and "
-            "commit the reference.",
+            f"FAIL: {names} {'is' if len(stale) == 1 else 'are'} stale. Run "
+            "`python scripts/render-whats-new.py` and commit the references.",
             file=sys.stderr,
         )
         return 1
-    DIGEST.write_text(new_text, encoding="utf-8", newline="\n")
-    print(f"{DIGEST.name} rewritten from {DATA.name} ({summary}).")
+    for path, new in stale:
+        path.write_text(new, encoding="utf-8", newline="\n")
+    print(f"{names} rewritten from {DATA.name} ({summary}).")
     return 0
 
 

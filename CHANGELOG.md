@@ -36,6 +36,12 @@ yet tagged.
   gateway (with the point-to-site case that makes a gateway without connections look
   idle when it is not). `azure-snapshot-sprawl` now finds full snapshots billed at the
   Premium SSD rate.
+- **The "what changed" digest is in two files.** `finops-whats-new.md` keeps the
+  scheduled changes and the current and previous month, so "what changed last month"
+  and "what is coming" are still answered there. The earlier months of the 90-day
+  window are in `finops-whats-new-earlier.md`, generated from the same list. The one
+  file had reached its size budget. On the connector, the earlier months are
+  `get_reference(name="finops-whats-new-earlier")`.
 - **Vertex AI spend caps: the alerts are fixed.** `finops-vertexai.md` adds a fifth
   mechanic: a spend cap budget's alerts (50%, 80%, 100%) and recipients cannot be
   customised, so other thresholds need an ordinary budget beside the cap.
