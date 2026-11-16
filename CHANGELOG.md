@@ -36,6 +36,14 @@ yet tagged.
   gateway (with the point-to-site case that makes a gateway without connections look
   idle when it is not). `azure-snapshot-sprawl` now finds full snapshots billed at the
   Premium SSD rate.
+- **The connector's search no longer answers a short query on one word of it.** A
+  `query` of two or three words used to return a file that shared a single minor
+  word with it: "NAT gateway charges" on Azure returned the VNet gateway runbook on
+  "gateway", and the French "charges" (workloads) of a Spot question matched the
+  English word. Such a file now comes back only when the shared word carries at least
+  40% of the query's weight. Sentences are ranked as before, because one distinctive
+  word in a sentence is often the right match. A two-word compound can still slip
+  through ("NAT gateway" on Azure still returns the VNet gateway runbook).
 - **The "what changed" digest is in two files.** `finops-whats-new.md` keeps the
   scheduled changes and the current and previous month, so "what changed last month"
   and "what is coming" are still answered there. The earlier months of the 90-day

@@ -816,7 +816,10 @@ at once: the SKILL.md / POWER.md routing fallback (grep the lists when no routin
 keyword matches), retrieval on the ChatGPT, Gemini and llms-full surfaces (the text
 travels with the knowledge file), and, since phase 2 (same day), the `query`
 parameter on the MCP finders, which rank by word overlap on the questions, then the
-title, then the headings, with no embedding and no network call; phase 3 (shipped
+title, then the headings, with no embedding and no network call (since 2026-11-16 a
+file sharing one word with a query of two or three words is dropped unless that word
+carries 40% of the query's weight; sentences keep single-word matches, which the
+held-out test of the declared questions showed are often right); phase 3 (shipped
 2026-11-09) put the field on every file, generates the README "What you can ask, by
 role" block from the persona-tagged entries (`scripts/render-questions-readme.py`,
 `--check` in CI) and gates the rules below with `scripts/check-questions.py`. Writing

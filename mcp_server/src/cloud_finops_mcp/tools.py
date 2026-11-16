@@ -110,6 +110,19 @@ _REFERENCE_PROVIDER_PREFIXES = (
 )
 _TITLE_WEIGHT = 0.5
 _HEADING_WEIGHT = 0.35
+# A file that shares one word with a short query is kept only when that word
+# carries at least this share of the query's weight. Without the gate the word
+# counted once per surface (question, title, heading), so it cleared
+# QUERY_MIN_SCORE alone: "NAT gateway charges" on scope azure returned the VNet
+# gateway runbook on "gateway" (0.49), and the French "charges" (workloads) of a
+# Spot question matched the English "charges" (0.32).
+_SINGLE_WORD_MIN_SHARE = 0.4
+# Short means two or three content words, the length of a keyword query, where
+# every word is meant. In a sentence one shared distinctive word ("snapshot") is
+# often the whole signal: on the declared questions, each asked with itself left
+# out of the index (16 November 2026), applying the gate to four words and up
+# cost 4 to 27 first places and applying it to three cost none.
+_SINGLE_WORD_MAX_QUERY_WORDS = 3
 
 _QUERY_TOKEN_RE = re.compile(r"[a-z0-9]+")
 
@@ -273,6 +286,12 @@ def _score_against_query(
     declares the user's question outranks one that merely shares its nouns,
     and a file with no ``questions:`` block yet is still reachable through
     its title and headings.
+
+    A file that shares a single content word with a short query (two or three
+    words) scores 0 unless that word carries ``_SINGLE_WORD_MIN_SHARE`` of the
+    query's weight: one word, however often the file repeats it, is not a match
+    on several. Above the gate the score is unchanged, so a file whose title and
+    questions both carry the word still ranks above one that mentions it once.
     """
     best_question: Question | None = None
     best_coverage = 0.0
@@ -285,6 +304,14 @@ def _score_against_query(
     heading_coverage = max(
         (_coverage(query, h, idf, query_weight) for h in headings), default=0.0
     )
+    if 2 <= len(query) <= _SINGLE_WORD_MAX_QUERY_WORDS:
+        shared = query & query_tokens(title_text)
+        for text in [q.text for q in questions] + list(headings):
+            if len(shared) > 1:
+                break
+            shared |= query & query_tokens(text)
+        if len(shared) == 1 and _weight(shared, idf) < _SINGLE_WORD_MIN_SHARE * query_weight:
+            return 0.0, best_question
     score = (
         _QUESTION_WEIGHT * best_coverage
         + _TITLE_WEIGHT * title_coverage
