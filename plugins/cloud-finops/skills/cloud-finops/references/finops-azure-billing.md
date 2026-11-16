@@ -88,16 +88,53 @@ Use the Azure Retail Prices API to verify EA discounts against public pricing. U
 
 ### FinOps Toolkit and FinOps Hubs
 
-Microsoft's open-source FinOps Toolkit provides pre-built solutions including Power BI
-report templates, Azure Workbooks, and FinOps Hubs for automated cost data ingestion.
+Microsoft's open-source FinOps Toolkit (MIT licence) provides Power BI report
+templates, Azure Workbooks, alerts, the Azure Optimization Engine (AOE), a PowerShell
+module, open data files and FinOps Hubs.
 
-**FinOps Hubs** normalise cost exports into a consistent schema and feed Power BI reports.
-Recommended for organisations that want production-grade reporting without building custom
-data pipelines. FinOps Hubs (Toolkit v12) ingest the **FOCUS 1.2 preview** from Cost
-Management and provide 1.2-aligned analytics on top, enabling standardised multi-cloud
-cost reporting (see "FOCUS export support" above for the layered preview vs GA picture).
+**FinOps Hubs** ingest the Cost Management exports (FOCUS cost, prices, reservation
+feeds) through Data Factory into Azure Data Explorer or Microsoft Fabric, normalise
+them and feed the reports. Recommended for organisations that want production-grade
+reporting without building custom data pipelines. Hubs ingest the **FOCUS 1.2
+preview** since Toolkit v12 (see "FOCUS export support" above for the preview vs GA
+picture). Release 15 (October 2026) added three network modes: public (the default),
+VNet (private endpoints, default outbound access) and private (private endpoints plus
+an opt-in NAT Gateway, which bills on its own). It also added a local hub in the free
+Kusto emulator container, for evaluation: no scheduled ingestion, no SLA.
 
-Repository: https://github.com/microsoft/finops-toolkit
+**Support model.** The toolkit is provided as-is: Microsoft supports the Azure services
+underneath, not the toolkit. Help comes through GitHub issues, discussions and
+office hours, with a stated aim of a reply within three business days, and
+independent firms on the toolkit's ecosystem page sell support. Ask who supports a
+client's hub before it carries a chargeback.
+
+**Check the hub version before quoting its numbers.** Release 15 (28 October 2026)
+fixed defects that changed figures, not only their display:
+
+- the dashboard counted commitment purchases as savings, overstating savings and
+  effective savings rate (the mechanism is in `finops-allocation-showback.md`,
+  "Measuring savings from the cost columns");
+- commitment savings were understated where duplicate reservation price rows existed;
+- the savings plan and reservation eligibility columns of the price data carried each
+  other's values from release 14 (April 2026), and rows already ingested keep the
+  wrong values until they are reingested;
+- a redeploy or upgrade could reset the retention setting and purge history;
+- service mappings could duplicate cost rows.
+
+A hub older than 15, or upgraded without reingesting its prices, gives savings, ESR
+and eligibility figures that cannot be defended, and a hub upgraded before 15 may hold
+less history than its retention setting says. The Power BI reports, workbooks and AOE
+older than 15 read the retired external instance size flexibility file (see
+`finops-azure-commitments.md`, "Instance size flexibility ratios come from the API,
+not the CSV"), and AOE older than 15 writes to Log Analytics through the HTTP Data
+Collector API, whose support ended on 14 September 2026 although ingestion still
+works ([Data Collector API](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api)).
+
+Sources: [v15 release notes](https://github.com/microsoft/finops-toolkit/releases/tag/v15)
+and [changelog](https://github.com/microsoft/finops-toolkit/blob/dev/docs-mslearn/toolkit/changelog.md),
+[support policy](https://github.com/microsoft/finops-toolkit/blob/dev/SUPPORT.md),
+[FinOps hubs overview](https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/finops-hubs-overview),
+all read 16 November 2026. Repository: https://github.com/microsoft/finops-toolkit
 
 ### Azure Resource Graph for cost analysis
 
@@ -147,6 +184,20 @@ produces its own FOCUS export. Central FinOps must **union the exports across
 profiles** before analysis. For multi-profile customers (most large enterprises),
 this is a daily ETL step, not a one-time configuration. Document the union logic
 in the FinOps platform runbook.
+
+**Units carry a block size.** Azure's `UnitOfMeasure` can group usage into
+blocks ("100 Hours", "10000 GB"), so cost divided by the legacy `Quantity` gives a
+price per block, not per unit. The FOCUS export splits it: `ConsumedQuantity` is
+the usage in distinct units, `PricingQuantity` is the charged amount after the
+block size, `PricingUnit` and `ConsumedUnit` hold the distinct unit,
+`x_PricingBlockSize` the factor and `x_PricingUnitDescription` the original
+string. Divide `ContractedCost` by `PricingQuantity`, never by `ConsumedQuantity`,
+and sum quantities only within one `ConsumedUnit`: a filter on a meter
+subcategory can mix token, hour and request meters. The FinOps toolkit's Pricing
+units open data file maps each `UnitOfMeasure` value to its block size. Sources:
+[FOCUS column mapping](https://learn.microsoft.com/en-us/cloud-computing/finops/focus/mapping),
+[Open data, Pricing units](https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/open-data#pricing-units),
+read 16 November 2026.
 
 **Source:** https://learn.microsoft.com/en-us/azure/cost-management-billing/dataset-schema/cost-usage-details-focus
 
@@ -707,7 +758,7 @@ from a Bicep/ARM template, query per resource, and sum monthly cost (hourly rate
 730). This moves cost estimation from a post-deploy surprise to a design-time
 constraint.
 
-### FinOps hubs AI agents (FinOps Toolkit 14+)
+### FinOps hubs AI agents (FinOps Toolkit 14 and 15)
 
 FinOps hubs (see "FinOps Toolkit and FinOps Hubs" above) connect AI agents to the
 hub's Data Explorer databases via the Azure MCP Server. Supported paths:
@@ -721,6 +772,21 @@ hub's Data Explorer databases via the Azure MCP Server. Supported paths:
   product, and leadership audiences rather than engineers
 - **Any MCP client** (Claude, Continue, and others) - the hub connection is plain
   MCP; Microsoft's instruction pack is written for Copilot but reusable
+- **Agent plugin** (added in Toolkit 15, October 2026) - one plugin for Claude Code,
+  Claude Cowork, GitHub Copilot CLI, Codex CLI and ChatGPT: five agents, four
+  commands, a KQL skill carrying the hub schema and a catalogue of queries, and the
+  Azure MCP Server started read-only and limited to Data Explorer. Three things to
+  check before pointing it at a client estate. The marketplace command installs the
+  repository's default branch (`dev`, a 16.0.0-dev build on 16 November 2026), not
+  the release tag, and the MCP server starts as `@azure/mcp@latest`, unpinned: pin
+  both. The catalogue records its own tests: on 16 November 2026, 21 of its 37
+  queries carried no test result, and the MACC burn, commitment waste and commitment
+  utilisation queries had been run on a hub holding no commitment rows. Its MACC
+  query leaves commitment purchases out and reads amortised cost, while reservation
+  and savings plan purchases count toward the MACC when billed (see
+  `finops-azure-commitments.md`), so it understates and delays the burn. The agents
+  query the data; reading the numbers they return still needs the mechanics in this
+  file and in `finops-azure-commitments.md`
 
 Permission requirement: Database Viewer or greater on the hub's Data Explorer
 databases. The usual freshness caveat applies - answers are only as current as the
@@ -733,7 +799,10 @@ https://techcommunity.microsoft.com/blog/azuregovernanceandmanagementblog/introd
 https://techcommunity.microsoft.com/blog/azuregovernanceandmanagementblog/arm-mcp-server-a-catalog-of-24-pocs/4519069,
 https://learn.microsoft.com/en-us/azure/developer/azure-mcp-server/tools/azure-pricing,
 https://techcommunity.microsoft.com/blog/finopsblog/whats-new-in-finops-toolkit-14-%E2%80%93-april-2026/4519497,
-https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/configure-ai
+https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/configure-ai.
+Toolkit 15 plugin: https://github.com/microsoft/finops-toolkit/releases/tag/v15 and the
+plugin source under `src/templates/agent-plugin` in the same repository (marketplace
+file, `.mcp.json`, query catalogue headers), read 16 November 2026
 
 ---
 

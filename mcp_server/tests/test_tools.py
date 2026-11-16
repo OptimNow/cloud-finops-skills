@@ -666,7 +666,10 @@ def test_query_combines_with_facets() -> None:
     aws = tools.find_playbooks(query="NAT gateway charges", scope="aws")
     assert aws["playbooks"][0]["name"] == "aws-zombie-nat-gateway"
     assert aws["filters"] == {"scope": "aws", "query": "NAT gateway charges"}
-    azure = tools.find_playbooks(query="NAT gateway charges", scope="azure")
+    # The empty case needs a query with no Azure runbook behind it. "NAT gateway
+    # charges" served until azure-idle-vnet-gateway arrived: it shares the noun
+    # "gateway" and now scores above the threshold.
+    azure = tools.find_playbooks(query="Kinesis stream with no consumers", scope="azure")
     assert azure["total"] == 0
     assert azure["playbooks"] == []
     assert "hint" in azure

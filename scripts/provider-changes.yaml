@@ -25,6 +25,13 @@
 as_of: "2026-11-15"
 
 entries:
+  - date: "2026-10-28"
+    provider: "Azure"
+    service: "FinOps toolkit 15"
+    change: "Release 15 fixes hub defects that changed figures (purchases counted as savings, eligibility columns swapped since release 14, retention reset on upgrade): check a hub's version before quoting it."
+    file: "finops-azure-billing"
+    section: "FinOps Toolkit and FinOps Hubs"
+    source: "https://github.com/microsoft/finops-toolkit/releases/tag/v15"
   - date: "2026-11-11"
     provider: "Snowflake"
     service: "Cortex AI Gateway and per-user quotas"

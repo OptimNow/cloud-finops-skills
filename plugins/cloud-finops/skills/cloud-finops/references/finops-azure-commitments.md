@@ -305,7 +305,11 @@ Since 9 May 2026 Microsoft no longer updates the public CSV of instance size
 flexibility ratios; the ratios are published through the API and PowerShell only. A
 tool that still parses the CSV reports reservation utilisation against stale ratios,
 silently, as new SKUs ship, so check for one at the start of an Azure engagement.
-Source: [Instance size flexibility for Azure Reservations](https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/instance-size-flexibility)
+The FinOps toolkit's Power BI reports, workbooks and Azure Optimization Engine are such
+tools before release 15 (October 2026), which replaced the file with an open data
+file built from the Reservations catalogue API.
+Sources: [Instance size flexibility for Azure Reservations](https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/instance-size-flexibility),
+[toolkit v15 release notes](https://github.com/microsoft/finops-toolkit/releases/tag/v15) (read 16 November 2026)
 
 ### Compute commitment layering strategy
 
@@ -343,7 +347,9 @@ Savings Plans:
   the commitment (forfeit risk) nor over-utilising it (no further benefit beyond the
   commitment value).
 - Reservation and Savings Plan purchases **count toward** MACC burndown - purchasing
-  them does not "double-discount" but does pull commitment forward.
+  them does not "double-discount" but does pull commitment forward. A burndown
+  computed from amortised cost with purchases removed (as the FinOps toolkit's
+  catalogue query does in release 15) understates and delays it.
 
 **Critical distinction:** A MACC is a binding obligation, not a forecast: a shortfall at
 the end date or at a missed milestone is charged as an Azure prepayment credit. What
@@ -916,8 +922,9 @@ expiries together.
   spend, where ODE is what the covered usage would have cost with no discount
   applied: the FinOps Foundation definition, which decomposes as utilisation x
   coverage x discount. On FOCUS data, (sum of `ContractedCost` minus sum of
-  `EffectiveCost`) / sum of `ContractedCost` per service. Name the denominator
-  in use; the two give different numbers. Actual savings over the theoretical
+  `EffectiveCost`) / sum of `ContractedCost` per service, commitment purchase
+  rows excluded from both sums (`finops-allocation-showback.md`, "Measuring savings
+  from the cost columns"). Name the denominator in use; the two give different numbers. Actual savings over the theoretical
   maximum is a realisation ratio, not ESR. Sources: <https://www.finops.org/?p=16534> (FinOps Foundation playbook
   "How to Calculate Effective Savings Rate", updated 17 March 2026) and
   <https://focus.finops.org/docs/use-cases/v1-4/determine-effective-savings-rate-by-service/>

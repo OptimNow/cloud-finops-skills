@@ -54,9 +54,12 @@ in its frontmatter.
 | [azure-blob-cold-data-in-hot](azure-blob-cold-data-in-hot.md) | Blob Cold Data Sitting in Hot | overprovisioned | possible |
 | [azure-blob-version-and-soft-delete-sprawl](azure-blob-version-and-soft-delete-sprawl.md) | Blob Version and Soft-Delete Sprawl | orphaned | likely |
 | [azure-database-extended-support](azure-database-extended-support.md) | Database Extended Support Surcharge | modernization | obvious |
+| [azure-ddos-plan-unassociated](azure-ddos-plan-unassociated.md) | DDoS Protection Plan With No Virtual Network | orphaned | obvious |
+| [azure-expressroute-circuit-not-provisioned](azure-expressroute-circuit-not-provisioned.md) | ExpressRoute Circuit Not Provisioned | idle | likely |
 | [azure-hybrid-benefit-unclaimed](azure-hybrid-benefit-unclaimed.md) | Unclaimed Azure Hybrid Benefit | commitment-mismatch | likely |
 | [azure-idle-sql-database](azure-idle-sql-database.md) | Idle SQL Database | idle | likely |
 | [azure-idle-vm](azure-idle-vm.md) | Idle VM (Stopped but Not Deallocated) | idle | obvious |
+| [azure-idle-vnet-gateway](azure-idle-vnet-gateway.md) | Idle Virtual Network Gateway | idle | likely |
 | [azure-log-analytics-sprawl](azure-log-analytics-sprawl.md) | Log Analytics Ingestion Sprawl | overprovisioned | likely |
 | [azure-orphan-disks](azure-orphan-disks.md) | Orphan Managed Disks | orphaned | obvious |
 | [azure-orphaned-public-ips-and-nics](azure-orphaned-public-ips-and-nics.md) | Orphaned Public IPs and NICs | orphaned | obvious |

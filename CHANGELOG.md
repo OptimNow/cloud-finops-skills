@@ -16,6 +16,26 @@ yet tagged.
 
 ### New and corrected content
 
+- **Microsoft FinOps toolkit 15: check a hub's version before quoting it.**
+  `finops-azure-billing.md` brings the toolkit section up to release 15 (October 2026):
+  Data Explorer or Fabric behind a hub, the three network modes, the local hub, the
+  as-is support model, and the defects release 15 fixed that changed figures
+  (commitment purchases counted as savings, swapped eligibility columns since release
+  14, retention reset on upgrade). The agents section adds the toolkit's agent plugin
+  and what to check before using it on a client estate.
+- **Savings from the FOCUS cost columns.** `finops-allocation-showback.md` adds the
+  three subtractions (negotiated, commitment, total) and the rules that make the total
+  quotable: commitment purchase rows stay out of every savings sum, a negative value
+  is a finding, a zero usually means a missing price. The ESR formula in
+  `finops-azure-commitments.md` now says the same, and its MACC section warns that a
+  burndown computed from amortised cost without purchases understates the burn.
+- **Azure units carry a block size.** `finops-azure-billing.md` explains which FOCUS
+  quantity to divide by, and why quantities are summed within one unit only.
+- **Three new Azure network runbooks**: a DDoS Protection plan with no virtual
+  network, an ExpressRoute circuit left `NotProvisioned`, and an idle virtual network
+  gateway (with the point-to-site case that makes a gateway without connections look
+  idle when it is not). `azure-snapshot-sprawl` now finds full snapshots billed at the
+  Premium SSD rate.
 - **Vertex AI spend caps: the alerts are fixed.** `finops-vertexai.md` adds a fifth
   mechanic: a spend cap budget's alerts (50%, 80%, 100%) and recipients cannot be
   customised, so other thresholds need an ordinary budget beside the cap.
