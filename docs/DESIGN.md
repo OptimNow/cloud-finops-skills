@@ -75,11 +75,16 @@ before every release. A report that is right but out of scope goes to
 
 **The "what changed" digest (since 2026-11-10).** `references/finops-whats-new.md`
 answers "what happened in the last month" and "what is coming" from a table per
-month and a "Scheduled changes" table. The tables are generated: the source is
+month and a "Scheduled changes" table. Since 2026-11-16 it holds the scheduled changes
+and the month of `as_of` and the one before; the earlier months of the 90-day window
+are in `references/finops-whats-new-earlier.md`. The one file had reached the
+15,000-token budget with any new entry pushing it over, and a split with two fixed
+names was chosen over one file per month, which would have changed llms.txt, the
+STRUCTURE tree, the entry points and the catalogue counts every month. The tables are generated: the source is
 `scripts/provider-changes.yaml`, one entry per provider change the library applied
 (`date`, `provider`, `service`, `change`, `file`, `section`, `source`), and
 `scripts/render-whats-new.py` validates each entry (a closed provider list, a file and a
-section that exist, no dash or price-word regressions) and rewrites the block between
+section that exist, no dash or price-word regressions) and rewrites the block of both files between
 the markers; `--check` runs in CI. The 90-day window is counted from the file's
 `as_of`, never from the clock, so CI cannot go red because time passed; entries past
 the window stay in the YAML as the archive. Two duties follow. A content PR that
@@ -811,7 +816,10 @@ at once: the SKILL.md / POWER.md routing fallback (grep the lists when no routin
 keyword matches), retrieval on the ChatGPT, Gemini and llms-full surfaces (the text
 travels with the knowledge file), and, since phase 2 (same day), the `query`
 parameter on the MCP finders, which rank by word overlap on the questions, then the
-title, then the headings, with no embedding and no network call; phase 3 (shipped
+title, then the headings, with no embedding and no network call (since 2026-11-16 a
+file sharing one word with a query of two or three words is dropped unless that word
+carries 40% of the query's weight; sentences keep single-word matches, which the
+held-out test of the declared questions showed are often right); phase 3 (shipped
 2026-11-09) put the field on every file, generates the README "What you can ask, by
 role" block from the persona-tagged entries (`scripts/render-questions-readme.py`,
 `--check` in CI) and gates the rules below with `scripts/check-questions.py`. Writing

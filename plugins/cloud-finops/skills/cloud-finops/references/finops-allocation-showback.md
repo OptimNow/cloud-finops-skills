@@ -20,6 +20,8 @@ questions:
     section: "Showback report design"
   - q: "Our team totals do not add up to the invoice. How do we reconcile?"
     section: "Reconcile to invoice"
+  - q: "How do we measure negotiated and commitment savings from ListCost, ContractedCost and EffectiveCost?"
+    section: "Measuring savings from the cost columns"
   - "Un tiers de notre facture cloud n'est attribué à personne. Par où commence-t-on ?"
   - q: "Why can nobody tell me what each product costs us to run in the cloud?"
     persona: "Executive"
@@ -84,6 +86,35 @@ workload that consumes 10% of cluster capacity in March should be allocated
 that was paid in full in January. `BilledCost` would attribute a $1M annual
 prepay entirely to whoever consumed the first kilowatt-hour after the
 purchase.
+
+### Measuring savings from the cost columns
+
+The columns decompose savings in three subtractions: negotiated-discount savings
+are `ListCost` minus `ContractedCost`, commitment-discount savings are
+`ContractedCost` minus `EffectiveCost`, and total savings are `ListCost` minus
+`EffectiveCost`. Three rules decide whether the total can be quoted:
+
+- **Leave commitment purchase rows, and the tax on them, out of every savings
+  sum.** A purchase that covers later usage keeps its price in `ListCost` and
+  `ContractedCost`, while its `EffectiveCost` is 0 by the specification, because
+  that cost is recognised on the usage rows it covers. Summed as they are, the
+  whole purchase reads as money saved. Microsoft's FinOps hubs dashboard had this
+  defect until toolkit release 15 (October 2026), which overstated savings and
+  effective savings rate.
+- **A negative value is a finding.** `EffectiveCost` above `ContractedCost`
+  means a commitment that costs more than the negotiated pay-as-you-go rate would
+  have, or a price error; `ContractedCost` above `ListCost` is a data error.
+- **Zero usually means a missing price, not a missing discount.** Rows without
+  `ListCost` or `ContractedCost` (Marketplace lines and some purchases are the
+  usual ones) contribute nothing, so the total is understated. Report the share
+  of priced rows beside the total.
+
+Sources: FOCUS specification,
+[EffectiveCost](https://github.com/FinOps-Open-Cost-and-Usage-Spec/FOCUS_Spec/blob/working_draft/specification/datasets/cost_and_usage/columns/effectivecost.md)
+and the [ContractedCost discussion](https://github.com/FinOps-Open-Cost-and-Usage-Spec/FOCUS_Spec/blob/working_draft/supporting_content/datasets/cost_and_usage/columns/contractedcost.md);
+Microsoft, [Understanding savings calculations](https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/savings-calculations);
+FinOps toolkit [v15 release notes](https://github.com/microsoft/finops-toolkit/releases/tag/v15);
+all read 16 November 2026.
 
 ### Mapping to AWS legacy cost columns
 

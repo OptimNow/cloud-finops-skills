@@ -9,6 +9,7 @@ questions:
   - "How do we find snapshots whose source disk no longer exists in Azure?"
   - "Do Azure disk snapshots expire on their own?"
   - "Why is storage cost rising in a subscription with no new data?"
+  - "Why are some of our Azure snapshots billed at Premium SSD rates?"
   - "Nos snapshots de disques Azure s'accumulent : lesquels supprimer, et comment les retrouver ?"
 ---
 
@@ -24,7 +25,12 @@ jobs whose cleanup half was never written, and snapshots orphaned when
 their source disk (or the whole VM) was deleted. A **full** snapshot
 bills the used size of the disk on every copy; **incremental** snapshots
 bill only the delta since the previous one, so a full-snapshot job on a
-schedule is the expensive variant of the pattern. Two signals are needed
+schedule is the expensive variant of the pattern. Storage tier adds a second
+multiplier: incremental snapshots always use Standard HDD storage, whatever the
+source disk, while a full snapshot can sit on Premium SSD and bill the whole used
+size at that rate
+([Incremental snapshots](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-incremental-snapshots),
+read 16 November 2026). Two signals are needed
 before deleting - age plus a gone source disk, or age plus a superseding
 backup - because an old snapshot can be the only restore point something
 still depends on.
@@ -38,6 +44,7 @@ still depends on.
 - Storage cost in the subscription rising with no matching data growth
   on live disks
 - Full (non-incremental) snapshots of large disks recurring daily
+- Full snapshots with a `Premium_LRS` SKU, for example kept as a source to clone VMs
 
 ## Detection
 
@@ -52,6 +59,7 @@ resources
 | extend sourceId    = tolower(tostring(properties.creationData.sourceResourceId))
 | extend sizeGB      = toint(properties.diskSizeGB)
 | extend incremental = tobool(properties.incremental)
+| extend skuName     = tostring(sku.name)
 | extend created     = todatetime(properties.timeCreated)
 | extend ageDays     = datetime_diff('day', now(), created)
 | where ageDays > 90
@@ -62,9 +70,13 @@ resources
     | project diskId
   ) on $left.sourceId == $right.diskId
 | extend sourceGone = isempty(diskId)
-| project subscriptionId, resourceGroup, name, sizeGB, incremental, ageDays, sourceGone
+| project subscriptionId, resourceGroup, name, sizeGB, incremental, skuName, ageDays, sourceGone
 | order by sourceGone desc, sizeGB desc
 ```
+
+The 90-day filter is for deletion. For the storage tier, drop it: any snapshot where
+`incremental == false` and `skuName == "Premium_LRS"` bills its full size at the
+Premium SSD rate, whatever its age.
 
 Resource Graph carries inventory, not cost: `sizeGB` ranks full
 snapshots correctly, but an incremental snapshot's billed size is its
@@ -93,6 +105,10 @@ activity log tell you which tool made it.
 4. Where snapshot jobs must remain, switch them to **incremental**
    (`az snapshot create --incremental`) - the recurring cost drops from
    full disk size to daily delta.
+6. For full Premium snapshots that must stay, take an incremental (Standard HDD)
+   snapshot of the source disk, or create the copy with `--sku Standard_LRS`, then
+   delete the Premium one. If they exist to clone VMs at scale, Microsoft recommends
+   a custom image on Standard HDD in the Azure Compute Gallery instead.
 5. Add an Azure Policy audit on snapshot age so the estate does not
    regrow silently.
 

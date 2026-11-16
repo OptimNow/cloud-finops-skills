@@ -79,7 +79,7 @@ ALL_TOOLS=(claude-code claude-projects cursor windsurf chatgpt gemini gemini-cli
 # The routing rows live inside quoted heredocs (so the backticks and <slug>
 # placeholders around them stay literal), so each builder breaks its heredoc
 # for one printf rather than switching to an unquoted heredoc.
-NAMED_WASTE_PATTERNS="zombie NAT, snapshot sprawl, idle ELB, Kinesis stream with no consumers, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste, expiring commitment without a renewal decision, unused Azure reservation, GCP CUD mismatch, S3 incomplete multipart uploads, S3 noncurrent version sprawl, S3 cold data in Standard, NAT-to-gateway-endpoint substitution, idle Azure VM (stopped not deallocated), orphaned Azure public IPs and NICs, Azure snapshot sprawl, gp2-to-gp3 migration, Graviton candidate, Spot candidate, Azure Blob version and soft-delete sprawl, Azure Blob cold data in Hot, GCS soft-delete and noncurrent version sprawl, GCS cold data in Standard, GCP Cloud Logging ingestion sprawl, unclaimed Azure Hybrid Benefit, Azure database extended support surcharge"
+NAMED_WASTE_PATTERNS="zombie NAT, snapshot sprawl, idle ELB, Kinesis stream with no consumers, cross-AZ egress, oversized RDS, orphan EBS, orphan Azure disks, App Service overprovisioning, Log Analytics ingestion sprawl, idle Azure SQL, idle GKE Autopilot, orphan Persistent Disks, Cloud Functions cold starts, schedule blindness, untagged spend drift, idle SageMaker endpoint, always-on SageMaker notebook, SageMaker endpoint sprawl / MME consolidation, oversized GPU instance, multi-GPU underutilized, MIG candidate, GPU for CPU-bound workload, outdated GPU generation, agent-loop flat-line burn, coding-agent token waste, expiring commitment without a renewal decision, unused Azure reservation, GCP CUD mismatch, S3 incomplete multipart uploads, S3 noncurrent version sprawl, S3 cold data in Standard, NAT-to-gateway-endpoint substitution, idle Azure VM (stopped not deallocated), orphaned Azure public IPs and NICs, Azure snapshot sprawl, gp2-to-gp3 migration, Graviton candidate, Spot candidate, Azure Blob version and soft-delete sprawl, Azure Blob cold data in Hot, GCS soft-delete and noncurrent version sprawl, GCS cold data in Standard, GCP Cloud Logging ingestion sprawl, unclaimed Azure Hybrid Benefit, Azure database extended support surcharge, Azure DDoS protection plan with no VNet, ExpressRoute circuit not provisioned, idle Azure VNet gateway"
 
 # Emit the "Named waste pattern" routing row. $1 is the knowledge-file column,
 # which is the only thing that differs between the two variants.
@@ -693,7 +693,7 @@ Use these knowledge files for the following query types:
 | Allocation methodology and showback, EffectiveCost vs BilledCost, shared services | finops-allocation-showback.md |
 | Chargeback, soft-to-hard maturity, Finance prerequisites (ERP, tax, SOX) | finops-chargeback.md |
 | FinOps operating model, RACI, governance forums, ITFM / TBM handoffs | finops-practice-operations.md |
-| What changed recently: dated provider changes, scheduled retirements and deadlines | finops-whats-new.md |
+| What changed recently: dated provider changes, scheduled retirements and deadlines | finops-whats-new.md (older months: finops-whats-new-earlier.md) |
 | Onboarding workloads, intake gate, double-bubble cost, M&A, divestiture | finops-onboarding-workloads.md |
 | Kubernetes FinOps (EKS / GKE / AKS), OpenCost / Kubecost, Karpenter | finops-kubernetes.md |
 | On-prem and hybrid: internal bill, Outposts / Azure Local / Arc / VMware, exit fees | finops-on-prem-hybrid.md |
@@ -833,7 +833,8 @@ build_gemini_grouped_knowledge() {
     "$refs/finops-anomaly-management.md" "$refs/finops-allocation-showback.md" \
     "$refs/finops-chargeback.md" "$refs/finops-onboarding-workloads.md" \
     "$refs/finops-kpis-benchmarking.md" "$refs/finops-forecasting.md" \
-    "$refs/finops-practice-operations.md" "$refs/finops-whats-new.md"
+    "$refs/finops-practice-operations.md" "$refs/finops-whats-new.md" \
+    "$refs/finops-whats-new-earlier.md"
   cat_required "$outdir/methodology.md" \
     "$refs/optimnow-methodology.md"
 

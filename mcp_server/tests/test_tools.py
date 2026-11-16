@@ -666,11 +666,47 @@ def test_query_combines_with_facets() -> None:
     aws = tools.find_playbooks(query="NAT gateway charges", scope="aws")
     assert aws["playbooks"][0]["name"] == "aws-zombie-nat-gateway"
     assert aws["filters"] == {"scope": "aws", "query": "NAT gateway charges"}
+    # No Azure runbook covers NAT gateways. azure-idle-vnet-gateway shares the
+    # noun "gateway" only, which the single-word gate keeps out of a short query.
     azure = tools.find_playbooks(query="NAT gateway charges", scope="azure")
     assert azure["total"] == 0
     assert azure["playbooks"] == []
     assert "hint" in azure
     assert "valid_values" not in azure
+
+
+def test_one_shared_word_does_not_carry_a_short_query() -> None:
+    """A three-word query is not answered by a file that shares one minor word of it.
+
+    Before the gate, "gateway" put the VNet gateway runbook in the results and the
+    French "charges" (workloads) of a Spot question matched the English "charges".
+    """
+    names = [pb["name"] for pb in tools.find_playbooks(query="NAT gateway charges")["playbooks"]]
+    assert names[0] == "aws-zombie-nat-gateway"
+    assert not {"azure-idle-vnet-gateway", "aws-spot-candidate", "aws-cross-az-egress"} & set(names)
+    # A file sharing two of the words is untouched, provider names included.
+    assert tools.find_references(query="reduce AWS costs")["references"][0]["name"].startswith("finops-aws")
+
+
+def test_single_word_gate_applies_to_short_queries_only() -> None:
+    """In a sentence one distinctive shared word is often the whole signal, so it still counts."""
+    from types import SimpleNamespace
+
+    def item(name: str, title: str, question: str) -> SimpleNamespace:
+        return SimpleNamespace(name=name, title=title, headings=[],
+                               questions=[SimpleNamespace(text=question, section=None)])
+
+    corpus = [
+        item("snapshots", "Snapshot sprawl", "Which old snapshots can we delete?"),
+        item("reservations", "Reservation renewal", "Which reservations expire this quarter?"),
+        item("vms", "Idle virtual machines", "Which VMs run for nothing at night?"),
+    ]
+
+    def ranked(query: str) -> list[str]:
+        return [entry[0].name for entry in tools._rank_by_query(corpus, query, lambda i: i.title, corpus)]
+
+    assert ranked("snapshot reservations expire") == ["reservations"]
+    assert ranked("our snapshot bill keeps climbing every single week") == ["snapshots"]
 
 
 def test_query_with_an_invalid_facet_reports_the_facet() -> None:
