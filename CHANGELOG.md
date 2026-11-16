@@ -16,6 +16,12 @@ yet tagged.
 
 ### New and corrected content
 
+- **Vertex AI spend caps: the alerts are fixed.** `finops-vertexai.md` adds a fifth
+  mechanic: a spend cap budget's alerts (50%, 80%, 100%) and recipients cannot be
+  customised, so other thresholds need an ordinary budget beside the cap.
+- **Concurrent licences are sized on peak use.** `finops-sam.md` adds that a floating
+  licence pool is sized on peak simultaneous checkouts from the licence-server log, not
+  on headcount, and that a long idle timeout inflates that peak.
 - **GenAI capacity: idle reserved capacity held as an access hedge.** `finops-genai-capacity.md`
   now separates deliberate idle capacity, kept because provider capacity is scarce, from
   waste: price the hedge against the cost of losing access, report it on its own line,

@@ -410,7 +410,7 @@ estimated cost passes the cap, until the next monthly period. Eligible services:
 API, Gemini Enterprise Agent Platform (formerly Vertex AI), Cloud Run and Cloud Run
 functions. Folder, organisation, label, multi-project and multi-service budgets are out
 of scope, and so are reseller accounts and subscription costs such as Gemini Enterprise
-seats. Four mechanics decide whether it works as a guardrail:
+seats. Five mechanics decide whether it works as a guardrail:
 
 - **It reads gross list price.** The estimate excludes credits and savings, so an
   account with large credits or committed use discounts hits the cap well before its
@@ -424,10 +424,14 @@ seats. Four mechanics decide whether it works as a guardrail:
   It lifts on its own at the start of the next period.
 - **It is not instant.** Cost data can lag by a day or more and overage is billed, so
   set the cap slightly below the real limit.
+- **Its alerts are fixed.** A spend cap budget emails all billing administrators and
+  project owners at 50%, 80% and 100% of the cap, and its alerts and recipients cannot
+  be customised. For any other threshold or recipient, keep an ordinary alert budget
+  on the same project beside the cap.
 
 Sources: [Cloud Billing release notes, 13 October 2026](https://docs.cloud.google.com/billing/docs/release-notes),
 [spend cap budgets](https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps)
-(read 17 October 2026); the August announcement:
+(read 17 October 2026, alerts re-read 16 November 2026); the August announcement:
 https://cloud.google.com/blog/products/ai-machine-learning/flexible-billing-and-cost-controls-for-agents-on-google-cloud
 
 ---
