@@ -16,6 +16,12 @@ yet tagged.
 
 ### New and corrected content
 
+- **Snapshots that keep billing after deletion.** `aws-snapshot-sprawl` gains a step:
+  check the EBS Recycle Bin before declaring a clean-up saving, because a deleted
+  snapshot that matches a retention rule is billed until the retention expires.
+  `finops-aws-patterns-storage.md` adds the same mechanic and EC2 Fast Launch for
+  Windows, whose temporary instances and pre-provisioned snapshots are billed at
+  standard rates.
 - **Microsoft FinOps toolkit 15: check a hub's version before quoting it.**
   `finops-azure-billing.md` brings the toolkit section up to release 15 (October 2026):
   Data Explorer or Fabric behind a hub, the three network modes, the local hub, the

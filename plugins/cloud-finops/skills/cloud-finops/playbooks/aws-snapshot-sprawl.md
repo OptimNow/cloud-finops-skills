@@ -125,6 +125,15 @@ read 14 November 2026).
    the clean-up automation, which is why incident-time snapshots are the
    backup waste nobody owns (an observation from an Equifax engineer,
    Seshadri Reddy Kommepalli, at FinOps X 2026).
+7. Check the **Recycle Bin** before declaring the saving. A deleted snapshot
+   that matches a Recycle Bin retention rule stays billed at the normal
+   snapshot rate until its retention period expires, so a clean-up can show
+   no drop in the bill for weeks. List the Region's retention rules first,
+   and filter cost on the AWS-generated cost allocation tag
+   `aws:recycle-bin:resource-in-bin` = `true` (only the management account
+   can activate it, in the Billing console) to see what the bin still costs
+   ([Recycle Bin](https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin.html),
+   read 17 November 2026).
 
 ## Anti-pattern
 
