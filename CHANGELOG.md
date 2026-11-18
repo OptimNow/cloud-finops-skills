@@ -16,6 +16,11 @@ yet tagged.
 
 ### New and corrected content
 
+- **Hosted AI gateways become the invoice.** `finops-for-ai.md` now says that a gateway
+  that bills you (OpenRouter, Cloudflare AI Gateway with Unified Billing) passes provider
+  token prices through with no markup and charges a fee on the credit purchase instead.
+  Credit purchases are prepayments, not usage, and cost is allocated from the gateway's
+  per-request logs.
 - **AWS Savings Plan return.** `finops-aws-commitments.md` adds the return of a
   Savings Plan bought in error to the portfolio liquidity mechanisms, with its limits:
   $100 an hour or less, and a deadline at seven days or at the end of the calendar

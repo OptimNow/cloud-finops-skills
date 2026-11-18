@@ -121,6 +121,13 @@ attaches metadata before requests execute. Options by complexity:
 | API gateway | Kong, NGINX with custom plugins, Azure API Management token policies (`finops-azure-openai.md`) | Medium-High | High |
 | Custom application middleware | Direct SDK instrumentation | Low-Medium | Full control |
 
+A hosted gateway that bills you (OpenRouter, Cloudflare AI Gateway with Unified Billing)
+replaces the provider invoice. Both pass provider token prices through with no markup and
+charge on the credit purchase instead (OpenRouter 5.5%, Cloudflare 5%, checked 17 November
+2026; OpenRouter's bring-your-own-key mode charges 5% of the equivalent usage above an
+allowance). Book credit purchases as prepayments, not usage, and allocate from the
+gateway's per-request cost logs; unused OpenRouter credits can expire after a year.
+
 **Real-time cost ingestion** - token counts must be captured as model responses are
 returned, not retrieved from billing exports. Cost Explorer lags 24-48 hours - acceptable
 for EC2, not for workloads where a misconfigured agent can generate thousands of dollars
