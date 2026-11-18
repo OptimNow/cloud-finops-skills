@@ -286,6 +286,17 @@ This inefficiency arises when snapshots are retained long after they've served t
 - EBS Snapshot Pricing
 - Working with Snapshots
 
+Two places where snapshots keep billing after someone thought they were gone. A
+deleted snapshot or volume that matches a **Recycle Bin** retention rule is billed at
+its normal rate until the retention period expires (the AWS-generated tag
+`aws:recycle-bin:resource-in-bin` = `true` isolates it). **EC2 Fast Launch** for
+Windows has no service charge, but it launches temporary t3 instances and keeps a pool
+of pre-provisioned snapshots, both billed at standard rates; consumed snapshots are
+deleted unless a Recycle Bin rule retains them. Sources:
+[Recycle Bin](https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin.html),
+[EC2 Fast Launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/win-ami-config-fast-launch.html),
+read 17 November 2026.
+
 **Unused Ebs Volume Attached To A Stopped Ec2 Instance**
 Service: AWS EBS | Type: Unused Resource
 
