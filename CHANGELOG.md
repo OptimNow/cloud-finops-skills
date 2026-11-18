@@ -16,6 +16,13 @@ yet tagged.
 
 ### New and corrected content
 
+- **AWS Savings Plan return.** `finops-aws-commitments.md` adds the return of a
+  Savings Plan bought in error to the portfolio liquidity mechanisms, with its limits:
+  $100 an hour or less, and a deadline at seven days or at the end of the calendar
+  month (UTC), whichever comes first, so a plan bought on the 30th can be returned
+  only until the next day ends. It adds the yearly quota, the accounts that may
+  request it, and the deletion of a queued purchase before it starts. Reported in
+  issue 379.
 - **Snapshots that keep billing after deletion.** `aws-snapshot-sprawl` gains a step:
   check the EBS Recycle Bin before declaring a clean-up saving, because a deleted
   snapshot that matches a retention rule is billed until the retention expires.

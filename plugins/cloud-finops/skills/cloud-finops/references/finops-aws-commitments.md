@@ -117,12 +117,14 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 
 4. **Convertible RIs provide mid-term liquidity.** EC2 Instance Savings Plans offer
    similar flexibility at equal or better discount depth, but they are locked for
-   the full term - no modifications allowed once purchased. Convertible RIs can be
+   the full term - no modifications allowed once purchased, beyond a return in the
+   first days after a purchase error (see "Commitment portfolio liquidity" below,
+   which sets the limits). Convertible RIs can be
    exchanged mid-term for a different configuration (instance family, OS, tenancy),
    which means you can reshape the commitment as workloads evolve without waiting
    for expiry. They sell in both 1-year and 3-year terms, so mid-term exchange is
    available at either horizon - a 1-year Convertible is the most liquid RI shape
-   on offer. This mid-term exchange capability is one of three commitment
+   on offer. This mid-term exchange capability is one of the commitment
    liquidity mechanisms (see "Commitment portfolio liquidity" below). Note:
    Convertible RIs cannot be sold on the RI Marketplace - only Standard RIs can -
    so the liquidity trade-off is mid-term exchange flexibility vs secondary market
@@ -407,12 +409,14 @@ portfolio without wasting money - is as important as discount depth. Every commi
 purchase decision should be evaluated on two axes: how much does it save, and how
 much flexibility does it preserve?
 
-AWS commitment instruments offer three forms of liquidity:
+AWS commitment instruments offer four forms of liquidity (AWS documentation read
+18 November 2026):
 
 | Liquidity mechanism | How it works | Available on |
 |---|---|---|
 | **Secondary market resale** | Sell unused Standard RIs on the RI Marketplace to recover value | Standard RIs only, within a lifetime cap; not for RIs bought under a discount programme without AWS's approval |
 | **Mid-term exchange** | Exchange a Convertible RI for a different configuration (family, OS, tenancy) without losing the commitment value | Convertible RIs only |
+| **Purchase-error return** | Return a Savings Plan bought in error: any upfront payment is refunded in full, and the usage it covered is billed at On-Demand rates or picked up by another plan | Savings Plans only, with an hourly commitment of $100 or less, until seven days after the purchase or the end of that calendar month (UTC), whichever comes first |
 | **Staggered expiry** | Purchase commitments in phased blocks so that only a fraction of the portfolio expires in any given quarter | All instruments (SPs, RIs) |
 
 **Resale is a small exit, not a mechanism to size a portfolio against.** An AWS account
@@ -425,12 +429,36 @@ neither the sale nor its price is guaranteed. Sources:
 <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html>,
 <https://aws.amazon.com/service-terms/> (5.6), read 28 October 2026.
 
-The first two are instrument-specific. The third - staggered expiry through phased
-purchasing - is a portfolio management discipline that works with any instrument and
-is the most reliable way to maintain liquidity.
+**A Savings Plan return closes at the end of the month, not after seven days.** AWS
+accepts the return of a plan bought in the last seven days *and* in the same calendar
+month, and the month ends in UTC. The month boundary often comes first: a plan bought
+on the 30th of a 31-day month can be returned only until the end of the next day
+(UTC), and a plan bought on the last day of a month only on that day. Compute the
+deadline as the earlier of the two dates before answering "how long do we have". The
+other conditions: an hourly commitment of $100 or less (a larger plan cannot be
+returned at all), a plan in the active state (a payment-pending plan has to activate
+first), and a quota of 10 returns per calendar year per management account, or per
+account outside an organisation. The return must come from the management account
+that was in place at the purchase, and under billing transfer from the account that
+bought the plan. All Upfront and Partial Upfront plans cannot be returned under AWS
+Brazil or AWS Turkey. It needs the root user or the `savingsplans:returnSavingsPlan`
+permission, and cannot be undone; the refund of the upfront payment appears on the
+bill within 24 hours. A queued purchase, one set to start at a later date, is not yet
+active and can be deleted until it starts. The return corrects a purchase error, not
+a sizing decision: the size cap and the yearly quota rule it out as a trial period.
+Sources: <https://docs.aws.amazon.com/savingsplans/latest/userguide/return-sp.html>,
+<https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-quotas.html>,
+<https://docs.aws.amazon.com/savingsplans/latest/userguide/ce-sp-queued-delete.html>,
+read 18 November 2026.
+
+Resale, exchange and return are instrument-specific, and a return only covers the
+first days. Staggered expiry through phased purchasing is a portfolio management
+discipline that works with any instrument and is the most reliable way to maintain
+liquidity.
 
 Organisations that buy their full commitment in a single transaction have zero
-liquidity until the term expires. If workloads shift, they pay for unused commitment
+liquidity until the term expires, once the return window has passed (and from the
+start, for a plan above the return's size cap). If workloads shift, they pay for unused commitment
 with no recourse. Organisations that build a diversified portfolio with staggered
 expiry dates always have a portion of their commitment approaching renewal, creating
 a natural rebalancing rhythm.
