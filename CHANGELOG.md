@@ -16,6 +16,19 @@ yet tagged.
 
 ### New and corrected content
 
+- **Azure OpenAI regional deployments cost more than Data Zone in Europe.**
+  `finops-azure-openai.md` said a Regional deployment costs about the same as Data
+  Zone. That holds in East US 2 (+10% over Global), not in Europe: Azure's price list
+  shows +21% in Sweden Central, Germany West Central, France Central and UK South and
+  +32% in West Europe, against a flat +10% for Data Zone. Where an EU Data Zone meets
+  the residency requirement, it is the cheaper in-region option.
+- **AI gateway budgets, ledgers and new models.** `finops-ai-dev-tools.md` explains why a
+  LiteLLM hard budget refuses parallel Claude Code calls while little has been spent: it
+  reserves each call's full output ceiling before sending it. It gives the two remedies,
+  sizing the budget for the ceiling or lowering it with `CLAUDE_CODE_MAX_OUTPUT_TOKENS`.
+  `finops-for-ai.md` adds a two-pass check of the gateway ledger against the invoice
+  (tokens first, to find traffic that bypassed the gateway, then cost, to find a wrong
+  rate) and warns that LiteLLM records a model missing from its price map at zero spend.
 - **Hosted AI gateways become the invoice.** `finops-for-ai.md` now says that a gateway
   that bills you (OpenRouter, Cloudflare AI Gateway with Unified Billing) passes provider
   token prices through with no markup and charges a fee on the credit purchase instead.
