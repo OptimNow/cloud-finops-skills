@@ -199,6 +199,16 @@ Anything marked **Blocks** that is not in this table is new: fix it in the repos
 push, and select **Re-validate**. A validation result applies to one commit, so
 validate again after any push.
 
+The scan of each new version reports its own findings on the plugin's page. Those seen
+on the versions scanned since 16 November 2026, read on 2026-11-19:
+
+| Scan finding | Result | Why, and what to do |
+|---|---|---|
+| `Files the policy review couldn't cover` | Policy hold on each version since 16 November 2026 | Not a file or count limit: the folder has 106 files, none over 62 KB. The hold started with the commit that took the folder past 2 MiB (PR 378), so the policy review is taken to read about 2 MiB. Anthropic's note says no action is needed unless asked; the listing keeps serving the last published version until a reviewer clears a newer one. `scripts/check-plugin-file-limits.sh` reports the total and warns above 95% of 2 MiB. See `docs/DESIGN.md`, "Claude directory listing" |
+| `Unrecognized field in plugin.json` (3 findings) | Warning | Most likely `documentationUrl`, `supportUrl` and `privacyPolicyUrl`, which the plugins reference lists as directory listing fields that Claude Code ignores. The finding itself names `privacyPolicyUrl` as an exception. Keep them: the listing reads them |
+| `Field from another tool's manifest` (`icon`) | Warning | The directory reads `icon` for the listing and Claude Code ignores it. No action |
+| `File has a line that may change package-manager settings` (`playbooks/azure-blob-version-and-soft-delete-sprawl.md`) | Warning | The playbook runs no package manager and writes no configuration file: its commands are read-only `az ... list` and `az ... show` piped to `jq`. Probably a false positive. Open the finding in the portal to read the line it points at before changing anything |
+
 ### 1.3 Listing details
 
 Read from `plugin.json` and the README; nothing to type. Check that the display name,

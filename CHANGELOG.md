@@ -156,6 +156,17 @@ yet tagged.
   quotas take overrides and role scope (`finops-snowflake.md`); Databricks budgets can
   call a webhook (`finops-databricks.md`).
 
+### For maintainers
+
+- **CI reports the plugin folder's total size.** Since 16 November 2026 the Claude
+  directory has held each new version for a reviewer, with "Files the policy review
+  couldn't cover", although no file is over 256 KiB and the folder has 106 files. The
+  hold began with the commit that took the folder past 2 MiB. Anthropic documents no
+  total, so 2 MiB is inferred from that one crossing. The file-limits step now prints
+  the total as git stores the files and, above 95% of 2 MiB, names the five largest
+  files and raises a warning on the pull request. It does not fail: the folder is
+  already 2.12 MB, and what to do about it waits on Anthropic's answer.
+
 ## 1.52.0 (14 November 2026)
 
 ### New and corrected content

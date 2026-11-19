@@ -1057,6 +1057,20 @@ from how the directory works:
   `<ANTHROPIC_ADMIN_KEY>`; a tool it recommends is installed from its own repository,
   never launched with `npx`. Do not bring a large generated artefact back into the
   tree; build it at release time instead.
+- **The folder's total size is watched against a 2 MiB budget inferred on
+  2026-11-19.** From 16 November 2026 the directory held every new version with
+  "Files the policy review couldn't cover", although no file or count limit was
+  crossed (106 files, none over 62 KB). The first held commit (PR 378) took the folder
+  to 2,109,903 bytes; the one before, at 2,080,926 bytes, went live. No Anthropic page
+  gives a total, so the 2 MiB figure comes from that one crossing.
+  `scripts/check-plugin-file-limits.sh` reports the total as git stores the files and
+  warns above 95% of 2 MiB, without failing. The folder grows fast (1.36 MB on
+  1 October, 1.77 MB on 1 November, 2.12 MB on 19 November), so a one-off trim buys
+  days. A split into a cloud plugin and an AI and data-platforms plugin (about 1.53 MB
+  and 0.63 MB, with 110 links between the two halves) buys about six weeks, because
+  the cloud half grows fastest. The choice between a size budget that each content
+  batch keeps, a split, and a reviewer on each version waits on Anthropic's answer
+  about that budget.
 
 ---
 
