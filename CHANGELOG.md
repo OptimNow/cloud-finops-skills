@@ -16,6 +16,11 @@ yet tagged.
 
 ### New and corrected content
 
+- **Third-party "guaranteed" commitments.** `finops-aws-commitments.md` now explains
+  the 30-day or one-year "insured" commitments some vendors sell: the Reserved Instance
+  or Savings Plan is bought in your own accounts, AWS still bills its whole term, and the
+  protection is the vendor's contractual promise of a resale or rebate, paid for with a
+  share of the savings. It lists the questions to ask before buying.
 - **Azure OpenAI regional deployments cost more than Data Zone in Europe.**
   `finops-azure-openai.md` said a Regional deployment costs about the same as Data
   Zone. That holds in East US 2 (+10% over Global), not in Europe: Azure's price list
