@@ -19,6 +19,8 @@ questions:
     section: "Phase 2: Establish unit economics"
   - q: "Are we ready to manage AI costs, and what is missing?"
     section: "AI cost readiness assessment"
+  - q: "Our AI gateway's cost does not match the provider invoice. Where does the gap come from?"
+    section: "Phase 1: Establish AI cost visibility"
   - "Par où commencer le FinOps de nos dépenses IA, et quels gaspillages classiques éviter ?"
 ---
 
@@ -132,6 +134,30 @@ gateway's per-request cost logs; unused OpenRouter credits can expire after a ye
 returned, not retrieved from billing exports. Cost Explorer lags 24-48 hours - acceptable
 for EC2, not for workloads where a misconfigured agent can generate thousands of dollars
 within hours.
+
+**Reconcile the gateway ledger against the invoice.** A gateway prices each call from its
+own rate card, so its ledger is an estimate until it is checked against the provider's
+bill. Compare the two per day (UTC on both sides) and per meter (model and token type),
+in two passes:
+
+1. **Tokens first.** More tokens on the invoice than in the ledger is traffic that
+   bypassed the gateway: a direct key, a test script, a team not yet migrated. Close the
+   direct path; do not adjust the ledger.
+2. **Cost second.** Matching tokens with a cost that differs is a rate-card error, often
+   the wrong deployment type (an Azure Data Zone or Regional deployment priced at the
+   Global rate, `finops-azure-openai.md`) or a price change the card missed. Version the
+   rate card and record the version on each ledger row, so a corrected month can be
+   re-priced from the rows.
+
+Allocation still splits what the provider billed, not the ledger total (see "Charge the
+effective rate, not the list price" below).
+
+**A new model at zero cost is a missing price, not a free model.** A gateway that prices
+from a bundled cost map can record a model the map does not know at zero: LiteLLM logs
+`This model isn't mapped yet` and records zero spend for it until the map or a custom
+price in `model_info` covers it
+([missing model](https://docs.litellm.ai/docs/troubleshoot/missing_model)). Alert on
+zero-cost rows for paid models, and price a model before it is opened to teams.
 
 > **Implementation baseline:** about 30 minutes of design and about 2 hours of
 > implementation for a first gateway - a working estimate, not a benchmark; verify

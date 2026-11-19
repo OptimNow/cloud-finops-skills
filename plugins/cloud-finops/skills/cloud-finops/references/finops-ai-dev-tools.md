@@ -20,6 +20,8 @@ questions:
     section: "Token rate variability"
   - q: "Do MCP servers and context files make every coding session more expensive?"
     section: "context-load tax"
+  - q: "Why does our LiteLLM budget block Claude Code when we have barely spent anything?"
+    section: "For BYOK tools (Claude Code, Codex)"
   - "Nos dépenses d'outils de codage IA explosent : comment les encadrer sans les interdire ?"
 ---
 
@@ -639,7 +641,19 @@ resolves to a blocked tier, so test pipelines before tightening. Scale Tier sits
 the policy. Source: <https://developers.openai.com/api/docs/guides/error-codes>.
 
 **LiteLLM budget caps** - set hard or soft budget limits per team or project at the proxy
-level. Prevents runaway spend from a single developer or workflow.
+level. Prevents runaway spend from a single developer or workflow. Size a hard cap for
+the output ceiling, not for expected spend: LiteLLM reserves each request's maximum cost
+before sending it, priced from the request's `max_tokens` (or the model's limit when it
+is absent), and replaces the reservation with the actual cost afterwards
+([budgets](https://docs.litellm.ai/docs/proxy/users)). A coding agent asks for a large
+output ceiling on most calls (Claude Code uses a per-model default, 32,000 tokens for a
+model ID it cannot resolve, as behind some gateways), so each call in flight holds the
+price of its whole ceiling, and a cap sized on expected spend refuses parallel sessions
+while little has been spent. Either budget for the ceiling times the calls in flight, or
+lower the ceiling with `CLAUDE_CODE_MAX_OUTPUT_TOKENS` in a managed settings `env` block
+([environment variables](https://code.claude.com/docs/en/env-vars)); a ceiling below what
+a turn needs ends that turn early. Turning reservation off stops the refusals but lets
+concurrent requests overshoot the cap, as LiteLLM documents.
 
 **Context window management** - the 200K repricing cliff applied to older Claude models
 that reached 1M context via a beta header; the current generation prices flat across a
