@@ -21,6 +21,8 @@ questions:
     section: "Azure API Management"
   - q: "Does Azure OpenAI spend count towards our MACC?"
     section: "Azure Hybrid Benefit and MACC"
+  - q: "Is a regional Azure OpenAI deployment more expensive than a Data Zone one?"
+    section: "Deployment Locality"
   - "Nos PTU Azure OpenAI sont sous-utilisées la nuit : faut-il repasser au paiement à l'usage ?"
 ---
 
@@ -85,7 +87,7 @@ performance, compliance posture, and cost.
 |---|---|---|
 | **Global** | Traffic routed across regions for best availability and throughput | Lowest |
 | **Data Zone (US or EU)** | Processing within all regions of a chosen zone (e.g., all EU regions) | +10% on standard token rates (as of 20 September 2026) |
-| **Regional** | Processing and storage within a single Azure region (e.g., Germany, Australia) | Comparable to Data Zone for standard token rates; provisioned (PTU) hourly rates run materially higher - verify per model |
+| **Regional** | Processing and storage within a single Azure region (e.g., Germany, Australia) | Set per region, on standard token rates: +10% in East US 2, +21% in Sweden Central, Germany West Central, France Central and UK South, +32% in West Europe (Retail Prices API `regnl` meters, 18 November 2026; a few older model versions stay at +10%). Provisioned (PTU) hourly rates run materially higher - verify per model |
 
 **Key trade-offs:**
 - Global deployment offers the best performance and lowest cost but provides no data
@@ -94,12 +96,21 @@ performance, compliance posture, and cost.
   sovereignty requirements without the throughput penalty of single-region
 - Regional deployment is the strictest option; suitable for regulated industries
   requiring single-region data residency, but performance is lower
-- **Data residency has a visible, uniform price.** The Data Zone premium is a flat
-  10% over Global across the model list, and Google applies the same 10% to
-  non-global Gemini endpoints since 1 July 2026 (`finops-vertexai.md`). Treat
-  roughly 10% on every token as the going rate for in-region processing when a
-  residency requirement is being debated, and put that number in front of whoever
-  is asking for it.
+- **Data residency has a visible price, and only the zone price is uniform.** The Data
+  Zone premium is a flat 10% over Global across the model list, and Google applies the
+  same 10% to non-global Gemini endpoints since 1 July 2026 (`finops-vertexai.md`).
+  Regional adds a per-region uplift: in the European regions above it costs two to
+  three times the Data Zone premium, so where an EU Data Zone meets the residency
+  requirement it is the cheaper in-region option. Before pricing a single-region
+  deployment, read that region's `regnl` meters in the
+  [Retail Prices API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices)
+  (service `Foundry Models`), and put the figure in front of whoever is asking for
+  residency.
+- **Price internal cost at the meter of the deployment type in use.** A gateway or
+  chargeback rate card that carries the Global price under-charges a Data Zone or
+  Regional deployment by its premium, and the gap shows up only when the ledger is
+  reconciled against the invoice (`finops-for-ai.md`, "Reconcile the gateway ledger
+  against the invoice").
 
 Locality adds a cost premium beyond the base token rate. Always confirm your
 compliance requirements before defaulting to a more restrictive (and more expensive)
