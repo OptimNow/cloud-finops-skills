@@ -429,6 +429,22 @@ neither the sale nor its price is guaranteed. Sources:
 <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html>,
 <https://aws.amazon.com/service-terms/> (5.6), read 28 October 2026.
 
+**Third-party guaranteed commitments move the risk by contract, not on the AWS bill.**
+Some vendors sell 30-day or one-year "guaranteed" or "insured" commitments. Under one
+such vendor's terms, the commitment is bought in the customer's own accounts, often on a
+longer term than the one sold, and the vendor promises a resale or a rebate of net losses
+from underutilisation, for a fee taken as a share of the savings. AWS still bills a
+Reserved Instance for the whole term regardless of use, a Savings Plan cannot be
+cancelled, and RI Marketplace resale is capped per account, so the protection is a claim
+on the vendor, not a feature of the commitment. Before buying, ask: which account and
+which term hold the commitment, how a release is executed and paid, which losses are
+excluded (one vendor's terms exclude underutilisation caused by commitments bought
+outside its service), and whether the quoted rate is net of the fee. Sources:
+<https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts-reserved-instances-application.html>,
+<https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-ris.html>, Archera SaaS
+Services Terms and Conditions, section 4.1 (<https://www.archera.ai/terms-and-conditions>),
+read 19 November 2026.
+
 **A Savings Plan return closes at the end of the month, not after seven days.** AWS
 accepts the return of a plan bought in the last seven days *and* in the same calendar
 month, and the month ends in UTC. The month boundary often comes first: a plan bought

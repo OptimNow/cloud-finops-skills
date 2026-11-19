@@ -16,6 +16,11 @@ yet tagged.
 
 ### New and corrected content
 
+- **Third-party "guaranteed" commitments.** `finops-aws-commitments.md` now explains
+  the 30-day or one-year "insured" commitments some vendors sell: the Reserved Instance
+  or Savings Plan is bought in your own accounts, AWS still bills its whole term, and the
+  protection is the vendor's contractual promise of a resale or rebate, paid for with a
+  share of the savings. It lists the questions to ask before buying.
 - **Hosted AI gateways become the invoice.** `finops-for-ai.md` now says that a gateway
   that bills you (OpenRouter, Cloudflare AI Gateway with Unified Billing) passes provider
   token prices through with no markup and charges a fee on the credit purchase instead.
