@@ -12,7 +12,7 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 An "Unreleased" section, when there is one, lists what is merged to `main` and not
 yet tagged.
 
-## Unreleased
+## 1.53.0 (20 November 2026)
 
 ### New and corrected content
 
@@ -168,6 +168,24 @@ yet tagged.
   (`finops-aws-billing.md`); Snowflake's AI Gateway is GA, cost controls included, and per-user
   quotas take overrides and role scope (`finops-snowflake.md`); Databricks budgets can
   call a webhook (`finops-databricks.md`).
+
+### Upgrading
+
+- **Claude directory plugin**: the new content is already there if your copy follows
+  the directory; otherwise update or reinstall the plugin.
+- **Claude Code marketplace** (`cloud-finops@optimnow`): run
+  `/plugin update cloud-finops@optimnow` once this version is tagged.
+- **Hosted connector** (`https://mcp.optimnow.io/mcp`): nothing to do. The five new
+  runbooks and `finops-whats-new-earlier` appear in its catalogue, and the short-query
+  ranking applies, when this version is deployed, which the release does itself.
+- **If you read the digest by section**: the months before the previous one left
+  `finops-whats-new` for `finops-whats-new-earlier`. A saved `get_reference` call that
+  names one of those months in `finops-whats-new` now gets the list of sections that
+  remain, not the text: name the new file.
+- **PyPI package**: `pip install -U cloud-finops-mcp`.
+- **ChatGPT and Gemini**: run the installer again and re-upload the knowledge files,
+  which now include `finops-whats-new-earlier` and the five new runbooks. On ChatGPT,
+  paste the new `instructions.md` too: its digest row names the second file.
 
 ### For maintainers
 
