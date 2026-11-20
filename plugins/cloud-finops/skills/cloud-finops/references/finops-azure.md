@@ -18,6 +18,10 @@ questions:
   - q: "How do we reduce AKS cost without hurting the apps running on it?"
     section: "AKS optimisation in depth"
   - "Nos VM Azure sont surdimensionnées mais Advisor ne dit rien : que vérifier ?"
+  - q: "Azure prices rise on 1 February 2027: which VM series, disks and storage take the rise, and how do we size it?"
+    section: "Region placement for cost"
+  - q: "Hausse des prix Azure au 1er février 2027 : nos réservations, savings plans et Managed Disks sont-ils concernés ?"
+    section: "Region placement for cost"
 ---
 
 # FinOps on Azure
@@ -170,50 +174,97 @@ Azure Storage will rise in seven regions on 1 February 2027:
 | West Europe (Amsterdam), Norway East, Norway West | 9% |
 | Southeast Asia (Singapore) | 8% |
 
-The notice excludes the v1 and v2 VM series and the newest v7 series (Dsv7, Ddsv7,
-Dlsv7, Dldsv7, Esv7, Edsv7), and a list of storage services that includes General Block
-Blob, Standard Page Blob, Tables, Queues and Storage Bandwidth. Excluded from this notice
-does not mean spared: a separate rise is reported for the v1 and v2 series, and Microsoft
-has not confirmed it (see "Treat a rise on v1 and v2 as reported, not confirmed" below).
-The notice does not name the affected subscriptions or resources, so exposure has to be
-worked out from the estate.
+**Which VM series take which rise.** The notice excludes from the regional rise the v1
+series Bv1, D, Ds, F, Fs, G, Gs, L, NP and HCS, the v2 series Av2, Amv2, Dv2, Dsv2, Fsv2
+and Lsv2, and six Intel v7 series (Dsv7, Ddsv7, Dlsv7, Dldsv7, Esv7, Edsv7). Every series
+not on the list takes the regional rise, which is easy to misread in two places: the v3 to
+v6 series, Dv3, Dsv3, Ev3 and Esv3 included (supported until 15 November 2029), and the
+AMD v7 series (Dasv7, Easv7 and the rest). Excluded does not mean spared: the listed v1
+and v2 series take a separate rise instead (status in the last bullet below).
+
+| Series | Regional rise (seven regions) | Separate rise of about 25% (all regions) |
+|---|---|---|
+| Listed v1 and v2 series | No | Yes, as an account team states it |
+| v3 to v6, and AMD v7 | Yes | No |
+| The six listed Intel v7 series | No | No |
+
+**Storage in scope.** The storage exclusions, as listed on the Microsoft Q&A thread below:
+Azure Container Storage, Azure Managed Lustre, Azure NetApp Files Cross Region Replication
+SKU, Blob Features, Change Feed, General Block Blob, Import/Export, Queues, Queues v2,
+Standard Page Blob, Storage Actions, Storage Bandwidth, Storage Discovery, Tables and the
+Transaction Optimized SKU. Two readings to get right:
+
+- **Managed Disks take the rise.** They are not on the list, and the Standard Page Blob
+  exclusion covers page blobs in storage accounts, not managed disks, which bill on their
+  own meters.
+- **Azure Files takes the rise except its Transaction Optimized tier**: Premium, Hot and
+  Cool are in scope.
+
+The thread leaves open whether general-purpose v2 (StorageV2) blob storage falls under
+the General Block Blob exclusion: match the names on the list against the meter
+subcategories in the price sheet, and ask the account team where they do not match. The
+notice text names no subscription or resource, and an Impacted Resources tab, where the
+advisory has one, is visible only in the customer's portal, so exposure is worked out
+from the estate's cost data.
 
 What to do before the date:
 
-- **Size the exposure.** Group the last three months of cost by region and meter
-  category in Cost Management, keep the seven regions and the non-excluded VM series
-  and storage meters, and apply the percentages. That gives the 2027 budget delta and
-  shows whether it is material.
+- **Size the exposure meter by meter.** Take three months of amortised cost, the price
+  sheet (for the contract unit prices) and the reservation inventory with its expiry
+  dates. Keep the seven regions and filter on meter subcategory or meter, not on meter
+  category alone: managed disks, files and blob share the Storage category, and the
+  exclusions are named at the finer level. Usage under a reservation takes the rise only
+  from the reservation's expiry; pay-as-you-go usage and usage under a savings plan take
+  it from 1 February. The result is the 2027 budget delta, phased by reservation expiry.
+- **Apply the negotiated discounts to the new prices.** An ACD and service-specific
+  discounts apply as a percentage of the list price in force, so to the new prices.
+  Whether a contract caps the rise depends on its price-protection clause: the EA price
+  guarantee and the Effective Price rule some ACD amendments carry are in
+  `finops-cloud-contracts.md` ("Azure: MACC and the Azure Commitment Discount"), and
+  MCA-E has no protection by default. No Microsoft statement on this rise addresses
+  either, so read the clause and ask the account team.
 - **Decide on placement for movable workloads.** For dev/test and batch work, compare
   the post-increase price in these regions against a neighbouring region (Sweden
   Central against North Europe, for example) with the Retail Prices API, and count the
   egress and latency cost of moving. Data residency usually rules out a move for
   production data; it rarely rules it out for build agents and test environments.
-- **Treat commitment protection as unconfirmed.** Several partners report that a
-  reservation bought before 1 February 2027 keeps its price for the term, and that
-  savings plans are not protected. Microsoft has not stated either in a public page;
-  confirm with the account team before buying reservations early to beat the increase,
-  and remember that reservation exchange rules change on the same date
+- **Know what a commitment protects.** A reservation bought before 1 February 2027 keeps
+  its price to term, then its usage bills at the prices in force. It covers the compute
+  meter only, so the VM's disks and software meters take whatever rise applies to their
+  own meters. A savings plan keeps its hourly commitment in currency, but from 1 February
+  that commitment covers less usage in these regions and the overflow bills at the new
+  pay-as-you-go price: utilisation stays full while coverage falls. Buying reservations
+  before the date to keep today's price fits stable usage only, weighed against the
+  exchange retirement on the same date and the series that can no longer be reserved
   (`finops-azure-commitments.md`).
-- **Treat a rise on v1 and v2 as reported, not confirmed.** Partner and vendor blogs
-  report that the v1 and v2 series take a separate global rise of about 25% in place of
-  the regional one; no Microsoft page states it, and the copies of the notice read for
-  this file do not carry it (checked 11 November 2026). Give that figure only with this
-  status, never as a rise Microsoft is applying, and keep it out of a budget until the
-  customer has read the advisories in their own Service Health blade or has the account
-  team's answer in writing. What Microsoft has published is narrower: its
+- **Migrate the listed v1 and v2 series rather than absorb their rise.** They retire
+  anyway, NP and HC first on 31 May 2027, and they can no longer be reserved (dates and
+  terms in `finops-azure-commitments.md`, "Compute commitment instruments", point 6). A move
+  to v5 or later avoids both the rise and the retirement.
+- **Know the status of what account teams state.** No Microsoft page states the rise on
+  the listed v1 and v2 series. A written answer from a Microsoft account team to a
+  customer in November 2026, consistent with what partners had reported, states that
+  these series take about 25% from 1 February 2027 in every region, all sizes, in place
+  of the regional rise and not on top of it; that reservations bought before the date
+  keep their price to term; that a savings plan covers less usage from the date; and
+  that the ACD applies to the new prices. Such messages state that they are for general
+  information and do not bind Microsoft. Budget on the 25% once the customer has the same
+  answer in writing from its own account team or reads it in its Service Health blade,
+  and quote it as the account team's statement, not as a published price. What Microsoft
+  has published is narrower: its
   [VM lifecycle post](https://azure.microsoft.com/en-us/blog/enhancing-microsoft-azure-virtual-machine-lifecycle/)
   of 28 September 2026 says that series entering the End of Life stage "should expect
   changes to pricing and availability", with no figure, no date and no series named.
 
 Sourcing note: the Service Health notice is visible only in customers' portals and has
-no public Microsoft page. The region list, percentages and exclusions above are as quoted
-from the notice in a [Microsoft Q&A thread](https://learn.microsoft.com/en-in/answers/questions/6026564/clarification-required-azure-vm-and-storage-pricin)
-and reported consistently by partners ([Cloudy with a Chance of Licensing](https://cloudywithachanceoflicensing.com/2026/10/13/microsoft-increase-azure-prices-from-february-2027/),
+no public Microsoft page. The region list, percentages and VM exclusions above are as
+quoted from the notice in a [Microsoft Q&A thread](https://learn.microsoft.com/en-in/answers/questions/6026564/clarification-required-azure-vm-and-storage-pricin),
+the storage exclusions as listed in an answer on the same thread, and both were reported
+consistently by partners ([Cloudy with a Chance of Licensing](https://cloudywithachanceoflicensing.com/2026/10/13/microsoft-increase-azure-prices-from-february-2027/),
 [FinOps Weekly](https://finopsweekly.com/news/azure-updates-2026-10-08/)), all read 16
-October 2026. Check the notice in the Service Health blade for the exact scope. The rise
-reported for the v1 and v2 series is a separate matter with no such source behind it: its
-status is in the last bullet above.
+October 2026; the thread was read again on 20 November 2026. Check the notice in the
+Service Health blade for the exact scope. What account teams state beyond the notice has
+the status given in the last bullet above.
 
 ---
 

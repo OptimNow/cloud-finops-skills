@@ -112,9 +112,10 @@ to be layered, not chosen in isolation.
    coverage falls to pay-as-you-go unless a Compute Savings Plan absorbs it. The series also retire outright: Dv3, Dsv3, Ev3 and
    Esv3 (32 sizes) cannot be created, resized into, run or purchased after 15 November
    2029 (this retirement does not apply to Azure Government, 21Vianet or sovereign cloud
-   regions). The other affected v1 and v2 series retire earlier: D, Ds, Dv2, Dsv2 and Ls
-   on 1 May 2028, and Av2/Amv2, B (v1), F, Fs, Fsv2, G, Gs and Lsv2 on 15 November 2028,
-   per the Learn retirement page.
+   regions). The other affected v1 and v2 series retire earlier: NP and HC on 31 May 2027
+   (NP reservations ended on 2 April 2026), D, Ds, Dv2, Dsv2 and Ls on 1 May 2028, and
+   Av2/Amv2, B (v1), F, Fs, Fsv2, G, Gs and Lsv2 on 15 November 2028, per the Learn
+   retirement page (read 20 November 2026).
    Capacity growth restrictions apply in the meantime (no new subscriptions, no quota
    increases), and a reservation gives no capacity assurance, so use an on-demand capacity
    reservation where capacity matters. The practical move is to migrate to v5 or later and
@@ -285,6 +286,9 @@ hard new locks; size within the family stays flexible through ISF.
 
 Microsoft's own framing now matches this split: reservations for predictable, stable
 workloads, savings plans for evolving or dynamic ones.
+
+The regional price rise of the same date, and what a reservation or a savings plan
+protects from it, are in `finops-azure.md`, "Region placement for cost".
 
 ### Spot Virtual Machines
 

@@ -16,6 +16,14 @@ yet tagged.
 
 ### New and corrected content
 
+- **Azure price rise of 1 February 2027: what takes it and how to size it.**
+  `finops-azure.md` now says which VM series take which rise (the v3 to v6 and AMD v7
+  series take the regional rise; the listed v1 and v2 series take about 25% in every
+  region instead, as an account team states it in writing, with no public page), that
+  Managed Disks and every Azure Files tier but Transaction Optimized are in scope, what
+  a reservation and a savings plan protect, and how to size the impact meter by meter,
+  phased by reservation expiry. `finops-azure-commitments.md` adds the NP and HC
+  retirement on 31 May 2027.
 - **Savings sized net of the cost of acting.** `finops-waste-detection-playbooks.md`
   now says to size a potential saving after the engineering, test and migration cost
   of the change, with its break-even, and to record a change that breaks even after
