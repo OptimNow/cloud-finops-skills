@@ -113,6 +113,12 @@ potential reported as achieved learn to discount it within one quarter,
 and the credibility of the FinOps practice degrades (see
 `finops-kpis-benchmarking.md`).
 
+Size each potential saving net of the cost of acting: engineering and test
+time, migration risk and the work it displaces, with the months to break even.
+A change that breaks even after the workload's planned end, or that cuts usage
+whose cost is already committed, is not an opportunity. Record it with that
+reason instead of reporting it as a missed saving.
+
 ### Use FOCUS columns for inventory scope
 
 For any cross-cloud or multi-account waste hunt, scope inventory queries
