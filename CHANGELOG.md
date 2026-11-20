@@ -16,6 +16,11 @@ yet tagged.
 
 ### New and corrected content
 
+- **Savings sized net of the cost of acting.** `finops-waste-detection-playbooks.md`
+  now says to size a potential saving after the engineering, test and migration cost
+  of the change, with its break-even, and to record a change that breaks even after
+  the workload's planned end, or that cuts already committed usage, with that reason
+  rather than report it as a missed saving.
 - **Third-party "guaranteed" commitments.** `finops-aws-commitments.md` now explains
   the 30-day or one-year "insured" commitments some vendors sell: the Reserved Instance
   or Savings Plan is bought in your own accounts, AWS still bills its whole term, and the
