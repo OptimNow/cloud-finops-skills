@@ -45,6 +45,10 @@ yet tagged.
   2026): put shared instructions first and row data last, and where to measure the hits.
 - **What's new digest** runs to 21 November 2026.
 
+### Install and listings
+
+- The Claude Code marketplace description counts 49 runbooks; it still said 44.
+
 ## 1.53.0 (20 November 2026)
 
 ### New and corrected content
