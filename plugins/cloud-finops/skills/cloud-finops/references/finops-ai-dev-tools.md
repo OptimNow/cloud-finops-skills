@@ -489,6 +489,14 @@ https://docs.github.com/en/billing/reference/billing-reports,
 [GitHub changelog, 28 October 2026](https://github.blog/changelog/2026-10-28-work-from-anywhere-with-a-new-connected-copilot-cloud-experience/),
 read 31 October 2026.
 
+**November 2026.** Copilot code review on Azure Repos (GA 17 November 2026) bills GitHub
+AI credits to the Azure subscription linked to the Azure DevOps organisation, so it lands
+on the Azure bill, not the GitHub invoice: allocate and budget it in Azure Cost
+Management. Adaptive review effort (public preview) picks Lite, Balanced or Max per pull
+request but never above the maximum level set for the enterprise, organisation or
+repository, so that setting is the ceiling to govern; the changelog gives no credit cost
+per level ([GitHub changelog, 17 November 2026](https://github.blog/changelog/2026-11-17-copilot-code-review-adaptive-effort-secret-detection-and-more), read 21 November 2026).
+
 ### Windsurf (now "Devin Desktop")
 
 Windsurf overhauled its pricing in March 2026, retiring the credit system in favour of

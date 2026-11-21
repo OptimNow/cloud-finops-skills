@@ -626,6 +626,7 @@ dimensions:
 | Batch API usage | Workload type |
 | Managed Agent runtime | Agent owner / business process |
 | Managed Agent session tokens | Agent owner / business process, beside the runtime meter |
+| Customer-paid usage (Linked billing, beta) | Off your invoice: log each request's `billing_policy` beside the feature, since the reports do not say who paid |
 
 ### Enterprise billing context
 
@@ -634,6 +635,24 @@ dimensions:
   Enterprise seat model with usage-based billing
 - Admin controls, spend caps, and usage analytics are available as part of business plans
 - Managed Agents have separate billing and may require additional enterprise agreements
+- **Linked billing (beta, 17 November 2026) moves a customer's token cost off your
+  invoice.** A company building on Claude lets a customer link its own Claude
+  organisation, then names the payer on each `/v1/messages` or `/v1/chat/completions`
+  request: `billing_policy` with `bill_to: "user_profile"` bills the customer,
+  `bill_to: "self"` or no field bills you (beta header `user-profiles-billing-2026-10-01`).
+  Unit economics need that split per request: customer-paid requests still count in your
+  Console's requests and tokens, add 0 to `amount` and their list price to `list_amount`
+  in the cost API, and no field or `group_by[]` value says who paid, so log it yourself.
+  It is also an availability dependency: the customer can set a spend cap for your app or
+  unlink it, and its requests are then refused (402 at the cap, 403 once unlinked), never
+  billed to you; serving them at your cost means resending with `bill_to: "self"`. Only
+  organisations that pay Anthropic directly (prepaid credits or invoice) qualify, not
+  those billed through a cloud marketplace; Message Batches and billable code execution
+  cannot bill the customer, and your organisation's rate limits and data retention apply,
+  not the customer's. Sources:
+  [release notes](https://platform.claude.com/docs/en/release-notes/overview) and
+  [Linked billing](https://platform.claude.com/docs/en/manage-claude/oauth-apps/organization-billing-connections),
+  read 21 November 2026.
 
 ---
 
@@ -687,7 +706,7 @@ OpenAI"). Source:
 
 ### Cross-provider applicability
 
-The same pricing pattern is emerging across providers (OpenAI priority/flex tiers,
+The same pricing pattern is emerging across providers (OpenAI speed tiers and background windows,
 batch discounts, managed services). The governance posture built for Anthropic - tier
 detection, anomaly detection, cost allocation by feature/team/environment, guardrails
 for premium modes and managed services - is reusable across the GenAI vendor landscape.
