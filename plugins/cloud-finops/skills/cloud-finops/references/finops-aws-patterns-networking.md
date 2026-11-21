@@ -69,6 +69,7 @@ NAT Gateways are convenient for enabling outbound access from private subnets, b
 - Identify NAT Gateways with consistently high data processing volumes over the lookback period
 - Review per-GB transfer charges to assess whether NAT Gateway usage represents a significant portion of total networking costs
 - Determine whether traffic patterns are driven by expected workload behaviour or architectural inefficiencies
+- To see which workloads drive a shared NAT gateway's per-GB charges, turn on Networking flexible cost allocation (16 November 2026, no charge): it splits the NAT gateway line item in CUR by the resource that generated the traffic, without changing the bill; scope and limits in `finops-allocation-showback.md`, "Network cost" ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/networking-flexible-cost-allocation/), read 21 November 2026)
 
 **Suboptimal Configuration Of A Cloudfront Distribution**
 Service: AWS CloudFront | Type: Inefficient Configuration

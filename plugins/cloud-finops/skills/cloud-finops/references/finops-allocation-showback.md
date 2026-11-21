@@ -114,7 +114,9 @@ Sources: FOCUS specification,
 and the [ContractedCost discussion](https://github.com/FinOps-Open-Cost-and-Usage-Spec/FOCUS_Spec/blob/working_draft/supporting_content/datasets/cost_and_usage/columns/contractedcost.md);
 Microsoft, [Understanding savings calculations](https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/savings-calculations);
 FinOps toolkit [v15 release notes](https://github.com/microsoft/finops-toolkit/releases/tag/v15);
-all read 16 November 2026.
+all read 16 November 2026. On AWS, the three subtractions can run on native CUR 2.0
+columns since 20 November 2026, if the export opts in: see "Native cost and rate columns"
+below.
 
 ### Mapping to AWS legacy cost columns
 
@@ -123,10 +125,31 @@ predates FOCUS and uses different terms.
 
 | FOCUS column | AWS legacy column | Cost Explorer view |
 |---|---|---|
-| `EffectiveCost` | (no single column - derive per line item type, below) | "Amortized" |
-| `BilledCost` | `line_item_unblended_cost` | "Unblended" |
-| `ListCost` | (no direct column - compute as `pricing_public_on_demand_cost`) | n/a |
-| `ContractedCost` | (no direct column - compute from EDP / private pricing rate sheet) | n/a |
+| `EffectiveCost` | `cost_analytics_effective_cost` if the export opts in; otherwise derive per line item type, below | "Amortized" |
+| `BilledCost` | `line_item_unblended_cost` (or `cost_analytics_billed_cost`) | "Unblended" |
+| `ListCost` | `cost_analytics_list_cost` if the export opts in; otherwise compute from `pricing_public_on_demand_cost` | "List cost" |
+| `ContractedCost` | `cost_analytics_contracted_cost` if the export opts in; otherwise compute from the EDP / private pricing rate sheet | "Contracted cost" |
+
+**Native cost and rate columns (AWS, 20 November 2026).** Ticking "Include standardized
+cost and rate columns" on a new or edited CUR 2.0 export adds 14 columns,
+`cost_analytics_<measure>_cost` and `cost_analytics_<measure>_rate` for seven measures:
+`billed`, `list`, `contracted`, `effective`, `public_on_demand`,
+`public_equivalent_billed` and `public_equivalent_effective`. The savings subtractions above then need no join with
+Savings Plans rates or public price lists: negotiated savings are `cost_analytics_list_cost`
+minus `cost_analytics_contracted_cost`, commitment savings are `cost_analytics_contracted_cost`
+minus `cost_analytics_effective_cost`. The columns are opt-in per export, so check the
+export settings before writing the query. Three limits from the column definitions:
+`cost_analytics_list_cost` is null except on `Usage` and `SavingsPlanCoveredUsage` rows,
+and on Spot and Capacity Block usage, so a list-based total leaves out Reserved
+Instance-covered usage (`DiscountedUsage`); `cost_analytics_effective_cost` is 0 on
+`Fee`, `SavingsPlanUpfrontFee`, `SavingsPlanNegation` and `Discount` rows, which matches
+the purchase rule above; `cost_analytics_public_on_demand_cost` prices tiered SKUs at
+their highest tier. Cost Explorer shows the same cost types under Advanced options for
+November 2026 and later months. No charge; not in GovCloud or China. Sources:
+[AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/aws-cur-cost-explorer/),
+CUR 2.0 [cost analytics columns](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-cost-analytics.html)
+and [Cost Explorer advanced options](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-advanced.html),
+read 21 November 2026.
 
 **Deriving the amortised view from CUR 2.0.** CUR has no amortised-cost column. Take
 `line_item_unblended_cost` for every line item type except four. `SavingsPlanCoveredUsage`
@@ -240,7 +263,27 @@ Recommended allocation pattern:
 1. Tag the network appliances themselves (NAT, ALB, TGW, ExpressRoute) where
    tagging is supported
 2. For untaggable inter-resource traffic, allocate by **traffic share**
-   measured from VPC Flow Logs, Application Gateway logs, or equivalent
+   measured from VPC Flow Logs, Application Gateway logs, or equivalent.
+   On AWS, turn on Networking flexible cost allocation (FCA) before building a
+   Flow Logs pipeline. Since 16 November 2026 it splits the shared line item by
+   the resource that generated the traffic for NAT gateway data processing and
+   data transfer (internet traffic included), in-Region EC2 data transfer with a
+   directly connected peer in the same VPC, and VPC peering data transfer. The
+   split arrives in CUR (legacy and 2.0, with split cost allocation data) within
+   24 hours, at no charge, and the bill does not change. The management account
+   (or a standalone account) turns it on under Cost Management preferences,
+   "Split cost allocation data"; allocation policies are created in the VPC
+   console and apply only from the time they take effect, never to earlier
+   usage. Keep Flow Logs for what FCA leaves out: traffic between Regions
+   (cross-Region peering included), private NAT gateways, NAT traffic that
+   first passes a Network Firewall or Gateway Load Balancer endpoint, and any
+   other networking resource, Transit Gateway included, since policies exist
+   only for NAT gateways, EC2 instances and VPC peering connections. Not in
+   GovCloud, Middle East (Bahrain) or Middle East (UAE). Sources:
+   [AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/networking-flexible-cost-allocation/),
+   [FCA user guide](https://docs.aws.amazon.com/vpc/latest/userguide/networking-flexible-cost-allocation.html)
+   and [limitations](https://docs.aws.amazon.com/vpc/latest/userguide/networking-flex-cost-allocation-limitations.html),
+   read 21 November 2026
 3. For shared infrastructure (CDN, edge), use a tiered approach:
    first attribute to product through the CDN's request logs; then fall back
    to revenue-weighted or even-split for the residual

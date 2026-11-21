@@ -329,6 +329,24 @@ and
 https://docs.snowflake.com/en/release-notes/2026/other/2026-11-11-per-user-quota-role-scope
 (read 15 November 2026).
 
+**Prompt caching for AI_COMPLETE (GA 18 November 2026).** Snowflake processes a prompt
+prefix that repeats across calls once and bills the repeated tokens at the model's cached
+input rate, up to 97.5% off the standard input rate. It is automatic, cannot be turned
+off and needs no SQL change, so the lever is prompt order: put the shared instructions,
+schema and few-shot examples first and the row data last, so that row-by-row calls share
+one prefix. Limits: AI_COMPLETE text inputs only (other AI functions and multi-modal
+inputs are not covered); not every model qualifies (the caching page points to model
+availability); the prompt must pass a minimum cacheable length that varies by model; the
+provider holds a prefix for about five minutes, each hit resetting the window; hits are
+not guaranteed. On Anthropic models Snowflake places a cache breakpoint only when enough
+rows of a batch share the prefix, so single-row calls and small queries rarely benefit.
+Measure the effect in `CORTEX_AI_FUNCTIONS_USAGE_HISTORY` (the `cache_read_input` entry of
+`METRICS`, for `FUNCTION_NAME = 'AI_COMPLETE'`), or per call in
+`usage.prompt_cache_tokens` with `show_details` set to TRUE. Sources:
+https://docs.snowflake.com/en/release-notes/2026/other/2026-11-18-cortex-prompt-caching
+and https://docs.snowflake.com/en/user-guide/snowflake-cortex/aisql-caching (read
+21 November 2026).
+
 **Where Cortex consumption is recorded.** Each surface has its own
 `SNOWFLAKE.ACCOUNT_USAGE` view, all with one year of retention:
 

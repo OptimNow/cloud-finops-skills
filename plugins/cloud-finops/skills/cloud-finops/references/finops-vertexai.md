@@ -155,6 +155,7 @@ rows were read again on 15 November 2026, when the tuned-endpoint row was correc
 | Priority tier | **1.8x**, applied to input, output and cached input alike | Global and us/eu multi-region endpoints only - no regional support |
 | Flex tier | **50%** | Synchronous but latency-tolerant; Preview; global endpoint only |
 | Batch | **50%** | Asynchronous, up to 24-hour turnaround |
+| Deferred tier | **50%** | Asynchronous; GA 16 November 2026; Interactions API on the global endpoint only; never falls back to Standard PayGo |
 | Non-global (regional) endpoint | **+10%** | GA Gemini 3 and later, from 1 July 2026; also applies to non-global Provisioned Throughput |
 | Prompt above 200K tokens (Pro SKUs) | **2x input, 1.5x output** | The whole request reprices, not just the excess |
 | Tuned model endpoint | **1.5x** the base model on a non-global endpoint; the base price on the global endpoint | Gemini 3 and later; older Gemini tuned endpoints stay at the base price |
@@ -167,7 +168,21 @@ Four points that matter more than the numbers:
   turnaround. Flex is the option for "interactive but nobody is watching the clock";
   Batch is for "come back tomorrow". Routing is by header
   (`X-Vertex-AI-LLM-Shared-Request-Type: flex` or `priority`), so tier choice is a code
-  path, not a console setting.
+  path, not a console setting. Since 16 November 2026 the Deferred tier (GA) is a third
+  50% route, so the split is: Deferred for agent workloads on the Interactions API,
+  Batch for file-based jobs, Flex for synchronous calls where latency does not matter.
+  Deferred is set with `service_tier="deferred"` (with `background=true` and
+  `store=true`), or `ServiceTier.DEFERRED` in an ADK agent's `RunConfig`. It targets 95%
+  of turns within 24 hours with no SLA, keeps server-side state for 7 days for
+  `previous_interaction_id` chaining (each chained turn billed on its own), and draws on
+  the same per-base-model request quota as Flex. The discount covers input, output and
+  thinking tokens and stacks with contract and implicit cache discounts; a turn cancelled
+  while queued, or a single-call turn that fails or passes 24 hours, is not billed. Models
+  at launch: Gemini 4 Carbon and Argon, Gemini 3.5 to 3.8 Flash, Gemini 3.5 and 3.1
+  Flash-Lite, Gemini 3.1 Pro preview. Sources:
+  [release notes](https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes)
+  and [Deferred tier](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/deferred-tier),
+  read 21 November 2026.
 - **Data residency now has a visible price.** Before 1 July 2026 non-global endpoints
   billed at global rates. A 10% premium on every token is a real number to put in front
   of whoever is asking for in-region processing - and Priority and Flex do not support

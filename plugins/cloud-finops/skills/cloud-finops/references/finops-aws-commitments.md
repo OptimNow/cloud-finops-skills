@@ -357,7 +357,8 @@ order matters because AWS applies discounts in a specific sequence.
 
 **Within the Savings Plans layer the order is fixed, not random.** In a consolidated billing
 family, a plan covers its owner account's usage first and reaches other accounts only when
-discount sharing is on. AWS then ranks the eligible usage by savings percentage (the Savings
+discount sharing allows it, through the organisation's setting or, since 17 November 2026,
+a setting on the plan itself (next paragraph). AWS then ranks the eligible usage by savings percentage (the Savings
 Plans rate against the On-Demand rate) and applies the commitment to the highest first; on a
 tie, the usage with the lowest Savings Plans rate goes first. Coverage continues until the
 hour's commitment is spent, and the rest is billed On-Demand. Two consequences for showback:
@@ -368,6 +369,30 @@ this rule rather than treating it as a data error, and allocate on the amortised
 `finops-allocation-showback.md`). Source:
 <https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-applying.html>, read
 30 October 2026.
+
+**Sharing set per commitment, and credits split by team (AWS, 17 November 2026).** Each
+Reserved Instance or Savings Plan can carry its own sharing preference ("level sharing"),
+set from its inventory page whether it was bought in a linked account or the payer. It
+names the accounts allowed to use the discount through a Cost Category whose rules use
+the Accounts dimension only, and it overrides the organisation's group sharing preference
+for that commitment. This is the answer to "stop one business unit's plan covering
+another's usage": scope the plan to the unit's accounts instead of turning sharing off
+for the whole organisation. The cost of doing so is utilisation: hours the unit does not
+use are no longer absorbed elsewhere, so a scoped plan needs the unit's own usage floor,
+not the organisation's. Credits follow the same model: Credit Group Sharing in Billing
+Preferences sets the default every new credit inherits, and a credit can be split by
+amount, percentage or evenly and transferred to other linked accounts of the payer. Each
+part keeps the original's expiry date and service eligibility and its sharing setting,
+and the receiving account consumes a transferred credit first; splits are permanent, at
+most 100 per credit family. Timing: a change made before the month closes is reapplied to
+the month to date, and the final bill uses the preferences in place at 23:59:59 UTC on
+the last day of the month. The Billing guide states that for sharing preferences in
+general; it does not restate it for level sharing, so treat it as unverified for a single
+commitment. Sources:
+<https://aws.amazon.com/about-aws/whats-new/2026/11/aws-benefits-sharing-capabilities/>,
+<https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html> and
+<https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/credits-split-transfer.html>,
+read 21 November 2026.
 
 **Recommended layering approach:**
 

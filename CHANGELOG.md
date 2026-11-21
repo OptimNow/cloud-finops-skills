@@ -12,6 +12,39 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 An "Unreleased" section, when there is one, lists what is merged to `main` and not
 yet tagged.
 
+## Unreleased
+
+### New and corrected content
+
+- **AWS commitment sharing is now set per commitment.** `finops-aws-billing.md` said RI
+  and Savings Plans sharing is set per account. Since 17 November 2026 each commitment
+  can carry its own sharing, scoped with a Cost Category, and a credit can be split and
+  moved to the team that should use it; `finops-aws-commitments.md` explains how to keep
+  one business unit's plan off another's usage, and what that costs in utilisation.
+- **OpenAI background windows replace Flex for work that can wait.**
+  `finops-ai-self-hosted-vs-managed.md` said OpenAI offers Batch and Flex at 50% off.
+  Flex is not offered on new models and is being wound down; the Responses API's
+  two-hour and eight-hour background windows bill at 0.7x and 0.6x Standard (beta,
+  17 November 2026), and Batch at 0.5x stays cheaper where the model offers it.
+- **AWS savings from native CUR 2.0 columns.** `finops-allocation-showback.md` maps the
+  14 opt-in `cost_analytics_` columns (20 November 2026) to the FOCUS cost columns, so
+  negotiated and commitment savings need no price-list join, and names their gaps.
+- **Splitting a shared NAT gateway bill on AWS.** `finops-allocation-showback.md` and
+  `finops-aws-patterns-networking.md` add Networking flexible cost allocation
+  (16 November 2026), which splits NAT gateway, in-Region EC2 and VPC peering data
+  charges by the resource that generated them, and what Flow Logs must still cover.
+- **Anthropic Linked billing.** `finops-anthropic.md`: a customer can pay for its own
+  Claude usage in your app (beta, 17 November 2026); unit economics need the per-request
+  `billing_policy`, and the customer's spend cap can stop the feature for that customer.
+- **Vertex AI Deferred tier.** `finops-vertexai.md` adds the Deferred tier (GA
+  16 November 2026, 50% off, Interactions API) and when to pick it over Batch or Flex.
+- **Copilot code review on Azure Repos is billed to Azure.** `finops-ai-dev-tools.md`
+  (17 November 2026): budget it in Azure Cost Management, and cap Adaptive effort with
+  the maximum review effort level.
+- **Snowflake prompt caching for AI_COMPLETE.** `finops-snowflake.md` (GA 18 November
+  2026): put shared instructions first and row data last, and where to measure the hits.
+- **What's new digest** runs to 21 November 2026.
+
 ## 1.53.0 (20 November 2026)
 
 ### New and corrected content

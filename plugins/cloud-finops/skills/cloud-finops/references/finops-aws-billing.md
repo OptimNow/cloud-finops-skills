@@ -653,8 +653,9 @@ Conductor pro forma".
 2. **Cost Categories and tags are reporting groupings.** They never change what is on an
    invoice, only what a cost report can group by.
 3. **Savings Plans, RIs and credits are shared org-wide by default.** Isolation is done
-   **per account in Billing Preferences**, not per invoice unit - an invoice unit does
-   not build a commitment fence around itself.
+   **in the sharing preferences** (per account, or per commitment since 17 November
+   2026), not per invoice unit - an invoice unit does not build a commitment fence
+   around itself.
 
 ### Decision rule
 
@@ -685,10 +686,12 @@ Conductor pro forma".
   enabled, members inherit the payer's tax settings. If the invoice issuer is not Amazon
   Web Services, Inc., members inherit the receiver's tax settings.
 - **Assignment changes take effect on the next billing cycle**, never retroactively.
-- **Commitment and credit isolation is a Billing Preferences job.** Credit sharing and
-  RI / Savings Plans discount sharing are set per account, and must be changed **before
-  the last day of the month** to apply to that month's invoices. This is the only way to
-  stop an invoice unit absorbing discounts bought elsewhere in the org.
+- **Commitment and credit isolation is a sharing job, not an invoice unit job.** Since
+  17 November 2026 RI and Savings Plans sharing can be set per commitment, scoped with a
+  Cost Category, and a credit can be split and transferred to the account that should
+  use it (detail in `finops-aws-commitments.md`, "Sharing set per commitment"). The final
+  bill uses the preferences in place at 23:59:59 UTC on the last day of the month. This
+  is the only way to stop an invoice unit absorbing discounts bought elsewhere in the org.
 - **Quotas** on invoice units and their members exist - read the
   [AWS Billing limits page](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-limits.html#limits-invoicing)
   rather than assuming a number.
