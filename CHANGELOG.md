@@ -44,6 +44,14 @@ yet tagged.
 - **Snowflake prompt caching for AI_COMPLETE.** `finops-snowflake.md` (GA 18 November
   2026): put shared instructions first and row data last, and where to measure the hits.
 - **What's new digest** runs to 21 November 2026.
+- **Azure reservation renewals now bring up the 1 February 2027 price rise.** A question
+  about buying or renewing Azure reservations is answered from
+  `finops-azure-commitments.md`, which covered the exchange retirement of that date and
+  only pointed elsewhere for the price rise on the same day. Its section "Commitment
+  liquidity after February 2027" now states the rise (North Europe 17%, France 11%, West
+  Europe and Norway 9%, Southeast Asia 8%) and what a reservation bought before the date
+  keeps. Renewal questions now reach that section through the connector, and the
+  unused-reservation playbook names the rise too.
 
 ### Install and listings
 
