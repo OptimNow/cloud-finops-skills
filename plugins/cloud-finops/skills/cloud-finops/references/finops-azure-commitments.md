@@ -20,7 +20,10 @@ questions:
   - "Does Azure Hybrid Benefit stack with reservations, and who should track our licences?"
   - q: "How much should we reserve in Azure, and what does Advisor get wrong?"
     section: "Commitment sizing methodology"
-  - "Nos réservations Azure arrivent à échéance : on renouvelle, on bascule en Savings Plan ou on laisse courir ?"
+  - q: "Nos réservations Azure arrivent à échéance : on renouvelle, on bascule en Savings Plan ou on laisse courir ?"
+    section: "Commitment liquidity after February 2027"
+  - q: "Our Azure reservations are up for renewal. What changes if we renew before or after 1 February 2027?"
+    section: "Commitment liquidity after February 2027"
 ---
 
 # Azure Commitment Discounts
@@ -259,6 +262,19 @@ the escape hatch that made reservations safe at moderate confidence, retires for
 and a one-way trade-in to a savings plan. Savings plans give usage flexibility (any
 family, any region) and no financial liquidity.
 
+<!-- Deliberate mirror of finops-azure.md, "Region placement for cost": a reservation
+purchase or renewal question is routed to this file alone, so the rise is stated here and not
+only pointed to. Change the figures in both files together. -->
+**The same date brings a regional price rise.** From 1 February 2027 Virtual Machine and
+Azure Storage prices rise in seven regions: North Europe (Dublin) 17%, France Central
+and France South 11%, West Europe (Amsterdam), Norway East and Norway West 9%, Southeast
+Asia 8% (Azure Service Health notice, October 2026). A reservation bought or renewed
+before the date keeps today's price to term on the compute meter only (the VM's disks
+take the rise), and a savings plan's hourly commitment covers less usage in these regions
+from the date. Renewing early to keep today's price fits stable usage only: the five
+locks below decide it. Which series take which rise, the storage meters in scope and how
+to size the exposure: `finops-azure.md`, "Region placement for cost".
+
 **Reserve only at high conviction across five lock dimensions, for the full term:**
 
 1. VM family stays put.
@@ -286,9 +302,6 @@ hard new locks; size within the family stays flexible through ISF.
 
 Microsoft's own framing now matches this split: reservations for predictable, stable
 workloads, savings plans for evolving or dynamic ones.
-
-The regional price rise of the same date, and what a reservation or a savings plan
-protects from it, are in `finops-azure.md`, "Region placement for cost".
 
 ### Spot Virtual Machines
 

@@ -82,7 +82,12 @@ lives in `references/finops-azure-commitments.md`.
 Ordered safest-first; note the calendar, because the liquidity toolkit
 shrinks on 1 February 2027 (reservation exchange retires for services a
 savings plan also covers - see the commitments reference for the full
-rules).
+rules). The same date brings a regional price rise on VMs and storage in
+seven regions, North Europe and West Europe among them: a reservation
+renewed before it keeps today's price to term on the compute meter, so a
+renewal decision weighs the date as well as the utilisation (figures and
+the rule in `references/finops-azure-commitments.md`, "Commitment
+liquidity after February 2027").
 
 1. Check scope first: flipping a reservation from a dead subscription
    scope to **shared scope** is free, instant, reversible, and fixes the
