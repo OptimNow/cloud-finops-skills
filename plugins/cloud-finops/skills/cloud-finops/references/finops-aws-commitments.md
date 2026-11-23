@@ -99,6 +99,16 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
    date in amortised views (see "Deriving the amortised view from CUR 2.0" in
    `finops-allocation-showback.md`).
 
+   **SageMaker training plans are a capacity reservation, not a discount.** A plan is
+   one or more Reserved Capacity blocks of accelerated ml instances (1 to 182 days in
+   1-day steps; 1, 2, 4, 8, 16, 32 or 64 instances; bookable up to 8 weeks ahead), paid
+   up front, for one target resource (training jobs, HyperPod, inference endpoints or
+   Studio apps) that cannot be swapped afterwards. The purchase is final: it cannot be
+   cancelled or resized, only extended to a new end date. Size it to a scheduled
+   workload, give idle hours inside the block an owner, and do not count it as Savings
+   Plan coverage ([SageMaker training plans](https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html),
+   read 23 November 2026).
+
    **EC2 Auto Scaling reservations-first placement (as of July 2026).** EC2 Auto
    Scaling now defaults to a reservations-then-balanced strategy: it prioritises
    consuming existing Capacity Reservations (ODCRs, Capacity Blocks, and
@@ -231,6 +241,8 @@ START: What compute service runs the workload?
 │   │
 │   ├── Training jobs → Spot via SageMaker Managed Spot Training
 │   │   (up to 90% discount; requires checkpoint support)
+│   │   Scheduled run needing guaranteed accelerators → SageMaker
+│   │   training plan (capacity reservation, paid up front, final)
 │   │
 │   └── Inference endpoints
 │       ├── Stable, predictable → SageMaker AI Savings Plan

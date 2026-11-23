@@ -16,6 +16,12 @@ yet tagged.
 
 ### New and corrected content
 
+- **SageMaker training plans.** `finops-aws-commitments.md` adds them as a capacity
+  reservation, not a discount: paid up front for one target resource, final (no
+  cancellation or resizing, extension only), not Savings Plan coverage.
+- **Blended unit rates and mix effects.** `finops-kpis-benchmarking.md` warns that a
+  blended rate can rise after a good decision, such as deleting cold-tier data, and
+  says to hold the mix constant or split by tier and show total cost beside it.
 - **AWS commitment sharing is now set per commitment.** `finops-aws-billing.md` said RI
   and Savings Plans sharing is set per account. Since 17 November 2026 each commitment
   can carry its own sharing, scoped with a Cost Category, and a credit can be split and
