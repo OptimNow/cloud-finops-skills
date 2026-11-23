@@ -256,6 +256,13 @@ not cheaper by default (Yuya Miyahara, FinOps X 2026; no figures given). How
 the data-centre side gets a bill to compare in the first place, and how the hybrid
 platforms are billed, is in `finops-on-prem-hybrid.md`.
 
+**A blended unit rate can rise after a good decision.** Deleting unused cold-tier data
+lowers the bill and raises the average cost per GB stored, because the cheap gigabytes
+left the denominator. Before reporting a blended rate (per GB, per vCPU-hour, per
+request), hold the mix constant or split the rate by tier, and show total cost beside
+it. Illustrative, November 2026: 100 TB hot at 1.0 per unit and 100 TB cold at 0.2
+average 0.6; delete the cold 100 TB and the average is 1.0 while spend fell 17%.
+
 The trend, not the level, is the deliverable: a unit cost of 0.42 means
 nothing in isolation, but a unit cost down 12% year-on-year while volume grew
 30% is a sentence an executive can repeat to the board.
