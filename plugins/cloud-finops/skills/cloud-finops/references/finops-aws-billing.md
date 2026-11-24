@@ -750,6 +750,16 @@ of them belong to Finance rather than to the FinOps or platform team:
    handled in the reporting layer with Cost Category split charge rules - and then it is
    a showback number, not an invoice line.
 
+**Several invoices a month, and the payment currency.** AWS issues an invoice when the
+billing period closes and another on each subscription or one-time purchase (an All
+Upfront RI is charged immediately), while the amortised view spreads upfront charges
+over the term: warn Accounts Payable before the first commitment purchase. Billing is in
+US dollars by default; with another payment currency the rate is set when the invoice is
+created, rates change daily and console amounts in that currency are estimates, so
+compare AWS's rate on a past invoice with the treasury rate before switching. Sources,
+read 24 November 2026: [Bills page](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html),
+[non-USD currency](https://repost.aws/knowledge-center/non-us-currency).
+
 ---
 
 ## AWS Multi-Organisation Billing Features

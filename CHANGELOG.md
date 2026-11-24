@@ -16,6 +16,10 @@ yet tagged.
 
 ### New and corrected content
 
+- **AWS invoices and payment currency.** `finops-aws-billing.md` adds that AWS issues an
+  invoice on each one-time purchase (an All Upfront RI is charged immediately) as well as
+  at period close, and that with a non-USD payment currency the rate is set when the
+  invoice is created, so compare it with the treasury rate before switching currency.
 - **SageMaker training plans.** `finops-aws-commitments.md` adds them as a capacity
   reservation, not a discount: paid up front for one target resource, final (no
   cancellation or resizing, extension only), not Savings Plan coverage.
