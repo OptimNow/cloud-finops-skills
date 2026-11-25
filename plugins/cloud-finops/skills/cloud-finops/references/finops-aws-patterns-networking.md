@@ -86,8 +86,10 @@ Service: AWS NAT Gateway | Type: Inefficient Configuration
 NAT Gateways are designed to serve private subnets within the same Availability Zone. When subnets in one AZ are configured to route traffic through a NAT Gateway in a different AZ, the traffic crosses AZ boundaries and incurs inter-AZ data transfer charges in addition to the standard NAT processing fees.
 
 - Update route tables to ensure that each subnet routes outbound traffic through the NAT Gateway in the same AZ
-- Ensure one NAT Gateway is deployed per Availability Zone for fault tolerance and cost efficiency
+- Serve each Availability Zone that has workloads from a NAT gateway in that zone: one zonal NAT gateway per AZ, or one regional NAT gateway, which expands into every AZ with workloads
 - Review and revise any infrastructure templates or automation that create non-AZ-aware routing
+
+A regional NAT gateway simplifies routing (one NAT ID and one route for all AZs, no public subnet) but does not cut the hourly charge: AWS bills one NAT gateway-hour per hour for each AZ the gateway is configured in, so a regional gateway across three AZs bills like three zonal gateways. It can take up to 60 minutes to expand into a new AZ, and until then that AZ's traffic is processed across zones by the gateway in an existing AZ. It does not support private NAT. Move to it for simpler operations; the hourly charge falls only when it contracts out of an AZ with no workloads ([Amazon VPC pricing](https://aws.amazon.com/vpc/pricing/) and [regional NAT gateways](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html), read 25 November 2026).
 
 **Suboptimal Routing Through Nat Gateway Instead Of Vpc Endpoint**
 Service: AWS NAT Gateway | Type: Inefficient Configuration

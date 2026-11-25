@@ -174,6 +174,13 @@ They project from the account's own history, so they cannot see a planned launch
 a migration or a price change. Use them as the Crawl and Walk baseline and as an
 early warning (the forecast-triggered controls are in `finops-aws-billing.md` and
 `finops-anomaly-management.md`), and keep the drivers in the practice's own model.
+AWS Cost Explorer forecasts up to 18 months ahead at Monthly granularity, with an 80%
+prediction interval, and gives none when history is too short, which is common for an
+account with less than one full billing cycle. Forecasting is not available on a
+grouped chart, so forecast each team or service with a filter rather than a group-by
+([Cost Explorer time ranges](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-modify.html)
+and [forecasting](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-forecast.html),
+read 25 November 2026).
 
 ---
 
