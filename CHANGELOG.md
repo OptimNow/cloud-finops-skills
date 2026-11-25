@@ -16,6 +16,14 @@ yet tagged.
 
 ### New and corrected content
 
+- **AWS regional NAT gateway, Cost Explorer forecast horizon, CloudTrail free copy.**
+  `finops-aws-patterns-networking.md` no longer tells you to deploy one NAT gateway per
+  Availability Zone as the only option: a regional NAT gateway is one route for all
+  zones, but it is billed per zone it spans, so moving from three zonal gateways to one
+  regional gateway does not cut the hourly charge. `finops-forecasting.md` adds that Cost
+  Explorer forecasts up to 18 months ahead and not on a grouped chart, and
+  `finops-aws-patterns-other.md` that only the first copy of CloudTrail management events
+  is free, so team trails that duplicate an organisation trail are billed.
 - **AWS invoices and payment currency.** `finops-aws-billing.md` adds that AWS issues an
   invoice on each one-time purchase (an All Upfront RI is charged immediately) as well as
   at period close, and that with a non-USD payment currency the rate is set when the

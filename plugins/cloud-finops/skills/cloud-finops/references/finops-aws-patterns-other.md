@@ -120,6 +120,8 @@ Service: AWS CloudTrail | Type: Redundant Configuration
 
 AWS CloudTrail enables event logging across AWS services, but when multiple trails are configured to log overlapping events - especially data events - it can result in redundant charges and unnecessary storage or ingestion costs. This commonly occurs in decentralised environments where teams create trails independently, unaware of existing coverage or shared logging destinations. Each trail that records data events contributes to billing on a per-event basis, even if the same activity is logged by multiple trails.
 
+Only the first copy is free: AWS delivers one copy of ongoing management events to S3 at no charge, and a second trail that logs the same management events is billed per 100,000 events. Data events are billed on every trail that records them. Team trails that duplicate an organisation trail therefore pay for management events the organisation trail already captures ([CloudTrail pricing](https://aws.amazon.com/cloudtrail/pricing/), read 25 November 2026).
+
 - Delete or disable redundant trails that provide no unique audit or compliance value
 - Consolidate overlapping trails into a single unified configuration where feasible
 - Use centralised log destinations (e.g., one S3 bucket) to reduce storage and ingestion cost
