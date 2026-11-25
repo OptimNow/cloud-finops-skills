@@ -323,7 +323,8 @@ Codex is OpenAI's coding agent, available through ChatGPT and as a CLI tool.
 ### Access paths
 
 **ChatGPT subscription (default):** Codex CLI usage draws from your ChatGPT plan limits
-at no extra per-token charge. ChatGPT Plus is the cheapest plan with expanded Codex usage
+at no extra per-token charge inside those limits; past them, eligible usage continues
+on purchased credits. ChatGPT Plus is the cheapest plan with expanded Codex usage
 (chatgpt.com/pricing, read 9 November 2026; the Free and Go tiers carry limited Codex
 access, and the page holds the seat prices). On ChatGPT Enterprise the agreement decides
 whether usage draws workspace credits or bills in USD by token; see `finops-sam.md`,
@@ -338,6 +339,30 @@ usage before credits are drawn
 ([OpenAI release notes](https://openai.com/products/release-notes#CL-20261029-CHAT-562),
 read 14 November 2026).
 
+**From December 2026 that allowance is shared with Chat.** Until then a Plus, Pro or
+Business seat carries two meters: Chat has its own message limits per model, and Work
+and Codex share a separate allowance that follows the model and the task, not a count
+of messages, over a five-hour window, a weekly window or both, depending on the plan
+(the Pro tiers have no five-hour limit at present). OpenAI has announced that from December 2026 these plans carry one allowance across
+ChatGPT and Codex, measured in tokens, with Instant chat outside it. No day, no
+allowance size and no price change are published, a small group of users may see it
+earlier, and Enterprise and Edu are not named. Two consequences for sizing:
+
+- **A seat's Codex capacity depends on the same person's Chat use.** A plan size or
+  credit top-up worked out from Codex usage alone should be re-run on combined usage.
+  On Business, where usage past the included limit continues from the workspace's
+  purchased credits, forecast that pool on Chat and Codex together.
+- **Chat moves from a count of messages to a count of tokens.** A long conversation
+  with a large context will draw more than a short one, where until now each counted
+  as one message.
+
+OpenAI expects most users not to wait for a reset more often than today. Check that
+against Settings > Usage, which will show the combined balance and reset times, before
+changing plan
+([Understanding ChatGPT and Codex usage limits](https://help.openai.com/en/articles/20001625-understanding-chatgpt-and-codex-usage-limits);
+[Managing usage with GPT-6 Astra in Work and Codex](https://help.openai.com/en/articles/20001516-managing-usage-with-gpt-6-astra-in-work-and-codex),
+both read 25 November 2026).
+
 **Fast mode on the subscription path is a consumption multiplier.** Signed in with
 ChatGPT, Codex offers a Fast mode on supported models that draws included plan limits at
 2.5x the Standard rate, and purchased credits or Enterprise pay-as-you-go usage at 2x (as
@@ -348,13 +373,17 @@ credits are not available in API key mode, which uses the API `service_tier` pre
 described under "Optimisation levers" below. On team and enterprise plans where
 `config.toml` is shared, treat it like Anthropic Fast mode: allow-listed per engineer or
 per task, not the default in the shared configuration. A solo developer on a personal
-plan can leave it on; the multiplier only matters once the limit is pooled. One
+plan can leave it on; the multiplier only matters once the limit is pooled across a
+team. One
 organisation reported that switching a Fast
 default back to Standard cut its Codex credit consumption by about 60% (Robertas Vasaris,
 Lundbeck, "Price the Outcome, Not the Seat", Tokenomicon FinOps X Amsterdam, September
 2026, https://www.youtube.com/watch?v=tjskeeu8YhI - practitioner-reported).
 Sources: https://learn.chatgpt.com/docs/agent-configuration/speed.md (formerly
-developers.openai.com/codex/speed), https://help.openai.com/en/articles/20001106-codex-rate-card
+developers.openai.com/codex/speed), and OpenAI's ChatGPT rate card for Business,
+Enterprise and Edu,
+https://help.openai.com/en/articles/11481834-chatgpt-rate-card-business-enterpriseedu-credit-based-pricing
+(the former Codex rate card, article 20001106, opened this page on 25 November 2026).
 
 **API key mode:** when switched to API key mode, Codex bills per token at standard
 OpenAI API rates for the current Codex-facing models (GPT-5.x-Codex variants).
@@ -379,7 +408,7 @@ of the exercise. The structural points that do not rot:
 
 Sources: https://www.finout.io/blog/openai-pricing-in-2026,
 https://openai.com/index/introducing-gpt-5-5/,
-https://help.openai.com/en/articles/20001106,
+https://help.openai.com/en/articles/11481834-chatgpt-rate-card-business-enterpriseedu-credit-based-pricing,
 https://openai.com/api/pricing/
 
 OpenAI claims Codex CLI is approximately 4x more token-efficient than Claude Code, meaning
