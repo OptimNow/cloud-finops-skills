@@ -25,6 +25,13 @@
 as_of: "2026-11-21"
 
 entries:
+  - date: "2026-12"
+    provider: "OpenAI"
+    service: "ChatGPT Plus, Pro and Business"
+    change: "Chat and Codex share one included allowance, measured in tokens, with Instant chat outside it; until then Chat has its own message limits. No day or allowance size is published. Re-run plan sizing and credit top-ups on combined Chat and Codex usage."
+    file: "finops-ai-dev-tools"
+    section: "Access paths"
+    source: "https://help.openai.com/en/articles/20001625-understanding-chatgpt-and-codex-usage-limits"
   - date: "2026-11-20"
     provider: "AWS"
     service: "CUR 2.0 and Cost Explorer"

@@ -16,6 +16,13 @@ yet tagged.
 
 ### New and corrected content
 
+- **ChatGPT and Codex share one allowance from December 2026.** `finops-ai-dev-tools.md`
+  said Codex draws from the ChatGPT plan limits without saying which ones. It now says
+  that on Plus, Pro and Business Chat has its own message limits today, separate from
+  the Work and Codex allowance, and that OpenAI has announced one allowance for both
+  from December 2026, measured in tokens, with Instant chat outside it: re-run plan
+  sizing and credit top-ups on combined usage. The change is in the digest under
+  "Scheduled changes", and the link to OpenAI's rate card follows its new address.
 - **AWS regional NAT gateway, Cost Explorer forecast horizon, CloudTrail free copy.**
   `finops-aws-patterns-networking.md` no longer tells you to deploy one NAT gateway per
   Availability Zone as the only option: a regional NAT gateway is one route for all
