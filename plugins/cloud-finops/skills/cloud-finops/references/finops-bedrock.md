@@ -20,6 +20,8 @@ questions:
     section: "Prompt caching"
   - q: "Our Bedrock bill jumped overnight. How do we find which application caused it?"
     section: "Cost Anomaly Detection"
+  - q: "Is Bedrock model distillation worth it, and what does the distilled model cost to run?"
+    section: "Model distillation"
   - "Combien nous coûte Bedrock par application, et comment l'attribuer aux équipes ?"
 ---
 
@@ -647,10 +649,41 @@ guaranteed.
 Train a small "student" model on outputs of a large "teacher" model for a specific
 task. AWS-reported results for Bedrock Model Distillation: distilled models up to
 500% faster and up to 75% less expensive than the teacher, with <2% accuracy loss on
-use cases like RAG. FinOps positioning: distillation converts a recurring per-token
-premium into a one-off training cost - a candidate when a task is narrow, stable, and
-high-volume. Contrast with fine-tuning (static-knowledge injection) and RAG
+use cases like RAG. FinOps positioning: distillation trades a recurring per-token
+premium for a one-off training cost plus the cost of serving the distilled model
+(below) - a candidate when a task is narrow, stable, and high-volume. Contrast with fine-tuning (static-knowledge injection) and RAG
 (fresh-data injection): distillation targets capability transfer at lower unit cost.
+
+**The saving depends on how the distilled model is served.** A distilled model is a
+custom model, and Bedrock serves a custom model in one of two ways (pages read
+26 November 2026):
+
+- **Provisioned Throughput.** Billed per hour and per model unit, at the price of the
+  base model it was customised from, with no commitment, one month or six months, and
+  billing runs until the Provisioned Throughput is deleted. The hours bill with or
+  without traffic, so the per-token saving exists only above the utilisation at which
+  the hourly charge undercuts the teacher's on-demand bill for the same traffic.
+- **On-demand custom model deployment.** Per token, nothing provisioned. It is limited
+  to models customised on or after 16 July 2025 from Amazon Nova Micro, Lite, 2 Lite
+  or Pro (US East, N. Virginia) or Meta Llama 3.3 70B Instruct (US West, Oregon).
+
+For any other student model, Provisioned Throughput is the only route, and AWS's
+Provisioned Throughput page still words that requirement as applying to every
+customised model.
+So check the student model against the on-demand list before the business case: a
+distilled model that needs a model unit around the clock is a fixed cost, and a
+low-volume or bursty task can cost more distilled than it did on the teacher.
+
+The job bills as well. When Bedrock generates the teacher's responses for the training
+set, those calls are charged at the teacher's on-demand rate (its data synthesis can
+grow the set to 15,000 prompt-response pairs); supplying prompt-response pairs from
+existing invocation logs of the same teacher skips that generation. The student's
+fine-tuning and the monthly storage of the custom model are priced on the Bedrock
+pricing page. Sources:
+<https://docs.aws.amazon.com/bedrock/latest/userguide/prov-throughput.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/model-customization-use.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/deploy-custom-model-on-demand.html>,
+<https://docs.aws.amazon.com/bedrock/latest/userguide/model-distillation.html>
 
 ### Related patterns: MoE and plan/execute model splitting
 

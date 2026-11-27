@@ -50,7 +50,7 @@ to be layered, not chosen in isolation.
 
 | Instrument | Discount depth | Flexibility | Commitment type | Term | Covers |
 |---|---|---|---|---|---|
-| Azure Reservation | Up to 72% | Lowest - locked to VM family, region, size | Capacity-based (specific SKU) | 1yr or 3yr (see note) | VMs, Dedicated Hosts, App Service (Premium v3 and later, Isolated v2), specific services |
+| Azure Reservation | Up to 72% | Lowest - locked to VM family, region, size | Resource-based (specific SKU) | 1yr or 3yr (see note) | VMs, Dedicated Hosts, App Service (Premium v3 and later, Isolated v2), specific services |
 | Azure Savings Plan for Compute | Up to 65% | High - any VM family, region, size | Spend-based ($/hr) | 1yr or 3yr | VMs, Dedicated Hosts, Container Instances, Container Apps, App Service (Premium v3 / Isolated v2), Functions Premium |
 | Azure Hybrid Benefit (AHB) | Up to 40% (Windows), 55% (SQL) | Highest - no commitment, no lock-in | Licensing overlay | None | VMs, SQL Database, SQL MI, Red Hat/SUSE Linux |
 | Spot Virtual Machines | Up to 90% | Variable - can be evicted with 30s notice | None (market-priced) | None | VMs, VMSS, AKS node pools |
@@ -120,8 +120,8 @@ to be layered, not chosen in isolation.
    Av2/Amv2, B (v1), F, Fs, Fsv2, G, Gs and Lsv2 on 15 November 2028, per the Learn
    retirement page (read 20 November 2026).
    Capacity growth restrictions apply in the meantime (no new subscriptions, no quota
-   increases), and a reservation gives no capacity assurance, so use an on-demand capacity
-   reservation where capacity matters. The practical move is to migrate to v5 or later and
+   increases); for capacity assurance see "On-demand capacity reservation" below. The practical move is to migrate to
+   v5 or later and
    exchange the reservation to the new series on the way (exchanges are unrestricted until
    1 February 2027; after that date each eligible reservation bought before it keeps one
    final exchange), or trade it in for a savings plan, rather than letting the reservation
@@ -143,6 +143,18 @@ to be layered, not chosen in isolation.
 | **Savings Plan cancel / exchange / refund** | N/A | N/A | Not allowed. SPs are non-refundable, non-exchangeable, non-cancellable. |
 
 Source: https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations
+
+### On-demand capacity reservation - billed when unused
+
+A reservation discounts; only an on-demand capacity reservation holds capacity. It
+reserves a VM size in a region or zone under an SLA, with no term: create and delete it
+at will. It bills at the VM's pay-as-you-go rate from creation, used or not; a VM running
+in it is billed in its place, not on top. A VM uses it only if it names the capacity
+reservation group: without that, you pay the empty reservation and the VM. Reservations
+and savings plans discount its used and unused quantity alike. Not offered for Spot,
+dedicated hosts or availability sets, nor for the ND, NCads H100 v5, HB and HC series
+([capacity reservation](https://learn.microsoft.com/en-us/azure/virtual-machines/capacity-reservation-overview),
+read 26 November 2026).
 
 ### Compute commitment decision tree
 
@@ -190,8 +202,8 @@ START: What Azure compute service runs the workload?
 │   │
 │   └── Special case: GPU / N-series VMs
 │       - Capacity scarcity is a primary concern (NC, ND, NV families)
-│       - Reservations may be necessary to secure capacity in constrained regions
-│       - Savings Plans do not reserve capacity - only provide pricing benefit
+│       - Reservations and Savings Plans discount; neither guarantees capacity
+│       - To hold capacity: on-demand capacity reservation (above), where offered
 │       - For ML training: consider Spot VMs with checkpointing
 │
 ├── Azure Kubernetes Service (AKS)
@@ -217,7 +229,6 @@ START: What Azure compute service runs the workload?
 ├── Azure Functions
 │   │
 │   ├── Consumption Plan → pay per execution, no commitment available
-│   │   - Focus on optimising execution duration and memory allocation
 │   │
 │   ├── Premium Plan → runs on App Service infrastructure
 │   │   Savings Plan for Compute applies. But first: does the workload
@@ -228,9 +239,8 @@ START: What Azure compute service runs the workload?
 │
 ├── Container Instances
 │   │
-│   └── Savings Plan for Compute covers Container Instances
-│       - Only worth committing if usage is sustained and predictable
-│       - For short-lived or burst containers, PAYG is usually cheaper
+│   └── Savings Plan for Compute covers Container Instances; commit only
+│       on sustained usage, short-lived or burst containers stay on PAYG
 │
 └── Azure Databricks
     │
@@ -250,8 +260,16 @@ START: What Azure compute service runs the workload?
 | Size | Flexible within family (instance size flexibility) | Any size |
 | Covers App Service | Premium v3 + Isolated v2 | App Service & Functions Premium plans (broader SKU set) |
 | Covers Container Instances | No | Yes |
-Both take monthly or upfront payment and the same scopes (subscription, resource group,
-management group, shared). Exchange, refund and trade-in are in the liquidity table
+Both take the same scopes (subscription, resource group, management group, shared) and
+monthly or upfront payment. **The total is the same either way, with no fee for paying
+monthly**: upfront buys no extra discount, unlike AWS, so pay monthly unless MACC timing
+argues otherwise ("Net discount under a MACC", last paragraph). Under an MCA billed
+outside USD each instalment moves with the month's exchange rate. Cancelling a
+monthly-paid reservation counts its remaining payments towards the $50,000 refund cap;
+SUSE, Red Hat and pre-purchase plans are upfront only
+([buy a reservation](https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/prepare-buy-reservation)
+and, for savings plans, the overview cited in point 2; read 26 November 2026).
+Exchange, refund and trade-in are in the liquidity table
 above; the operating rule after the exchange retirement follows.
 
 ### Commitment liquidity after February 2027
@@ -299,9 +317,6 @@ hard new locks; size within the family stays flexible through ISF.
   zero liquidity to unwind an over-commitment. Teams that cannot yet build the
   cost-plus-utilisation join should hedge the uncertain slice with a wider PAYG buffer,
   plus AHB and Spot where they fit, until they can size the hourly floor with confidence.
-
-Microsoft's own framing now matches this split: reservations for predictable, stable
-workloads, savings plans for evolving or dynamic ones.
 
 ### Spot Virtual Machines
 
@@ -459,10 +474,6 @@ Consequence: in AWS you read $/hour spend per SKU directly from CUR. In Azure yo
 daily spend, but to derive the hourly equivalent you must join cost data with utilisation
 data on `ResourceId`.
 
-**Common trap:** consultants moving from AWS to Azure assume hourly cost data is one
-query away. It is not. Build the join into your sizing process before you hit the
-problem on a live engagement.
-
 #### Why daily data hurts Savings Plan sizing more than RI sizing
 
 **RI sizing** is mostly OK with daily data. An RI commits to a SKU+region count for a
@@ -497,9 +508,8 @@ The workaround that closes the granularity gap:
 5. Multiply by the SKU's hourly $ rate (from a price sheet export, FOCUS `ListUnitPrice`,
    or the Retail Prices API) to get the SP-safe commitment level.
 
-This is the step the granularity gap forces. FinOps Hubs and most third-party FinOps
-platforms do this for you behind the scenes; if you are not using one of those, you
-build it yourself.
+FinOps Hubs and most third-party FinOps platforms do this join for you; without one,
+you build it yourself.
 
 ```kql
 // Cost-plus-utilisation join for Savings Plan sizing
@@ -531,9 +541,8 @@ cost
 | order by implied_hourly_floor_usd desc
 ```
 
-The query is illustrative - real environments will need the cost-table column names
-mapped to whatever FOCUS schema the ingestion produces, and the `_ResourceId`
-normalisation tweaked for the customer's resource ID conventions.
+The query is illustrative: map the column names and the `_ResourceId` normalisation to
+the customer's ingestion.
 
 #### Calibrating Advisor's reservation and Savings Plan recommendations
 
@@ -621,8 +630,7 @@ Once the always-on floor per SKU family and region is known (the join above), ma
   it with a Savings Plan if the workload must stay on the legacy series
 
 Then validate against Advisor (above), buy in phased blocks ("Phased purchasing"
-below), and re-evaluate quarterly against actuals rather than against Advisor's rolling
-recommendation.
+below), and re-evaluate quarterly against actuals.
 
 ---
 

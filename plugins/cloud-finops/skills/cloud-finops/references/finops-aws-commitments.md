@@ -53,8 +53,8 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 
 | Instrument | Discount depth | Flexibility | Commitment type | Term | Covers |
 |---|---|---|---|---|---|
-| EC2 Standard RI | Up to 72% | Lowest - locked to instance type, region, OS, tenancy | Capacity reservation + rate | 1yr or 3yr | EC2 only |
-| EC2 Convertible RI | Up to 66% | Medium - can change instance family, OS, tenancy | Rate only (no capacity) | 1yr or 3yr | EC2 only |
+| EC2 Standard RI | Up to 72% | Lowest - locked to instance type, region, OS, tenancy | Rate; capacity only if zonal | 1yr or 3yr | EC2 only |
+| EC2 Convertible RI | Up to 66% | Medium - can change instance family, OS, tenancy | Rate; capacity only if zonal | 1yr or 3yr | EC2 only |
 | EC2 Instance Savings Plan | Up to 72% | Medium - locked to instance family and region | Spend-based ($/hr) | 1yr or 3yr | EC2 only |
 | Compute Savings Plan | Up to 66% | Highest - any instance family, region, OS | Spend-based ($/hr) | 1yr or 3yr | EC2, Fargate, Lambda |
 | SageMaker AI Savings Plan | Up to 64% | Flexible across SageMaker AI usage | Spend-based ($/hr) | 1yr or 3yr | SageMaker AI (training, inference, notebooks) |
@@ -93,7 +93,8 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
    read 9 November 2026). If you need guaranteed capacity in a specific AZ (e.g. GPU
    instances, high-demand regions), the routes are a zonal RI, an On-Demand Capacity
    Reservation (capacity without a discount, which a regional RI or a Savings Plan then
-   discounts), or, for ML accelerators, an EC2 Capacity Block. A Capacity Block
+   discounts, and which bills when empty: see "On-Demand Capacity Reservations (ODCR) -
+   billed when empty" below), or, for ML accelerators, an EC2 Capacity Block. A Capacity Block
    is paid up front, but since 6 November 2026 CUR 2.0 and Cost Explorer amortise
    that fee over the reservation, so GPU block spend no longer spikes on the purchase
    date in amortised views (see "Deriving the amortised view from CUR 2.0" in
@@ -151,6 +152,30 @@ Source: https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.htm
 
 6. **Spot is not a commitment** - it is a market mechanism. It belongs in the compute
    cost strategy but should not be compared directly against commitment instruments.
+
+### On-Demand Capacity Reservations (ODCR) - billed when empty
+
+**An unused Capacity Reservation bills like a running instance.** An On-Demand Capacity
+Reservation (ODCR) is charged at the equivalent On-Demand rate from the moment it is
+provisioned, per second (60 seconds minimum), whether or not an instance runs in it;
+when a matching instance runs in it, you pay for the instance and nothing for the
+reservation. Savings Plans and regional RIs discount it: AWS applies their discount to
+running instances first and to unused reservations with what is left; a zonal RI's
+discount does not apply to Capacity Reservations.
+
+Two consequences:
+
+- An ODCR left behind after a launch, a DR test or a migration costs a full On-Demand
+  instance per empty slot until someone cancels it.
+- Spare Savings Plan or regional RI commitment lands on the empty slots, so commitment
+  utilisation stays high while the capacity sits idle: read reservation usage, not
+  only commitment utilisation.
+
+In CUR 2.0 the idle part is `capacity_reservation_capacity_reservation_status = 'Unused'`
+with usage type `UnusedBox`; a cancelled future-dated reservation can carry a
+cancellation charge on the same usage type. Give every ODCR an owner and an end date
+([Capacity Reservation pricing and billing](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html),
+read 26 November 2026).
 
 ### Compute commitment decision tree
 
@@ -210,7 +235,8 @@ START: What compute service runs the workload?
 │   │   │
 │   │   └── YES → Compute Savings Plan (only instrument that covers Fargate)
 │   │             - Fargate Spot available for fault-tolerant ECS tasks
-│   │               (up to 70% discount, but can be interrupted)
+│   │               (up to 70% discount, but can be interrupted); EKS
+│   │               on Fargate has no Spot and no Arm (Graviton) option
 │   │             - EC2 Instance SPs and Standard RIs do NOT cover Fargate
 │   │
 │   └── Consider: would ECS/EKS on EC2 be cheaper?

@@ -13,6 +13,7 @@ questions:
   - "Our CloudTrail and Config bills are surprisingly high. What is the usual cause?"
   - "Can AWS Marketplace purchases count towards our enterprise commitment?"
   - "What logging and monitoring settings quietly inflate an AWS bill?"
+  - "A script re-tags our resources every hour and the AWS Config bill went up. Are the two linked?"
   - "Quels coûts AWS hors calcul, stockage et réseau sont souvent gaspillés : logs, Config, CloudTrail, Marketplace ?"
 ---
 
@@ -78,6 +79,15 @@ By default, AWS Config can be set to record changes across all supported resourc
 - Limit AWS Config recording to only essential resource types using resource recording groups
 - Exclude high-churn resource types that provide minimal compliance or operational value
 - Disable Config entirely in sandbox, test, or dev accounts if configuration history is not needed
+
+Automation is a frequent source of that churn. Config bills each configuration item it records, and it records one whenever it detects a change to a recorded resource. A job that rewrites resources on a schedule (a tagging function, a pipeline that re-applies settings, a script that rotates security group rules, an autoscaler) is therefore billed on every run that changes something; rule and conformance pack evaluations are a separate charge. A change to a resource that has relationships records several items: in AWS's example, swapping the security group of one EC2 instance records an item for the instance and for the security groups.
+
+- Whether a write that leaves the resource identical, such as re-applying the same tag value, records an item is not stated by AWS, whose wording is "whenever it detects a change". Measure it instead of assuming either way
+- Find the source with the `Configuration Items Recorded` usage metric (AWS Config dashboard, or the `AWS/Config` namespace in CloudWatch), filtered by resource type, and match the spikes to the schedule of the automation
+- Fix the job first (write only when the value differs, batch the changes), then exclude the resource type or move it to daily recording
+- Daily recording (periodic recording on the pricing page) is not cheaper by default: it records at most one item per resource per day, and only when the resource differs from its last item, but that item is priced at four times a continuous one. It pays for a resource that changes more than four times a day, costs the same at four, and costs more at one to three. Apply that test before following the advice in the other Config patterns of this catalogue to move non-production or Spot-heavy accounts to daily recording
+
+Sources: [AWS Config pricing](https://aws.amazon.com/config/pricing/) (the fourfold ratio is the US East rate), [configuration items](https://docs.aws.amazon.com/config/latest/developerguide/config-concepts.html), [items for resources with relationships](https://docs.aws.amazon.com/config/latest/developerguide/example-sns-notification.html), [recording frequency](https://docs.aws.amazon.com/config/latest/developerguide/select-resources.html), [usage metrics](https://docs.aws.amazon.com/config/latest/developerguide/viewing-the-aws-config-dashboard.html) (read 26 November 2026)
 
 **Excessive Cloudwatch Log Volume From Persistently Enabled Debugging**
 Service: AWS CloudWatch | Type: Inefficient Configuration

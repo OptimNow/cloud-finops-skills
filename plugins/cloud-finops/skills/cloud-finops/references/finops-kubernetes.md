@@ -20,6 +20,8 @@ questions:
     section: "Karpenter vs Cluster Autoscaler"
   - q: "How much of our cluster bill is idle nodes, and how do we measure it?"
     section: "Idle node cost"
+  - q: "We run EKS on Fargate. Why is each pod billed for more CPU and memory than it requests?"
+    section: "EKS on Fargate - each pod is billed at a rounded-up size"
   - "Comment répartir le coût d'un cluster Kubernetes partagé entre les équipes ?"
 ---
 
@@ -214,6 +216,11 @@ Reducing CPU and memory requests to match observed usage reclaims a material
 share of cluster spend (30-50% is indicative, not a benchmark) without
 degrading service-level objectives, IF done carefully.
 
+One dated benchmark for scale: Cast AI's 2026 State of Kubernetes Resource
+Optimization report (March 2026) shows typical clusters running at 8% CPU and
+20% memory utilisation, down from 10% and 23% in 2025
+(<https://cast.ai/blog/2026-state-of-kubernetes-resource-optimization-cpu-at-8-memory-at-20-and-getting-worse/>).
+
 ### Methodology
 
 1. **Collect 14+ days of CPU and memory usage** per container, per workload.
@@ -260,6 +267,58 @@ degrading service-level objectives, IF done carefully.
   on a fixed node pool just creates more headroom on the same nodes; the
   bill does not change. Pair rightsizing with autoscaling tuning (next
   section).
+
+### EKS on Fargate - each pod is billed at a rounded-up size
+
+On EKS Fargate there is no node to bin-pack and no idle node cost: each pod
+runs alone and is billed for the vCPU and memory Fargate provisions for it,
+whatever it uses. Fargate derives that size from the pod's requests:
+
+1. Take the larger of the biggest init container request and the sum of the
+   long-running containers' requests.
+2. Add 256 MB of memory for the Kubernetes components (`kubelet`,
+   `kube-proxy`, `containerd`).
+3. Round up to the next Fargate combination of vCPU and memory:
+
+   | vCPU | Memory |
+   |---|---|
+   | 0.25 | 0.5, 1 or 2 GB |
+   | 0.5 | 1 to 4 GB, in 1 GB steps |
+   | 1 | 2 to 8 GB, in 1 GB steps |
+   | 2 | 4 to 16 GB, in 1 GB steps |
+   | 4 | 8 to 30 GB, in 1 GB steps |
+   | 8 | 16 to 60 GB, in 4 GB steps |
+   | 16 | 32 to 120 GB, in 8 GB steps |
+
+A pod with no requests gets the smallest combination (0.25 vCPU, 0.5 GB).
+The 256 MB can push a pod up a vCPU size: AWS's example is a request of 1 vCPU
+and 8 GB. With the 256 MB it no longer fits the 8 GB ceiling of 1 vCPU, so it
+is provisioned as 2 vCPU and 9 GB, twice the vCPU the team asked for.
+
+What follows for rightsizing:
+
+- **Read the billed size from the pod, not the node.** The
+  `CapacityProvisioned` annotation (`kubectl describe pod`) is the size that
+  sets the cost; the node size `kubectl get nodes` reports is unrelated and
+  often larger.
+- **Only a change of combination saves money.** A memory request lowered
+  from 3.5 GB to 3.2 GB at 0.5 vCPU is still provisioned as 4 GB, and the bill
+  does not move. Size requests so that memory plus 256 MB lands on a
+  combination, not just above one: at 1 vCPU, request 256 MB less than 8 GB.
+- **Billing runs from the start of the image pull until the pod terminates**,
+  per second with a one-minute minimum, so large images and slow starts are
+  paid time. The pods of a finished Job keep existing, and keep billing, until
+  they are deleted: set `ttlSecondsAfterFinished` on Jobs.
+- **Storage:** 20 GiB of ephemeral storage per pod is included; more is
+  billed, and Fargate provisions more than the request (115 GiB for a
+  100 GiB request).
+- **Rate levers are narrower than on nodes.** A Compute Savings Plan covers
+  Fargate; EKS on Fargate has no Spot and no Arm (Graviton) option, so an
+  interruptible or Arm-ready workload is cheaper on EC2 nodes.
+
+Sources: [Fargate Pod configuration](https://docs.aws.amazon.com/eks/latest/userguide/fargate-pod-configuration.html),
+[Fargate on EKS, considerations](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html),
+[Fargate pricing](https://aws.amazon.com/fargate/pricing/) (read 26 November 2026)
 
 ---
 

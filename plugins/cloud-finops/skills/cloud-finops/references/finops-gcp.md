@@ -21,6 +21,7 @@ questions:
     section: "Kubernetes cost attribution on GKE"
   - q: "Where do we see our GCP carbon footprint?"
     section: "Cloud Carbon Footprint"
+  - "How do we let project teams see their own GCP costs without access to the whole billing account?"
   - "Notre facture GCP est trop élevée : par où commencer, et quels engagements prendre ?"
 ---
 
@@ -55,8 +56,15 @@ contract sits at the Billing Account level.
 - [ ] Pricing data export to BigQuery for SKU price reconciliation
 - [ ] AI Cost Summary Agent widget in Billing Overview (preview) for AI workload visibility
 
-The Cloud Billing console is sufficient for ad-hoc visualisation and budget alerting.
-For attribution and custom tooling, build on the BigQuery billing export.
+**Project teams can see their own costs without a billing-account role (preview since
+10 June 2026, read 26 November 2026).** Project Viewer, Editor and Owner include `billing.resourceCosts.get`,
+so a team opens Reports and Anomalies for its own project, one project at a time
+(budgets need Editor or Owner). Adding **Project Billing Costs Manager**
+(`roles/billing.projectCostsManager`) on the billing account gives Reports and the FinOps
+hub aggregated over the projects that person can already view, and nothing else in the
+account; above 300 projects the aggregated view falls back to one project at a time. Use
+it for engineering showback instead of Billing Account Viewer, which shows every project
+([cost management for project owners](https://docs.cloud.google.com/billing/docs/how-to/project-owners/overview)).
 
 ### AI Cost Summary Agent - native AI spend visibility
 
@@ -64,8 +72,7 @@ The **AI Cost Summary Agent** has been in preview since 27 April 2026 (still pre
 on 15 November 2026, per the
 [Cloud Billing release notes](https://docs.cloud.google.com/billing/docs/release-notes)),
 providing dedicated AI spend analysis across Gemini API and Vertex AI services through a
-Billing Overview widget. This addresses the AI cost visibility gap that FinOps teams
-face when managing AI workloads on GCP.
+Billing Overview widget.
 
 **Gemini Enterprise Pay-as-you-go edition - consumption alongside subscription.**
 On 26 August 2026 Google announced a **Gemini Enterprise Pay-as-you-go** edition
@@ -73,9 +80,7 @@ alongside the per-seat editions (Business, Standard, Plus, Frontline). There is 
 base subscription fee: you pay for the compute and tokens your teams consume at
 standard model API rates, with no feature quota limits. At announcement it was
 available to select customers on invoiced Cloud Billing accounts and "rolling out
-broadly soon", so check eligibility before planning around it. This gives FinOps
-teams a choice of billing shape for agent workloads rather than a single seat-based
-commitment.
+broadly soon", so check eligibility before planning around it.
 
 Seats waste money when they sit idle and consumption does when it is unbounded: start
 new or variable agent workloads on pay-as-you-go behind a budget and a spend cap, and
@@ -93,9 +98,6 @@ Cloud Billing added an **"Originating products"** filter/group-by dimension in B
 Reports, plus a preset report, **"Gemini Enterprise costs by SKU"** (release notes,
 confirmed 15 November 2026). Use the group-by to segment AI-related consumption across
 services; it is console-only (see `finops-vertexai.md`).
-
-For detailed AI cost optimisation strategies, see `finops-vertexai.md` and
-`finops-for-ai.md`.
 
 ### BigQuery billing export - the canonical GCP cost data path
 
@@ -183,9 +185,7 @@ Configure it alongside (not instead of) the standard/detailed exports - the FOCU
 schema is optimised for multi-cloud joins, while the native exports retain GCP-
 specific columns the FOCUS spec does not surface.
 
-For multi-cloud customers normalising AWS / Azure / GCP cost in one warehouse, the
-FOCUS export is the path that aligns with AWS Data Exports for FOCUS 1.2 and
-Azure Cost Management's FOCUS 1.2 support. GCP offers a dedicated FOCUS export to a
+GCP offers a dedicated FOCUS export to a
 Google-provided immutable BigQuery dataset
 (`gcp_billing_immutable_<BILLING_ACCOUNT_ID>_<Location>`), still in preview on
 15 November 2026, with a conformance report covering FOCUS 1.0, 1.1 and 1.2; the earlier
@@ -206,8 +206,7 @@ https://docs.cloud.google.com/billing/docs/how-to/export-data-bigquery-tables/fo
 
 For pricing-aware analytics, use the **Cloud Billing Pricing API** to validate that
 CUD-discounted rates match expectation, model what-if scenarios for re-architecture
-proposals, and reconcile invoice line items. Pricing changes propagate to the API
-within hours of the public price change.
+proposals, and reconcile invoice line items.
 
 Source: https://cloud.google.com/billing/docs/reference/pricing-api
 
@@ -422,10 +421,6 @@ and region and moves over time) in exchange for:
 running batch jobs and training workloads with checkpointing are valid Spot
 workloads.
 
-Use for: batch jobs, ML training with checkpointing, CI/CD, fault-tolerant tiers.
-Avoid for: stateful workloads, latency-sensitive APIs, anything that cannot tolerate
-abrupt termination.
-
 Source: https://docs.cloud.google.com/compute/docs/instances/spot (read
 15 November 2026)
 
@@ -618,16 +613,13 @@ emissions methodologies are supported.
 | **Location-based** | Average emissions intensity of the regional grid where compute runs | Comparing physical regions; reporting under GHG Protocol Scope 2 location-based |
 | **Market-based** | Emissions accounting for Google's renewable energy purchases (PPAs, RECs) | Reporting under GHG Protocol Scope 2 market-based; Google's net-zero claims |
 
-**Both views are exposed in the console and via BigQuery export.** For
-sustainability reporting that needs to align with corporate Scope 2 disclosures,
-choose the methodology that matches your accounting framework - they will produce
-materially different numbers, especially in regions where Google has heavy renewable
-PPAs.
+**Both views are exposed in the console and via BigQuery export.** Choose the one that
+matches your Scope 2 accounting framework: the numbers differ materially where Google
+has heavy renewable PPAs.
 
 **Practical FinOps integration:**
 - Region selection has a carbon-cost trade-off: cheaper regions are sometimes higher-
-  carbon (Asian regions vs European). Surface this in the architecture review, not
-  just at procurement.
+  carbon (Asian regions vs European).
 - The BigQuery carbon export joins to billing data on `project_id` + `service` +
   `region`, enabling carbon-per-dollar analytics for greenops dashboards.
 
@@ -640,19 +632,13 @@ Sources: https://cloud.google.com/carbon-footprint, https://docs.cloud.google.co
 ### Kubernetes cost attribution on GKE
 
 GKE workloads need container-level cost attribution that native GCP billing data does
-not provide (it stops at node-level). For the cross-cluster discipline (OpenCost,
-Kubecost, rightsizing methodology, node-level autoscaling, idle node cost),
-see `finops-kubernetes.md`. GKE-specific anchors:
+not provide (it stops at node-level). For the cross-cluster discipline, see
+`finops-kubernetes.md`. GKE-specific anchors:
 
 - Label consistency between Kubernetes resources and GCP resources is the prerequisite
   for unified reporting through BigQuery billing export
 - GKE Cost Allocation (native) emits per-namespace, per-pod, per-label costs to BigQuery
   when enabled - prefer this over third-party tools where the use case is GKE-only
-- Industry benchmarks: as of March 2026, Cast AI's State of Kubernetes Resource
-  Optimization report shows typical clusters running at 8% CPU and 20% memory
-  utilisation (down from 10% / 23% in 2025)
-
-Source: https://cast.ai/blog/2026-state-of-kubernetes-resource-optimization-cpu-at-8-memory-at-20-and-getting-worse/
 
 ---
 
@@ -660,7 +646,7 @@ Source: https://cast.ai/blog/2026-state-of-kubernetes-resource-optimization-cpu-
 
 The remainder of this reference is a curated catalogue of 26 GCP inefficiency
 patterns covering compute, storage, databases, networking, and operational
-mechanics. Use these as a diagnostic checklist when building optimisation roadmaps.
+mechanics.
 Source: the [Cloud Efficiency Hub](https://www.pointfive.co/efficiency-hub), an open,
 practitioner-governed library powered by PointFive, credited here as the Hub
 asks of anyone who reuses its content.
