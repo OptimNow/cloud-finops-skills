@@ -106,8 +106,8 @@ kubectl get pods --all-namespaces \
 
 ## See also
 
-- `references/finops-gcp.md` - GCP cost data foundations, Autopilot
-  management fee pricing
+- `references/finops-gcp.md` - GCP cost data foundations;
+  `references/finops-gcp-patterns.md` - the idle Autopilot cluster pattern
 - `references/finops-kubernetes.md` - GKE cost attribution, cluster
   consolidation patterns
 - `playbooks/gcp-orphan-persistent-disks.md` - related orphan pattern

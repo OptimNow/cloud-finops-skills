@@ -118,7 +118,7 @@ gcloud monitoring metrics list --filter="metric.type:cloudfunctions.googleapis.c
 
 ## See also
 
-- `references/finops-gcp.md` - Cloud Functions pricing model, VPC
+- `references/finops-gcp-patterns.md` - Cloud Functions pricing model, VPC
   connector costs
 - `references/finops-vertexai.md` - similar cold-start economics for
   Vertex AI batch prediction

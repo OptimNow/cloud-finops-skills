@@ -43,7 +43,7 @@ questions:
 |---|---|
 | Compute rightsizing and Advisor calibration, Log Analytics cost control, AKS, networking cost | `finops-azure.md` |
 | Cost Management and FOCUS exports, billing scopes and allocation, tagging and Azure Policy, budgets | `finops-azure-billing.md` |
-| Database Reserved Capacity, storage reserved capacity and the database commitment decision tree | `finops-azure-commitments.md` |
+| Database Reserved Capacity, storage reserved capacity and the database commitment decision tree | `finops-azure-commitments-data.md` |
 | The enumerated per-service inefficiency catalogue | `finops-azure-patterns.md` |
 | A specific named waste pattern with a runnable detection query | `playbooks/azure-*.md` |
 
@@ -390,7 +390,7 @@ storage account).
 
 Azure SQL, Postgres / MySQL Flexible Server, and Cosmos DB each have their own
 sizing levers. The commitment-side guidance is in the database commitment decision tree in
-`finops-azure-commitments.md`;
+`finops-azure-commitments-data.md`;
 the levers below are the architectural and configuration changes that should
 happen **before** any Database Reserved Capacity purchase.
 
@@ -607,8 +607,9 @@ Software Assurance must still be enabled separately on Azure SQL DB / MI.
 SQL Database serverless, the DTU tiers and the Flexible Server Burstable tier are not
 reservable, and the figures above are illustrative upper bounds. The sizing method, the
 full exclusion list and the net-discount rule under a MACC live in
-`finops-azure-commitments.md` ("Database commitment decision tree" and "Net discount
-under a MACC with an Azure Commitment Discount").
+`finops-azure-commitments-data.md` ("Database commitment decision tree") and
+`finops-azure-commitments.md` ("Net discount under a MACC with an Azure Commitment
+Discount").
 
 ### KQL: database optimisation triage
 

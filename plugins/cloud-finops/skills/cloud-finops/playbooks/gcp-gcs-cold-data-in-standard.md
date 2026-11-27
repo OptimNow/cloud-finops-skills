@@ -159,9 +159,9 @@ The gates that make a class change defensible (all three, hence
 - `playbooks/aws-s3-cold-data-in-standard.md` and
   `playbooks/azure-blob-cold-data-in-hot.md` - the twins, same two-stage
   detection and the same three gates
-- `references/finops-gcp.md` - Storage Optimization Patterns ("Missing
-  Autoclass On GCS Bucket", "Inactive GCS Bucket") and the BigQuery
-  billing export section
+- `references/finops-gcp-patterns.md` - Storage Optimization Patterns ("Missing
+  Autoclass On GCS Bucket", "Inactive GCS Bucket"); `references/finops-gcp.md` -
+  the BigQuery billing export section
 - `references/finops-waste-detection-playbooks.md` - the taxonomy and the
   realised-versus-potential savings distinction this playbook leans on
 

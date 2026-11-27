@@ -762,7 +762,7 @@ entries:
     provider: "Azure"
     service: "Advisor commitment recommendations"
     change: "Savings plan and reservation recommendations, P3 reservations included, are produced at management group scope in the portal and the REST endpoints, aggregating every subscription under the group. Summing per-subscription recommendations by hand over-commits."
-    file: "finops-azure-commitments"
+    file: "finops-azure-commitments-sizing"
     section: "Commitment sizing methodology - granularity, Advisor calibration, tooling"
     source: "https://techcommunity.microsoft.com/blog/finopsblog/now-available-management-group%E2%80%93scoped-savings-plan-and-reservation-recommendatio/4560869"
   - date: "2026-09-28"

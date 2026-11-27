@@ -128,7 +128,7 @@ ORDER BY cost_30d DESC;
 - `references/finops-aws-patterns-compute.md` - EC2 patterns including non-prod
   scheduling
 - `references/finops-azure.md` - Azure VM rightsizing and scheduling
-- `references/finops-gcp.md` - Compute Engine scheduling patterns
+- `references/finops-gcp-patterns.md` - Compute Engine scheduling patterns
 - `references/finops-waste-detection-playbooks.md` - "schedule-
   blindness" category rubric
 

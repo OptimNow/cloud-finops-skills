@@ -234,7 +234,7 @@ taxonomy and confidence rubric; playbooks instantiate it.
 This directory is seeded with a curated subset of high-frequency patterns.
 The full per-provider catalogues live in `../references/finops-aws-patterns.md` (an
 index to five family files),
-`../references/finops-azure-patterns.md`, and `../references/finops-gcp.md`;
+`../references/finops-azure-patterns.md`, and `../references/finops-gcp-patterns.md`;
 extracting more of them into playbooks is tracked in `docs/ROADMAP.md`.
 
 ---

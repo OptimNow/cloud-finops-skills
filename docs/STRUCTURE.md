@@ -123,9 +123,14 @@ cloud-finops-skills/
 │       ├── finops-azure-billing.md         <- Azure billing data, allocation, tagging and
 │       │                                     Policy, budgets, EA-to-MCA (split 2026-10-22)
 │       ├── finops-azure-commitments.md     <- Azure RIs / SPs / AHB, liquidity, MACC
+│       ├── finops-azure-commitments-sizing.md <- Azure commitment sizing, Advisor calibration
+│       ├── finops-azure-commitments-data.md <- Azure database and storage commitments
+│       │                                     (both split from finops-azure-commitments.md 2026-11-27)
 │       ├── finops-azure-patterns.md        <- Azure enumerated pattern catalogue
 │       ├── finops-azure-openai.md          <- Azure OpenAI / PTUs
-│       ├── finops-gcp.md                   <- GCP FinOps
+│       ├── finops-gcp.md                   <- GCP billing data, CUDs / SUDs, BigQuery commitments, carbon
+│       ├── finops-gcp-patterns.md          <- GCP enumerated pattern catalogue
+│       │                                     (split from finops-gcp.md 2026-11-27)
 │       ├── finops-vertexai.md              <- GCP Vertex AI
 │       ├── finops-oci.md                   <- OCI
 │       ├── finops-databricks.md            <- Databricks (DBCU, allocation)

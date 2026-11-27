@@ -129,16 +129,19 @@ primary owner (`finops-on-prem-hybrid.md` takes Allocation, already covered).
    driver-led re-forecast cadence and AI forecast scenarios. Next depth when an
    engagement asks: worked driver models per workload type, and forecast
    collection from owners at Run.
-6. **`finops-gcp-patterns.md` split.** The GCP file carries 12 enumerated
-   patterns inline against a 1,495-line AWS catalogue; the split mirrors the
-   AWS and Azure structure and is a token-efficiency fix as much as a
-   coverage one. Priority depends on how much GCP engagements see.
+6. **`finops-gcp-patterns.md` split - SHIPPED 2026-11-27.** The 26 enumerated
+   patterns moved verbatim out of `finops-gcp.md`, which was at its size
+   budget; the split mirrors the AWS and Azure structure. The catalogue
+   itself is no deeper than before: priority for more GCP patterns depends
+   on how much GCP engagements see.
 
 Depth items that ride a quality lot when a content lot is light: OCI (182
 lines, six patterns: deepen or label it a foundations file in the routing
 table) and the GreenOps Azure and GCP pass below. (`finops-azure.md` and
 `finops-aws.md` were split into usage and billing files on 2026-10-22, and
-`finops-azure-commitments.md` was pruned under the budget the same day.)
+`finops-azure-commitments.md` was pruned under the budget the same day, then
+split on 2026-11-27 into the parent, `finops-azure-commitments-sizing.md` and
+`finops-azure-commitments-data.md`.)
 
 Deliberately not on the list: the last FCP cell (Education & Enablement) and
 the modernization and egress zero cells for Azure and GCP, which score well

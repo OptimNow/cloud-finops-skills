@@ -75,7 +75,7 @@ proven waste - check the portal view to distinguish "0% utilised" from
 one signal, action always warranted. Partial underutilisation (say 40-70%)
 is a different, weaker finding - it needs a second signal (no pending
 migration, no seasonal trough) before acting, and sizing guidance for it
-lives in `references/finops-azure-commitments.md`.
+lives in `references/finops-azure-commitments-sizing.md`.
 
 ## Fix
 
@@ -130,7 +130,7 @@ liquidity after February 2027").
 - `references/finops-azure-commitments.md` - reservation vs savings plan
   decision trees, portfolio liquidity, the 1 February 2027 exchange
   retirement rules
-- `references/finops-azure-commitments.md`, "Storage reserved capacity" - the
+- `references/finops-azure-commitments-data.md`, "Storage reserved capacity" - the
   hourly use-it-or-lose-it mechanics of blob, Files and disk reservations,
   where the same unused-hours waste appears on a stricter matching key
 - `playbooks/aws-expiring-commitment-no-decision.md` - the AWS member of
