@@ -19,6 +19,8 @@ questions:
     section: "Agents as cost actors: agent-initiated payments (x402 / MPP)"
   - q: "Per-token price keeps falling, so why does each agent task cost us more every quarter?"
     section: "Agentic cost anatomy - where the tokens go"
+  - q: "What does it cost to let an AI assistant query our AWS cost data through an MCP server, and where does that data go?"
+    section: "AWS Billing and Cost Management MCP server - billed calls and where the data goes"
   - "Combien va nous coûter un agent IA en tokens, et comment l'estimer avant de le construire ?"
 ---
 
@@ -162,7 +164,9 @@ only the raw cost table: when the effective savings rate or the unit cost it rep
 comes from the governed definition the Finance dashboard reads
 (`finops-kpis-benchmarking.md`, "One definition, every consumer"), the two agree, and
 an agent that has to derive a KPI from columns is a defect in the data layer, not in
-the prompt.
+the prompt. The providers publish their own cost-data servers: for AWS see "AWS Billing
+and Cost Management MCP server" below, for Azure `finops-azure-billing.md` ("Agentic
+FinOps on Azure").
 
 **2. Memory with cost controls**
 Stateful agents accumulate context over time - necessary for meaningful investigation but
@@ -258,6 +262,38 @@ Payments. Give it its own cost-attribution treatment - similar to the Managed Ag
 session-runtime billing documented in finops-anthropic.md - so bundled runtime cost is
 not silently folded into token spend. As of August 2026, this is available in AWS GovCloud
 (US-West). Source: AWS What's New - Bedrock.
+
+### AWS Billing and Cost Management MCP server - billed calls and where the data goes
+
+The open-source Billing and Cost Management MCP server (AWS Labs, announced 22 August
+2025) gives an MCP client Cost Explorer, Budgets, Cost Anomaly Detection, Compute
+Optimizer, Cost Optimization Hub, Savings Plans and S3 Storage Lens, plus a SQL engine
+that does the arithmetic (period-over-period change, unit cost), so the model does not
+work figures out itself. It runs beside the client and makes every call with the
+caller's AWS credentials: give it a profile limited to the permissions its README
+lists, not an administrator's. Two costs follow.
+
+- **Each Cost Explorer API request is billed**: per request on the primary billing
+  view, per source on a custom billing view (`finops-aws-billing.md`, "AWS Cost
+  Explorer" and "Custom billing views"). AWS's announcement says it plainly: each API
+  call the server makes is charged to the account. One question can take several
+  requests (several tools, and by default a tool reads every page of a long result),
+  and a scheduled agent repeats them on every run. Keep Cost Explorer for ad hoc
+  questions; a recurring report should read the CUR 2.0 export or a stored result. The
+  Storage Lens tool runs Athena queries, billed on the data scanned.
+- **The cost data goes to the model the client uses.** Tool results (account IDs,
+  spend by service and by tag) enter the model's context, so with a desktop assistant
+  they are sent to that assistant's model provider. Where that is not acceptable, use
+  a client that calls its model through Amazon Bedrock, where model providers have no
+  access to prompts and completions.
+
+Sources: [server README](https://github.com/awslabs/mcp/blob/main/src/billing-cost-management-mcp-server/README.md),
+[AWS What's New](https://aws.amazon.com/about-aws/whats-new/2025/08/aws-billing-cost-management-mcp-server/),
+[AWS announcement, "Cost Considerations"](https://aws.amazon.com/blogs/aws-cloud-financial-management/aws-announces-billing-and-cost-management-mcp-server/),
+[Cost Explorer pricing](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/pricing/),
+[Athena pricing](https://aws.amazon.com/athena/pricing/),
+[Bedrock data protection](https://docs.aws.amazon.com/bedrock/latest/userguide/data-protection.html)
+(all read 27 November 2026).
 
 ## Agents as cost actors: agent-initiated payments (x402 / MPP)
 
