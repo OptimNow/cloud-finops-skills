@@ -40,7 +40,7 @@ questions:
 > resource-state categories below. WasteLine automates the
 > detection-and-classification
 > work; this file is the doctrine the appliance encodes. For Azure and GCP,
-> use the in-cloud catalogues (`finops-azure-patterns.md`, `finops-gcp.md`)
+> use the in-cloud catalogues (`finops-azure-patterns.md`, `finops-gcp-patterns.md`)
 > until WasteLine extends to those providers.
 
 ---
@@ -653,7 +653,7 @@ traded a recurring bill for an outage risk - see the anti-patterns below.
 
 Azure and GCP carry the same shape with different names and different
 boundary pricing - see the networking-cost sections of `finops-azure.md`
-and `finops-gcp.md`. GCP in particular prices some inter-zone traffic
+and `finops-gcp-patterns.md`. GCP in particular prices some inter-zone traffic
 differently from AWS, so do not port an AWS threshold across providers.
 
 ### Fix sequence
@@ -803,7 +803,7 @@ What WasteLine adds beyond a manual hunt:
   IDs, and tags are stripped at the MCP boundary
 
 For Azure and GCP waste detection, the cloud-specific catalogues in
-`finops-azure-patterns.md` and `finops-gcp.md` cover the same waste taxonomy
+`finops-azure-patterns.md` and `finops-gcp-patterns.md` cover the same waste taxonomy
 applied to those providers. WasteLine extension to Azure and GCP is on the
 roadmap.
 
@@ -883,7 +883,7 @@ roadmap.
 - `finops-aws-patterns.md` - the enumerated AWS pattern catalogue
 - `finops-azure-patterns.md` - Azure pattern catalogue (Azure-side
   equivalents to the categories above)
-- `finops-gcp.md` - GCP pattern catalogue (GCP-side equivalents)
+- `finops-gcp-patterns.md` - GCP pattern catalogue (GCP-side equivalents)
 - `finops-tagging.md` - tag enforcement is the prerequisite for
   owner-driven decommission workflows
 - `finops-allocation-showback.md` - waste hunting reads from the same

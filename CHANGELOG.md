@@ -16,6 +16,15 @@ yet tagged.
 
 ### New and corrected content
 
+- **The Azure commitments guide and the Google Cloud guide are each split by question.**
+  Both had reached the size budget, so any question routed to them loaded about 15,000
+  tokens. Three parts move, unchanged, to their own files: how much to commit on Azure and
+  how to calibrate Advisor (`finops-azure-commitments-sizing.md`, about 2,900 tokens),
+  Azure database and storage commitments (`finops-azure-commitments-data.md`, about
+  3,700) and the 26 Google Cloud inefficiency patterns (`finops-gcp-patterns.md`, about
+  5,500). `finops-azure-commitments.md` keeps the instruments, the compute decision tree,
+  liquidity, MACC and phased purchasing; `finops-gcp.md` keeps billing data, commitment
+  discounts and carbon. Each now loads under 10,000 tokens.
 - **AWS cost data over MCP: each call is billed, and the data goes to the model.**
   `finops-agentic.md` adds the AWS Billing and Cost Management MCP server (AWS Labs),
   beside the Microsoft servers already described for Azure: what it reaches, that it

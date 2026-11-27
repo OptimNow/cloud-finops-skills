@@ -21,7 +21,7 @@ and that charge includes the first 30 days of storage. The first 50 GiB per proj
 per month is free; retention beyond 30 days is billed per GiB-month on top. The
 ingestion charge is the lever: on Google's list rates read 19 October 2026, one
 extra month of retention costs about one fiftieth of what the entry cost to ingest,
-so shortening retention (the pattern `finops-gcp.md` already covers) moves the bill
+so shortening retention (the pattern `finops-gcp-patterns.md` already covers) moves the bill
 far less than not ingesting the entry at all.
 
 Ingestion grows without anyone deciding it should. Every log routed to the `_Default`
@@ -97,8 +97,8 @@ every project underneath.
 
 ## See also
 
-- `references/finops-gcp.md` - excessive retention of logs in Cloud Logging; GCP cost
-  data and governance
+- `references/finops-gcp-patterns.md` - excessive retention of logs in Cloud Logging;
+  `references/finops-gcp.md` - GCP cost data and governance
 - `playbooks/azure-log-analytics-sprawl.md` - the Azure counterpart
 - `references/finops-waste-detection-playbooks.md` - "overprovisioned" category rubric
 

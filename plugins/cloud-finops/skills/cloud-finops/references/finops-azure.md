@@ -45,7 +45,9 @@ questions:
 |---|---|
 | Backup and snapshot management, blob and disk storage tiering and lifecycle, database optimisation (Azure SQL, Postgres / MySQL Flexible Server, Cosmos DB) | `finops-azure-data.md` |
 | Cost Management and FOCUS exports, Retail Prices API, FinOps Toolkit and hubs, billing scopes and allocation, tagging and Azure Policy, budgets, EA-to-MCA, agent access to cost data | `finops-azure-billing.md` |
-| Reservations, Savings Plans, AHB, Spot, commitment decision trees, portfolio liquidity, MACC | `finops-azure-commitments.md` |
+| Reservations, Savings Plans, AHB, Spot, the compute commitment decision tree, portfolio liquidity, MACC | `finops-azure-commitments.md` |
+| How much to commit, Advisor's commitment recommendations | `finops-azure-commitments-sizing.md` |
+| Database and storage commitments | `finops-azure-commitments-data.md` |
 | MACC and ACD negotiation, EA or MCA-E renewal, term sheet review | `finops-cloud-contracts.md` |
 | The enumerated per-service inefficiency catalogue | `finops-azure-patterns.md` |
 | A specific named waste pattern with a runnable detection query | `playbooks/azure-*.md` |

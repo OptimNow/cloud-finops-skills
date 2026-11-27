@@ -136,7 +136,7 @@ point-in-time recovery need all legitimately keep history.
   twin, same default-on soft delete trap
 - `playbooks/gcp-orphan-persistent-disks.md` - the block-storage side of
   orphaned bytes
-- `references/finops-gcp.md` - Storage Optimization Patterns ("Over
+- `references/finops-gcp-patterns.md` - Storage Optimization Patterns ("Over
   Retained Exported Object Versions")
 - `references/finops-waste-detection-playbooks.md` - the eight-category
   taxonomy this pattern fits ("orphaned")

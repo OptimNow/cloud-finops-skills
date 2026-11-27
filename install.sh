@@ -664,11 +664,11 @@ Use these knowledge files for the following query types:
 | Azure rightsizing, AKS, Log Analytics, networking | finops-azure.md |
 | Azure backup, storage, SQL, Cosmos DB | finops-azure-data.md |
 | Azure exports, allocation, Policy, budgets, MCA | finops-azure-billing.md |
-| Azure Reservations, Savings Plans, AHB, MACC, commitment strategy | finops-azure-commitments.md |
+| Azure Reservations, Savings Plans, AHB, MACC, commitment strategy | finops-azure-commitments.md (sizing: finops-azure-commitments-sizing.md; databases, storage: finops-azure-commitments-data.md) |
 | Azure optimisation pattern catalogue | finops-azure-patterns.md |
 | Azure OpenAI / Foundry PTUs | finops-azure-openai.md |
 | Anthropic Claude billing, Fast mode, prompt caching, long-context | finops-anthropic.md |
-| GCP cost management, BigQuery export, CUDs, SUDs, Spot, Carbon Footprint | finops-gcp.md |
+| GCP cost management, BigQuery export, CUDs, SUDs, Spot, Carbon Footprint | finops-gcp.md (waste patterns: finops-gcp-patterns.md) |
 | Vertex AI / Gemini pricing, Provisioned Throughput, context caching, Flexible Savings Plans | finops-vertexai.md |
 | AI cost management, LLM economics, agentic patterns, ROI, methodology lens | finops-for-ai.md |
 | Agentic FinOps, agent cost anatomy, cost per completed task, agent payments (x402/MPP) | finops-agentic.md |
@@ -811,9 +811,10 @@ build_gemini_grouped_knowledge() {
   cat_required "$outdir/azure.md" \
     "$refs/finops-azure.md" "$refs/finops-azure-data.md" \
     "$refs/finops-azure-billing.md" "$refs/finops-azure-commitments.md" \
+    "$refs/finops-azure-commitments-sizing.md" "$refs/finops-azure-commitments-data.md" \
     "$refs/finops-azure-patterns.md" "$refs/finops-azure-openai.md"
   cat_required "$outdir/gcp.md" \
-    "$refs/finops-gcp.md" "$refs/finops-vertexai.md"
+    "$refs/finops-gcp.md" "$refs/finops-gcp-patterns.md" "$refs/finops-vertexai.md"
   cat_required "$outdir/ai.md" \
     "$refs/finops-for-ai.md" "$refs/finops-anthropic.md" "$refs/finops-ai-dev-tools.md" \
     "$refs/finops-genai-capacity.md" "$refs/finops-ai-value-management.md" \

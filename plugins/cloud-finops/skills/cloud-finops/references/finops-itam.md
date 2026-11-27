@@ -358,7 +358,8 @@ of the operating model below is for.
 
 **Azure Hybrid Benefit:** the licensing overlay under every other Azure commitment
 decision, enabled on eligible VMs and vCore databases before any reservation is sized.
-`finops-azure-commitments.md` carries the discount order and the sizing patterns; the
+`finops-azure-commitments.md` carries the discount order and
+`finops-azure-commitments-sizing.md` the sizing patterns; the
 table in step 2 carries the eligibility rules.
 
 **AWS License Manager:** self-managed licence rules counted in vCPUs, cores, sockets or

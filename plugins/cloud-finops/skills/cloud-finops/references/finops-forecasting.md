@@ -48,7 +48,7 @@ it is re-cut. Neighbouring files own the decisions a forecast feeds:
 | Question | Where it lives |
 |---|---|
 | Forecasting a new workload before it exists (intake estimate, 12-month forecast document, the 60-90 day forecast-then-commit rule) | `finops-onboarding-workloads.md` |
-| How much to commit, and the keel below which no forecast is needed | `finops-aws-commitments.md`, `finops-azure-commitments.md` |
+| How much to commit, and the keel below which no forecast is needed | `finops-aws-commitments.md`, `finops-azure-commitments.md`, `finops-azure-commitments-sizing.md` |
 | Budget alerts and forecast-based alerts in each provider's tooling | `finops-anomaly-management.md`, `finops-aws-billing.md` (AWS Budgets and early controls), `finops-azure-billing.md` (Azure Budgets and Alerts) |
 | Forecast variance as a KPI, and carrying it into the executive conversation | `finops-kpis-benchmarking.md` |
 | AI business cases, incremental funding and stage gates | `finops-ai-value-management.md` |
@@ -322,8 +322,9 @@ report that names only the amount starts a search for someone to blame.
   five-minute budget and the executive conversation
 - `finops-onboarding-workloads.md` - forecasting at intake and the 60-90 day
   forecast-then-commit rule
-- `finops-aws-commitments.md`, `finops-azure-commitments.md` - the keel and
-  commitment sizing on top of a forecast
+- `finops-aws-commitments.md`, `finops-azure-commitments.md`,
+  `finops-azure-commitments-sizing.md` - the keel and commitment sizing on top of a
+  forecast
 - `finops-anomaly-management.md` - forecast-triggered alerts and the event class
   of forecast miss
 - `finops-ai-value-management.md` - AI business cases, incremental funding and
