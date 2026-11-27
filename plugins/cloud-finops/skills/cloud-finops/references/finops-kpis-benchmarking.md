@@ -23,6 +23,9 @@ questions:
     section: "The KPI portfolio by maturity stage"
   - q: "Cost per customer, per order or per transaction: how do we choose a unit-economics denominator?"
     section: "Unit economics"
+  - q: "Is the whole cloud bill cost of goods sold (COGS, cost of revenue) for gross margin, or only production, without dev and test?"
+    persona: "Finance and procurement"
+    section: "Unit economics"
   - "Dépensons-nous trop en cloud pour une entreprise de notre taille, et comment le savoir ?"
 ---
 
@@ -190,6 +193,20 @@ Choosing the denominator is the actual work:
   infrastructure efficiency metric. Fully-loaded (cloud + SaaS + platform team)
   cost per order is a COGS metric. Say which one is on the slide; mixing them
   across quarters is how a trendline gets quietly falsified.
+- **Split cloud spend before quoting a gross margin.** Gross margin takes only cost of
+  revenue (COGS): the production estate that serves customers. Development, test and
+  experimentation are R&D or other operating expense, which gross margin does not
+  count, so a cloud COGS figure built from the whole bill understates the margin. The
+  same test applies to the SaaS and platform-team cost a fully-loaded figure adds:
+  the part that runs production is cost of revenue, the rest is not. Environment and
+  account tags usually carry the split; shared platform cost needs a stated rule.
+  Which line a cost lands in is Finance's accounting policy, not a FinOps choice: ask
+  for it, apply it, and keep it fixed across quarters. One public example: Snowflake's
+  annual report puts the cloud infrastructure its customers consume, and the staff
+  who keep the service available, in cost of revenue, and the cloud infrastructure
+  used to develop the platform in R&D
+  ([Form 10-K for the year ended 31 January 2026](https://www.sec.gov/Archives/edgar/data/1640147/000164014726000008/snow-20260131.htm),
+  Item 7, read 27 November 2026).
 - **AI workloads get their own denominators** - cost per inference, per
   conversation, per document processed, per merged PR for coding agents - and
   the same anti-gaming rule applies: cost-per-merged-PR is a fleet trend
