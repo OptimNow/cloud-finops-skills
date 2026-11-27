@@ -185,7 +185,9 @@ right tool for detailed attribution and custom tooling.
   daily cost without requiring the legacy "resource-level data" paid tier. Retention
   and limits documented per service. Source:
   https://docs.aws.amazon.com/cost-management/latest/userguide/ce-resource-daily.html
-- API queries are charged ($0.01 per request)
+- API queries are charged ($0.01 per request), per source on a custom billing view,
+  and that includes each one an agent or MCP server makes (`finops-agentic.md`, "AWS
+  Billing and Cost Management MCP server")
 - For programmatic deep analysis, CUR / Data Exports remain the right tool - Cost
   Explorer is for visualisation and pre-built recommendations
 

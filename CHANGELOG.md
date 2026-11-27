@@ -25,6 +25,18 @@ yet tagged.
   5,500). `finops-azure-commitments.md` keeps the instruments, the compute decision tree,
   liquidity, MACC and phased purchasing; `finops-gcp.md` keeps billing data, commitment
   discounts and carbon. Each now loads under 10,000 tokens.
+- **AWS cost data over MCP: each call is billed, and the data goes to the model.**
+  `finops-agentic.md` adds the AWS Billing and Cost Management MCP server (AWS Labs),
+  beside the Microsoft servers already described for Azure: what it reaches, that it
+  acts with the caller's AWS credentials, that every Cost Explorer API request it makes
+  is charged (several per question, and again on every scheduled run), and that the
+  cost data it returns is sent to whichever model the client uses, with Amazon Bedrock
+  as the route when it must not reach a model provider.
+- **Gross margin takes only part of the cloud bill.** `finops-kpis-benchmarking.md` now
+  says to split cloud spend into cost of revenue (production that serves customers) and
+  R&D or other operating expense before quoting a gross margin, that a cloud COGS
+  figure built from the whole bill understates the margin, and that the split is
+  Finance's accounting policy.
 - **EKS on Fargate: no Fargate Spot, no Graviton, and what each pod is billed.**
   `finops-aws-patterns-compute.md` told you to enable Fargate Spot and Arm on "ECS/EKS".
   Amazon EKS supports neither, so both patterns are now scoped to ECS and send EKS
