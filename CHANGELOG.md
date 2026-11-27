@@ -16,6 +16,40 @@ yet tagged.
 
 ### New and corrected content
 
+- **EKS on Fargate: no Fargate Spot, no Graviton, and what each pod is billed.**
+  `finops-aws-patterns-compute.md` told you to enable Fargate Spot and Arm on "ECS/EKS".
+  Amazon EKS supports neither, so both patterns are now scoped to ECS and send EKS
+  workloads to EC2 nodes for Spot or Graviton pricing. `finops-kubernetes.md` adds how
+  EKS on Fargate sizes a pod (its requests, plus 256 MB, rounded up to the next Fargate
+  combination), why only a tier change lowers the bill, and that finished Job pods keep
+  billing until deleted.
+- **A capacity reservation bills when it is empty, on AWS and on Azure.**
+  `finops-aws-commitments.md` adds that an unused On-Demand Capacity Reservation is
+  charged at the On-Demand rate, that Savings Plans and regional RIs land on empty slots
+  after running instances (so commitment utilisation can look healthy over idle
+  capacity), and how to find the idle part in CUR 2.0. `finops-azure-commitments.md`
+  adds the Azure equivalent, and no longer suggests that a reservation secures capacity
+  for GPU sizes: only an on-demand capacity reservation does. The instrument tables
+  follow: on AWS an RI reserves capacity only if it is zonal, whatever its class, and
+  an Azure reservation is described as resource-based, not capacity-based.
+- **Azure reservations and savings plans cost the same paid monthly or upfront.**
+  `finops-azure-commitments.md` now says so, with what monthly payment changes: the
+  instalment moves with the exchange rate under an MCA billed outside USD, and
+  cancelling counts the remaining payments towards the refund cap.
+- **Bedrock distillation: the saving depends on how the distilled model is served.**
+  `finops-bedrock.md` adds that a distilled model runs on Provisioned Throughput, billed
+  by the hour with or without traffic, unless its base model is on the short list that
+  can be deployed on demand, and what the distillation job itself bills.
+- **Automation that inflates the AWS Config bill.** `finops-aws-patterns-other.md` adds
+  that a scheduled job which rewrites resources is billed per configuration item on
+  each run that changes something, how to find the resource type behind a spike, and
+  that daily recording only pays for a resource that changes more than four times a
+  day.
+- **Google Cloud: project teams can see their own costs.** `finops-gcp.md` adds the
+  preview that lets project roles open cost reports for their project, and the Project
+  Billing Costs Manager role that aggregates them without opening the whole billing
+  account. The file was over its size budget: redundant sentences were removed and one
+  Kubernetes benchmark moved to `finops-kubernetes.md`.
 - **ChatGPT and Codex share one allowance from December 2026.** `finops-ai-dev-tools.md`
   said Codex draws from the ChatGPT plan limits without saying which ones. It now says
   that on Plus, Pro and Business Chat has its own message limits today, separate from

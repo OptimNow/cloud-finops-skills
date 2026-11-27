@@ -13,6 +13,7 @@ questions:
   - "Which AWS compute inefficiencies should we look for first in a new account?"
   - "Our EMR clusters sit idle between jobs. What is the pattern and the fix?"
   - "Where does Lambda spend go wrong, and what do we check?"
+  - "Can pods on EKS Fargate use Fargate Spot or Graviton?"
   - "Quels sont les gaspillages classiques sur EC2, Lambda et EKS, et comment les repérer ?"
 ---
 
@@ -268,10 +269,12 @@ EC2 instances are often overprovisioned based on rough estimates, legacy pattern
 **Underuse Of Fargate Spot For Interruptible Workloads**
 Service: AWS Fargate | Type: Pricing Model Misalignment
 
-Many teams run workloads on standard Fargate pricing even when the workload is fault-tolerant and could tolerate interruptions. Fargate Spot provides the same performance characteristics at up to 70% lower cost, making it ideal for stateless jobs, batch processing, CI/CD runners, or retry-friendly microservices.
+Many teams run ECS workloads on standard Fargate pricing even when the workload is fault-tolerant and could tolerate interruptions. Fargate Spot provides the same performance characteristics at up to 70% lower cost, making it ideal for stateless jobs, batch processing, CI/CD runners, or retry-friendly microservices.
 
-- Update ECS/EKS task definitions or profiles to enable Fargate Spot
-- For mixed environments, use capacity providers or placement strategies to route eligible tasks to Spot
+Fargate Spot exists on Amazon ECS only. Amazon EKS does not support it, so an interruptible pod on EKS gets Spot pricing from EC2 Spot nodes (a managed node group or Karpenter), not from a Fargate profile ([Fargate on EKS, considerations](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html), read 26 November 2026).
+
+- Add the `FARGATE_SPOT` capacity provider to the ECS cluster and to the service's capacity provider strategy
+- For mixed environments, weight `FARGATE` and `FARGATE_SPOT` in that strategy to route eligible tasks to Spot
 - Monitor interruption rates and implement retry logic where necessary
 
 **Recursive Lambda Function Invocation**
@@ -295,9 +298,11 @@ Retry storms occur when a function fails and is automatically retried repeatedly
 **Suboptimal Architecture Selection In Aws Fargate**
 Service: AWS Fargate | Type: Suboptimal Architecture Selection
 
-AWS Fargate supports both x86 and Graviton2 (ARM64) CPU architectures, but by default, many workloads continue to run on x86. Graviton2 delivers significantly better price-performance, especially for stateless, scale-out container workloads.
+On Amazon ECS, AWS Fargate supports both x86 and Graviton2 (ARM64) CPU architectures, but by default, many workloads continue to run on x86. Graviton2 delivers significantly better price-performance, especially for stateless, scale-out container workloads.
 
-- Update Fargate task definitions to use `"runtimePlatform": { "cpuArchitecture": "ARM64" }` where supported
+This pattern does not apply to EKS on Fargate, which cannot run workloads that require Arm processors: on EKS, Graviton pricing comes from Graviton EC2 nodes ([Fargate on EKS, comparison table](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html), [Fargate pricing](https://aws.amazon.com/fargate/pricing/), read 26 November 2026).
+
+- Update ECS task definitions on Fargate to use `"runtimePlatform": { "cpuArchitecture": "ARM64" }` where supported
 - Rebuild container images for multi-architecture compatibility if needed
 - Benchmark ARM-based performance to validate expected savings
 
