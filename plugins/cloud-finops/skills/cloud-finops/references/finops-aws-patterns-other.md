@@ -172,10 +172,9 @@ CloudWatch log groups often persist long after their usefulness has expired. In 
 OptimNow text, not from the Cloud Efficiency Hub. All pages read 10 November 2026,
 except where a paragraph gives its own date.
 
-**AWS WAF.** The billing model changes with usage on 1 February 2027; the model after
-this paragraph applies from that date. Through 31 January 2027: beyond the per web ACL,
-per rule and per request charges, every request
-evaluated counts, whatever the rule action. The paid intelligent threat mitigation
+**AWS WAF.** Usage from 1 February 2027 is billed on a different model, described in
+the next paragraph. Through 31 January 2027: beyond the per web ACL, per rule and per
+request charges, every request evaluated counts, whatever the rule action. The paid intelligent threat mitigation
 groups (Bot Control, Account Takeover Prevention, Account Creation Fraud Prevention)
 add a monthly fee per web ACL and a fee per request they inspect. AWS's own advice:
 exclude traffic with a scope-down statement, run cheaper blocking rules (IP
@@ -188,7 +187,8 @@ API Gateway HTTP APIs cannot be protected, only REST APIs ([WAF pricing](https:/
 [intelligent threat mitigation best practices](https://docs.aws.amazon.com/waf/latest/developerguide/waf-managed-protections-best-practices.html),
 [supported resources](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html)).
 
-**AWS WAF from 1 February 2027.** Three meters replace the list above: an hourly charge
+**AWS WAF from 1 February 2027.** Three meters replace the charges above (a CloudWatch
+Logs allowance per million requests still applies): an hourly charge
 per protected resource, a charge per request a web ACL inspects (whatever the action),
 and a premium request fee on requests that a premium rule group inspects (Bot Control
 targeted protection, ATP, ACFP, the API Security and AI Security groups), charged once

@@ -583,8 +583,9 @@ the pricing shape differs:
   hits are already covering the workload - placing large, stable content at the start of
   the prompt and sending similar-prefix requests close together is enough to raise the
   implicit hit rate, at zero storage cost.
-- Cache write: charged at **standard input-token rates** on models before Gemini 4
-  Hydrogen - unlike Anthropic and Bedrock, there is no write premium on them.
+- Cache write: charged at **standard input-token rates** - unlike Anthropic and
+  Bedrock, there is no write premium. One exception starts on 12 January 2027, for
+  Gemini 4 Hydrogen and later models (next bullet but one).
 - Cache **storage** (explicit only): bills per hour the cache is held, per cached token.
   The rate is flat across prompt size but varies by model class: **Pro SKUs cost 4.5x
   the Flash and Flash-Lite rate** per token-hour. This is the cost component to watch,

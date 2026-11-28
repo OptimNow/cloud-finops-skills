@@ -340,8 +340,8 @@ notifications when eviction risk rises (typically 30 seconds to 15 minutes ahead
 is not charged for a VM that Azure evicts to reclaim capacity within its first 60
 minutes. Microsoft says only that it costs more than standard Spot and stays well below
 pay-as-you-go: no ratio is published. The premium buys the longer notice and the
-no-charge rule, so it suits work that checkpoints within the hour or needs more than 30
-seconds to drain. Compare its rate with the standard Spot rate plus the expected cost
+no-charge rule, so it suits work that needs more than 30 seconds to checkpoint or
+drain, and short jobs whose early eviction would otherwise be paid for and lost. Compare its rate with the standard Spot rate plus the expected cost
 of re-running evicted work, not with pay-as-you-go. The no-charge rule is stated for
 capacity evictions only, so do not count on it for a VM you delete yourself. It runs on
 single VMs and scale sets (Flexible or Uniform) with `SpotPlus` priority, on API version

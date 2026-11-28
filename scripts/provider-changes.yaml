@@ -56,7 +56,7 @@ entries:
   - date: "2026-11-23"
     provider: "Google Cloud"
     service: "BigQuery reservation and billing controls"
-    change: "reservation_override_mode and disable_on_demand_billing are GA, set per region on a project or an organisation. The second makes a query without an assigned reservation fail instead of billing per TiB, so the commitment becomes the ceiling; assign every project first."
+    change: "reservation_override_mode and disable_on_demand_billing are GA, set per region on a project or an organisation. The second makes a query without an assigned reservation fail instead of billing per TiB; assign every project first. Autoscaled slots still bill."
     file: "finops-gcp"
     section: "BigQuery commitments (separate from Compute CUDs)"
     source: "https://docs.cloud.google.com/bigquery/docs/release-notes"

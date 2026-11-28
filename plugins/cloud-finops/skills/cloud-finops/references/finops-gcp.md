@@ -533,7 +533,7 @@ slots stay there, as a residual to allocate by rule, and a query project on anot
 billing account is not attributed at all. It is set per administration project and
 location and applies from the next billing day.
 
-**Keeping the commitment as the ceiling (GA 23 November 2026).** Two options, set per
+**Closing the on-demand path (GA 23 November 2026).** Two options, set per
 region with `ALTER PROJECT SET OPTIONS` or `ALTER ORGANIZATION SET OPTIONS`, decide
 whether a query can leave its reservation for on-demand billing.
 `reservation_override_mode` governs overrides of an assigned reservation: the default,
@@ -544,8 +544,8 @@ attribution above. `disable_on_demand_billing`, set to true, makes any query wit
 assigned reservation fail instead of billing per TiB: it closes the case of an
 unassigned project running on-demand beside the commitment. It trades a surprise
 charge for a failed query, so check that every project that runs queries in the region
-has an assignment before setting it, and set it where the commitment is meant to be the
-ceiling.
+has an assignment before setting it. It stops per-TiB billing, not slot spend:
+autoscaled slots above the baseline still bill at the edition rate.
 
 Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments,
 https://docs.cloud.google.com/bigquery/docs/reservations-monitoring and the
