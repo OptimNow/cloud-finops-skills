@@ -12,7 +12,7 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 An "Unreleased" section, when there is one, lists what is merged to `main` and not
 yet tagged.
 
-## Unreleased
+## 1.54.0 (28 November 2026)
 
 ### New and corrected content
 
@@ -159,7 +159,7 @@ yet tagged.
   the maximum review effort level.
 - **Snowflake prompt caching for AI_COMPLETE.** `finops-snowflake.md` (GA 18 November
   2026): put shared instructions first and row data last, and where to measure the hits.
-- **What's new digest** runs to 21 November 2026.
+- **What's new digest** runs to 28 November 2026.
 - **Azure reservation renewals now bring up the 1 February 2027 price rise.** A question
   about buying or renewing Azure reservations is answered from
   `finops-azure-commitments.md`, which covered the exchange retirement of that date and
@@ -172,6 +172,27 @@ yet tagged.
 ### Install and listings
 
 - The Claude Code marketplace description counts 49 runbooks; it still said 44.
+
+### Upgrading
+
+- **Claude directory plugin**: the new content is already there if your copy follows
+  the directory; otherwise update or reinstall the plugin.
+- **Claude Code marketplace** (`cloud-finops@optimnow`): run
+  `/plugin update cloud-finops@optimnow` once this version is tagged.
+- **Hosted connector** (`https://mcp.optimnow.io/mcp`): nothing to do. The three new
+  references (`finops-azure-commitments-sizing`, `finops-azure-commitments-data`,
+  `finops-gcp-patterns`) appear in its catalogue when this version is deployed, which
+  the release does itself. Its seven tools are unchanged.
+- **If you read a reference by section**: commitment sizing and Advisor calibration,
+  and database and storage commitments, left `finops-azure-commitments` for the two new
+  Azure files, and the Google Cloud inefficiency patterns left `finops-gcp` for
+  `finops-gcp-patterns`. A saved `get_reference` call that names one of those sections
+  in the old file now gets the list of sections that remain, not the text: name the
+  new file.
+- **PyPI package**: `pip install -U cloud-finops-mcp`.
+- **ChatGPT and Gemini**: run the installer again and re-upload the knowledge files,
+  which now include the three new references. On ChatGPT, paste the new
+  `instructions.md` too: its Azure commitments and Google Cloud rows name the new files.
 
 ## 1.53.0 (20 November 2026)
 
