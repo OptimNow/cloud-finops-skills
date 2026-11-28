@@ -533,10 +533,27 @@ slots stay there, as a residual to allocate by rule, and a query project on anot
 billing account is not attributed at all. It is set per administration project and
 location and applies from the next billing day.
 
+**Keeping the commitment as the ceiling (GA 23 November 2026).** Two options, set per
+region with `ALTER PROJECT SET OPTIONS` or `ALTER ORGANIZATION SET OPTIONS`, decide
+whether a query can leave its reservation for on-demand billing.
+`reservation_override_mode` governs overrides of an assigned reservation: the default,
+`DENY_OVERRIDE_TO_NONE`, lets a query move to another reservation but refuses an
+explicit override to on-demand; `ALLOW_ANY_OVERRIDE` reopens that path; and
+`DENY_ANY_OVERRIDE` holds every query on its assignment, which also protects the
+attribution above. `disable_on_demand_billing`, set to true, makes any query without an
+assigned reservation fail instead of billing per TiB: it closes the case of an
+unassigned project running on-demand beside the commitment. It trades a surprise
+charge for a failed query, so check that every project that runs queries in the region
+has an assignment before setting it, and set it where the commitment is meant to be the
+ceiling.
+
 Sources: https://docs.cloud.google.com/bigquery/docs/reservations-assignments,
 https://docs.cloud.google.com/bigquery/docs/reservations-monitoring and the
 [BigQuery release notes](https://docs.cloud.google.com/bigquery/docs/release-notes)
-(9 and 11 November 2026 entries, read 14 November 2026).
+(9 and 11 November 2026 entries, read 14 November 2026); for the two options, the
+23 November 2026 entry, [default configuration](https://docs.cloud.google.com/bigquery/docs/default-configuration)
+and the [options list](https://docs.cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language),
+read 28 November 2026.
 
 #### Cross-cloud queries - cache the remote reads
 

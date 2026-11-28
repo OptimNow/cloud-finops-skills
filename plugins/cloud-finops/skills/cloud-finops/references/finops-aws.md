@@ -494,6 +494,9 @@ The WAF inclusion is load-bearing for the value math. 25 WAF rules at $1/rule/mo
 (us-east-1 list rate, read 9 November 2026) is $25/month of standalone WAF value, which by
 itself exceeds the $15 Pro price.
 If you were going to adopt WAF anyway, Pro pays for itself on that line alone.
+That comparison holds through 31 January 2027: from 1 February 2027 WAF drops the
+per-rule charge and bills per protected resource and per request ("AWS WAF from
+1 February 2027" in `finops-aws-patterns-other.md`), so redo it with those two meters.
 
 ### Route 53 gotchas
 

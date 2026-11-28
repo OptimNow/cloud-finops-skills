@@ -92,12 +92,13 @@ describes both meters. Ratios are against Opus 5 (pricing page and hub, read 9 N
 | Claude Opus 4.8 | 1x | 0.1x | 1M | Previous Opus |
 | Claude Opus 4.7 | 1x | 0.1x | 1M | |
 | Claude Opus 4.6 | 1x | 0.1x | 1M | |
+| Claude Opus 4.5 | 1x | 0.1x | 200K | Deprecated 23 November 2026 (`claude-opus-4-5-20251101` and the undated `claude-opus-4-5`); retirement on the Claude API scheduled for 22 January 2027, recommended replacement Opus 5.5 (0.8x the rate, 1M window). The date covers the platforms Anthropic operates, Microsoft Foundry included; Amazon Bedrock and Google-managed Claude on Google Cloud set their own ([model deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations), read 28 November 2026). A prompt that had to fit 200K can grow on the 1M window, so re-check context-heavy cost estimates at migration |
 | Claude Sonnet 5.5 | 0.4x | 0.05x | 1M | Launched 28 September 2026 at the Sonnet 5 rate. Carries breaking API changes from Sonnet 5 (thinking-mode and forced-tool-use behaviour), so the upgrade is an engineering change at constant unit cost |
 | Claude Sonnet 5 | 0.4x | 0.1x | 1M | Launched at an introductory rate; Anthropic made it the standard rate in August 2026 and cancelled the scheduled 1 September increase |
 | Claude Sonnet 4.6 | 0.6x | 0.1x | 1M | |
 | Claude Sonnet 4.5 | 0.6x | 0.1x | 200K | Deprecated 30 September 2026; retirement on the Claude API scheduled for 30 November 2026. Plan the migration to Sonnet 5 or 5.5 (0.67x the rate) before then |
 | Claude Haiku 5.5 | 0.02x for prompts up to 100K tokens, 0.1x above | 0.1x | 1M | Released 7 October 2026. Priced by prompt length: a request whose prompt (cache reads and writes included) passes 100K tokens pays 5x on every meter, request by request. On the newer tokenizer, so the same text counts about 30% more tokens than on Haiku 4.5; minimum cacheable prompt 512 tokens. Also on Bedrock (AWS GovCloud and Canada cross-Region inference included) |
-| Claude Haiku 4.5 | 0.2x | 0.1x | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (the still-active Opus 4.5 is likewise 200K) |
+| Claude Haiku 4.5 | 0.2x | 0.1x | 200K | 200K window - the 1M window applies to 4.6-generation and later models only (Opus 4.5, retiring on 22 January 2027, is likewise 200K) |
 
 **Four FinOps consequences of this table.** First, the Opus tier held one list rate across
 five generations (4.5 through 5), and Opus 5.5 is the first break in that line: 0.8x

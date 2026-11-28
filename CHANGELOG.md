@@ -16,6 +16,42 @@ yet tagged.
 
 ### New and corrected content
 
+- **AWS WAF changes its billing model on 1 February 2027.** `finops-aws-patterns-other.md`
+  described charges per web ACL, per rule and per extra capacity that end on 31 January
+  2027. It now keeps them as the model until that date and adds the new one: an hourly
+  charge per protected resource, a charge per inspected request and one premium fee per
+  request. A web ACL shared by many resources costs more, a rule-heavy one less, so the
+  file says what to re-model before February. `finops-aws.md` marks its CloudFront
+  flat-rate comparison, built on the per-rule charge, as valid until the same date.
+- **Copilot code review is billed to the organisation by default from 30 December 2026.**
+  `finops-ai-dev-tools.md`: where no billing choice was saved, reviews by licensed
+  members move to the organisation that owns the repository, so choose Member or
+  Organization in the Copilot policy before that date.
+- **Claude Opus 4.5 retires on the Claude API on 22 January 2027.** `finops-anthropic.md`
+  called it "still-active". It is deprecated since 23 November 2026 and has its own row
+  in the model table, with the replacement (Opus 5.5), which platforms the date covers,
+  and what the move to a 1M window does to a cost estimate.
+- **The Gemini 4 cache-write charge covers Neon as well as Hydrogen.** `finops-vertexai.md`
+  scoped the charge that starts on 12 January 2027 to Gemini 4 Hydrogen. It applies to
+  Hydrogen and later models, at 1.25x the input rate with longer retention priced
+  higher, and the file adds that Hydrogen and Neon take no explicit cache, so prompt
+  order is the caching lever until then.
+- **Microsoft Foundry cost controls can block requests at a budget (preview).**
+  `finops-azure-openai.md` adds the control beside Azure Cost Management: a spending or
+  token budget that alerts or blocks new requests, the 429 a blocked request returns,
+  and its limits (Azure OpenAI deployments only, estimated totals that will not match
+  the bill).
+- **Azure Spot plus (preview).** `finops-azure-commitments.md` adds the tier between Spot
+  and pay-as-you-go: longer eviction notice, no charge for a VM evicted for capacity in
+  its first 60 minutes, and what to compare its rate with.
+- **BigQuery: stopping queries from falling back to on-demand billing.** `finops-gcp.md`
+  adds the two regional options that became generally available on 23 November 2026,
+  what each value does, and the trade-off of closing the on-demand path: a query
+  without a reservation fails.
+- **Splitting a shared S3 bucket by prefix, and a Slurm cluster by job, on AWS.**
+  `finops-allocation-showback.md` adds split cost allocation data for S3 prefixes
+  (17 November 2026), with what it requires and what it leaves unsplit, and for AWS
+  Parallel Computing Service (23 November 2026).
 - **The Azure commitments guide and the Google Cloud guide are each split by question.**
   Both had reached the size budget, so any question routed to them loaded about 15,000
   tokens. Three parts move, unchanged, to their own files: how much to commit on Azure and

@@ -343,6 +343,33 @@ of more than 80% for one application moved off a dedicated Atlas cluster onto a 
 one (Thais Minelvino Dos Santos, FinOps X 2026). These are one organisation's figures,
 not benchmarks.
 
+### Shared S3 buckets and shared HPC clusters
+
+Two AWS cases that needed a pipeline now have split cost allocation data in CUR.
+
+- **A general purpose S3 bucket shared by several teams** (since 17 November 2026).
+  Billing and Cost Management allocates the bucket's storage and its Tier 1 and Tier 2
+  request costs to the deepest matching prefix, within the range of prefix levels you
+  choose, and each prefix line item carries its prefix path as AWS-generated cost
+  allocation tags. A split by prefix no longer needs a Storage Lens export or an S3
+  Inventory pipeline, provided the prefixes map to owners. Two limits. It requires the
+  S3 Storage Lens advanced tier, with Billing and Cost Management publishing switched
+  on in the Storage Lens configuration: nothing is charged beyond that tier, but the
+  tier is paid ("Unused S3 Storage Lens Advanced" in `finops-aws-patterns-storage.md`),
+  so weigh it against the bucket's cost. And only storage and Tier 1 and Tier 2
+  requests are split: the announcement names no other charge, so retrieval and data
+  transfer stay on the bucket, to allocate by rule. Not in the China or GovCloud (US)
+  Regions.
+- **A Slurm cluster on AWS Parallel Computing Service** (since 23 November 2026).
+  Split cost allocation data attributes shared EC2 CPU, GPU and memory to each job by
+  what it requests and consumes, and CUR aggregates the cost by job, user, Slurm
+  account, queue, compute node group, node and cluster: the native key for HPC
+  chargeback. It requires Slurm 25.11 or later.
+
+Sources: AWS What's New, [S3](https://aws.amazon.com/about-aws/whats-new/2026/11/s3-split-cost-allocation/)
+(17 November 2026) and [AWS PCS](https://aws.amazon.com/about-aws/whats-new/2026/11/pcs-supports-split-cost-data/)
+(23 November 2026), read 28 November 2026.
+
 ### Security tooling
 
 Security tools serve the organisation, not individual teams. Default to

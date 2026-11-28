@@ -333,6 +333,22 @@ region, in the portal and in the Resource Graph `SpotResources` table
 [Spot Placement Score](https://learn.microsoft.com/en-us/azure/virtual-machine-scale-sets/spot-placement-score),
 read 14 November 2026).
 
+**Spot plus (public preview, announced 17 November 2026)** is a tier between Spot and
+pay-as-you-go. It targets at least 60 minutes of runtime on a best-effort basis while
+remaining evictable, gives up to 2 minutes' eviction notice, sends rebalance
+notifications when eviction risk rises (typically 30 seconds to 15 minutes ahead), and
+is not charged for a VM that Azure evicts to reclaim capacity within its first 60
+minutes. Microsoft says only that it costs more than standard Spot and stays well below
+pay-as-you-go: no ratio is published. The premium buys the longer notice and the
+no-charge rule, so it suits work that checkpoints within the hour or needs more than 30
+seconds to drain. Compare its rate with the standard Spot rate plus the expected cost
+of re-running evicted work, not with pay-as-you-go. The no-charge rule is stated for
+capacity evictions only, so do not count on it for a VM you delete yourself. It runs on
+single VMs and scale sets (Flexible or Uniform) with `SpotPlus` priority, on API version
+2026-04-01 or later, once the subscription is registered for the preview; the
+announcement does not mention AKS node pools
+([Azure Updates](https://azure.microsoft.com/updates?id=581145), read 28 November 2026).
+
 ### Instance size flexibility ratios come from the API, not the CSV
 
 Since 9 May 2026 Microsoft no longer updates the public CSV of instance size

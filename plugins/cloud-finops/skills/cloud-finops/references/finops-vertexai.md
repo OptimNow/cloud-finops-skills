@@ -233,8 +233,12 @@ Neither mechanism alters Provisioned Throughput commitment burndown rates.
 Platform both carry promotional pricing through **30 November 2026**, delivered as a 50%
 credit back on net spend (the Cyber Permissive variants are excluded), and bill at
 twice that net rate from **1 December 2026**: at constant volume the December bill for
-them doubles. Gemini 4 Hydrogen gains a cache-write meter on **12 January 2027**, so a
-cost model that priced its caching as reads only needs a write line from that date (Gemini 4 rows of the pricing page, read 14 November 2026).
+them doubles. Gemini 4 Hydrogen and later models (Neon and Neon for cyber so far) gain
+a cache-write meter on **12 January 2027**, at 1.25x the standard input rate by default
+with longer retention priced higher, so a cost model that priced their caching as reads
+only needs a write line from that date (Gemini 4 rows of the pricing page, read
+14 November 2026; [release notes](https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes)
+of 12, 18 and 23 November 2026, read 28 November 2026).
 
 <!-- Maintainer note: remove this subsection after January 2027, once both windows have
 closed and the repricing has landed in actuals. -->
@@ -579,8 +583,8 @@ the pricing shape differs:
   hits are already covering the workload - placing large, stable content at the start of
   the prompt and sending similar-prefix requests close together is enough to raise the
   implicit hit rate, at zero storage cost.
-- Cache write: charged at **standard input-token rates** - unlike Anthropic and
-  Bedrock, there is no write premium.
+- Cache write: charged at **standard input-token rates** on models before Gemini 4
+  Hydrogen - unlike Anthropic and Bedrock, there is no write premium on them.
 - Cache **storage** (explicit only): bills per hour the cache is held, per cached token.
   The rate is flat across prompt size but varies by model class: **Pro SKUs cost 4.5x
   the Flash and Flash-Lite rate** per token-hour. This is the cost component to watch,
@@ -589,8 +593,15 @@ the pricing shape differs:
   durable part.
 - Cache hit (read): 90% off the standard input rate on 2.5-generation and Gemini 3
   models (75% on 2.0-era models), and 95% off on the Gemini 4 rows (cache read at
-  0.05x input, read 15 November 2026). Gemini 4 Hydrogen gains a cache-write meter at
-  1.25x input on 12 January 2027, which ends "no write premium" for that model.
+  0.05x input, read 15 November 2026). Gemini 4 Hydrogen and later models (Neon, GA
+  18 November 2026, and Neon for cyber, GA 23 November 2026) gain a cache-write meter
+  at 1.25x input by default on 12 January 2027, with longer retention priced higher,
+  which ends "no write premium" for them. Hydrogen and Neon take no explicit cache:
+  caching is implicit, with durable caching on by default for shared prefixes of 4,096
+  tokens or more. Until cache control with a TTL arrives on that date, their only
+  caching lever is prefix ordering; from that date, a prefix written and not read
+  again costs more than an uncached prompt ([release notes](https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes)
+  of 12, 18 and 23 November 2026, read 28 November 2026).
 - TTL: default **60 minutes**, extendable through the API. Minimum lifetime 1 minute,
   no maximum. Maximum cacheable blob or text payload 10 MB.
 - **Minimum cache size is now model-dependent** - the old flat 2,048-token floor only
