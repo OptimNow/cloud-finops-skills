@@ -12,7 +12,7 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 An "Unreleased" section, when there is one, lists what is merged to `main` and not
 yet tagged.
 
-## Unreleased
+## 1.55.0 (28 November 2026)
 
 ### New and corrected content
 
@@ -28,6 +28,32 @@ yet tagged.
   `finops-aws-patterns-other.md` and `finops-bedrock.md` add that the rule group for
   LLM, MCP and A2A endpoints (23 November 2026) pays a WAF per-request fee, and that
   its content inspection calls Bedrock Guardrails, billed separately.
+
+### Upgrading
+
+- **Claude directory plugin**: the new content is already there if your copy follows
+  the directory; otherwise update or reinstall the plugin.
+- **Claude Code marketplace** (`cloud-finops@optimnow`): run
+  `/plugin update cloud-finops@optimnow` once this version is tagged.
+- **Hosted connector** (`https://mcp.optimnow.io/mcp`): nothing to do. The connector
+  stayed on 1.53.0 through 1.54.0, whose deploy did not complete, so this release
+  brings it the content of both versions, the three references added in 1.54.0
+  included. Its seven tools are unchanged.
+- **PyPI package**: `pip install -U cloud-finops-mcp`.
+- **ChatGPT and Gemini**: run the installer again and re-upload the knowledge files to
+  pick up the changed references. There is no new file and `instructions.md` is
+  unchanged since 1.54.0.
+
+### For maintainers
+
+- **1.54.0 reached PyPI and GitHub but not the hosted connector.** Its deploy job
+  pushed the image, then the Fly.io command gave no output for 29 minutes and the job's
+  30-minute limit stopped it. The connector kept serving 1.53.0 and the MCP Registry
+  entry was skipped. The 1.54.0 deploy was not repaired: 1.55.0 replaces it.
+- **The workflows' pinned actions run on Node.js 24.** `actions/checkout`,
+  `actions/setup-python`, the two artifact actions, `softprops/action-gh-release` and
+  `dependabot/fetch-metadata` moved to their latest major, pinned by commit. This
+  release is the first run of the artifact and release actions at those versions.
 
 ## 1.54.0 (28 November 2026)
 
@@ -199,7 +225,8 @@ yet tagged.
 - **Hosted connector** (`https://mcp.optimnow.io/mcp`): nothing to do. The three new
   references (`finops-azure-commitments-sizing`, `finops-azure-commitments-data`,
   `finops-gcp-patterns`) appear in its catalogue when this version is deployed, which
-  the release does itself. Its seven tools are unchanged.
+  the release does itself. Its seven tools are unchanged. (The 1.54.0 deploy did not
+  complete: the connector received this content with 1.55.0.)
 - **If you read a reference by section**: commitment sizing and Advisor calibration,
   and database and storage commitments, left `finops-azure-commitments` for the two new
   Azure files, and the Google Cloud inefficiency patterns left `finops-gcp` for
