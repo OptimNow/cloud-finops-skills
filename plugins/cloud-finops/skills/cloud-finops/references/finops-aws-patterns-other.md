@@ -169,10 +169,12 @@ CloudWatch log groups often persist long after their usefulness has expired. In 
 
 ## Security services: billing mechanics that list prices hide
 
-OptimNow text, not from the Cloud Efficiency Hub. All pages read 10 November 2026.
+OptimNow text, not from the Cloud Efficiency Hub. All pages read 10 November 2026,
+except where a paragraph gives its own date.
 
-**AWS WAF.** Beyond the per web ACL, per rule and per request charges, every request
-evaluated counts, whatever the rule action. The paid intelligent threat mitigation
+**AWS WAF.** Usage from 1 February 2027 is billed on a different model, described in
+the next paragraph. Through 31 January 2027: beyond the per web ACL, per rule and per
+request charges, every request evaluated counts, whatever the rule action. The paid intelligent threat mitigation
 groups (Bot Control, Account Takeover Prevention, Account Creation Fraud Prevention)
 add a monthly fee per web ACL and a fee per request they inspect. AWS's own advice:
 exclude traffic with a scope-down statement, run cheaper blocking rules (IP
@@ -184,6 +186,29 @@ vended-log rates beyond it; a logging filter can keep only BLOCK and COUNT reque
 API Gateway HTTP APIs cannot be protected, only REST APIs ([WAF pricing](https://aws.amazon.com/waf/pricing/),
 [intelligent threat mitigation best practices](https://docs.aws.amazon.com/waf/latest/developerguide/waf-managed-protections-best-practices.html),
 [supported resources](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html)).
+
+**AWS WAF from 1 February 2027.** Three meters replace the charges above (a CloudWatch
+Logs allowance per million requests still applies): an hourly charge
+per protected resource, a charge per request a web ACL inspects (whatever the action),
+and a premium request fee on requests that a premium rule group inspects (Bot Control
+targeted protection, ATP, ACFP, the API Security and AI Security groups), charged once
+per request however many premium groups inspect it. The charges for web ACLs, rules,
+rule groups, WCU capacity, body inspection, CAPTCHA and Challenge are removed, and each
+web ACL includes up to 2,500 WCUs. Every association counts: a web ACL attached to 10
+resources is 10 protected resources. So cost follows what is protected and how much
+traffic is inspected, not how the rules are written. A rule-heavy web ACL costs less; a
+web ACL shared by many CloudFront distributions or load balancers, which paid one web
+ACL fee, pays per attached resource, and low-traffic resources carry the hourly charge
+whatever their volume (AWS points to the CloudFront flat-rate plans for many
+distributions with modest traffic). Re-model before February from the number of
+associations and the monthly request count, not from the rule inventory. Rule order
+still matters: a request that an earlier rule allows or blocks, or that a scope-down
+statement excludes, pays no premium fee. No action is needed to move, and Shield
+Advanced pricing does not change: the subscription keeps including WAF on protected
+resources up to 1,500 WCUs per web ACL
+([WAF pricing](https://aws.amazon.com/waf/pricing/),
+[AWS What's New, 23 November 2026](https://aws.amazon.com/about-aws/whats-new/2026/11/aws-waf-introduces-simplified-pricing/),
+read 28 November 2026).
 
 **GuardDuty.** The default threat detection cannot be disabled once GuardDuty is on;
 protection plans are turned on or off per plan, for all or selected accounts.

@@ -238,7 +238,7 @@ for during the wait.
 - [ ] Monitor unallocated PTUs - set alerts when PTUs are reserved but undeployed
 - [ ] Monitor allocated PTU utilisation - target >80%
 - [ ] Define spillover policy: what percentage of requests can route to PAYG within SLA?
-- [ ] Set spending alerts on PAYG spillover costs (variable component of a provisioned setup)
+- [ ] Set spending alerts on PAYG spillover costs (variable component of a provisioned setup); a Foundry cost control (preview) can also block requests at a budget, see "Azure Cost Management integration"
 - [ ] Apply existing Azure EA discounts - verify they apply to PTU reservations
 
 ---
@@ -301,6 +301,23 @@ Key filtering dimensions:
 **Limitation:** native Cost Management does not provide token-level granularity per
 request. For unit economics, combine billing data with Azure Monitor metrics or
 application-level instrumentation.
+
+**A native hard stop, in public preview since 24 November 2026.** A Cost Management
+budget alerts after the cost is recorded; it does not refuse a request. A Microsoft
+Foundry cost control sets a spending or token budget on a Foundry resource or project,
+for all usage or filtered by project, model deployment, agent or hosted agent session,
+reset daily, weekly or monthly. At each threshold it sends an alert through Azure Event
+Grid or blocks new requests, which then return 429 with the header
+`x-ms-budget-cause: budget_exceeded` until the next reset or a higher budget: handle
+that header separately from a rate-limit 429, or a retry loop keeps retrying against a
+spent budget. It counts usage as requests run, so it acts before the cost appears in Cost Management. Three
+limits: during the preview it supports Azure OpenAI model deployments only; spending
+totals are estimates and are not reconciled with the Azure bill; and the request that
+crosses a threshold still completes, so usage ends slightly above it. Set the blocking
+threshold with a margin, and keep Cost Management for reconciliation and chargeback
+([Azure Updates](https://azure.microsoft.com/updates?id=581323),
+[cost controls overview](https://learn.microsoft.com/azure/foundry/concepts/cost-controls),
+read 28 November 2026).
 
 ### Tagging strategy for Azure OpenAI
 

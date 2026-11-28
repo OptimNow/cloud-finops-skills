@@ -525,6 +525,13 @@ Management. Adaptive review effort (public preview) picks Lite, Balanced or Max 
 request but never above the maximum level set for the enterprise, organisation or
 repository, so that setting is the ceiling to govern; the changelog gives no credit cost
 per level ([GitHub changelog, 17 November 2026](https://github.blog/changelog/2026-11-17-copilot-code-review-adaptive-effort-secret-detection-and-more), read 21 November 2026).
+From 30 December 2026, on Copilot Business and Enterprise, code reviews by members with
+a Copilot licence are billed to the organisation that owns the repository wherever no
+billing choice was saved. Organisation billing requires AI Credits paid usage and can
+raise spend, so choose Member or Organization in the enterprise or organisation Copilot
+policy before that date (accounts without AI Credits paid usage, under a billing lock
+or with no billable customer are set to Member)
+([GitHub changelog, 25 November 2026](https://github.blog/changelog/2026-11-25-copilot-code-review-billing-will-default-to-the-organization), read 28 November 2026).
 
 ### Windsurf (now "Devin Desktop")
 
