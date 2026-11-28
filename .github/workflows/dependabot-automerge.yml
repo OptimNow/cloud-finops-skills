@@ -28,14 +28,16 @@ jobs:
       # It was the one left on a floating tag, which is the wrong one to leave
       # floating: it runs in a job holding contents:write + pull-requests:write,
       # and its output is what decides whether the next step merges without a
-      # human. v2 is a moving tag - re-pointing it is a supply-chain step, not
-      # a release. SHA verified 2026-08-27 against the v2.5.0 tag via the GitHub
-      # API (v2 and v2.5.0 resolve to the same commit). v3 exists upstream; the
-      # move to it is a major bump and so is a deliberate human decision, which
+      # human. v3 is a moving tag - re-pointing it is a supply-chain step, not
+      # a release. SHA verified 2026-11-28 against the v3.1.0 tag with
+      # `git ls-remote` (the tag resolves to this commit, whose action.yml
+      # declares node24). The move from v2.5.0 to v3 was a major bump, made by
+      # hand on the maintainer's request when Node.js 20 was deprecated on the
+      # runners. The next major is again a deliberate human decision, which
       # is also why fetch-metadata is on the deny-list below.
       - name: Fetch dependabot metadata
         id: meta
-        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a  # v2.5.0
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98  # v3.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
