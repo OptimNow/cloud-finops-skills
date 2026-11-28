@@ -12,6 +12,23 @@ each tagged release, as do the **hosted connector** at `mcp.optimnow.io` and the
 An "Unreleased" section, when there is one, lists what is merged to `main` and not
 yet tagged.
 
+## Unreleased
+
+### New and corrected content
+
+- **CloudWatch metrics in OpenTelemetry format: one enrichment level is free.**
+  `finops-aws-patterns-other.md` adds that basic enrichment of AWS service metrics costs
+  nothing since 27 November 2026, that resource tag enrichment is metered per GB
+  ingested, what makes that volume grow, and when the paid level is worth turning on.
+- **Neptune graphs for agents that scale to zero.** `finops-aws.md` adds Neptune Graph
+  Sessions (27 November 2026) under the database cost drivers: per-second billing on
+  the memory used, scale to zero after 15 idle minutes, and when a provisioned graph
+  is still the right choice.
+- **AWS WAF AI Security is billed twice, by WAF and by Bedrock.**
+  `finops-aws-patterns-other.md` and `finops-bedrock.md` add that the rule group for
+  LLM, MCP and A2A endpoints (23 November 2026) pays a WAF per-request fee, and that
+  its content inspection calls Bedrock Guardrails, billed separately.
+
 ## 1.54.0 (28 November 2026)
 
 ### New and corrected content

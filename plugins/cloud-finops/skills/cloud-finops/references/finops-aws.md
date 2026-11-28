@@ -20,6 +20,7 @@ questions:
   - q: "S3 Files or EFS: which filesystem access over S3 costs less for our workload?"
     section: "S3 Files vs EFS comparison"
   - "Where do we start to optimise our AWS usage once the billing data is clean?"
+  - "Each of our AI agents gets its own Neptune graph and the bill keeps growing. Is there a cheaper mode?"
   - "Comment optimiser l'usage AWS : EC2, conteneurs, GPU, SageMaker, bases de données ?"
 ---
 
@@ -366,6 +367,20 @@ Database services often represent 20-40% of cloud spend, yet many organisations 
   `VolumeBytesUsed` high and raise I/O; the online index rebuild (engine 1.5.0.0,
   provisioned writer instances) reclaims it with reads and writes continuing
   ([AWS What's New, 27 October 2026](https://aws.amazon.com/about-aws/whats-new/2026/10/neptune-online-index-rebuild/))
+- One provisioned Neptune Analytics graph per agent, user or task: a provisioned graph
+  starts at 16 m-NCU and bills by the hour whether it is queried or not, so each extra
+  graph adds that floor. Neptune Graph Sessions (GA 27 November 2026) is the mode for
+  many small, intermittent graphs: a graph starts at 4 or 8 s-NCU (1 GB of memory and
+  0.25 vCPU each) with headroom up to twice that size, compute bills per second on the
+  memory the graph uses, and it scales to zero after 15 minutes idle and resumes in
+  seconds with its data kept. A stopped graph bills storage only. An s-NCU and an
+  m-NCU are different units with different rates, so compare the two modes per hour of
+  expected use on the pricing page, not unit for unit. A graph queried around the
+  clock gains nothing from scale to zero, and one that outgrows 16 GB of memory needs
+  a provisioned graph. The Neptune pricing page leaves Savings Plan eligibility to the
+  Database Savings Plans page: check there before counting s-NCU usage as covered
+  ([AWS What's New](https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-neptune-graph-sessions-generally-available),
+  [Neptune pricing](https://aws.amazon.com/neptune/pricing/), read 28 November 2026)
 - Cache memory paid for cold data: ElastiCache data tiering keeps least-recently-used
   items on the node's SSD and reads them back on demand (Valkey 7.2 and later, r7gd and
   r8gd Graviton nodes, extended to Europe (Spain) and Asia Pacific (Hyderabad) in
