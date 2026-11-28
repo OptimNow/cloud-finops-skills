@@ -14,6 +14,8 @@ questions:
   - "Can AWS Marketplace purchases count towards our enterprise commitment?"
   - "What logging and monitoring settings quietly inflate an AWS bill?"
   - "A script re-tags our resources every hour and the AWS Config bill went up. Are the two linked?"
+  - "Is it free to query AWS service metrics in CloudWatch with PromQL, and what does adding resource tags to them cost?"
+  - "What does it cost to protect an LLM or MCP endpoint with AWS WAF?"
   - "Quels coûts AWS hors calcul, stockage et réseau sont souvent gaspillés : logs, Config, CloudTrail, Marketplace ?"
 ---
 
@@ -21,7 +23,8 @@ questions:
 
 > The AWS pattern catalogue for CloudWatch Logs, AWS Config, CloudTrail,
 > EventBridge, OpenSearch, EDP and Marketplace: the signal to look for and the
-> remediation for each. A closing section covers the billing mechanics of the
+> remediation for each. Two closing sections cover the free and metered levels of
+> CloudWatch OpenTelemetry enrichment and the billing mechanics of the
 > security services (WAF, GuardDuty, Inspector, IAM Access Analyzer). A lookup surface, retrieved when hunting a specific
 > pattern. For named patterns with runnable detection queries, prefer
 > `playbooks/`. The other families are listed in `finops-aws-patterns.md`; billing
@@ -167,6 +170,36 @@ CloudWatch log groups often persist long after their usefulness has expired. In 
 
 ---
 
+## CloudWatch metrics in OpenTelemetry format: one enrichment level is free
+
+OptimNow text, not from the Cloud Efficiency Hub.
+
+CloudWatch can convert the metrics AWS services publish (EC2, RDS, ELB and others) into
+OpenTelemetry data points that PromQL can query. Two levels exist, and only one is
+metered:
+
+- **Basic enrichment**, at no additional cost since 27 November 2026. Each data point
+  gets the resource ARN, cloud provider, Region and account ID, and the original
+  CloudWatch dimensions become attributes. It is on by default when CloudWatch Omni is
+  set up, and any account can enable it.
+- **Resource tag enrichment**, charged as OTel Vended Metric Enrichment. It adds the
+  resource's AWS tags as PromQL labels and bills per GB ingested, at the rate of
+  published OTel metrics, on the uncompressed size of each data point. The bill
+  therefore grows with three things: the number of metrics, their resolution, and the
+  number and size of the tags on each resource. AWS's own example: 8,000 metrics at
+  one-minute resolution, at 450 bytes per enriched observation, is about 155 GB a month.
+
+Tag enrichment is worth its cost where tags are the allocation key in a dashboard or an
+alert (cost per team, per environment). Elsewhere basic enrichment answers the same
+PromQL query by account and resource for nothing. The level can be switched at any
+time, so start on basic and turn tag enrichment on per account when a query needs a
+tag. The metrics stay available through the existing CloudWatch APIs in both cases
+([AWS What's New, 27 November 2026](https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-cloudwatch-opentelemetry-enrichment/),
+[CloudWatch pricing](https://aws.amazon.com/cloudwatch/pricing/), Metrics section and
+example 25, read 28 November 2026).
+
+---
+
 ## Security services: billing mechanics that list prices hide
 
 OptimNow text, not from the Cloud Efficiency Hub. All pages read 10 November 2026,
@@ -209,6 +242,22 @@ resources up to 1,500 WCUs per web ACL
 ([WAF pricing](https://aws.amazon.com/waf/pricing/),
 [AWS What's New, 23 November 2026](https://aws.amazon.com/about-aws/whats-new/2026/11/aws-waf-introduces-simplified-pricing/),
 read 28 November 2026).
+
+**AWS WAF AI Security: one control, two bills.** The AI Security managed rule group
+(GA 23 November 2026, seven Regions) protects LLM, MCP and A2A endpoints behind API
+Gateway, Application Load Balancers and CloudFront. A request it inspects pays a
+per-request fee on top of the WAF request fee, once per request even when the API
+Security group inspects it too; from 1 February 2027 that fee is the premium request
+fee above. With content inspection enabled, the rule group also calls Amazon Bedrock
+Guardrails, on requests for prompt injection, jailbreaks and harmful content and on
+responses for sensitive information, and Bedrock bills those calls separately, per text
+unit and per safeguard ("Guardrails bill per text unit" in `finops-bedrock.md`). The
+WAF line item therefore understates the cost of the control, and the Bedrock part
+scales with prompt and response length, not with the request count. Scope the rule
+group to the AI paths (AWS's example is `/v1/chat/*`), place it after cheaper rules,
+and enable content inspection only where the protocol checks are not enough
+([AWS What's New, 23 November 2026](https://aws.amazon.com/about-aws/whats-new/2026/11/waf-ai-endpoint-discovery-protection/),
+[WAF pricing](https://aws.amazon.com/waf/pricing/), read 28 November 2026).
 
 **GuardDuty.** The default threat detection cannot be disabled once GuardDuty is on;
 protection plans are turned on or off per plan, for all or selected accounts.

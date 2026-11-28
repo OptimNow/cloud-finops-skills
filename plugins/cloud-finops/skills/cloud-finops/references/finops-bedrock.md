@@ -89,6 +89,11 @@ image filters per image, Automated Reasoning per text unit per policy. Word filt
 regex filters are free. AWS's example counts a 200-character query as 1 unit and a
 1,500-character response as 2, for each safeguard. Grounding counts source, query and
 response together. A blocked prompt is charged for the evaluation but not for inference.
+Calls made through the `InvokeGuardrailChecks` API have their own price table, with
+three safeguards (content filters, prompt attack as a filter of its own, sensitive
+information). AWS WAF's AI Security rule group uses that API for content inspection
+since 23 November 2026, so a WAF deployment can create Guardrails spend in an account
+that runs no inference (pricing page, read 28 November 2026).
 The AWS Price List carries separate `Guardrail-*UnitsConsumed` usage types; confirm the
 string in your CUR. Sources: [Bedrock pricing](https://aws.amazon.com/bedrock/pricing/),
 [How Guardrails works](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-how.html),
